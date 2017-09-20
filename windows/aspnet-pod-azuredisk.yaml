@@ -1,0 +1,21 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: aspnet-azuredisk
+  labels:
+    name: storage
+spec:
+  containers:
+  - image: microsoft/aspnet
+    name: aspnet-azuredisk
+    volumeMounts:
+    - name: blobdisk01
+      mountPath: 'D:'
+  nodeSelector:
+    beta.kubernetes.io/os: windows
+  volumes:
+  - name: blobdisk01
+    persistentVolumeClaim:
+      claimName: pv-dd-shared-hdd-5g
+
