@@ -1,14 +1,14 @@
-# create a azure disk pvc first
+## create a azure disk pvc first
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/pvc-azuredisk.yaml
-#make sure pvc is created successfully
+#### make sure pvc is created successfully
 kubectl describe pvc pv-dd-shared-hdd-5g
 
-# create a pod with azure disk pvc
+## create a pod with azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml
-# watch the status of pod until its Status changed from Pending to Running
+#### watch the status of pod until its Status changed from Pending to Running
 watch kubectl describe po aspnet-azuredisk
 
-# enter the pod container to do validation
+## enter the pod container to do validation
 kubectl exec -it aspnet-azuredisk -- cmd
 
 ```
