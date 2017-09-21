@@ -1,0 +1,21 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: aspnet-azurefile
+  labels:
+    name: storage
+spec:
+  containers:
+  - image: microsoft/aspnet
+    name: aspnet-azurefile
+    volumeMounts:
+    - name: blobfile01
+      mountPath: 'D:'
+  nodeSelector:
+    beta.kubernetes.io/os: windows
+  volumes:
+  - name: blobfile01
+    persistentVolumeClaim:
+      claimName: azurefile-pvc
+
