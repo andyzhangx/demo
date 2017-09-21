@@ -1,15 +1,18 @@
-## create a azure disk pvc first
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/pvc-azuredisk.yaml
+## create a storage class for azure file first
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/azurefile-storageclass.yaml
+
+## create a pvc for azure file first
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/pvc-azurefile.yaml
 #### make sure pvc is created successfully
-kubectl describe pvc pv-dd-shared-hdd-5g
+kubectl describe pvc azurefile-pvc
 
 ## create a pod with azure disk pvc
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/aspnet-pod-azurefile.yaml
 #### watch the status of pod until its Status changed from Pending to Running
-watch kubectl describe po aspnet-azuredisk
+watch kubectl describe po aspnet-azurefile
 
 ## enter the pod container to do validation
-kubectl exec -it aspnet-azuredisk -- cmd
+kubectl exec -it aspnet-azurefile -- cmd
 
 ```
 C:\>d:
