@@ -2,7 +2,7 @@
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/azurefile-storageclass.yaml
 
 ## create a pvc for azure file first
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/pvc-azurefile.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/azurefile-pvc.yaml
 #### make sure pvc is created successfully
 kubectl describe pvc azurefile-pvc
 
