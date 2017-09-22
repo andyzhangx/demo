@@ -17,5 +17,5 @@ spec:
   volumes:
   - name: blobdisk01
     persistentVolumeClaim:
-      claimName: pv-dd-shared-hdd-5g
+      claimName: pvc-azuredisk
 
