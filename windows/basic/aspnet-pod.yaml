@@ -1,0 +1,13 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: aspnet
+  labels:
+    name: storage
+spec:
+  containers:
+  - image: microsoft/aspnet
+    name: aspnet
+  nodeSelector:
+    beta.kubernetes.io/os: windows
