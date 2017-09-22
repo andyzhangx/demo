@@ -1,4 +1,7 @@
-## create a azure disk pvc first
+## create a azure disk storage class if sharehdd does not exist
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/storageclass-azuredisk.yaml
+
+## create a azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/pvc-azuredisk.yaml
 #### make sure pvc is created successfully
 kubectl describe pvc pv-dd-shared-hdd-5g
