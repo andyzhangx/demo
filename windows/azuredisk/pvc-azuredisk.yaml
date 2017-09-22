@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: pv-dd-shared-hdd-5g
+  name: pvc-azuredisk
   annotations:
     volume.beta.kubernetes.io/storage-class: sharedhdd
 spec:
