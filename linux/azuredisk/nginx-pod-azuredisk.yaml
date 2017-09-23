@@ -1,0 +1,19 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-azuredisk
+spec:
+  containers:
+  - image: nginx
+    name: nginx-azuredisk
+    command:
+    - "/bin/sh"
+    - "-c"
+    - while true; do echo $(date) >> /mnt/blobdisk/outfile; sleep 1; done
+    volumeMounts:
+    - name: blobdisk01
+      mountPath: "/mnt/blobdisk"
+  volumes:
+  - name: blobdisk01
+    persistentVolumeClaim:
+      claimName: pvc-azuredisk 

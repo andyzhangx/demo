@@ -4,7 +4,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windo
 ## create a azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/pvc-azuredisk.yaml
 #### make sure pvc is created successfully
-kubectl describe pvc pv-dd-shared-hdd-5g
+kubectl describe pvc pvc-azuredisk
 
 ## create a pod with azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml
