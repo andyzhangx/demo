@@ -1,10 +1,10 @@
 ## create a storage class for azure file first
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/azurefile-storageclass.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/storageclass-azurefile.yaml
 
 ## create a pvc for azure file first
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/azurefile-pvc.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/pvc-azurefile.yaml
 #### make sure pvc is created successfully
-kubectl describe pvc azurefile-pvc
+kubectl describe pvc pvc-azurefile
 
 ## create a pod with azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/aspnet-pod-azurefile.yaml
