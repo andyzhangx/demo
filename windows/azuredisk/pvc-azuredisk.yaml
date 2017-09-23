@@ -2,11 +2,10 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: pvc-azuredisk
-  annotations:
-    volume.beta.kubernetes.io/storage-class: sharedhdd
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
+  storageClassName: hdd
