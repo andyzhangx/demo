@@ -17,5 +17,5 @@ spec:
   volumes:
   - name: blobfile01
     persistentVolumeClaim:
-      claimName: azurefile-pvc
+      claimName: pvc-azurefile
 
