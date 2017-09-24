@@ -1,8 +1,8 @@
 ## create a azure disk storage class if sharehdd does not exist
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/storageclass-azuredisk.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml
 
 ## create a azure disk pvc
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/pvc-azuredisk.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml
 #### make sure pvc is created successfully
 kubectl describe pvc pvc-azuredisk
 
