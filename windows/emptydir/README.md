@@ -6,7 +6,7 @@ watch kubectl describe po aspnet
 ## enter the pod container to do validation
 kubectl exec -it aspnet -- cmd
 
-'''
+```
 C:\>d:
 
 D:\>dir
@@ -18,4 +18,4 @@ D:\>dir
                0 File(s)              0 bytes
                2 Dir(s)  97,325,273,088 bytes free
 
-'''
+```
