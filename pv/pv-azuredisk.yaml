@@ -8,5 +8,5 @@ spec:
   accessModes:
     - ReadWriteOnce
   azureDisk:
-    storageaccounttype: Standard_LRS
-    kind: Shared    
+    diskName: test.vhd
+    diskURI: https://someaccount.blob.microsoft.net/vhds/test.vhd
