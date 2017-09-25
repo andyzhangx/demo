@@ -2,7 +2,7 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: aspnet
+  name: aspnet-emptydir
 spec:
   containers:
   - image: microsoft/aspnet
