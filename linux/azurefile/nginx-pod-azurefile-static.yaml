@@ -3,13 +3,9 @@ kind: Pod
 metadata:
  name: azure
 spec:
-  containers:
+ containers:
   - image: nginx
     name: nginx-azurefile
-    command:
-    - "/bin/sh"
-    - "-c"
-    - while true; do echo $(date) >> /mnt/azurefile/outfile; sleep 1; done
     volumeMounts:
       - name: azure
         mountPath: /mnt/azurefile
