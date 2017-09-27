@@ -1,5 +1,11 @@
 ## create a storage class for azure file first
+### There are two kinds of configuration of storage class for azure file
+#### Method#1: find a suitable storage account that matches skuName and location in same resource group when provisioning azure file
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile.yaml
+
+#### Method#2: use specified storage account  when provisioning azure file
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile-account.yaml
+
 
 ## create a pvc for azure file first
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile.yaml
