@@ -18,7 +18,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux
 watch kubectl describe po nginx-azurefile
 
 ## enter the pod container to do validation
-kubectl exec -it nginx-azurefile -- cmd
+kubectl exec -it nginx-azurefile -- bash
 
 ```
 ```
