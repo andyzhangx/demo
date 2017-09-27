@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: azure
+spec:
+  containers:
+  - image: nginx
+    name: nginx-azurefile
+    command:
+    - "/bin/sh"
+    - "-c"
+    - while true; do echo $(date) >> /mnt/azurefile/outfile; sleep 1; done
+    volumeMounts:
+      - name: azure
+        mountPath: /mnt/azurefile
+ volumes:
+      - name: azure
+        azureFile:
+          secretName: azure-secret
+          shareName: k8stest
+          readOnly: false
