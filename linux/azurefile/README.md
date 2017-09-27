@@ -34,7 +34,7 @@ https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/azure-secrect.yaml
 kubectl create -f azure-secrect.yaml
 
 ## create a pod with azure file
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile-v1.6.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile-static.yaml
 
 ## enter the pod container to do validation
 kubectl exec -it nginx-azurefile -- bash
