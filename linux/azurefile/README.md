@@ -46,7 +46,7 @@ There is a bug of azure file mount feature in v1.7.x, cluster name length must b
 ```
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
-A fis for this is in progress: https://github.com/kubernetes/kubernetes/pull/53172
+A fix for this is in progress: https://github.com/kubernetes/kubernetes/pull/53172
 
 
 # Static Provisioning for azure file (support from v1.5.0)
