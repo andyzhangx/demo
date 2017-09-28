@@ -2,14 +2,20 @@
 ## 1. create a storage class for azure file first
 ### There are two kinds of storage class configuration for azure file
 #### Method#1: find a suitable storage account that matches skuName and location in same resource group when provisioning azure file
-download storageclass-azurefile.yaml file and modify `skuName` and `location` values
+download storageclass-azurefile.yaml file and modify `skuName`, `location` values
+```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile.yaml
+vi storageclass-azurefile.yaml
 kubectl create -f storageclass-azurefile.yaml
+```
 
 #### Method#2: use existing storage account when provisioning azure file
-download storageclass-azurefile-account.yaml file and modify `skuName` and `location` values
+download storageclass-azurefile-account.yaml file and modify `storageAccount` values
+```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile-account.yaml
+vi storageclass-azurefile-account.yaml
 kubectl create -f storageclass-azurefile-account.yaml
+```
 
 ## 2. create a pvc for azure file first
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile.yaml
@@ -47,11 +53,12 @@ A fis for this is in progress: https://github.com/kubernetes/kubernetes/pull/531
 ## 1. create a secret for azure file
 Create an azure file share in the Azure storage account, get the connection info of that azure file and then create a secret that contains the base64 encoded Azure Storage account name and key. In the secret file, base64-encode Azure Storage account name and pair it with name azurestorageaccountname, and base64-encode Azure Storage access key and pair it with name azurestorageaccountkey. For the base64-encode, you could leverage this site: https://www.base64encode.net/
 
-#### 2. use below config file as an example
-https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/azure-secrect.yaml
-
-#### use below command to create a secret for azure file
+#### 2. download azure-secrect.yaml file and modify `azurestorageaccountname`, `azurestorageaccountkey` values
+```
+wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/azure-secrect.yaml
+vi azure-secrect.yaml
 kubectl create -f azure-secrect.yaml
+```
 
 ## 3. create a pod with azure file
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile-static.yaml
