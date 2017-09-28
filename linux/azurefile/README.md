@@ -4,7 +4,7 @@
 #### Method#1: find a suitable storage account that matches skuName and location in same resource group when provisioning azure file
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile.yaml
 
-#### Method#2: use specified storage account  when provisioning azure file
+#### Method#2: use existing storage account when provisioning azure file
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile-account.yaml
 
 ## create a pvc for azure file first
@@ -21,7 +21,23 @@ watch kubectl describe po nginx-azurefile
 kubectl exec -it nginx-azurefile -- bash
 
 ```
+root@nginx-azurefile:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          30G  3.6G   26G  13% /
+tmpfs           6.9G     0  6.9G   0% /dev
+tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
+/dev/sda1        30G  3.6G   26G  13% /etc/hosts
+/dev/sdc        4.8G   12M  4.6G   1% /mnt/blobfile
+shm              64M     0   64M   0% /dev/shm
+tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
+### Note
+There is a bug of azure file mount feature in v1.7.x, cluster name lenght must be less than 14 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
+```
+persistentvolume-controller                     Warning         ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
+```
+A fis for this is in progress: https://github.com/kubernetes/kubernetes/pull/53172
+
 
 # Static Provisioning for azure file (support from v1.5.0)
 ## create a secret for azure file
@@ -40,4 +56,13 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux
 kubectl exec -it nginx-azurefile -- bash
 
 ```
+root@nginx-azurefile:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          30G  3.6G   26G  13% /
+tmpfs           6.9G     0  6.9G   0% /dev
+tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
+/dev/sda1        30G  3.6G   26G  13% /etc/hosts
+/dev/sdc        4.8G   12M  4.6G   1% /mnt/blobfile
+shm              64M     0   64M   0% /dev/shm
+tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
