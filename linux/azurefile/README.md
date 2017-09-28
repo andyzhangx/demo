@@ -50,7 +50,8 @@ A fix for this is in progress: https://github.com/kubernetes/kubernetes/pull/531
 
 
 # Static Provisioning for azure file (support from v1.5.0)
-kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file, only static provisioning is supported for azure file
+kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file, only static provisioning is supported for azure file which means a storage account should be created before using azure file mount feature.
+
 ## 1. create a secret for azure file
 Create an azure file share in the Azure storage account, get the connection info of that azure file and then create a secret that contains the base64 encoded Azure Storage account name and key. In the secret file, base64-encode Azure Storage account name and pair it with name azurestorageaccountname, and base64-encode Azure Storage access key and pair it with name azurestorageaccountkey. For the base64-encode, you could leverage this site: https://www.base64encode.net/
 
