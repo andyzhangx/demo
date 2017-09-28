@@ -1,6 +1,6 @@
 # Dynamic Provisioning for azure file (support from v1.7.0)
 ## 1. create a storage class for azure file first
-### There are two kinds of storage class configuration for azure file
+There are two kinds of storage class configuration for azure file
 #### Method#1: find a suitable storage account that matches skuName and location in same resource group when provisioning azure file
 download storageclass-azurefile.yaml file and modify `skuName`, `location` values
 ```
