@@ -1,4 +1,4 @@
-# Dynamic Provisioning for azure file (support from v1.7.0)
+# Dynamic Provisioning for azure file in Linux (support from v1.7.0)
 ## 1. create a storage class for azure file
 There are two kinds of storage class configuration for azure file
 #### Option#1: find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure file
@@ -49,7 +49,7 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 A fix for this is in progress: https://github.com/kubernetes/kubernetes/pull/53172
 
 
-# Static Provisioning for azure file (support from v1.5.0)
+# Static Provisioning for azure file in Linux (support from v1.5.0)
 kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file, only static provisioning is supported for azure file which means a storage account should be created before using azure file mount feature.
 
 ## 1. create a secret for azure file
