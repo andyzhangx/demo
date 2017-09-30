@@ -8,7 +8,7 @@ wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-az
 vi storageclass-azuredisk-old.yaml
 kubectl create -f storageclass-azuredisk-old.yaml
 ```
-###### Note: k8s will find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure disk
+###### Note: for option#2, k8s will find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure disk
 
 ## 2. create an azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml
