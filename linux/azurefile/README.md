@@ -1,6 +1,6 @@
 # Dynamic Provisioning for azure file in Linux (support from v1.7.0)
 ## 1. create a storage class for azure file
-There are two kinds of storage class configuration for azure file
+There are two options for creating azure file storage class
 #### Option#1: find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure file
 download storageclass-azurefile.yaml file and modify `skuName`, `location` values
 ```
@@ -24,7 +24,7 @@ kubectl describe pvc pvc-azurefile
 
 ## 3. create a pod with azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml
-#### watch the status of pod until its Status changed from Pending to Running
+#### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po nginx-azurefile
 
 ## 4. enter the pod container to do validation
@@ -64,6 +64,8 @@ kubectl create -f azure-secrect.yaml
 
 ## 3. create a pod with azure file
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile-static.yaml
+#### watch the status of pod until its Status changed from `Pending` to `Running`
+watch kubectl describe po nginx-azurefile
 
 ## 4. enter the pod container to do validation
 kubectl exec -it nginx-azurefile -- bash
