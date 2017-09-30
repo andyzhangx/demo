@@ -1,7 +1,7 @@
 ## 1. create an azure disk storage class if `hdd` does not exist
-#### for k8s version >= v1.7.2
+#### option#1(for k8s version >= v1.7.2)
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml
-#### for k8s version < 1.7.2
+#### option#2(for k8s version < 1.7.2)
 download storageclass-azuredisk-old.yaml and modify `skuName`, `location` values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-old.yaml
