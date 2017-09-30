@@ -1,17 +1,17 @@
-## create a azure disk storage class if sharehdd does not exist
+## 1. create an azure disk storage class if `hdd` does not exist
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml
 
-## create a azure disk pvc
+## 2. create an azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml
 #### make sure pvc is created successfully
 kubectl describe pvc pvc-azuredisk
 
-## create a pod with azure disk pvc
+## 3. create a pod with azure disk pvc
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml
-#### watch the status of pod until its Status changed from Pending to Running
+#### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po aspnet-azuredisk
 
-## enter the pod container to do validation
+## 4. enter the pod container to do validation
 kubectl exec -it aspnet-azuredisk -- cmd
 
 ```
