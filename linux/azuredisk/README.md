@@ -2,7 +2,7 @@
 #### option#1(for k8s version >= v1.7.2)
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml
 #### option#2(for k8s version < 1.7.2)
-download storageclass-azuredisk-old.yaml and modify `skuName`, `location` values
+download `storageclass-azuredisk-old.yaml` and modify `skuName`, `location` values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-old.yaml
 vi storageclass-azuredisk-old.yaml
