@@ -18,17 +18,19 @@ kubectl create -f storageclass-azurefile-account.yaml
 ```
 
 ## 2. create a pvc for azure file first
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile.yaml
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile.yaml```
+
 #### make sure pvc is created successfully
-kubectl describe pvc pvc-azurefile
+```kubectl describe pvc pvc-azurefile```
 
 ## 3. create a pod with azure disk pvc
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml```
+
 #### watch the status of pod until its Status changed from `Pending` to `Running`
-watch kubectl describe po nginx-azurefile
+```watch kubectl describe po nginx-azurefile```
 
 ## 4. enter the pod container to do validation
-kubectl exec -it nginx-azurefile -- bash
+```kubectl exec -it nginx-azurefile -- bash```
 
 ```
 root@nginx-azurefile:/# df -h
@@ -42,7 +44,7 @@ shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 ### Note
-There is a bug of azure file mount feature in v1.7.x, cluster name length must be less than 14 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
+There is a bug of azure file mount feature in v1.7.x, cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
 ```
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
@@ -63,12 +65,13 @@ kubectl create -f azure-secrect.yaml
 ```
 
 ## 3. create a pod with azure file
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile-static.yaml
-#### watch the status of pod until its Status changed from `Pending` to `Running`
-watch kubectl describe po nginx-azurefile
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile-static.yaml```
+
+#### watch the status of pod until its `Status` changed from `Pending` to `Running`
+```watch kubectl describe po nginx-azurefile```
 
 ## 4. enter the pod container to do validation
-kubectl exec -it nginx-azurefile -- bash
+```kubectl exec -it nginx-azurefile -- bash```
 
 ```
 root@nginx-azurefile:/# df -h
