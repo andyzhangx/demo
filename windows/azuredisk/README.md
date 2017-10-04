@@ -1,19 +1,21 @@
 ## Support from k8s version 1.7.x
 ## 1. create an azure disk storage class if `hdd` does not exist
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
 
 ## 2. create an azure disk pvc
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
+
 #### make sure pvc is created successfully
-kubectl describe pvc pvc-azuredisk
+```kubectl describe pvc pvc-azuredisk```
 
 ## 3. create a pod with azure disk pvc
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml
-#### watch the status of pod until its Status changed from `Pending` to `Running`
-watch kubectl describe po aspnet-azuredisk
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml```
+
+#### watch the status of pod until its `Status` changed from `Pending` to `Running`
+```watch kubectl describe po aspnet-azuredisk```
 
 ## 4. enter the pod container to do validation
-kubectl exec -it aspnet-azuredisk -- cmd
+```kubectl exec -it aspnet-azuredisk -- cmd```
 
 ```
 C:\>d:
