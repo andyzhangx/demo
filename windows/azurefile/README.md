@@ -1,4 +1,4 @@
-# Dynamic Provisioning for azure file on Windows (support from v1.7.x)
+# Dynamic Provisioning for azure file on Windows 2016 DataCenter(support from v1.7.x)
 ## 1. create an azure file storage class
 There are two options for creating azure file storage class
 #### Option#1: find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure file
@@ -49,7 +49,7 @@ D:\test>dir
 ```
 
 
-# Static Provisioning for azure file in Windows (support from v1.7.x)
+# Static Provisioning for azure file on Windows 2016 DataCenter(support from v1.7.x)
 ## 1. create a secret for azure file
 Create an azure file share in the Azure storage account, get the connection info of that azure file and then create a secret that contains the base64 encoded Azure Storage account name and key. In the secret file, base64-encode Azure Storage account name and pair it with name azurestorageaccountname, and base64-encode Azure Storage access key and pair it with name azurestorageaccountkey. For the base64-encode, you could leverage this site: https://www.base64encode.net/
 
