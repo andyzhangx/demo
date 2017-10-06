@@ -1,4 +1,4 @@
-# Debugging techniques for kubernetes on azure
+# Debugging skills for kubernetes on azure
 ### Q: How to change log level in k8s cluster
 #### On master
 edit yaml files under `/etc/kubernetes/manifests/`, and then run `sudo service docker restart`
