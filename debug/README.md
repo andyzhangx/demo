@@ -19,3 +19,14 @@ run `docker ps -a` to get all containers, if there is any stopped container, usi
 change `KUBELET_IMAGE` value, default value is `gcrio.azureedge.net/google_containers/hyperkube-amd64:1.x.x`
 and then run `sudo service docker restart`
 
+### Q: Pod could not be scheduled to a windows node
+1. make sure node is marked as `windows` label, run below command to check
+`kubectl get nodes --show-labels`
+use below command to label `windows` on the windows node:
+```kubectl label nodes <node-name> beta.kubernetes.io/os=windows --overwrite```
+
+2. `nodeSelector` should be specified in the pod configuration, e.g.
+```
+  nodeSelector:
+    beta.kubernetes.io/os: windows
+```
