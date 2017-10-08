@@ -1,15 +1,19 @@
 ## 1. create an azure disk storage class if `hdd` does not exist
-#### option#1(for k8s version >= v1.7.2)
+#### for k8s version >= v1.7.2
+###### option#1: k8s agent pool is based on blob disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
 
-#### option#2(for k8s version < 1.7.2)
+###### option#2: k8s agent pool is based on managed disk VM
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml```
+
+#### for k8s version < 1.7.2
 download `storageclass-azuredisk-old.yaml` and modify `skuName`, `location` values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-old.yaml
 vi storageclass-azuredisk-old.yaml
 kubectl create -f storageclass-azuredisk-old.yaml
 ```
-###### Note: for option#2, k8s will find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure disk
+###### Note: for `storageclass-azuredisk-old.yaml`, k8s will find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure disk
 
 ## 2. create an azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
