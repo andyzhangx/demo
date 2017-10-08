@@ -1,6 +1,10 @@
 ## Support from k8s version 1.7.x on Windows 2016 DataCenter
 ## 1. create an azure disk storage class if `hdd` does not exist
+#### option#1: k8s agent pool is based on blob disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
+
+#### option#2: k8s agent pool is based on managed disk VM
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml```
 
 ## 2. create an azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
