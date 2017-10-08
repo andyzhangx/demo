@@ -2,7 +2,7 @@
 ## kubernetes on Windows
 ### build kubernetes on Windows
 ### debug kubernetes windows node
-#### create a port 3389 for windows node
+#### create a port 3389 for remote log in to the windows node
 1. create an external load balancer in the resource group
 2. assign a public address for this load balancer
 3. add the windows node in backend pool in the load balancer setting
