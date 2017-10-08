@@ -6,7 +6,7 @@
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
 
 #### make sure pvc is created successfully
-```kubectl describe pvc pvc-azuredisk```
+```watch kubectl describe pvc pvc-azuredisk```
 
 ## 3. create a pod with azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml```
