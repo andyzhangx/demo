@@ -1,0 +1,29 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-azurefile
+  name: nginx-azurefile
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-azurefile
+      name: nginx-azurefile
+    spec:
+      containers:
+      - name: nginx-azurefile
+        image: nginx
+        command:
+        - "/bin/sh"
+        - "-c"
+        - while true; do echo $(date) >> /mnt/blobfile/outfile; sleep 1; done		
+        volumeMounts:
+        - name: blobfile01
+          mountPath: "/mnt/blobfile"
+      volumes:
+      - name: blobfile01
+        persistentVolumeClaim:
+          claimName: pvc-azurefile
