@@ -10,12 +10,12 @@ spec:
   - image: microsoft/aspnet
     name: aspnet-azuredisk
     volumeMounts:
-    - name: blobdisk01
+    - name: disk01
       mountPath: 'D:'
   nodeSelector:
     beta.kubernetes.io/os: windows
   volumes:
-  - name: blobdisk01
+  - name: disk01
     persistentVolumeClaim:
       claimName: pvc-azuredisk
 

@@ -9,11 +9,11 @@ spec:
     command:
     - "/bin/sh"
     - "-c"
-    - while true; do echo $(date) >> /mnt/blobdisk/outfile; sleep 1; done
+    - while true; do echo $(date) >> /mnt/disk/outfile; sleep 1; done
     volumeMounts:
-    - name: blobdisk01
-      mountPath: "/mnt/blobdisk"
+    - name: disk01
+      mountPath: "/mnt/disk"
   volumes:
-  - name: blobdisk01
+  - name: disk01
     persistentVolumeClaim:
       claimName: pvc-azuredisk 
