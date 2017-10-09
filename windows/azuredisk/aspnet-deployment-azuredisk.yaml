@@ -1,0 +1,27 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: aspnet-azuredisk
+  name: aspnet-azuredisk
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: aspnet-azuredisk
+      name: aspnet-azuredisk
+    spec:
+      containers:
+      - name: aspnet-azuredisk
+        image: microsoft/aspnet
+        volumeMounts:
+        - name: disk01
+          mountPath: 'D:'
+      nodeSelector:
+        beta.kubernetes.io/os: windows
+      volumes:
+      - name: disk01
+        persistentVolumeClaim:
+          claimName: pvc-azuredisk
