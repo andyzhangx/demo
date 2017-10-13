@@ -23,6 +23,16 @@ begin build on windows
 go build cmd\kubelet\kubelet.go
 go build cmd\kube-proxy\proxy.go
 ```
+### build linux/windows/darwin on Linux
+```
+KUBE_BUILD_PLATFORMS=linux/amd64 make WHAT=cmd/kubelet
+KUBE_BUILD_PLATFORMS=windows/amd64 make WHAT=cmd/kubelet
+KUBE_BUILD_PLATFORMS=darwin/amd64 make WHAT=cmd/kubelet
+
+KUBE_BUILD_PLATFORMS=linux/amd64 make
+KUBE_BUILD_PLATFORMS=windows/amd64 make
+KUBE_BUILD_PLATFORMS=darwin/amd64 make
+```
 
 ### debug kubernetes windows node
 
