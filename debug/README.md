@@ -1,10 +1,12 @@
 # Debugging skills for kubernetes on azure
 ### Q: How to change log level in k8s cluster
 #### On master
-edit yaml files under `/etc/kubernetes/manifests/`, and then run `sudo service docker restart`
-#### On agent in Linux
+edit yaml files under `/etc/kubernetes/manifests/`, change `--v=2` value and then run `sudo service docker restart`
+#### On Linux agent
 
-#### On agent in Windows
+#### On Windows agent
+edit `c:\k\kubeletstart.ps1`, check the parameter(`--v=2`) in `c:\k\kubelet.exe` command
+restart `Kubelet` service
 
 ### Q: There is no k8s component container running on master, how to do troubleshooting?
 run `journalctl -u kubelet` to get the kubelet related logs
