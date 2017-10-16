@@ -1,4 +1,4 @@
-# kubernetes developing skills
+# kubernetes developing practices
 ## kubernetes on Windows
 ### build kubernetes on Windows
 under admin mode in dos
