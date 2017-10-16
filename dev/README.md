@@ -1,12 +1,12 @@
 # kubernetes developing practices
 ## kubernetes on Windows
 ### build kubernetes on Windows
-under admin mode in dos
+run dos in admin mode
 ```
 cd C:\Go\src\k8s.io\kubernetes\vendor\k8s.io
 ```
 
-delete the original link file manually
+delete the original link files manually
 create links
 ```
 mklink /d api ..\..\staging\src\k8s.io\api
@@ -18,7 +18,7 @@ mklink /d kube-aggregator ..\..\staging\src\k8s.io\kube-aggregator
 mklink /d metrics ..\..\staging\src\k8s.io\metrics
 mklink /d sample-apiserver ..\..\staging\src\k8s.io\sample-apiserver
 ```
-begin build on windows
+begin to build k8s binaries on windows
 ```
 go build cmd\kubelet\kubelet.go
 go build cmd\kube-proxy\proxy.go
