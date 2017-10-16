@@ -43,3 +43,11 @@ KUBE_BUILD_PLATFORMS=darwin/amd64 make
 make clean
 make
 ```
+
+## General development practices
+#### precheck before submit any code
+```
+hack/update-bazel.sh
+hack/verify-golint.sh
+hack/verify-gofmt.sh
+```
