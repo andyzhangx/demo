@@ -32,3 +32,11 @@ use below command to label `windows` on the windows node:
   nodeSelector:
     beta.kubernetes.io/os: windows
 ```
+
+### Q: How to set default storage class in kubernetes on azure?
+first edit below file, set the `default` class as false:
+```
+sudo vi /etc/kubernetes/addons/azure-storage-classes.yaml
+```
+And then follow below guide to set the default class:
+https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
