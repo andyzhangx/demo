@@ -2,12 +2,12 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: windowswebserver-azuredisk
+  name: windowsservercore-azuredisk
 spec:
   containers:
   - image: microsoft/windowsservercore
     imagePullPolicy: IfNotPresent
-    name: windowswebserver
+    name: windowsservercore
     command:
     - powershell.exe
     - -command
