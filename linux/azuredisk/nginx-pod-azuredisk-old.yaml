@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: nginx-azuredisk
+spec:
+ containers:
+  - image: nginx
+    name: nginx-azuredisk
+    volumeMounts:
+      - name: azure
+        mountPath: /mnt/disk
+ volumes:
+      - name: azure
+        azureDisk:
+          diskName: test.vhd
+          diskURI: https://YOURSTORAGEACCOUNT.blob.core.windows.net/vhds/test.vhd
