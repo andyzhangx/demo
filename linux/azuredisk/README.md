@@ -41,7 +41,7 @@ tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
-# Static Provisioning for azure disk (support k8s version >= 1.6)
+# Static Provisioning for azure disk
 #### 1. create an azure disk in the same resource group and modify `nginx-pod-azuredisk-old.yaml`
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-old.yaml
