@@ -1,3 +1,4 @@
+# Dynamic Provisioning for azure disk in Linux
 ## 1. create an azure disk storage class if `hdd` does not exist
 #### for k8s version >= v1.7.2
 ###### option#1: k8s agent pool is based on blob disk VM
@@ -40,14 +41,30 @@ tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
-
-## Another option to create a pod with an azure disk mount(support k8s version >= 1.6): 
-#### create your own disk in the same resource group and modify `nginx-pod-azuredisk-old.yaml`
+# Static Provisioning for azure disk (support k8s version >= 1.6)
+#### 1. create an azure disk in the same resource group and modify `nginx-pod-azuredisk-old.yaml`
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-old.yaml
 vi nginx-pod-azuredisk-old.yaml
 ```
-#### create a pod with an azure disk mount
+#### 2. create a pod with an azure disk mount
 ```kubectl create -f nginx-pod-azuredisk-old.yaml```
 
+#### 3. watch the status of pod until its Status changed from `Pending` to `Running`
+```watch kubectl describe po nginx-azuredisk```
+
+## 4. enter the pod container to do validation
+```kubectl exec -it nginx-azuredisk -- bash```
+
+```
+root@nginx-azuredisk:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          30G  3.6G   26G  13% /
+tmpfs           6.9G     0  6.9G   0% /dev
+tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
+/dev/sda1        30G  3.6G   26G  13% /etc/hosts
+/dev/sdc        4.8G   10M  4.6G   1% /mnt/disk
+shm              64M     0   64M   0% /dev/shm
+tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
+```
 
