@@ -41,5 +41,13 @@ shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
+## Another option to create a pod with an azure disk mount(support k8s version >= 1.6): 
+#### create your own disk in the same resource group and modify `nginx-pod-azuredisk-old.yaml`
+```
+wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-old.yaml
+vi nginx-pod-azuredisk-old.yaml
+```
+#### create a pod with an azure disk mount
+```kubectl create -f nginx-pod-azuredisk-old.yaml```
 
 
