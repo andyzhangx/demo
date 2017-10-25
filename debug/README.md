@@ -31,6 +31,22 @@ docker logs $id > $id.log 2>&1 &
 vi $id.log
 ```
 
+### Q: How to get the k8s kubelet logs on agent?
+1. get the "CONTAINER ID" of "/hyperkube kubelet"
+```
+docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'
+```
+2. get kubelet logs
+```
+docker logs "CONTAINER ID" > "CONTAINER ID".log 2>&1 &
+```
+Or use below command lines directly:
+```
+id=`docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'`
+docker logs $id > $id.log 2>&1 &
+vi $id.log
+```
+
 ### Q: How to change k8s hyperkube image?
 `sudo vi /etc/default/kubelet`
 change `KUBELET_IMAGE` value, default value is `gcrio.azureedge.net/google_containers/hyperkube-amd64:1.x.x`
