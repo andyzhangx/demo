@@ -24,6 +24,11 @@ docker ps -a | grep "hyperkube controlle" | awk -F ' ' '{print $1}'
 ```
 docker logs "CONTAINER ID" > "CONTAINER ID".log 2>&1 &
 ```
+Or use below command lines directly:
+```
+id=`docker ps -a | grep "hyperkube controlle" | awk -F ' ' '{print $1}'`
+docker logs $id > $id.log 2>&1 &
+```
 
 ### Q: How to change k8s hyperkube image?
 `sudo vi /etc/default/kubelet`
