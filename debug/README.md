@@ -27,7 +27,7 @@ docker logs "CONTAINER ID" > "CONTAINER ID".log 2>&1 &
 Or use below command lines directly:
 ```
 id=`docker ps -a | grep "hyperkube controlle" | awk -F ' ' '{print $1}'`
-docker logs $id > $id.log 2>&1 &
+docker logs $id > $id.log 2>&1
 vi $id.log
 ```
 
@@ -43,7 +43,7 @@ docker logs "CONTAINER ID" > "CONTAINER ID".log 2>&1 &
 Or use below command lines directly:
 ```
 id=`docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'`
-docker logs $id > $id.log 2>&1 &
+docker logs $id > $id.log 2>&1
 vi $id.log
 ```
 
