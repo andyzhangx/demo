@@ -71,3 +71,6 @@ sudo vi /etc/kubernetes/addons/azure-storage-classes.yaml
 ```
 And then follow below guide to set the default class:
 https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
+
+### Q: How to delete the pod by force?
+```kubectl delete pod PODNAME --grace-period=0 --force```
