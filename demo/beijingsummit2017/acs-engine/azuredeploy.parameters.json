@@ -174,13 +174,13 @@
       "value": "16.04.201710110"
     },
     "servicePrincipalClientId": {
-      "value": "91fe9b3f-d35a-4f9b-8c92-e8572916bd9a"
+      "value": "..."
     },
     "servicePrincipalClientSecret": {
-      "value": "ed0a7cc2-070e-416c-b42c-734da36a9caa"
+      "value": "..."
     },
     "sshRSAPublicKey": {
-      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDSEzOJcriMD1BcbcH7EKEkNjHvo+TB+7hWZ+JrLDKDoML6IrAHSUPoBEjwbLLh1Ut6iX/2g9GzQlwWZ9+uvNYfwqLRillTNq/oHGOS5FwfA9RV+O4/VXqwMogJmHxeVah7k7/auqp7vVKWoKBy6/HqxSJv+u80JO9wat1U4oHDesj8I3zhxZyk8MrvfeDNzhIoDTazc8q7OiHayZ18G/vTjAEATwiSY4dHyhxHl7qtUXKc2gLet7hlYeTeAUp0XPiQMM9y33BPDOyJkw2faSzcl7eeKFsdzuyZuSwsPePxSaX5fgXCbeqQ/BrzraDnwJlaC3IjzhT8HxfQJbYpD4ma root@andy-dev"
+      "value": "ssh-rsa ... root@andy-dev"
     },
     "targetEnvironment": {
       "value": "AzurePublicCloud"
