@@ -1,0 +1,21 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: aspnet-azuredisk
+  labels:
+    name: storage
+spec:
+  containers:
+  - image: microsoft/aspnet:4.7.1-windowsservercore-1709
+    name: aspnet-azuredisk
+    volumeMounts:
+    - name: disk01
+      mountPath: 'D:'
+  nodeSelector:
+    beta.kubernetes.io/os: windows
+  volumes:
+  - name: disk01
+    persistentVolumeClaim:
+      claimName: pvc-azuredisk
+
