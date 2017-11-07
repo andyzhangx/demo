@@ -5,7 +5,7 @@ metadata:
   name: windowsservercore-azuredisk
 spec:
   containers:
-  - image: microsoft/windowsservercore
+  - image: microsoft/windowsservercore:1709
     imagePullPolicy: IfNotPresent
     name: windowsservercore
     command:
