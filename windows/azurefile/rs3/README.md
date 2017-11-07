@@ -21,7 +21,7 @@ kubectl create -f storageclass-azurefile-account.yaml
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile.yaml```
 
 #### make sure pvc is created successfully
-```kubectl describe pvc pvc-azurefile```
+```watch kubectl describe pvc pvc-azurefile```
 
 ## 3. create a pod with azure file pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/rs3/windowsservercore-pod-azurefile.yaml```
