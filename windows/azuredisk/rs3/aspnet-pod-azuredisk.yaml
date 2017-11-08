@@ -11,7 +11,7 @@ spec:
     name: aspnet-azuredisk
     volumeMounts:
     - name: disk01
-      mountPath: 'D:'
+      mountPath: '/mnt/azure'
   nodeSelector:
     beta.kubernetes.io/os: windows
   volumes:
