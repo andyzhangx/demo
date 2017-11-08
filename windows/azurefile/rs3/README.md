@@ -24,13 +24,13 @@ kubectl create -f storageclass-azurefile-account.yaml
 ```watch kubectl describe pvc pvc-azurefile```
 
 ## 3. create a pod with azure file pvc
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/rs3/windowsservercore-pod-azurefile.yaml```
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/rs3/aspnet-pod-azurefile.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
-```watch kubectl describe po windowsservercore-azurefile```
+```watch kubectl describe po aspnet-azurefile```
 
 ## 4. enter the pod container to do validation
-```kubectl exec -it windowsservercore-azurefile -- cmd```
+```kubectl exec -it aspnet-azurefile -- cmd```
 
 ```
 C:\>d:
@@ -61,13 +61,13 @@ kubectl create -f azure-secrect.yaml
 ```
 
 ## 3. create a pod with azure file
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/rs3/windowsservercore-pod-azurefile.yaml```
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/rs3/aspnet-pod-azurefile.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
-```watch kubectl describe po windowsservercore-azurefile```
+```watch kubectl describe po aspnet-azurefile```
 
 ## 4. enter the pod container to do validation
-```kubectl exec -it windowsservercore-azurefile -- cmd```
+```kubectl exec -it aspnet-azurefile -- cmd```
 
 ```
 C:\>d:
