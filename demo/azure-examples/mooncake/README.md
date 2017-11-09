@@ -39,3 +39,8 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/demo/
 kubectl get po -w
 kubectl describe po nginx
 ```
+
+#cleanup
+```
+kubectl delete po nginx
+```
