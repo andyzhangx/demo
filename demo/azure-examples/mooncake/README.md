@@ -2,11 +2,17 @@
 ### 1. Create a service using docker hub images
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/demo/azure-examples/mooncake/azure-vote-all-in-one-redis.yml
+kubectl get pod -w
 kubectl get service azure-vote-front --watch
 
 kubectl get pod
 kubectl scale --replicas=3 deployment/azure-vote-front
-kubectl get pod
+kubectl get pod -w
+```
+
+##### Speedup: use images in docker private registry
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/demo/azure-examples/mooncake/azure-vote-all-in-one-redis-speedup.yml
 ```
 
 #cleanup
@@ -44,3 +50,6 @@ kubectl describe po nginx
 ```
 kubectl delete po nginx
 ```
+
+### Note:
+https://github.com/Azure/devops-sample-solution-for-azure-china
