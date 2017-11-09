@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: azure-vote-back
-        image: registry.docker-cn.com/redis
+        image: registry.docker-cn.com/library/redis
         ports:
         - containerPort: 6379
           name: redis
