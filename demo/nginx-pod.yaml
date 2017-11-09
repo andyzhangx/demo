@@ -1,0 +1,9 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx
+spec:
+  containers:
+  - image: mirror.azure.cn:5000/library/nginx
+    name: nginx
