@@ -18,13 +18,13 @@ kubectl delete deployment azure-vote-front
 ```
 ### 2. Use docker private registry on mooncake
 docker hub proxy in china: https://www.docker-cn.com/registry-mirror
+
 docker private registry on mooncake(only for testing/demo): 
 ```
-mirror.azure.cn:5000
-curl https://mirror.azure.cn:5000/v2/_catal
+curl https://mirror.azure.cn:5000/v2/_catalog
 ```
 
-###### pull docker image from docker hub and then push image to docker private registry on mooncake
+##### pull docker image from docker hub and then push image to docker private registry on mooncake
 ```
 docker pull registry.docker-cn.com/library/nginx
 docker tag registry.docker-cn.com/library/nginx mirror.azure.cn:5000/library/nginx
