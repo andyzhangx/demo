@@ -39,8 +39,6 @@ docker push mirror.azure.cn:5000/library/nginx
 
 ### 3. Create a pod using docker private registry on mooncake
 ```
-curl https://mirror.azure.cn:5000/v2/_catalog
-
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/demo/azure-examples/mooncake/nginx-pod.yaml
 kubectl get po -w
 kubectl describe po nginx
