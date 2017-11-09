@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: azure-vote-back
-        image: mirror.azure.cn/library/redis
+        image: mirror.azure.cn:5000/library/redis
         ports:
         - containerPort: 6379
           name: redis
@@ -44,7 +44,7 @@ spec:
     spec:
       containers:
       - name: azure-vote-front
-        image: mirror.azure.cn/microsoft/azure-vote-front:redis-v1
+        image: mirror.azure.cn:5000/microsoft/azure-vote-front:redis-v1
         ports:
         - containerPort: 80
         resources:
