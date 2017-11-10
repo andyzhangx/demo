@@ -6,4 +6,3 @@ metadata:
 provisioner: kubernetes.io/azure-file
 parameters:
   skuName: Standard_LRS
-  location: westus2

@@ -9,5 +9,4 @@ mountOptions:
   - file_mode=0777
 parameters:
   skuName: Standard_LRS
-  location: westus2
 

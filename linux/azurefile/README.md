@@ -1,12 +1,9 @@
 # Dynamic Provisioning for azure file in Linux (support from v1.7.0)
 ## 1. create a storage class for azure file
 There are two options for creating azure file storage class
-#### Option#1: find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure file
-download `storageclass-azurefile.yaml` file and modify `skuName`, `location` values
+#### Option#1: find a suitable storage account that matches `skuName` and `location` in same resource group when provisioning azure file
 ```
-wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile.yaml
-vi storageclass-azurefile.yaml
-kubectl create -f storageclass-azurefile.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile.yaml
 ```
 
 #### Option#2: use existing storage account when provisioning azure file
