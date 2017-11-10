@@ -53,7 +53,7 @@ kubectl delete po nginx
 ```
 putty.exe -ssh -L 8080:localhost:8080 azureuser@andy-jenkins.chinaeast.cloudapp.chinacloudapi.cn
 ```
-http://localhost:8080/
+http://andy-jenkins.chinaeast.cloudapp.chinacloudapi.cn:8080/
 
 
 ### Links:
