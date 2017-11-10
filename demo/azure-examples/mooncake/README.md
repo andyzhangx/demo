@@ -49,6 +49,13 @@ kubectl describe po nginx
 kubectl delete po nginx
 ```
 
+### 4. Demo jenkins 
+```
+putty.exe -ssh -L 8080:localhost:8080 azureuser@andy-jenkins.chinaeast.cloudapp.chinacloudapi.cn
+```
+http://localhost:8080/
+
+
 ### Links:
 https://github.com/Azure/devops-sample-solution-for-azure-china
 
