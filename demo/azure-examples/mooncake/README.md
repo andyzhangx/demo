@@ -51,5 +51,7 @@ kubectl delete po nginx
 
 ### Links:
 https://github.com/Azure/devops-sample-solution-for-azure-china
+
 https://github.com/kubernetes/charts/tree/master/stable/acs-engine-autoscaler
+
 https://github.com/andyzhangx/spin-kub-demo.git
