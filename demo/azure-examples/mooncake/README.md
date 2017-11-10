@@ -1,5 +1,5 @@
 # Mooncake Demo
-### 1. Create a service using docker hub images
+### 1. Create a k8s service using docker hub images
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/demo/azure-examples/mooncake/azure-vote-all-in-one-redis.yml
 kubectl get pod -w
@@ -49,5 +49,7 @@ kubectl describe po nginx
 kubectl delete po nginx
 ```
 
-### Note:
+### Links:
 https://github.com/Azure/devops-sample-solution-for-azure-china
+https://github.com/kubernetes/charts/tree/master/stable/acs-engine-autoscaler
+https://github.com/andyzhangx/spin-kub-demo.git
