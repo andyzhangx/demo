@@ -1,6 +1,14 @@
-# Demo
-This project contains examples for kubernetes persistent volume on azure, kubernetes debugging and development practices on azure/windows.
-#### `linux` directory contains pv examples on windows
-#### `windows` directory contains pv examples on linux
-#### `debug` directory contains debugging practices of kubernetes on azure
-#### `dev` directory contains development practices of kubernetes on azure
+# Deploy kubernetes cluster on mooncake
+```
+./acs-engine generate kubernetes-1.7.9.json
+RESOURCE_GROUP_NAME=andy-k8s179
+az group create -l chinaeast -n $RESOURCE_GROUP_NAME
+
+az group deployment create \
+    --name="andy-k8s179" \
+    --resource-group=$RESOURCE_GROUP_NAME \
+    --template-file="./_output/andy-k8s179/azuredeploy.json" \
+    --parameters "@./_output/andy-k8s179/azuredeploy.parameters.json"
+```
+
+For detailed steps, you could refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/README.md
