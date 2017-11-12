@@ -50,6 +50,7 @@ kubectl delete po nginx
 ```
 
 ### 4. Demo jenkins 
+https://github.com/andyzhangx/spin-kub-demo.git
 ```
 putty.exe -ssh -L 8080:localhost:8080 azureuser@andy-jenkins.chinaeast.cloudapp.chinacloudapi.cn
 kubectl scale --replicas=3 deployment/testapp
@@ -59,9 +60,9 @@ http://andy-jenkins.chinaeast.cloudapp.chinacloudapi.cn:8080/
 ### Links:
 https://github.com/Azure/devops-sample-solution-for-azure-china
 
+##### scale a k8s cluster
+https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/scale.md
 https://github.com/kubernetes/charts/tree/master/stable/acs-engine-autoscaler
-
-https://github.com/andyzhangx/spin-kub-demo.git
 
 ##### best practice for deploying k8s cluster on mooncake
 https://github.com/andyzhangx/Demo/tree/master/acs-engine/mooncake
