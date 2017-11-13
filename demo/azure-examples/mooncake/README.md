@@ -66,3 +66,6 @@ https://github.com/kubernetes/charts/tree/master/stable/acs-engine-autoscaler
 
 ##### best practice for deploying k8s cluster on mooncake
 https://github.com/andyzhangx/Demo/tree/master/acs-engine/mooncake
+
+##### eshop code
+https://github.com/dotnet-architecture/eShopOnContainers/tree/eShopOnKubernetes
