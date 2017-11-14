@@ -23,6 +23,20 @@ kubectl delete deployment azure-vote-back
 kubectl delete deployment azure-vote-front
 ```
 ### 2. Use docker private registry on mooncake
+```
+az acr login --name andyregistry
+docker tag redis andyregistry.azurecr.io/redis
+docker push andyregistry.azurecr.io/redis
+
+$ docker pull andyregistry.azurecr.io/redis:v2
+Please login prior to pull:
+Username: andyregistry
+Password:
+v2: Pulling from redis
+Digest: sha256:f39c53109fe3bd41ed3abadd4a4997abf88f4ed0f83256a5c16ab7b5afb385cb
+Status: Image is up to date for andyregistry.azurecr.io/redis:v2
+```
+
 docker hub proxy in china: https://www.docker-cn.com/registry-mirror
 
 docker private registry on mooncake(only for testing/demo): 
