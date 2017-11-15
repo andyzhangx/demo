@@ -1,4 +1,4 @@
-## Support from k8s version 1.7.x on Windows 2016 RS3
+## Support from k8s version 1.7.x on Windows 2016
 Note: v1.8.0 - v1.8.2 does not support azure disk mount on windows
 ## 1. create an azure disk storage class if `hdd` does not exist
 #### option#1: k8s agent pool is based on blob disk VM
