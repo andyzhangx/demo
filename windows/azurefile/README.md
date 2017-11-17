@@ -1,8 +1,7 @@
 # Dynamic Provisioning for azure file on Windows 2016 DataCenter(support from v1.7.x)
 ## 1. create an azure file storage class
 There are two options for creating azure file storage class
-#### Option#1: find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure file
-download `storageclass-azurefile.yaml` file and modify `skuName`, `location` values
+#### Option#1: find a suitable storage account that matches ```skuName``` in same resource group when provisioning azure file
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile.yaml
 ```
