@@ -33,19 +33,17 @@ kubectl create -f storageclass-azurefile-account.yaml
 ```kubectl exec -it aspnet-azurefile -- cmd```
 
 ```
-C:\>d:
-D:\>mkdir test
-D:\>cd test
-D:\test>dir
- Volume in drive D has no label.
- Volume Serial Number is 50C1-AE52
+C:\>cd mnt\azure
+C:\mnt\azure>dir
+ Volume in drive C has no label.
+ Volume Serial Number is F878-8D74
 
- Directory of D:\test
+ Directory of C:\mnt\azure
 
-09/20/2017  12:40 AM    <DIR>          .
-09/20/2017  12:40 AM    <DIR>          ..
+11/08/2017  06:03 AM    <DIR>          .
+11/08/2017  06:03 AM    <DIR>          ..
                0 File(s)              0 bytes
-               2 Dir(s)   5,334,327,296 bytes free
+               2 Dir(s)   5,368,709,120 bytes free
 ```
 
 
@@ -70,17 +68,15 @@ kubectl create -f azure-secrect.yaml
 ```kubectl exec -it aspnet-azurefile -- cmd```
 
 ```
-C:\>d:
-D:\>mkdir test
-D:\>cd test
-D:\test>dir
- Volume in drive D has no label.
- Volume Serial Number is 50C1-AE52
+C:\>cd mnt\azure
+C:\mnt\azure>dir
+ Volume in drive C has no label.
+ Volume Serial Number is F878-8D74
 
- Directory of D:\test
+ Directory of C:\mnt\azure
 
-09/20/2017  12:40 AM    <DIR>          .
-09/20/2017  12:40 AM    <DIR>          ..
+11/08/2017  06:03 AM    <DIR>          .
+11/08/2017  06:03 AM    <DIR>          ..
                0 File(s)              0 bytes
-               2 Dir(s)   5,334,327,296 bytes free
+               2 Dir(s)   5,368,709,120 bytes free
 ```
