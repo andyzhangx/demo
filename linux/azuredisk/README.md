@@ -42,23 +42,20 @@ shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 # Static Provisioning for azure disk
-#### 1. create an azure disk in the same resource group and modify `nginx-pod-azuredisk-old.yaml`
+#### 1. create an azure disk in the same resource group and modify `nginx-pod-azuredisk.yaml`
 ##### unmanged disk
 ```
-wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
-vi nginx-pod-azuredisk-static-blobdisk.yaml
+wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
+vi nginx-pod-azuredisk.yaml
 ```
 ##### managed disk
 ```
-wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-mgrdisk.yaml
-vi nginx-pod-azuredisk-static-mgrdisk.yaml
+wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-mgrdisk.yaml
+vi nginx-pod-azuredisk.yaml
 ```
 
 #### 2. create a pod with an azure disk mount
-##### unmanged disk
-```kubectl create -f nginx-pod-azuredisk-static-blobdisk.yaml```
-##### managed disk
-```kubectl create -f nginx-pod-azuredisk-static-mgrdisk.yaml```
+```kubectl create -f nginx-pod-azuredisk.yaml```
 
 #### 3. watch the status of pod until its Status changed from `Pending` to `Running`
 ```watch kubectl describe po nginx-azuredisk```
