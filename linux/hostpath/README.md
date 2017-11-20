@@ -10,15 +10,13 @@ watch kubectl describe po nginx-hostpath
 kubectl exec -it nginx-hostpath -- bash
 
 ```
-C:\>d:
-
-D:\>dir
-
- Directory of D:\
-
-09/25/2017  06:29 AM    <DIR>          .
-09/25/2017  06:29 AM    <DIR>          ..
-               0 File(s)              0 bytes
-               2 Dir(s)  97,325,273,088 bytes free
-
+root@nginx-hostpath:/mnt/hostpath# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          30G  2.7G   27G  10% /
+tmpfs           3.4G     0  3.4G   0% /dev
+tmpfs           3.4G     0  3.4G   0% /sys/fs/cgroup
+/dev/sda1        30G  2.7G   27G  10% /etc/hosts
+/dev/sdb1        99G   60M   94G   1% /mnt/hostpath
+shm              64M     0   64M   0% /dev/shm
+tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
