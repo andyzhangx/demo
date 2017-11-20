@@ -1,8 +1,12 @@
-## 1. create a simple pod on linux
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/basic/nginx-pod.yaml```
+## Azure secret example 
+actully it's using kubernetes `secret` kind to store azure storage account, and then let azure file use that secret object in k8s.
 
-#### 2. watch the status of pod until its `Status` changed from `Pending` to `Running`
-```watch kubectl describe po nginx```
+#### azure file example using secret
+https://github.com/andyzhangx/Demo/tree/master/linux/azurefile#static-provisioning-for-azure-file-in-linux-support-from-v150
 
-## 3. enter the pod container to do validation
-```kubectl exec -it nginx -- bash```
+#### secret file storing azure storage account
+https://github.com/andyzhangx/Demo/blob/master/pv/azure-secrect.yaml
+
+### Note:
+`Opaque` type in `secret` kind works in azure, while type “kubernetes.io/service-account-token” does not work, it's due to bug https://github.com/kubernetes/kubernetes/issues/52419 (Symlink for ca.crt & token files are broken on windows containers)
+Currently windows container team are working on this issue, would update if it's resolved.
