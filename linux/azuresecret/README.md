@@ -1,5 +1,5 @@
 ## Azure secret example 
-actully it's using kubernetes `secret` kind to store azure storage account, and then let azure file use that secret object in k8s.
+Following example would use `secret` kind to store azure storage account, and then let azure file use that secret object in k8s.
 
 #### azure file example using secret
 https://github.com/andyzhangx/Demo/tree/master/linux/azurefile#static-provisioning-for-azure-file-in-linux-support-from-v150
