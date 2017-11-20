@@ -10,13 +10,17 @@ watch kubectl describe po nginx-subpath
 kubectl exec -it nginx-subpath -- bash
 
 ```
-root@nginx-subpath:/mnt/subpath# df -h
-Filesystem      Size  Used Avail Use% Mounted on
-overlay          30G  2.7G   27G  10% /
-tmpfs           3.4G     0  3.4G   0% /dev
-tmpfs           3.4G     0  3.4G   0% /sys/fs/cgroup
-/dev/sda1        30G  2.7G   27G  10% /etc/hosts
-/dev/sdb1        99G   60M   94G   1% /mnt/subpath
-shm              64M     0   64M   0% /dev/shm
-tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
+root@nginx-hostpath:/# ls /mnt/hostpath -lt
+total 4708
+-rw-r--r-- 1 root root   24584 Nov 20 08:25 Microsoft.Azure.Extensions.CustomScript.6.manifest.xml
+drwx------ 2 root root    4096 Nov 20 08:12 events
+-rw-r--r-- 1 root root   13271 Nov 20 08:11 Prod.1.manifest.xml
+-rw-r--r-- 1 root root       1 Nov 20 07:55 Incarnation
+-rw-r--r-- 1 root root   21478 Nov 20 07:55 ExtensionsConfig.6.xml
+-rw-r--r-- 1 root root    1280 Nov 20 07:55 ABBF05E2E537D4FC04F8BB5695743FEFC8ED981E.crt
+-rw-r--r-- 1 root root     875 Nov 20 07:55 D9FBFC079879707B4F6B3D1DDDA71383F55B385A.crt
+-rw-r--r-- 1 root root    1860 Nov 20 07:55 ABBF05E2E537D4FC04F8BB5695743FEFC8ED981E.prv
+-rw-r--r-- 1 root root    4015 Nov 20 07:55 Certificates.pem
+-rw-r--r-- 1 root root    4891 Nov 20 07:55 Certificates.p7m
+...
 ```
