@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-gitrepo
+spec:
+  containers:
+  - image: nginx
+    name: nginx-gitrepo
+    volumeMounts:
+    - mountPath: /mnt/gitrepo
+      name: git-volume
+  volumes:
+  - name: git-volume
+    gitRepo:
+      repository: "https://github.com/andyzhangx/Demo.git"
