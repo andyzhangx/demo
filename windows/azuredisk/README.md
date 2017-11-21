@@ -1,5 +1,6 @@
-## Support from k8s version 1.7.x on Windows 2016
+## Support from k8s version 1.7.x on Windows 2016 DataCenter
 Note: v1.8.0 - v1.8.2 does not support azure disk mount on windows
+
 ## 1. create an azure disk storage class if `hdd` does not exist
 #### option#1: k8s agent pool is based on blob disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
@@ -14,7 +15,7 @@ Note: v1.8.0 - v1.8.2 does not support azure disk mount on windows
 ```watch kubectl describe pvc pvc-azuredisk```
 
 ## 3. create a pod with azure disk pvc
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml```
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/rs3/aspnet-pod-azuredisk.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```watch kubectl describe po aspnet-azuredisk```
