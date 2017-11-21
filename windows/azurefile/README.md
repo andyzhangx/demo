@@ -1,4 +1,7 @@
 # Dynamic Provisioning for azure file on Windows Server version 1709(support from v1.7.x)
+#### Attention:
+azure file mount feature is only supported on Windows Server version 1709, and there is a breaking change for container running on 1709, only windows container tag with `1709` keyword could run on 1709, e.g. `microsoft/aspnet:4.7.1-windowsservercore-1709`, `microsoft/windowsservercore:1709`
+
 ## 1. create an azure file storage class
 There are two options for creating azure file storage class
 #### Option#1: find a suitable storage account that matches ```skuName``` in same resource group when provisioning azure file
