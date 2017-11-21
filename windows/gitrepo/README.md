@@ -7,9 +7,6 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windo
 #### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po aspnet-gitrepo
 
-## 2. enter the pod container to do validation
-kubectl exec -it aspnet-gitrepo -- cmd
-
 ```
 Events:
   FirstSeen     LastSeen        Count   From                    SubObjectPath   Type            Reason                  Message
@@ -19,3 +16,8 @@ Events:
   1m            1s              8       kubelet, 36830k8s9000                   Warning         FailedMount             MountVolume.SetUp failed for volume "git-volume" : failed to exec 'git clone https://github.com/andyzhangx/Demo.git':
  : executable file not found in %!!(MISSING)P(MISSING)ATH%!!(MISSING)(NOVERB)
 ```
+
+## 2. enter the pod container to do validation
+kubectl exec -it aspnet-gitrepo -- cmd
+
+
