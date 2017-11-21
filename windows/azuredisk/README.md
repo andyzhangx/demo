@@ -1,6 +1,6 @@
 ## Support from k8s version 1.7.x on Windows Server version 1709 
 #### Attention:
-1. v1.8.0 - v1.8.2 does not support azure disk mount on windows
+1. v1.8.0 - v1.8.2 does not support azure disk mount on windows, v1.7.x and v1.8.3 above support
 2. azure disk mount feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), and there is a breaking change for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
 ```
 microsoft/aspnet:4.7.1-windowsservercore-1709
@@ -22,7 +22,7 @@ microsoft/iis:windowsservercore-1709
 ```watch kubectl describe pvc pvc-azuredisk```
 
 ## 3. create a pod with azure disk pvc
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/rs3/aspnet-pod-azuredisk.yaml```
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```watch kubectl describe po aspnet-azuredisk```
