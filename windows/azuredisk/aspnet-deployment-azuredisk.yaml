@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: aspnet-azuredisk
-        image: microsoft/aspnet
+        image: microsoft/aspnet:4.7.1-windowsservercore-1709
         volumeMounts:
         - name: disk01
           mountPath: 'D:'
