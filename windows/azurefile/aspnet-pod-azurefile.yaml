@@ -3,11 +3,9 @@ kind: Pod
 apiVersion: v1
 metadata:
   name: aspnet-azurefile
-  labels:
-    name: storage
 spec:
   containers:
-  - image: microsoft/aspnet
+  - image: microsoft/aspnet:4.7.1-windowsservercore-1709
     name: aspnet-azurefile
     volumeMounts:
     - name: azurefile01
