@@ -10,9 +10,10 @@ https://github.com/andyzhangx/Demo/tree/master/linux/azurefile#static-provisioni
 https://github.com/andyzhangx/Demo/blob/master/pv/azure-secrect.yaml
 
 #### 2. use secret to Pull an Image from a Azure Private Registry
+Please refer to:
+https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-that-holds-your-authorization-token
+
 ##### Note:
 Image Pull Secrets will work, but are generally unnecessary. 
 The ACS cluster uses its service principal to log into the ACR repository.
 So as long as the cluster service principal has read rights to ACR, it should all just work.
-
-https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-that-holds-your-authorization-token
