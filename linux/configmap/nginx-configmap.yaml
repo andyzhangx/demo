@@ -1,0 +1,14 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-configmap
+spec:
+  containers:
+  - image: nginx
+    name: nginx-configmap
+    env:
+      - name: SPECIAL_LEVEL_KEY
+        valueFrom:
+          configMapKeyRef:
+            name: special-config
+            key: special.how
