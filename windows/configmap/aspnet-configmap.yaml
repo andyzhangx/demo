@@ -1,0 +1,14 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: aspnet-configmap
+spec:
+  containers:
+  - image: microsoft/aspnet:4.7.1-windowsservercore-1709
+    name: aspnet-configmap
+    env:
+      - name: SPECIAL_LEVEL_KEY
+        valueFrom:
+          configMapKeyRef:
+            name: special-config
+            key: special.how
