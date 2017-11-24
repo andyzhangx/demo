@@ -22,14 +22,14 @@ kubectl describe pvc pvc-nfs
 
 ## 3. create a pod with nfs mount
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/nfs/nginx-nfs.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/nfs/aspnet-nfs.yaml
 ```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
-watch kubectl describe po nginx-nfs
+watch kubectl describe po aspnet-nfs
 
 ## 4. enter the pod container to do validation
-kubectl exec -it nginx-nfs -- bash
+kubectl exec -it aspnet-nfs -- bash
 
 ```
 root@nginx-nfs:/mnt/azure# df -h
