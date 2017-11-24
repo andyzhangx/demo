@@ -1,0 +1,19 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-nfs
+spec:
+  containers:
+  - image: nginx
+    name: nginx-nfs
+    command:
+    - "/bin/sh"
+    - "-c"
+    - while true; do echo $(date) >> /mnt/azure/outfile; sleep 1; done
+    volumeMounts:
+    - name: disk01
+      mountPath: /mnt/azure
+  volumes:
+  - name: disk01
+    persistentVolumeClaim:
+      claimName: pvc-nfs
