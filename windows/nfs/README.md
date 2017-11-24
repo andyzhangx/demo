@@ -1,3 +1,4 @@
+# Attention: nfs mount on windows does not work now, this feature is working in progress
 ## 1. download `pv-nfs.yaml`, change `nfs` config and then create a nfs persistent volume (pv)
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv-nfs.yaml
@@ -29,16 +30,8 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windo
 watch kubectl describe po aspnet-nfs
 
 ## 4. enter the pod container to do validation
-kubectl exec -it aspnet-nfs -- bash
+kubectl exec -it aspnet-nfs -- cmd
 
 ```
-root@nginx-nfs:/mnt/azure# df -h
-Filesystem                            Size  Used Avail Use% Mounted on
-overlay                                30G  3.9G   26G  14% /
-tmpfs                                 6.9G     0  6.9G   0% /dev
-tmpfs                                 6.9G     0  6.9G   0% /sys/fs/cgroup
-nfstest.eastus2.cloudapp.azure.com:/   30G  1.3G   28G   5% /mnt/azure
-/dev/sda1                              30G  3.9G   26G  14% /etc/hosts
-shm                                    64M     0   64M   0% /dev/shm
-tmpfs                                 6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
+
 ```
