@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: aspnet-nfs
+spec:
+  containers:
+  - image: microsoft/aspnet
+    name: aspnet-nfs
+    volumeMounts:
+    - name: disk01
+      mountPath: /mnt/azure
+  nodeSelector:
+    beta.kubernetes.io/os: windows
+  volumes:
+  - name: disk01
+    persistentVolumeClaim:
+      claimName: pvc-nfs
