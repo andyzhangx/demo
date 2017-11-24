@@ -1,4 +1,4 @@
-## Current Status of Windows Server support for kubernetes on Windows
+## Current Status of Windows Server support for kubernetes on Azure
 kubernetes on Windows is **under preview** status.
 
 k8s windows cluster could be created by two ways:
