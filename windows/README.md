@@ -10,4 +10,10 @@ Create "azure conatiner service" (not AKS) in azure portal, select `Windows` OS,
 #### acs-engine (https://github.com/Azure/acs-engine)
 By acs-engine **v0.9.2 or above**, you could deploy a `Windows Server version 1709` (also called `RS3`) based k8s cluster which would support azure disk & azure file mount feature on Windows node. 
 
+You could check Windows version by following command `ver`:
+```
+C:\Users\azureuser>ver
+Microsoft Windows [Version 10.0.16299.19]
+```
+
 #### azure disk & azure file mount feature on Windows node version supporting list
