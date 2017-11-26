@@ -1,7 +1,6 @@
-## Dynamic Provisioning for azure disk mount on Windows Server version 1709 
+## Dynamic Provisioning for Azure disk mount on Windows Server version 1709 
 #### Attention:
-1. azure disk mount feature on windows is avalable from k8s version >= 1.7.9, while **v1.8.0, v1.8.1, v1.8.2** does not support this feature.
-2. azure disk mount feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), and there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
+Azure disk mount feature on Windows is avalable from k8s version >= 1.7.2, with the exception that **v1.8.0, v1.8.1, v1.8.2** does not support this feature. And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
 ```
 microsoft/aspnet:4.7.1-windowsservercore-1709
 microsoft/windowsservercore:1709
