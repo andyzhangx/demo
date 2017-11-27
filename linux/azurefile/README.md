@@ -20,7 +20,7 @@ kubectl create -f storageclass-azurefile-account.yaml
 #### make sure pvc is created successfully
 ```watch kubectl describe pvc pvc-azurefile```
 
-## 3. create a pod with azure disk pvc
+## 3. create a pod with azure file pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
