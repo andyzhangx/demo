@@ -1,4 +1,5 @@
 # Set mountOptions in Dynamic Provisioning for azure file (support from v1.7.0)
+## Below is an example setting mountOptions in Dynamic Provisioning
 #### download `storageclass-azurefile-mountoptions.yaml` file and modify `mountOptions` values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile-mountoptions.yaml
