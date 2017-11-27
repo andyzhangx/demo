@@ -14,6 +14,8 @@ microsoft/iis:windowsservercore-1709
 #### option#2: k8s agent pool is based on managed disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml```
 
+##### Note: managed disk mount feature is only supported from version v1.7.2
+
 ## 2. create an azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
 
