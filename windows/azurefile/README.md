@@ -1,4 +1,4 @@
-# Dynamic Provisioning for azure file on Windows Server version 1709 (support from v1.7.x)
+# Dynamic Provisioning for azure file on Windows Server version 1709 (support from v1.7.2)
 #### Attention:
 Azure file mount feature on Windows is avalable from k8s version >= 1.7.2 , and it's only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
 ```

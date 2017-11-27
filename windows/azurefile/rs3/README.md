@@ -1,4 +1,4 @@
-# Dynamic Provisioning for azure file on Windows Server version 1709(support from v1.7.x)
+# Dynamic Provisioning for azure file on Windows Server version 1709(support from v1.7.2)
 ## 1. create an azure file storage class
 There are two options for creating azure file storage class
 #### Option#1: find a suitable storage account that matches ```skuName``` in same resource group when provisioning azure file
