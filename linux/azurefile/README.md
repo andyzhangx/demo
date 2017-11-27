@@ -83,3 +83,7 @@ tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
+
+### Note
+`fileMode`, `dirMode` would be set to `0700` and gid, uid would be set as `0` by default, you could override this mountOptions by following this guide:
+https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md
