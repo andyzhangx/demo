@@ -1,3 +1,6 @@
+# downwardAPI on Windows is not supported due to bug:
+https://github.com/kubernetes/kubernetes/issues/52419 
+
 ## 1. create a pod with downwardAPI mount
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/downwardapi/aspnet-downwardapi.yaml
