@@ -34,7 +34,7 @@ docker: Error response from daemon: container b08d4e031b8203446aedf7cc81ea110ac5
 ...
 ```
 
-2. "Azure Conatiner Service - AKS" does not support Windows yet, it is in progress.
+2. "Azure Conatiner Service - AKS" does not support Windows yet.
 
 ###### Links
 About `Windows Server version 1709`: https://docs.microsoft.com/en-us/windows-server/get-started/whats-new-in-windows-server-1709
