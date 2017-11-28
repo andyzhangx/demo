@@ -20,10 +20,14 @@ tmpfs           6.9G  8.0K  6.9G   1% /etc
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 bash-4.4# cd /etc/
-bash-4.4# ls -lt
-total 0
-lrwxrwxrwx 1 0 0 18 Nov 28 07:34 annotations -> ..data/annotations
-lrwxrwxrwx 1 0 0 13 Nov 28 07:34 labels -> ..data/labels
+bash-4.4# ls -lt -a
+total 4
+drwxr-xr-x 1 0 0 4096 Nov 28 07:43 ..
+drwxrwxrwt 3 0 0  120 Nov 28 07:34 .
+drwxr-xr-x 2 0 0   80 Nov 28 07:34 ..119811_28_11_07_34_48.789997996
+lrwxrwxrwx 1 0 0   33 Nov 28 07:34 ..data -> ..119811_28_11_07_34_48.789997996
+lrwxrwxrwx 1 0 0   18 Nov 28 07:34 annotations -> ..data/annotations
+lrwxrwxrwx 1 0 0   13 Nov 28 07:34 labels -> ..data/labels
 
 bash-4.4# cat annotations
 build="two"
