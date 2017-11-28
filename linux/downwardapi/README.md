@@ -6,7 +6,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux
 #### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po nginx-downwardapi
 
-## 4. enter the pod container to do validation
+## 2. enter the pod container to do validation
 kubectl exec -it nginx-downwardapi -- bash
 
 ```
