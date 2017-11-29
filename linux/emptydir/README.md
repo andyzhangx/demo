@@ -7,15 +7,7 @@ watch kubectl describe po nginx-emptydir
 kubectl exec -it nginx-emptydir -- cmd
 
 ```
-C:\>d:
-
-D:\>dir
-
- Directory of D:\
-
-09/25/2017  06:29 AM    <DIR>          .
-09/25/2017  06:29 AM    <DIR>          ..
-               0 File(s)              0 bytes
-               2 Dir(s)  97,325,273,088 bytes free
-
+root@nginx-emptydir:/# ls /mnt -lt
+total 4
+drwxrwxrwx 2 root root 4096 Nov 29 09:10 emptydir
 ```
