@@ -46,7 +46,7 @@ PS C:\Users\azureuser> Install-WindowsFeature NFS-Client
 PS C:\Users\azureuser> exit
 
 C:\Users\azureuser>mount \\{NFS-share} G:
-G: is now successfully connected to \\andynfs.eastus2.cloudapp.azure.com\home\
+G: is now successfully connected to \\{NFS-share}
 The command completed successfully.
 ```
 For details about NFS `mount` command, please refer to:
