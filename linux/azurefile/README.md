@@ -85,8 +85,10 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
 ### Note
-`fileMode`, `dirMode` would be set to `0700` and gid, uid would be set as `0` by default, you could override this mountOptions by following this guide:
+1. `fileMode`, `dirMode` would be set to `0700` and gid, uid would be set as `0` by default, you could override this mountOptions by following this guide:
 https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md
+
+2. `Premium` storage type is not supported for azure file
 
 #### Links
 Azure file introduction:
