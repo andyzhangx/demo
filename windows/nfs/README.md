@@ -35,3 +35,21 @@ kubectl exec -it aspnet-nfs -- cmd
 ```
 
 ```
+
+### Instructions for using NFS on Windows Server
+```
+C:\Users\azureuser>powershell
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\azureuser> Install-WindowsFeature NFS-Client
+PS C:\Users\azureuser> exit
+
+C:\Users\azureuser>mount \\{NFS-share} G:
+G: is now successfully connected to \\andynfs.eastus2.cloudapp.azure.com\home\
+The command completed successfully.
+```
+For details about NFS `mount` command, please refer to:
+https://technet.microsoft.com/en-us/library/cc754350(v=ws.11).aspx
+
+
