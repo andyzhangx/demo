@@ -51,3 +51,17 @@ hack/update-bazel.sh
 hack/verify-golint.sh
 hack/verify-gofmt.sh
 ```
+
+## Azure disk & file mount process
+On agent node:
+```
+/dev/sdc <--
+/var/lib/kubelet/pods/950f2eb8-d4e7-11e7-bc95-000d3a041274/volumes/kubernetes.io~azure-disk/pvc-67e4e319-d4e7-11e7-bc95-000d3a041274 <--
+/var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426 <--
+/mnt/azure #mountPath in container
+```
+
+Other:
+```
+/var/lib/kubelet/pods/26a3137c-d4e5-11e7-bc95-000d3a041274/plugins/kubernetes.io~empty-dir
+```
