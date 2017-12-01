@@ -7,7 +7,7 @@ Create "Azure Conatiner Service" (**not** AKS) in azure portal, select `Windows`
 ##### Note: 
 azure disk & azure file mount feature is **not** enabled on this because it's using `Windows Server 2016 DataCenter` OS, only `Windows Server version 1709` is supported for these two features.
 
-### 2. acs-engine (https://github.com/Azure/acs-engine)
+### 2. [acs-engine](https://github.com/Azure/acs-engine)
 By acs-engine **v0.9.2 or above**, you could deploy a `Windows Server version 1709` (codename `RS3`) based k8s cluster which would support azure disk & azure file mount feature on Windows node. 
 
 You could check Windows version by following command, below is an example using `Windows Server version 1709`:
@@ -20,11 +20,11 @@ Microsoft Windows [Version 10.0.16299.19]
 ## k8s volume support on Windows Server 1709
 | Volume | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
-| azure disk | Yes | azuredisk | Support from v1.7.2 |
-| azure file | Yes | azurefile | Support from v1.7.2 |
-| emptyDir | Yes | emptydir | tmpfs is not supported on Windows Server |
-| hostpath | Yes | hostpath |  |
-| secret | Partially | secret | “Opaque” type works, while type “service-account-token” does not work due to moby bug: https://github.com/kubernetes/kubernetes/issues/52419  |
+| azure disk | Yes | [azuredisk](https://github.com/andyzhangx/Demo/tree/master/windows/azuredisk) | Support from v1.7.2 |
+| azure file | Yes | [azurefile](https://github.com/andyzhangx/Demo/tree/master/windows/azurefile) | Support from v1.7.2 |
+| emptyDir | Yes | [emptydir](https://github.com/andyzhangx/Demo/tree/master/windows/emptydir) | tmpfs is not supported on Windows Server |
+| hostpath | Yes | [hostpath](https://github.com/andyzhangx/Demo/tree/master/windows/hostpath) |  |
+| secret | Partially | [secret](https://github.com/andyzhangx/Demo/tree/master/windows/secret) | “Opaque” type works, while type “service-account-token” does not work due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419)  |
 
 ##### Note
 1. **breaking change** for Windows container running on `Windows Server version 1709`, only image tag with `1709` keyword could run on `Windows Server version 1709`, e.g.
