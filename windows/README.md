@@ -1,8 +1,7 @@
 ## Current Status of Windows Server support for kubernetes on Azure
 kubernetes on Windows is **under preview** status.
 
-k8s windows cluster could be created by two ways:
-
+## k8s windows cluster could be created by two ways:
 ### 1. azure portal
 Create "Azure Conatiner Service" (**not** AKS) in azure portal, select `Windows` OS, if k8s cluster is created successfully, the master node would be still Ubuntu OS, agent node would be `Windows Server 2016 DataCenter`.
 ##### Note: 
@@ -17,6 +16,15 @@ kubectl exec -it WINDOWS-PODNAME -- cmd
 C:\Users\azureuser>ver
 Microsoft Windows [Version 10.0.16299.19]
 ```
+
+## k8s volume support on Windows Server 1709
+| Volume | Support on Windows | Example | Notes |
+| ---- | ---- | ---- | ---- |
+| azure disk | Yes | azuredisk | Support from v1.7.2 |
+| azure file | Yes | azurefile | Support from v1.7.2 |
+| emptyDir | Yes | emptydir | tmpfs is not supported on Windows Server |
+| hostpath | Yes | hostpath |  |
+| secret | Partially | secret | “Opaque” type works, while type “service-account-token” does not work due to moby bug: https://github.com/kubernetes/kubernetes/issues/52419  |
 
 ##### Note
 1. **breaking change** for Windows container running on `Windows Server version 1709`, only image tag with `1709` keyword could run on `Windows Server version 1709`, e.g.
