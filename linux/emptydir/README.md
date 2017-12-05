@@ -4,7 +4,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux
 watch kubectl describe po nginx-emptydir
 
 ## 2. enter the pod container to do validation
-kubectl exec -it nginx-emptydir -- cmd
+kubectl exec -it nginx-emptydir -- bash
 
 ```
 root@nginx-emptydir:/# ls /mnt -lt

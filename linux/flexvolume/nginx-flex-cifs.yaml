@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-flex-cifs
+spec:
+  containers:
+  - name: nginx-flex-cifs
+    image: nginx
+    volumeMounts:
+    - name: test
+      mountPath: /data
+  volumes:
+  - name: test
+    flexVolume:
+      driver: "foo/cifs"
+      secretRef:
+        name: cifscreds
+      readOnly: true		
+      options:
+        source: "//andytestx.file.core.windows.net/k8stest"
+        mountOptions: "dir_mode=0700,file_mode=0600"
