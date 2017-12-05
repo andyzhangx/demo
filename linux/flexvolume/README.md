@@ -1,6 +1,6 @@
 ## 1. create a secret which stores cifs account name and passwrod
 ```
-kubectl create secret generic cifscreds --from-literal username=andytestx --from-literal password="xxx"
+kubectl create secret generic cifscreds --from-literal username=USERNAME --from-literal password="PASSWORD"
 ```
 
 ## 2. install flex volume driver on all linux agent nodes
