@@ -33,6 +33,10 @@ kubectl exec -it nginx-flexvolume-cifs -- bash
 ```
 ```
 
+### Known issues
+1. From v1.8.0, `echo -e` or `echo -ne` is not allowed in flexvolume driver script
+
 ### Links
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
+
 [Persistent Storage Using FlexVolume Plug-ins](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html)
