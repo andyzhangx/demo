@@ -54,4 +54,6 @@ Workaround is as following:
 Create a `Standard_LRS` storage account in the same resource group with AKS cluster and wait for a few seconds, azure file PVC will be created successfully.
 
 #### Links
+[Azure Container Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/)
+
 [Deploy an Azure Container Service (AKS) cluster](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
