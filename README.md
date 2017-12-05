@@ -4,7 +4,7 @@ This project contains examples, best practices for kubernetes volumes on azure, 
 ### [acs-engine](https://github.com/andyzhangx/Demo/edit/master/acs-engine)
 [acs-engine](https://github.com/azure/acs-engine) best practices
 
-### [aks]](https://github.com/andyzhangx/Demo/edit/master/aks)
+### [aks](https://github.com/andyzhangx/Demo/edit/master/aks)
 [Azure Container Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/) best practices
 
 ### [debug](https://github.com/andyzhangx/Demo/edit/master/debug) 
