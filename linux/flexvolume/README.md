@@ -10,6 +10,8 @@ cd /etc/kubernetes/volumeplugins/foo~cifs
 sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/cifs
 sudo chmod a+x cifs
 ```
+#### Note
+There is some issue with this `cifs` driver, it's not working now.
 
 ## 3. specify `volume-plugin-dir` for kubelet service
 ```
@@ -33,3 +35,4 @@ kubectl exec -it nginx-flexvolume-cifs -- bash
 
 ### Links
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
+[Persistent Storage Using FlexVolume Plug-ins](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html)
