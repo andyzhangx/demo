@@ -1,28 +1,28 @@
 ## Overview
 This project contains examples, best practices for kubernetes volumes on azure, kubernetes debugging and development practices on azure & windows, azure container service(AKS) and helm best practices, project status, etc.
 
-### `acs-engine` 
+### [acs-engine](https://github.com/andyzhangx/Demo/edit/master/acs-engine)
 [acs-engine](https://github.com/azure/acs-engine) best practices
 
-### `aks` 
+### [aks]](https://github.com/andyzhangx/Demo/edit/master/aks)
 [Azure Container Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/) best practices
 
-### `debug` 
+### [debug](https://github.com/andyzhangx/Demo/edit/master/debug) 
 debugging practices of kubernetes on Azure
 
-### `dev` 
+### [dev](https://github.com/andyzhangx/Demo/edit/master/dev)
 development practices of kubernetes on Azure
 
-### `helm` 
+### [helm](https://github.com/andyzhangx/Demo/edit/master/helm)
 [helm](https://github.com/kubernetes/helm/) best practices
 
-### `linux` 
+### [linux](https://github.com/andyzhangx/Demo/edit/master/linux) 
 persistent volume(pv) examples, best practices, project status on Linux
 
-### `pv` 
+### [pv](https://github.com/andyzhangx/Demo/edit/master/pv) 
 all persistent volume(pv) examples
 
-### `windows` 
+### [windows](https://github.com/andyzhangx/Demo/edit/master/windows) 
 persistent volume(pv) examples, best practices, project status on Windows
 
 #### Links
