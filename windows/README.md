@@ -23,7 +23,6 @@ Microsoft Windows [Version 10.0.16299.19]
 | azure disk | Yes | [azuredisk](https://github.com/andyzhangx/Demo/tree/master/windows/azuredisk) | Support from v1.7.2 |
 | azure file | Yes | [azurefile](https://github.com/andyzhangx/Demo/tree/master/windows/azurefile) | Support from v1.7.2 |
 | cephfs | No |  | No official support for cephfs support on windows, could use NFS instead |
-| ConfigMap | Yes | [configmap](https://github.com/andyzhangx/Demo/tree/master/windows/configmap) |  |
 | downwardAPI | No |  | Same issue with secret, due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419) |
 | emptyDir | Yes | [emptydir](https://github.com/andyzhangx/Demo/tree/master/windows/emptydir) | tmpfs is not supported on Windows Server |
 | fc (fibre channel) |  |  |  |
@@ -44,6 +43,11 @@ Microsoft Windows [Version 10.0.16299.19]
 | StorageOS |  |  |  |
 | subPath | Yes | [subpath](https://github.com/andyzhangx/Demo/tree/master/windows/subpath) |  |
 
+## other k8s feature support on Windows Server 1709
+| Feature | Support on Windows | Example | Notes |
+| ---- | ---- | ---- | ---- |
+| ConfigMap | Yes | [configmap](https://github.com/andyzhangx/Demo/tree/master/windows/configmap) |  |
+| DaemonSet |  |  |  |
 
 ##### Note
 1. **breaking change** for Windows container running on `Windows Server version 1709`, only image tag with `1709` keyword could run on `Windows Server version 1709`, e.g.
