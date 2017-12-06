@@ -32,3 +32,5 @@ kubectl get po -o wide
 
 #### Links
 helm installation guide: https://github.com/kubernetes/helm/blob/master/docs/install.md
+
+Mooncake installation guide: http://mirror.chinacloudapp.cn/help/kubernetes.html
