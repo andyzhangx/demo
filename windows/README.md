@@ -1,5 +1,5 @@
 ## Current Status of Windows Server support for kubernetes on Azure
-kubernetes on Windows is **under preview** status.
+### kubernetes on Windows is **under preview** status.
 
 ## k8s windows cluster could be created by two ways:
 ### 1. azure portal
@@ -47,7 +47,6 @@ Microsoft Windows [Version 10.0.16299.19]
 | Feature | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
 | ConfigMap | Yes | [configmap](https://github.com/andyzhangx/Demo/tree/master/windows/configmap) |  |
-| DaemonSet |  |  |  |
 
 ##### Note
 1. **breaking change** for Windows container running on `Windows Server version 1709`, only image tag with `1709` keyword could run on `Windows Server version 1709`, e.g.
