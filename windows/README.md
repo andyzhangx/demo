@@ -20,8 +20,8 @@ Microsoft Windows [Version 10.0.16299.19]
 ## k8s volume support on Windows Server 1709
 | Volume | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
-| azure disk | Yes | [azuredisk](https://github.com/andyzhangx/Demo/tree/master/windows/azuredisk) | Support from v1.7.2 |
-| azure file | Yes | [azurefile](https://github.com/andyzhangx/Demo/tree/master/windows/azurefile) | Support from v1.7.2 |
+| azure disk | Yes | [azuredisk](https://github.com/andyzhangx/Demo/tree/master/windows/azuredisk) | Support from v1.7.2 by acs-engine|
+| azure file | Yes | [azurefile](https://github.com/andyzhangx/Demo/tree/master/windows/azurefile) | Support from v1.7.2 by acs-engine|
 | cephfs | No |  | No official support for cephfs support on windows, could use NFS instead |
 | downwardAPI | No |  | Same issue with secret, due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419) |
 | emptyDir | Yes | [emptydir](https://github.com/andyzhangx/Demo/tree/master/windows/emptydir) | tmpfs is not supported on Windows Server |
