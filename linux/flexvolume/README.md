@@ -3,7 +3,7 @@
 kubectl create secret generic cifscreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="foo/cifs"
 ```
 
-## 2. install flex volume driver on all linux agent nodes
+## 2. install flex volume driver on every linux agent node
 ```
 sudo mkdir -p /etc/kubernetes/volumeplugins/foo~cifs
 cd /etc/kubernetes/volumeplugins/foo~cifs
@@ -13,7 +13,7 @@ sudo chmod a+x cifs
 #### Note:
 Make sure `jq` package is installed on every node.
 
-## 3. specify `volume-plugin-dir` for kubelet service
+## 3. specify `volume-plugin-dir` in kubelet service config
 ```
 sudo vi /etc/systemd/system/kubelet.service
         --volume-plugin-dir=/etc/kubernetes/volumeplugins \
