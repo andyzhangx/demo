@@ -39,7 +39,7 @@ Microsoft Windows [Version 10.0.16299.19]
 | Quobyte |  |  |  |
 | rbd | No |  |  |
 | ScaleIO |  |  |  |
-| secret | Partially | [secret](https://github.com/andyzhangx/Demo/tree/master/windows/secret) | “Opaque” type works, while type “service-account-token” does not work due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419)  |
+| secret | Partially | [secret](https://github.com/andyzhangx/Demo/tree/master/windows/secret) | text type works, while file type(e.g. “service-account-token”) does not work due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419)  |
 | StorageOS |  |  |  |
 | subPath | Yes | [subpath](https://github.com/andyzhangx/Demo/tree/master/windows/subpath) |  |
 
