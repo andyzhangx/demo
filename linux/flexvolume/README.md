@@ -20,7 +20,7 @@ sudo systemctl restart kubelet
 ```
 
 #### Note:
-The default plugin direcotory seems not working:
+The default plugin direcotory seems not working on Azure:
 ```
 /usr/libexec/kubernetes/kubelet-plugins/volume/exec/
 ```
