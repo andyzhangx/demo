@@ -55,7 +55,14 @@ echo {"status": "Success", "capabilities": {"attach": false}}
 ```
 Which means your FlexVolume driver does not need Master-initiated Attach/Detach
 
-3. The default plugin direcotory `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` seems not working on Azure.
+3. You will get following error if you don't specify your secret type as driver name `foo/cifs`
+```
+MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-secret
+```
+
+4. You will get `Host down` error if you don't specify the cifs version
+
+5. The default plugin direcotory `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` seems not working on Azure.
 
 ### Links
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
