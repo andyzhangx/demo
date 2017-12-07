@@ -10,6 +10,8 @@ cd /etc/kubernetes/volumeplugins/foo~cifs
 sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/cifs
 sudo chmod a+x cifs
 ```
+#### Note:
+Make sure `jq` package is installed on every node.
 
 ## 3. specify `volume-plugin-dir` for kubelet service
 ```
