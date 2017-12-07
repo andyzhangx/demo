@@ -26,7 +26,7 @@ Microsoft Windows [Version 10.0.16299.19]
 | downwardAPI | No |  | Same issue with secret, due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419) |
 | emptyDir | Yes | [emptydir](https://github.com/andyzhangx/Demo/tree/master/windows/emptydir) | tmpfs is not supported on Windows Server |
 | fc (fibre channel) |  |  |  |
-| flexvolume | No |  | working on this [feature](https://github.com/kubernetes/kubernetes/issues/56875) |
+| flexvolume | Yes | [flexvolume](https://github.com/andyzhangx/Demo/tree/master/windows/flexvolume) | working on this [feature](https://github.com/kubernetes/kubernetes/issues/56875) [PR#56921](https://github.com/kubernetes/kubernetes/pull/56921) |
 | flocker |  |  |  |
 | gitRepo |  |  | git is not built-in on Windows host now |
 | glusterfs | No |  | Windows doesn't have a native GlusterFS client, could use NFS instead |
