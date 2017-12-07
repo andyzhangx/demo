@@ -1,6 +1,6 @@
 ## 1. create a secret which stores cifs account name and passwrod
 ```
-kubectl create secret generic cifscreds --from-literal username=USERNAME --from-literal password="PASSWORD"
+kubectl create secret generic cifscreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="foo/cifs"
 ```
 
 ## 2. install flex volume driver on all linux agent nodes
@@ -10,8 +10,6 @@ cd /etc/kubernetes/volumeplugins/foo~cifs
 sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/cifs
 sudo chmod a+x cifs
 ```
-#### Note
-There is some issue with this `cifs` driver, it's not working now.
 
 ## 3. specify `volume-plugin-dir` for kubelet service
 ```
@@ -19,6 +17,12 @@ sudo vi /etc/systemd/system/kubelet.service
         --volume-plugin-dir=/etc/kubernetes/volumeplugins \
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
+```
+
+#### Note:
+The default plugin direcotory seems not working:
+```
+/usr/libexec/kubernetes/kubelet-plugins/volume/exec/
 ```
 
 ## 4. create a pod with flexvolume-cifs mount on linux
@@ -31,6 +35,15 @@ watch kubectl describe po nginx-flexvolume-cifs
 kubectl exec -it nginx-flexvolume-cifs -- bash
 
 ```
+root@nginx-flex-cifs:/# df -h
+Filesystem                                 Size  Used Avail Use% Mounted on
+overlay                                    291G  3.3G  288G   2% /
+tmpfs                                      3.4G     0  3.4G   0% /dev
+tmpfs                                      3.4G     0  3.4G   0% /sys/fs/cgroup
+//andytestx.file.core.windows.net/k8stest  3.0G   16M  3.0G   1% /data
+/dev/sda1                                  291G  3.3G  288G   2% /etc/hosts
+shm                                         64M     0   64M   0% /dev/shm
+tmpfs                                      3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
 ### Known issues
