@@ -27,11 +27,13 @@ goto :eof
 goto :eof
 
 :mount
-@echo "mount", %~2, %~3, %~4 >> c:\k\example.log
+rem following line is only for debugging purpose
+rem @echo "mount", %~2, %~3, %~4 >> c:\k\example.log
 md %~2
 @echo {"status": "Success"}
 goto :eof
 
 :unmount
-@echo "unmount", %~2, %~3, %~4 >> c:\k\example.log
+rem following line is only for debugging purpose
+rem @echo "unmount", %~2, %~3, %~4 >> c:\k\example.log
 rm -rf %~2
