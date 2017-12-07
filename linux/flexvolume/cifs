@@ -27,19 +27,17 @@ MOUNT_CIFS="$DIR/cifs"
 usage() {
 	err "Invalid usage. Usage: "
 	err "\t$0 init"
-	err "\t$0 attach <json params>"
-	err "\t$0 detach <mount device>"
 	err "\t$0 mount <mount dir> <mount device> <json params>"
 	err "\t$0 unmount <mount dir>"
 	exit 1
 }
 
 err() {
-	echo -e $* 1>&2
+	echo $* 1>&2
 }
 
 log() {
-	echo -e $* >&1
+	echo $* >&1
 }
 
 ismounted() {
@@ -47,31 +45,15 @@ ismounted() {
 	[ "${MOUNT}" == "${MNTPATH}" ]
 }
 
-attach() {
-	log '{"status": "Success", "device": "/dev/null"}'
-	exit 0
-}
-
-detach() {
-	log '{"status": "Success"}'
-	exit 0
-}
-
-getvolumename() {
-	log '{"status": "Success", "message": "", "volumeName": "cifs-volumename"}'
-	exit 0
-}
-
-domount() {
+mount() {
 	MNTPATH="$1"
-	DMDEV="$2"
-	VOLUME_SRC=$(echo "$3"|"$JQ" -r '.source')
-        READ_MODE=$(echo "$3"|"$JQ" -r '.["kubernetes.io/readwrite"]')
-        MOUNT_OPTIONS=$(echo "$3"|"$JQ" -r '.mountOptions // empty')
-        USERNAME=$(echo "$3"|"$JQ" -r '.["kubernetes.io/secret/username"] // empty'|base64 -d)
-        PASSWORD=$(echo "$3"|"$JQ" -r '.["kubernetes.io/secret/password"] // empty'|base64 -d)
+        VOLUME_SRC=$(echo "$2"|"$JQ" -r '.source')
+        READ_MODE=$(echo "$2"|"$JQ" -r '.["kubernetes.io/readwrite"]')
+        MOUNT_OPTIONS=$(echo "$2"|"$JQ" -r '.mountOptions // empty')
+        USERNAME=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/username"] // empty'|base64 -d)
+        PASSWORD=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/password"] // empty'|base64 -d)
 
-        ALL_OPTIONS="user=${USERNAME},pass=${PASSWORD},${READ_MODE}"
+        ALL_OPTIONS="username=${USERNAME},password=${PASSWORD},${READ_MODE}"
         if [ -n "$MOUNT_OPTIONS" ]; then
             ALL_OPTIONS="${ALL_OPTIONS},${MOUNT_OPTIONS}"
         fi
@@ -83,7 +65,7 @@ domount() {
 
         mkdir -p ${MNTPATH} &> /dev/null
 
-        "$MOUNT_CIFS" -o "${ALL_OPTIONS}" "${VOLUME_SRC}" "${MNTPATH}" &> /dev/null
+        /bin/mount -t cifs "${VOLUME_SRC}" "${MNTPATH}" -o "${ALL_OPTIONS}" > /dev/null
 
         if [ $? -ne 0 ]; then
                 err '{ "status": "Failure", "message": "Failed to mount device '${DMDEV}' at '${MNTPATH}' , user: '${USERNAME}' , '${VOLUME_SRC}'"}'
@@ -114,7 +96,7 @@ unmount() {
 op=$1
 
 if [ "$op" = "init" ]; then
-        log '{"status": "Success"}'
+        log '{"status": "Success", "capabilities": {"attach": false}}'
         exit 0
 fi
 
@@ -125,23 +107,15 @@ fi
 shift
 
 case "$op" in
-        attach)
-                attach $*
-                ;;
-        detach)
-                detach $*
-                ;;
         mount)
-                domount $*
-                ;;
-        getvolumename)
-                getvolumename $*
-                ;;				
-	unmount)
+                mount $*
+                ;;			
+        unmount)
 		unmount $*
 		;;
 	*)
-		usage
+	usage
 esac
 
 exit 1
+
