@@ -1,4 +1,4 @@
-## 1. create a secret which stores cifs account name and passwrod
+## 1. create a secret which stores cifs account name and password
 ```
 kubectl create secret generic cifscreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="foo/cifs"
 ```
@@ -19,12 +19,6 @@ sudo vi /etc/systemd/system/kubelet.service
         --volume-plugin-dir=/etc/kubernetes/volumeplugins \
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
-```
-
-#### Note:
-The default plugin direcotory seems not working on Azure:
-```
-/usr/libexec/kubernetes/kubelet-plugins/volume/exec/
 ```
 
 ## 4. create a pod with flexvolume-cifs mount on linux
@@ -60,6 +54,8 @@ You could let flexvolume plugin return following:
 echo {"status": "Success", "capabilities": {"attach": false}}
 ```
 Which means your FlexVolume driver does not need Master-initiated Attach/Detach
+
+3. The default plugin direcotory `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` seems not working on Azure.
 
 ### Links
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
