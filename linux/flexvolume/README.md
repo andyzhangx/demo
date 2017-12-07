@@ -53,7 +53,7 @@ You could let flexvolume plugin return following:
 ```
 echo {"status": "Success", "capabilities": {"attach": false}}
 ```
-Which means your FlexVolume driver does not need Master-initiated Attach/Detach
+Which means your [FlexVolume driver does not need Master-initiated Attach/Detach](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html#flex-volume-drivers-without-master-initiated-attach-detach)
 
 3. You will get following error if you don't specify your secret type as driver name `foo/cifs`
 ```
