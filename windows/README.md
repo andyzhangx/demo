@@ -20,8 +20,8 @@ Microsoft Windows [Version 10.0.16299.19]
 ## k8s volume support on Windows Server 1709
 | Volume | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
-| azure disk | Yes | [azuredisk](https://github.com/andyzhangx/Demo/tree/master/windows/azuredisk) | Support from v1.7.2 by acs-engine|
-| azure file | Yes | [azurefile](https://github.com/andyzhangx/Demo/tree/master/windows/azurefile) | Support from v1.7.2 by acs-engine|
+| azure disk | Yes | [azuredisk](https://github.com/andyzhangx/Demo/tree/master/windows/azuredisk) | Support from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
+| azure file | Yes | [azurefile](https://github.com/andyzhangx/Demo/tree/master/windows/azurefile) | Support from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
 | cephfs | No |  | No official support for cephfs support on windows, could use NFS instead |
 | downwardAPI | No |  | Same issue with secret, due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419) |
 | emptyDir | Yes | [emptydir](https://github.com/andyzhangx/Demo/tree/master/windows/emptydir) | tmpfs is not supported on Windows Server |
@@ -65,6 +65,9 @@ docker: Error response from daemon: container b08d4e031b8203446aedf7cc81ea110ac5
 ```
 
 2. "Azure Conatiner Service - AKS" does not support Windows yet.
+
+3. About k8s version on Windows node
+k8s version on Windows node use https://github.com/Azure/kubernetes, while all Linux nodes(including master) use https://github.com/kubernetes/kubernetes.
 
 ###### Links
 About `Windows Server version 1709`: https://docs.microsoft.com/en-us/windows-server/get-started/whats-new-in-windows-server-1709
