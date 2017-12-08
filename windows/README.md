@@ -66,7 +66,8 @@ docker: Error response from daemon: container b08d4e031b8203446aedf7cc81ea110ac5
 
 2. "Azure Conatiner Service - AKS" does not support Windows yet.
 
-3. About k8s version on Windows node
+3. About k8s version on Windows node (deployed by acs-engine).
+
 k8s version on Windows node use https://github.com/Azure/kubernetes, while all Linux nodes(including master) use https://github.com/kubernetes/kubernetes.
 
 ###### Links
