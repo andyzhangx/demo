@@ -11,11 +11,11 @@ restart `Kubelet` service
 ### Q: There is no k8s component container running on master, how to do troubleshooting?
 run `journalctl -u kubelet` to get the kubelet related logs
 
-### Q: How to get the k8s component logs on master?
+### Q: How to get k8s component logs on master?
 run `docker ps -a` to get all containers, if there is any stopped container, using following command to get that container logs.
 `docker ps CONTAINER-ID > CONTAINER-ID.log 2>&1 &`
 
-##### Q: Get the controller manager logs on master
+##### Q: Get controller manager logs on master
 1. get the "CONTAINER ID" of "/hyperkube controlle"
 ```
 docker ps -a | grep "hyperkube controlle" | awk -F ' ' '{print $1}'
@@ -31,7 +31,7 @@ docker logs $id > $id.log 2>&1
 vi $id.log
 ```
 
-### Q: How to get the k8s kubelet logs on linux agent?
+### Q: How to get k8s kubelet logs on linux agent?
 1. get the "CONTAINER ID" of "/hyperkube kubelet"
 ```
 docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'
@@ -47,8 +47,12 @@ docker logs $id > $id.log 2>&1
 vi $id.log
 ```
 
-### Q: How to get the k8s kubelet logs on Windows agent?
-download pscp.exe tool
+### Q: How to get k8s kubelet logs on Windows agent?
+1. open a powershell windowd
+```
+start powershell
+```
+2. download pscp.exe tool
 ```
 cd c:\k
 $webclient = New-Object System.Net.WebClient
@@ -56,7 +60,7 @@ $url = "https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe"
 $file = " $pwd\pscp.exe"
 $webclient.DownloadFile($url,$file)
 ```
-scp c:\k\kubelet.err.log to your linux machine
+3. fill in your linux machine IP and password and then scp c:\k\kubelet.err.log to your linux machine
 ```
 Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD c:\k\kubelet.err.log azureuser@SERVER-IP:/tmp")
 ```
