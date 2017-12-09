@@ -31,7 +31,7 @@ docker logs $id > $id.log 2>&1
 vi $id.log
 ```
 
-### Q: How to get the k8s kubelet logs on agent?
+### Q: How to get the k8s kubelet logs on linux agent?
 1. get the "CONTAINER ID" of "/hyperkube kubelet"
 ```
 docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'
@@ -45,6 +45,19 @@ Or use below command lines directly:
 id=`docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'`
 docker logs $id > $id.log 2>&1
 vi $id.log
+```
+
+### Q: How to get the k8s kubelet logs on Windows agent?
+```
+cd c:\k
+rem download pscp.exe tool
+$webclient = New-Object System.Net.WebClient
+$url = "https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe"
+$file = " $pwd\pscp.exe"
+$webclient.DownloadFile($url,$file)
+
+rem scp c:\k\kubelet.err.log to your linux machine
+Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD c:\k\kubelet.err.log azureuser@SERVER-IP:/tmp")
 ```
 
 ### Q: How to change k8s hyperkube image?
