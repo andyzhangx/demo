@@ -17,6 +17,8 @@ C:\Users\azureuser>ver
 Microsoft Windows [Version 10.0.16299.19]
 ```
 
+Find more details about [Supported Windows versions](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
+
 ## k8s volume support on Windows Server 1709
 | Volume | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
@@ -70,7 +72,9 @@ docker: Error response from daemon: container b08d4e031b8203446aedf7cc81ea110ac5
 
 k8s version on Windows node use https://github.com/Azure/kubernetes, while all Linux nodes(including master) use https://github.com/kubernetes/kubernetes.
 
-###### Links
+##### Links
+[Microsoft Azure Container Service Engine - Kubernetes Windows Walkthrough](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
+
 About `Windows Server version 1709`: https://docs.microsoft.com/en-us/windows-server/get-started/whats-new-in-windows-server-1709
 
 Windows Container Version Compatibility:
