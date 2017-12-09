@@ -32,6 +32,8 @@ vi $id.log
 ```
 
 ### Q: How to get k8s kubelet logs on linux agent?
+Prerequisite:
+For debugging purpose, you could assign a public ip to your windows node and use ssh client to connect to that node.
 1. get the "CONTAINER ID" of "/hyperkube kubelet"
 ```
 docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'
@@ -48,7 +50,10 @@ vi $id.log
 ```
 
 ### Q: How to get k8s kubelet logs on Windows agent?
-1. open a powershell windowd
+Prerequisite:
+For debugging purpose, you could assign a public ip to your windows node and use windows RDP to connect to that windows node.
+
+1. open a powershell window
 ```
 start powershell
 ```
