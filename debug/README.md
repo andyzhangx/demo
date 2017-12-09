@@ -48,15 +48,16 @@ vi $id.log
 ```
 
 ### Q: How to get the k8s kubelet logs on Windows agent?
+download pscp.exe tool
 ```
 cd c:\k
-rem download pscp.exe tool
 $webclient = New-Object System.Net.WebClient
 $url = "https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe"
 $file = " $pwd\pscp.exe"
 $webclient.DownloadFile($url,$file)
-
-rem scp c:\k\kubelet.err.log to your linux machine
+```
+scp c:\k\kubelet.err.log to your linux machine
+```
 Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD c:\k\kubelet.err.log azureuser@SERVER-IP:/tmp")
 ```
 
