@@ -72,6 +72,15 @@ docker: Error response from daemon: container b08d4e031b8203446aedf7cc81ea110ac5
 
 k8s version on Windows node use https://github.com/Azure/kubernetes, while all Linux nodes(including master) use https://github.com/kubernetes/kubernetes.
 
+4. How to check windows version in acs-engine template
+
+open file _output/`dnsPrefix`/azuredeploy.json under acs-engine:
+```
+              "agentWindowsPublisher": "MicrosoftWindowsServer",
+              "agentWindowsOffer": "WindowsServerSemiAnnual",
+              "agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"
+```
+
 ##### Links
 [Microsoft Azure Container Service Engine - Kubernetes Windows Walkthrough](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
 
