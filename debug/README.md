@@ -101,6 +101,7 @@ https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class
 ## Advanced skills
 ### Q: How to open feature gate in kubernetes on azure?
 Take [Growing Persistent Volume size](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/storage/grow-volume-size.md) as an example:
+
 Append `"--feature-gates=ExpandPersistentVolumes=true"` into apiserver, scheduler and controller-manager parameters
 ```
 sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
