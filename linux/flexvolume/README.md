@@ -55,7 +55,7 @@ echo {"status": "Success", "capabilities": {"attach": false}}
 ```
 Which means your [FlexVolume driver does not need Master-initiated Attach/Detach](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html#flex-volume-drivers-without-master-initiated-attach-detach)
 
-3. The default plugin direcotory `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` seems not working on Azure.
+3. The default plugin direcotory `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` does not work on k8s cluster set up by acs-engine due to [bug](https://github.com/Azure/acs-engine/issues/1907)
 
 ### about this cifs flexvolume driver usage
 1. You will get following error if you don't specify your secret type as driver name `foo/cifs`
