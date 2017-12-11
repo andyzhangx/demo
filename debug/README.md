@@ -61,7 +61,7 @@ start powershell
 ```
 cd c:\k
 $webclient = New-Object System.Net.WebClient
-$url = "https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe"
+$url = "https://mirror.kaiyuanshe.org/putty/0.70/w64/pscp.exe"
 $file = " $pwd\pscp.exe"
 $webclient.DownloadFile($url,$file)
 ```
