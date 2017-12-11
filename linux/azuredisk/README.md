@@ -77,3 +77,5 @@ shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
+#### Links
+[Azure Storage Scalability and Performance Targets](https://docs.microsoft.com/en-us/azure/storage/common/storage-scalability-targets#azure-files-scale-targets)
