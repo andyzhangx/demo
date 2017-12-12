@@ -62,6 +62,11 @@ echo {"status": "Success", "capabilities": {"attach": false}}
 ```
 Which means your [FlexVolume driver does not need Master-initiated Attach/Detach](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html#flex-volume-drivers-without-master-initiated-attach-detach)
 
+2. The main difficulty is that how to pass json parameters which contains `",`, see below example
+```
+C:\tmp\test~example.cmd>.\example.cmd mount c:\var\lib\kubelet\pods\c4fd9ca4-df10-11e7-b71a-000d3a02c330\volumes\test~example2.cmd\flextest   {"kubernetes.io/fsType":"","kubernetes.io/pod.name":"aspnet-flex-example2","kubernetes.io/pod.namespace":"default","kubernetes.io/pod.uid":"c4fd9ca4-df10-11e7-b71a-000d3a02c330","kubernetes.io/pvOrVolumeName":"flextest","kubernetes.io/readwrite":"rw","kubernetes.io/serviceAccount.name":"default"}
+```
+
 ### Links
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
 
