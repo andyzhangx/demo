@@ -98,3 +98,32 @@ drwxr-xr-x. 8 root root 0 Dec 13 06:46 sdc
 
 In the above example, `0:0:0:0` is os disk(`sda`), `2:0:1:0` is resource disk(`sdb`), `5:0:0:0`,`5:0:0:1` are data disks, `3:0:0:0` is CDROM device.
 
+### 3. Now take CentOS 6.8 as an example, it has attached one datadisks, below is the debugging info need to collect:
+```
+$ ls -lt /sys/bus/scsi/devices
+total 0
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 0:0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_2/host0/target0:0:0/0:0:0:0
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 1:0:1:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_3/host1/target1:0:1/1:0:1:0
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 3:0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_17/host3/target3:0:0/3:0:0:0
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 5:0:0:0 -> ../../../devices/pci0000:00/0000:00:07.1/host5/target5:0:0/5:0:0:0
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 host0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_2/host0
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 host1 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_3/host1
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 host2 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_16/host2
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 host3 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_17/host3
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 host4 -> ../../../devices/pci0000:00/0000:00:07.1/host4
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 host5 -> ../../../devices/pci0000:00/0000:00:07.1/host5
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 target0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_2/host0/target0:0:0
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 target1:0:1 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_3/host1/target1:0:1
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 target3:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_17/host3/target3:0:0
+lrwxrwxrwx 1 root root 0 Dec 13 07:11 target5:0:0 -> ../../../devices/pci0000:00/0000:00:07.1/host5/target5:0:0
+
+# sudo cat /sys/bus/scsi/devices/3\:0\:0\:0/vendor
+Msft
+# sudo cat /sys/bus/scsi/devices/3\:0\:0\:0/model
+Virtual Disk
+# sudo ls -lt /sys/bus/scsi/devices/3\:0\:0\:0/block/
+total 0
+drwxr-xr-x. 8 root root 0 Dec 13 06:46 sdc
+```
+
+In the above example, `0:0:0:0` is os disk(`sda`), `1:0:1:0` is resource disk(`sdb`), `3:0:0:0` is data disk, `5:0:0:0` is CDROM device.
