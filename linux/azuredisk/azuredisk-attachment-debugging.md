@@ -1,6 +1,6 @@
 ## Debug Azure disk attachment issue
 There is some corner case in the before that k8s agent could not recognize the correct azure data disk.
-### Take Ubuntu 16.04 as an example, it has attached two datadisks, below is the debugging info need to collect:
+### 1. Take Ubuntu 16.04 as an example, it has attached two datadisks, below is the debugging info need to collect:
 #### `/dev/disk/azure/` contains all one OS disk(`sda`) and one resource disk(`sdb`)
 ```
 # sudo ls -lt /dev/disk/azure/
@@ -49,7 +49,9 @@ total 0
 drwxr-xr-x 9 root root 0 Dec  8 11:21 sdb
 ``` 
 
-### Now take coreos stable as an example, it has attached two datadisks, below is the debugging info need to collect:
+The last number of data disk scsi device(`5:0:0:0`) is the LUN number which is consistent with the LUN number in azure portal.
+
+### 2. Now take coreos stable as an example, it has attached two datadisks, below is the debugging info need to collect:
 ```
 # sudo ls -lt /dev/disk/azure/
 total 0
@@ -94,4 +96,5 @@ total 0
 drwxr-xr-x. 8 root root 0 Dec 13 06:46 sdc
 ```
 
+In the above example, `0:0:0:0` is os disk(`sda`), `2:0:1:0` is resource disk(`sdb`), `5:0:0:0`,`5:0:0:1` are data disks, `3:0:0:0` is CDROM device.
 
