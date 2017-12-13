@@ -10,12 +10,11 @@ sudo ./update-k8s.perl hyperkube
 After a while, your controller-manager, apiserver and scheduler will be replaced by new `hyperkube` image(`aztest/hyperkube`), you could check the new image by run `docker ps`, below is an example:
 ```
 azureuser@k8s-master-31586635-0:~$ docker images
-REPOSITORY                                                       TAG                                         IMAGE ID            CREATED             SIZE
-aztest/hyperkube                                                 20171211064107                              a7f129b24ec2        2 days ago     
-       744.2 MB
-gcrio.azureedge.net/google_containers/hyperkube-amd64            v1.8.2                                      8dc8847d478f        7 weeks ago         503.2 MB
-gcrio.azureedge.net/google_containers/kube-addon-manager-amd64   v6.4-beta.2                                 0a951668696f        6 months ago        79.24 MB
-gcrio.azureedge.net/google_containers/pause-amd64                3.0                                         99e59f495ffa        19 months ago       746.9 kB
+REPOSITORY                                                       TAG                    IMAGE ID            CREATED             SIZE
+aztest/hyperkube                                                 20171211064107         a7f129b24ec2        2 days ago          744.2 MB
+gcrio.azureedge.net/google_containers/hyperkube-amd64            v1.8.2                 8dc8847d478f        7 weeks ago         503.2 MB
+gcrio.azureedge.net/google_containers/kube-addon-manager-amd64   v6.4-beta.2            0a951668696f        6 months ago        79.24 MB
+gcrio.azureedge.net/google_containers/pause-amd64                3.0                    99e59f495ffa        19 months ago       746.9 kB
 ```
 
 Note:
