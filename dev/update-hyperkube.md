@@ -1,4 +1,4 @@
-## This guide will show you how to update hyperkube image directly in k8s master (only applies to Ubuntu OS now)
+## How to update hyperkube image directly in k8s master (only applies to Ubuntu OS now)
 
 #### 1. `scp _output/bin/hyperkube` to `/tmp/` on k8s master node and log on master node first
 ```
