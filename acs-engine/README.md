@@ -1,4 +1,4 @@
-### Change default storage class
+### Change default storage class (with single master)
 For k8s cluster setup by acs-engine (prior to v0.10.0), the default storage class would be [unmanaged azure disk storage class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-unmanaged-disk-storage-class), below is the workaround to change the default class to **managed** azure disk storage class:
 1. edit following file on master:
 ```
