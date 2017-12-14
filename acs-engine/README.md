@@ -4,7 +4,7 @@ For k8s cluster setup by acs-engine (prior to v0.10.0), the default storage clas
 ```
 sudo vi /etc/kubernetes/addons/azure-storage-classes.yaml
 ```
-2. Move the following config to the storage class where you want:
+2. Move the following config to the **managed** kind storage class where you want:
 ```
 storageclass.beta.kubernetes.io/is-default-class: "true"
 ```
