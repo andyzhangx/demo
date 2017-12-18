@@ -12,3 +12,24 @@ storageclass.beta.kubernetes.io/is-default-class: "true"
 ```
 watch kubectl get storageclass
 ```
+
+### Change `/var/lib/docker` to `/mnt` which has 100GB disk space
+1. Move docker data in `/var/lib/docker` to `/mnt`
+```
+sudo service docker stop
+sudo mv /var/lib/docker /mnt
+sudo ln -s /mnt/docker /var/lib/docker
+sudo service docker start
+```
+
+2. Set volume path mapping in `/etc/systemd/system/kubelet.service`
+```sudo vi /etc/systemd/system/kubelet.service```, append following (**this is the key point here**)
+```
+--volume=/mnt/docker:/mnt/docker:rw \
+```
+
+3. reload kubelet config changes
+```
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+```
