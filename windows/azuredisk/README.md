@@ -47,5 +47,10 @@ D:\test>dir
                2 Dir(s)   5,334,327,296 bytes free
 ```
 
+#### Links
+[Azure Disk Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-disk)
 
+[Azure Disk Scalability and Performance Targets](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/standard-storage?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json#scalability-and-performance-targets)
+
+[Debug Azure disk attachment issue](https://github.com/andyzhangx/Demo/blob/master/windows/azuredisk/azuredisk-attachment-debugging.md)
 
