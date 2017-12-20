@@ -86,5 +86,11 @@ C:\mnt\azure>dir
                2 Dir(s)   5,368,709,120 bytes free
 ```
 
-### Links
-`Windows Server version 1709`: https://docs.microsoft.com/en-us/windows-server/get-started/whats-new-in-windows-server-1709
+#### Links
+[Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
+
+[Azure file introduction](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction)
+
+[Azure Files scale targets](https://docs.microsoft.com/en-us/azure/storage/common/storage-scalability-targets#azure-files-scale-targets)
+
+[Windows Server version 1709](https://docs.microsoft.com/en-us/windows-server/get-started/whats-new-in-windows-server-1709)
