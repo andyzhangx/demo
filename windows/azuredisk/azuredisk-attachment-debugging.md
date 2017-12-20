@@ -1,129 +1,73 @@
 ## Debug Azure disk attachment issue
 There is some corner case in the before that k8s agent could not recognize the correct azure data disk.
-### 1. Take Ubuntu 16.04 as an example, it has attached two datadisks, below is the debugging info need to collect:
-#### `/dev/disk/azure/` contains all one OS disk(`sda`) and one resource disk(`sdb`)
+### 1. Take `Windows Version 1709` as an example, it has attached two datadisks, below is the debugging info need to collect:
+#### Run PowerShell command `Get-Disk` in admin mode
 ```
-# sudo ls -lt /dev/disk/azure/
-total 0
-lrwxrwxrwx 1 root root 10 Oct 10 02:59 root-part1 -> ../../sda1
-lrwxrwxrwx 1 root root 10 Oct 10 02:59 resource-part1 -> ../../sdb1
-lrwxrwxrwx 1 root root  9 Oct 10 02:59 resource -> ../../sdb
-lrwxrwxrwx 1 root root  9 Oct 10 02:59 root -> ../../sda
+PS C:\k> Get-Disk | select number, location
+number location
+------ --------
+     0 PCI Slot 0 : Adapter 0 : Channel 0 : Device 0
+     1 PCI Slot 1 : Adapter 0 : Channel 1 : Device 0
+     2 Integrated : Adapter 3 : Port 0 : Target 0 : LUN 0
+     5 Integrated : Adapter 3 : Port 0 : Target 0 : LUN 1
+     3 C:\ProgramData\docker\windowsfilter\e99aca58861e7a7cc0cea8e214391d74065b4f66b31a4b5a47989266cb41923b\sandbox....
+     6 C:\ProgramData\docker\windowsfilter\d92cb8c7d4bd2e076b112f359a91ca1f98b5b85eb2d82d2c1e7a1a3a75bac80a\sandbox....
+     4 C:\ProgramData\docker\windowsfilter\001fcb9cd5e73161a51230d286de1d20cccec54eb9086607e8b17d1c40469378\sandbox....
+     7 C:\ProgramData\docker\windowsfilter\b806ef220ad6c82e4f3027ac0348cd2f935be07c1d030f58e30616c1dc805a29\sandbox....
 ```
+In above example, there are two data disks which contain `LUN`, OS disk is `PCI Slot 0 : Adapter 0 : Channel 0 : Device 0`, resource disk is `PCI Slot 1 : Adapter 0 : Channel 1 : Device 0`
 
-#### `/sys/bus/scsi/devices` conatins all scsi devices including OS disk, resource disk and data disks
+#### Show detaled info of one data disk
 ```
-# ls -lt /sys/bus/scsi/devices
-total 0
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 2:0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0000-8899-0000-000000000000/host2/target2:0:0/2:0:0:0
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 3:0:1:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0001-8899-0000-000000000000/host3/target3:0:1/3:0:1:0
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 5:0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781b-1e82-4818-a1c3-63d806ec15bb/host5/target5:0:0/5:0:0:0
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 5:0:0:1 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781b-1e82-4818-a1c3-63d806ec15bb/host5/target5:0:0/5:0:0:1
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 host0 -> ../../../devices/pci0000:00/0000:00:07.1/ata1/host0
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 host1 -> ../../../devices/pci0000:00/0000:00:07.1/ata2/host1
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 host2 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0000-8899-0000-000000000000/host2
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 host3 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0001-8899-0000-000000000000/host3
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 host4 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781a-1e82-4818-a1c3-63d806ec15bb/host4
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 host5 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781b-1e82-4818-a1c3-63d806ec15bb/host5
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 target2:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0000-8899-0000-000000000000/host2/target2:0:0
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 target3:0:1 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0001-8899-0000-000000000000/host3/target3:0:1
-lrwxrwxrwx 1 root root 0 Dec 13 06:53 target5:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781b-1e82-4818-a1c3-63d806ec15bb/host5/target5:0:0
+$disks = Get-Disk
+$disks[3] | select *
 ```
 
-In the above example, `2:0:0:0` is os disk(`sda`), `3:0:1:0` is resource disk(`sdb`), `5:0:0:0`,`5:0:0:1` are data disks, see below check:
 ```
-# sudo cat /sys/bus/scsi/devices/5\:0\:0\:0/vendor
-Msft
-# sudo cat /sys/bus/scsi/devices/5\:0\:0\:0/model
-Virtual Disk
-# sudo ls -lt /sys/bus/scsi/devices/5\:0\:0\:0/block/
-total 0
-drwxr-xr-x 9 root root 0 Dec  8 11:21 sdc
-
-# sudo ls -lt /sys/bus/scsi/devices/2\:0\:0\:0/block/
-total 0
-drwxr-xr-x 9 root root 0 Dec  8 11:21 sda
-
-# sudo ls -lt /sys/bus/scsi/devices/3\:0\:1\:0/block/
-total 0
-drwxr-xr-x 9 root root 0 Dec  8 11:21 sdb
-``` 
-
-The last number of data disk scsi device(`5:0:0:0`) is the LUN number which is consistent with the LUN number in azure portal.
-
-### 2. Now take coreos stable as an example, it has attached two datadisks, below is the debugging info need to collect:
-```
-# sudo ls -lt /dev/disk/azure/
-total 0
-drwxr-xr-x. 2 root root 60 Dec 13 06:46 scsi1
-lrwxrwxrwx. 1 root root 10 Dec 13 04:42 root-part1 -> ../../sda1
-lrwxrwxrwx. 1 root root 10 Dec 13 04:42 root-part7 -> ../../sda7
-lrwxrwxrwx. 1 root root 10 Dec 13 04:42 root-part4 -> ../../sda4
-lrwxrwxrwx. 1 root root 10 Dec 13 04:42 root-part2 -> ../../sda2
-lrwxrwxrwx. 1 root root 10 Dec 13 04:42 root-part6 -> ../../sda6
-lrwxrwxrwx. 1 root root 10 Dec 13 04:42 root-part3 -> ../../sda3
-lrwxrwxrwx. 1 root root 10 Dec 13 04:42 root-part9 -> ../../sda9
-lrwxrwxrwx. 1 root root  9 Dec 13 04:42 root -> ../../sda
-lrwxrwxrwx. 1 root root 10 Dec 13 04:42 resource-part1 -> ../../sdb1
-lrwxrwxrwx. 1 root root  9 Dec 13 04:42 resource -> ../../sdb
-
-# ls -lt /sys/bus/scsi/devices
-total 0
-lrwxrwxrwx. 1 root root 0 Dec 13 06:59 5:0:0:1 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781b-1e82-4818-a1c3-63d806ec15bb/host5/target5:0:0/5:0:0:1
-lrwxrwxrwx. 1 root root 0 Dec 13 06:50 target5:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781b-1e82-4818-a1c3-63d806ec15bb/host5/target5:0:0
-lrwxrwxrwx. 1 root root 0 Dec 13 06:46 5:0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781b-1e82-4818-a1c3-63d806ec15bb/host5/target5:0:0/5:0:0:0
-lrwxrwxrwx. 1 root root 0 Dec 13 04:42 target0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0000-8899-0000-000000000000/host0/target0:0:0
-lrwxrwxrwx. 1 root root 0 Dec 13 04:42 target2:0:1 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0001-8899-0000-000000000000/host2/target2:0:1
-lrwxrwxrwx. 1 root root 0 Dec 13 04:42 target3:0:0 -> ../../../devices/pci0000:00/0000:00:07.1/ata2/host3/target3:0:0
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 2:0:1:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0001-8899-0000-000000000000/host2/target2:0:1/2:0:1:0
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 3:0:0:0 -> ../../../devices/pci0000:00/0000:00:07.1/ata2/host3/target3:0:0/3:0:0:0
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 host2 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0001-8899-0000-000000000000/host2
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 host3 -> ../../../devices/pci0000:00/0000:00:07.1/ata2/host3
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 host4 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781a-1e82-4818-a1c3-63d806ec15bb/host4
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 host5 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/f8b3781b-1e82-4818-a1c3-63d806ec15bb/host5
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 0:0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0000-8899-0000-000000000000/host0/target0:0:0/0:0:0:0
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 host0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBUS:01/00000000-0000-8899-0000-000000000000/host0
-lrwxrwxrwx. 1 root root 0 Dec 13 04:41 host1 -> ../../../devices/pci0000:00/0000:00:07.1/ata1/host1
-
-# sudo cat /sys/bus/scsi/devices/5\:0\:0\:0/vendor
-Msft
-
-# sudo cat /sys/bus/scsi/devices/5\:0\:0\:0/model
-Virtual Disk
-
-# sudo ls -lt /sys/bus/scsi/devices/5\:0\:0\:0/block/
-total 0
-drwxr-xr-x. 8 root root 0 Dec 13 06:46 sdc
+DiskNumber            : 5
+PartitionStyle        : MBR
+ProvisioningType      : Thin
+OperationalStatus     : Online
+HealthStatus          : Healthy
+BusType               : SAS
+UniqueIdFormat        : Vendor Id
+OfflineReason         :
+ObjectId              : {1}\\77890K8S9010\root/Microsoft/Windows/Storage/Providers_v2\WSP_Disk.ObjectId="{aa117a5a-e3b6
+                        -11e7-8f78-806e6f6e6963}:DI:\\?\scsi#disk&ven_msft&prod_virtual_disk#000001#{53f56307-b6bf-11d0
+                        -94f2-00a0c91efb8b}"
+PassThroughClass      :
+PassThroughIds        :
+PassThroughNamespace  :
+PassThroughServer     :
+UniqueId              : 4D534654202020209C8E3C77A846CD4AA6B8901C0E8E917D
+AdapterSerialNumber   :
+AllocatedSize         : 5368709120
+BootFromDisk          : False
+FirmwareVersion       : 1.0
+FriendlyName          : Msft Virtual Disk
+Guid                  :
+IsBoot                : False
+IsClustered           : False
+IsHighlyAvailable     : False
+IsOffline             : False
+IsReadOnly            : False
+IsScaleOut            : False
+IsSystem              : False
+LargestFreeExtent     : 0
+Location              : Integrated : Adapter 3 : Port 0 : Target 0 : LUN 1
+LogicalSectorSize     : 512
+Manufacturer          : Msft
+Model                 : Virtual Disk
+Number                : 5
+NumberOfPartitions    : 1
+Path                  : \\?\scsi#disk&ven_msft&prod_virtual_disk#000001#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}
+PhysicalSectorSize    : 512
+SerialNumber          :
+Signature             : 2134170139
+Size                  : 5368709120
+PSComputerName        :
+CimClass              : ROOT/Microsoft/Windows/Storage:MSFT_Disk
+CimInstanceProperties : {ObjectId, PassThroughClass, PassThroughIds, PassThroughNamespace...}
+CimSystemProperties   : Microsoft.Management.Infrastructure.CimSystemProperties
 ```
 
-In the above example, `0:0:0:0` is os disk(`sda`), `2:0:1:0` is resource disk(`sdb`), `5:0:0:0`,`5:0:0:1` are data disks, `3:0:0:0` is CDROM device.
-
-### 3. Now take CentOS 6.8 as an example, it has attached one datadisks, below is the debugging info need to collect:
-```
-$ ls -lt /sys/bus/scsi/devices
-total 0
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 0:0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_2/host0/target0:0:0/0:0:0:0
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 1:0:1:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_3/host1/target1:0:1/1:0:1:0
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 3:0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_17/host3/target3:0:0/3:0:0:0
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 5:0:0:0 -> ../../../devices/pci0000:00/0000:00:07.1/host5/target5:0:0/5:0:0:0
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 host0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_2/host0
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 host1 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_3/host1
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 host2 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_16/host2
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 host3 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_17/host3
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 host4 -> ../../../devices/pci0000:00/0000:00:07.1/host4
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 host5 -> ../../../devices/pci0000:00/0000:00:07.1/host5
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 target0:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_2/host0/target0:0:0
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 target1:0:1 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_3/host1/target1:0:1
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 target3:0:0 -> ../../../devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A03:00/device:07/VMBus:00/vmbus_17/host3/target3:0:0
-lrwxrwxrwx 1 root root 0 Dec 13 07:11 target5:0:0 -> ../../../devices/pci0000:00/0000:00:07.1/host5/target5:0:0
-
-# sudo cat /sys/bus/scsi/devices/3\:0\:0\:0/vendor
-Msft
-# sudo cat /sys/bus/scsi/devices/3\:0\:0\:0/model
-Virtual Disk
-# sudo ls -lt /sys/bus/scsi/devices/3\:0\:0\:0/block/
-total 0
-drwxr-xr-x. 8 root root 0 Dec 13 06:46 sdc
-```
-
-In the above example, `0:0:0:0` is os disk(`sda`), `1:0:1:0` is resource disk(`sdb`), `3:0:0:0` is data disk, `5:0:0:0` is CDROM device.
