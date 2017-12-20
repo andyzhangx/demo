@@ -67,7 +67,8 @@ $webclient.DownloadFile($url,$file)
 ```
 3. fill in your linux machine IP and password and then scp c:\k\kubelet.err.log to your linux machine
 ```
-Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD c:\k\kubelet.err.log azureuser@SERVER-IP:/tmp")
+cp c:\k\kubelet.err.log c:\k\kubelet.err.log.copy
+Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD c:\k\kubelet.err.log.copy azureuser@SERVER-IP:/tmp")
 ```
 
 ### Q: How to change k8s hyperkube image?
