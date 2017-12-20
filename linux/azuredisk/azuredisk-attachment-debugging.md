@@ -127,3 +127,6 @@ drwxr-xr-x. 8 root root 0 Dec 13 06:46 sdc
 ```
 
 In the above example, `0:0:0:0` is os disk(`sda`), `1:0:1:0` is resource disk(`sdb`), `3:0:0:0` is data disk, `5:0:0:0` is CDROM device.
+
+#### Links
+[Troubleshoot Linux VM device name change](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/troubleshoot-device-names-problems)
