@@ -93,6 +93,11 @@ https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountop
 2. `Premium` storage type is not supported for azure file
 
 #### Links
+[Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
+
 [Azure file introduction](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction)
 
 [Azure Files scale targets](https://docs.microsoft.com/en-us/azure/storage/common/storage-scalability-targets#azure-files-scale-targets)
+
+[Using Azure Files with Kubernetes](https://docs.microsoft.com/en-us/azure/aks/azure-files)
+
