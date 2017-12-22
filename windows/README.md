@@ -35,7 +35,7 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 | hostpath | Yes | [hostpath](https://github.com/andyzhangx/Demo/tree/master/windows/hostpath) |  |
 | iscsi | No |  | Windows container does not support iSCSI symbolic link |
 | local |  |  | It's alpha in k8s v1.9 |
-| nfs | No |  |  |
+| nfs | No | [add NFS volume support for windows](https://github.com/kubernetes/kubernetes/issues/56188) | Pending: there is not NFSv4 client in Windows  |
 | PortworxVolume |  |  |  |
 | projected |  |  |  |
 | Quobyte |  |  |  |
