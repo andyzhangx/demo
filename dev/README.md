@@ -56,8 +56,8 @@ hack/verify-gofmt.sh
 On agent node:
 ```
 /dev/sdc <--
-/var/lib/kubelet/pods/950f2eb8-d4e7-11e7-bc95-000d3a041274/volumes/kubernetes.io~azure-disk/pvc-67e4e319-d4e7-11e7-bc95-000d3a041274 <--
 /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426 <--
+/var/lib/kubelet/pods/950f2eb8-d4e7-11e7-bc95-000d3a041274/volumes/kubernetes.io~azure-disk/pvc-67e4e319-d4e7-11e7-bc95-000d3a041274 <--
 /mnt/azure #mountPath in container
 ```
 
