@@ -1,0 +1,15 @@
+{
+    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db4x",
+    "subscriptionId": "4be8920b-2978-43d7-ab14-04d8549c1d0x",
+    "aadClientId": "91fe9b3f-d35a-4f9b-8c92-e8572916bd9x",
+    "aadClientSecret": "ed0a7cc2-070e-416c-b42c-734da36a9cax",
+    "resourceGroup": "andy-hyb179x",
+    "location": "westus2",
+    "subnetName": "k8s-subnet",
+    "securityGroupName": "k8s-master-34763380-nsg",
+    "vnetName": "k8s-vnet-34763380",
+    "routeTableName": "k8s-master-34763380-routetable",
+    "primaryAvailabilitySetName": "linuxpool1-availabilitySet-34763380",
+    "useManagedIdentityExtension": false,
+    "useInstanceMetadata": true
+}
