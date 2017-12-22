@@ -33,9 +33,9 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 | gitRepo | No | [gitrepo](https://github.com/andyzhangx/Demo/tree/master/windows/gitrepo) | git is not built-in on Windows host now: [Enable gitRepo Volume on Windows](https://github.com/kubernetes/kubernetes/issues/57546) |
 | glusterfs | No |  | Windows doesn't have a native GlusterFS client, could use NFS instead |
 | hostpath | Yes | [hostpath](https://github.com/andyzhangx/Demo/tree/master/windows/hostpath) |  |
-| iscsi | No |  | Windows container does not support iSCSI symbolic link |
+| iscsi | No |  | Windows container does not support iSCSI symbolic link: [Enable iSCSI volume on Windows](https://github.com/kubernetes/kubernetes/issues/57548) |
 | local |  |  | It's alpha in k8s v1.9 |
-| nfs | No | | Pending: there is no NFSv4 client support on Windows now [add NFS volume support for windows](https://github.com/kubernetes/kubernetes/issues/56188)  |
+| nfs | No | | Pending: there is no NFSv4 client support on Windows now, see: [add NFS volume support for windows](https://github.com/kubernetes/kubernetes/issues/56188)  |
 | PortworxVolume |  |  |  |
 | projected |  |  |  |
 | Quobyte |  |  |  |
