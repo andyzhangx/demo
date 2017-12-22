@@ -30,12 +30,12 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 | fc (fibre channel) |  |  |  |
 | flexvolume | Yes | [flexvolume](https://github.com/andyzhangx/Demo/tree/master/windows/flexvolume) | working on this [feature](https://github.com/kubernetes/kubernetes/issues/56875) [PR#56921](https://github.com/kubernetes/kubernetes/pull/56921) (code merged) |
 | flocker |  |  |  |
-| gitRepo |  |  | git is not built-in on Windows host now |
+| gitRepo | No | [gitrepo](https://github.com/andyzhangx/Demo/tree/master/windows/gitrepo) | git is not built-in on Windows host now: [Enable gitRepo Volume on Windows](https://github.com/kubernetes/kubernetes/issues/57546) |
 | glusterfs | No |  | Windows doesn't have a native GlusterFS client, could use NFS instead |
 | hostpath | Yes | [hostpath](https://github.com/andyzhangx/Demo/tree/master/windows/hostpath) |  |
 | iscsi | No |  | Windows container does not support iSCSI symbolic link |
 | local |  |  | It's alpha in k8s v1.9 |
-| nfs | No | [add NFS volume support for windows](https://github.com/kubernetes/kubernetes/issues/56188) | Pending: there is not NFSv4 client in Windows  |
+| nfs | No | | Pending: there is no NFSv4 client support on Windows now [add NFS volume support for windows](https://github.com/kubernetes/kubernetes/issues/56188)  |
 | PortworxVolume |  |  |  |
 | projected |  |  |  |
 | Quobyte |  |  |  |
