@@ -20,6 +20,8 @@ Microsoft Windows [Version 10.0.16299.19]
 Find more details about [Supported Windows versions](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
 
 ## k8s volume support on Windows Server 1709
+Note: value of `Support on Windows` is empty means I don't have a chance to validate it on Windows
+
 | Volume | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
 | azure disk | Yes | [azuredisk](https://github.com/andyzhangx/Demo/tree/master/windows/azuredisk) | Support from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
