@@ -50,6 +50,13 @@ shm            tmpfs        68M     0   68M   0% /var/lib/docker/containers/dadc
 nsfs           nsfs           0     0     0    - /run/docker/netns/628465d8db02
 tmpfs          tmpfs       1.5G     0  1.5G   0% /run/user/1000
 ```
+Note:
+If you got following error, then it would be a bug, you could refer to [Issue#57444](https://github.com/kubernetes/kubernetes/issues/57444) for more details
+```
+sudo ls -lt /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/b3543426255
+ls: reading directory '/var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/b3543426255': Input/output error
+total 0
+```
 
 #### Links
 [Troubleshoot Linux VM device name change](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/troubleshoot-device-names-problems)
