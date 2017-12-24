@@ -40,12 +40,11 @@ tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
-### Note
-There is a bug of azure file mount feature in v1.7.x (fixed in v1.7.11 or above, v1.8.0), cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
+### Known issues
+There is a [bug](https://github.com/kubernetes/kubernetes/pull/48326) of azure file dynamic provision in v1.7.x (fixed in v1.7.11 or above, v1.8.0), cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
 ```
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
-A fix for this is in progress: https://github.com/kubernetes/kubernetes/pull/53172
 
 
 # Static Provisioning for azure file in Linux (support from v1.5.0)
@@ -87,10 +86,14 @@ root@nginx-azurefile:/# mount | grep cifs
 ```
 
 ### Note
-1. `fileMode`, `dirMode` would be set to `0700` and gid, uid would be set as `0` by default, you could override this mountOptions by following this guide:
-https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md
+1. `fileMode`, `dirMode` would be set to `0700` and gid, uid would be set as `0` by default, you could override this mountOptions by following this [guide](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md)
 
 2. `Premium` storage type is not supported for azure file
+
+### Other known issues of Azure file feature
+1. [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
+
+2. [mount options support of azure file](https://github.com/kubernetes/kubernetes/pull/54674) is available from v1.8.5
 
 #### Links
 [Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
