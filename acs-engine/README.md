@@ -33,3 +33,6 @@ sudo service docker start
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
+
+#### Links
+[Config kubernetes dashboard](https://github.com/Azure/devops-sample-solution-for-azure-china/tree/master-dev/acs-engine#9-config-kubernetes-dashboard-optional)
