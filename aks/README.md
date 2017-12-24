@@ -30,7 +30,7 @@ kubectl get nodes
 
 #### 5. scale up/down AKS cluster nodes
 ```
-az aks scale -g RESOURCE_GROUP_NAME -n CLUSTER_NAME --agent-count=2
+az aks scale -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --agent-count=2
 ```
 
 #### known issues
