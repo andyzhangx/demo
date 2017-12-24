@@ -15,7 +15,7 @@ az group create -n $RESOURCE_GROUP_NAME -l $LOCATION
 
 #### 2. Create an AKS cluster
 ```
-az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --agent-count 2 --generate-ssh-keys
+az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --agent-count 2 --generate-ssh-keys --kubernetes-version 1.8.1
 ```
 
 #### 3. get aks cluster credentials
@@ -58,7 +58,7 @@ hing storage account
 ```
 
 Workaround is as following:
-Create a `Standard_LRS` storage account in the same resource group with AKS cluster and wait for a few seconds, azure file PVC will be created successfully.
+Create a `Standard_LRS` storage account in a `shadow resource group` which contains all resources of your aks cluster, e.g. if you create an aks cluster `andy-aks182` in westus2 region, then `shadow resource group` would be `MC_andy-aks182_andy-aks182_westus2`, wait for a few seconds, azure file PVC will be created successfully.
 
 #### Links
 [Azure Container Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/)
