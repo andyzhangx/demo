@@ -53,6 +53,7 @@ kubectl patch storageclass default -p '{"metadata": {"annotations":{"storageclas
 ```
 
 2. Create azure file PVC error
+
 you may get following error when set up an azure file PVC:
 ```
 Events:
