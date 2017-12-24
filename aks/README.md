@@ -33,6 +33,11 @@ kubectl get nodes
 az aks scale -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --agent-count=2
 ```
 
+#### 5. delete AKS cluster node
+```
+az aks delete -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME
+```
+
 #### known issues
 1. default storage class is not set by default in AKS cluster, see issue: https://github.com/Azure/AKS/issues/48
 you may get following error when set up a PVC with a default storage class:
