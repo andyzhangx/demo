@@ -1,19 +1,26 @@
 # Azure Container Service - AKS
 
 ## Steps to create an AKS cluster by [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+#### Prerequisite, define environment variables here:
+```
+RESOURCE_GROUP_NAME=
+CLUSTER_NAME=
+LOCATION=westus2
+```
+
 #### 1. Create a resource group
 ```
-az group create -n RESOURCE_GROUP_NAME -l LOCATION
+az group create -n $RESOURCE_GROUP_NAME -l $LOCATION
 ```
 
 #### 2. Create an AKS cluster
 ```
-az aks create -g RESOURCE_GROUP_NAME -n CLUSTER_NAME --agent-count 2 --generate-ssh-keys
+az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --agent-count 2 --generate-ssh-keys
 ```
 
 #### 3. get aks cluster credentials
 ```
-az aks get-credentials -g RESOURCE_GROUP_NAME -n CLUSTER_NAME
+az aks get-credentials -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME
 ```
 
 #### 4. Get AKS nodes
