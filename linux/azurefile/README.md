@@ -41,7 +41,7 @@ shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 ### Note
-There is a bug of azure file mount feature in v1.7.x (fixed in v1.8.0), cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
+There is a bug of azure file mount feature in v1.7.x (fixed in v1.7.11 or above, v1.8.0), cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
 ```
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
