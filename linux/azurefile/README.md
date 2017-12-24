@@ -85,15 +85,23 @@ root@nginx-azurefile:/# mount | grep cifs
 //pvc3329812692002.file.core.windows.net/andy-mgwin1710-dynamic-pvc-7b5346be-d577-11e7-bc95-000d3a041274 on /mnt/blobfile type cifs (rw,relatime,vers=3.0,cache=strict,username=pvc3329812692002,domain=,uid=0,noforceuid,gid=0,noforcegid,addr=52.239.184.8,file_mode=0777,dir_mode=0777,persistenthandles,nounix,serverino,mapposix,rsize=1048576,wsize=1048576,echo_interval=60,actimeo=1)
 ```
 
-### Note
-1. `fileMode`, `dirMode` would be set to `0700` and gid, uid would be set as `0` by default, you could override this mountOptions by following this [guide](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md)
-
-2. `Premium` storage type is not supported for azure file
-
 ### Other known issues of Azure file feature
-1. [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
+1. `Premium` storage type is not supported for azure file currently
 
-2. [mount options support of azure file](https://github.com/kubernetes/kubernetes/pull/54674) is available from v1.8.5
+2. [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
+
+3. [mount options support of azure file](https://github.com/kubernetes/kubernetes/pull/54674) is available from v1.8.5
+
+4. `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5)
+
+| version | `fileMode`, `dirMode` value | Notes |
+| ---- | ---- | ---- |
+| v1.6.x, v1.7.x | 0777 |  |
+| v1.6.x, v1.7.x | 0777 |  |
+| v1.8.0-v1.8.5 | 0700 |  |
+| v1.8.6 or above | 0755 |  |
+| v1.9.0 | 0700 |  |
+
 
 #### Links
 [Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
