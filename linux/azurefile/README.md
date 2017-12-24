@@ -40,12 +40,13 @@ tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
-### Known issues
-There is a [bug](https://github.com/kubernetes/kubernetes/pull/48326) of azure file dynamic provision in v1.7.x (fixed in v1.7.11 or above, v1.8.0), cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
+### Known issues of azure file dynamic provision
+1. There is a [bug](https://github.com/kubernetes/kubernetes/pull/48326) of azure file dynamic provision in v1.7.x (fixed in v1.7.11 or above, v1.8.0), cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
 ```
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
 
+2. To specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster, if you are using AKS, the specified storage account should be in `shadow resource group`(begin with `MC_`) which contains all resources of your aks cluster. 
 
 # Static Provisioning for azure file in Linux (support from v1.5.0)
 kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file, only static provisioning is supported for azure file which means a storage account should be created before using azure file mount feature.
@@ -90,17 +91,15 @@ root@nginx-azurefile:/# mount | grep cifs
 
 2. [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
 
-3. [mount options support of azure file](https://github.com/kubernetes/kubernetes/pull/54674) is available from v1.8.5
+3. `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5)
 
-4. `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5)
-
-| version | `fileMode`, `dirMode` value | Notes |
-| ---- | ---- | ---- |
-| v1.6.x, v1.7.x | 0777 |  |
-| v1.6.x, v1.7.x | 0777 |  |
-| v1.8.0-v1.8.5 | 0700 |  |
-| v1.8.6 or above | 0755 |  |
-| v1.9.0 | 0700 |  |
+| version | `fileMode`, `dirMode` value |
+| ---- | ---- |
+| v1.6.x, v1.7.x | 0777 |
+| v1.6.x, v1.7.x | 0777 |
+| v1.8.0-v1.8.5 | 0700 |
+| v1.8.6 or above | 0755 |
+| v1.9.0 | 0700 |
 
 
 #### Links
