@@ -2,7 +2,7 @@
 make a plugin directory, e.g. `C:\volumeplugins\test~example.cmd` and put driver file https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/flexvolume/example.cmd under `C:\volumeplugins\test~example.cmd`
 
 ## 2. specify `volume-plugin-dir` value in Windows kubelet service config
-edit file `c:\k\kubeletstart.ps1`, append following config
+edit file `c:\k\kubeletstart.ps1`, append following config and restart `kubelet` service
 ```
 --volume-plugin-dir=c:\volumeplugins
 ```
