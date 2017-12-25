@@ -96,7 +96,6 @@ root@nginx-azurefile:/# mount | grep cifs
 | version | `fileMode`, `dirMode` value |
 | ---- | ---- |
 | v1.6.x, v1.7.x | 0777 |
-| v1.6.x, v1.7.x | 0777 |
 | v1.8.0-v1.8.5 | 0700 |
 | v1.8.6 or above | 0755 |
 | v1.9.0 | 0700 |
