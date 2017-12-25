@@ -100,7 +100,7 @@ root@nginx-azurefile:/# mount | grep cifs
 | v1.8.0-v1.8.5 | 0700 |
 | v1.8.6 or above | 0755 |
 | v1.9.0 | 0700 |
-
+| v1.9.1 or above | 0755 |
 
 #### Links
 [Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
