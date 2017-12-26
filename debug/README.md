@@ -65,7 +65,7 @@ $url = "https://mirror.kaiyuanshe.org/putty/0.70/w64/pscp.exe"
 $file = " $pwd\pscp.exe"
 $webclient.DownloadFile($url,$file)
 ```
-3. fill in your linux machine IP and password and then scp c:\k\kubelet.err.log to your linux machine
+3. replace with your linux machine IP, password and then scp `c:\k\kubelet.err.log.copy` to your linux machine
 ```
 cp c:\k\kubelet.err.log c:\k\kubelet.err.log.copy
 Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD c:\k\kubelet.err.log.copy azureuser@SERVER-IP:/tmp")
