@@ -36,6 +36,44 @@ KUBE_BUILD_PLATFORMS=darwin/amd64 make
 
 ### debug kubernetes windows node
 
+##### Replace `kubelet.exe` binary on Windows ServerCore
+Prerequisite:
+assign a public ip to the agent in azure portal and use RDP to connect to that agent. (only for debugging purpose)
+
+1. open a powershell window
+```
+start powershell
+```
+2. download pscp.exe tool
+```
+cd c:\k
+$webclient = New-Object System.Net.WebClient
+$url = "https://mirror.kaiyuanshe.org/putty/0.70/w64/pscp.exe"
+$file = " $pwd\pscp.exe"
+$webclient.DownloadFile($url,$file)
+```
+3. replace with your linux machine IP, password and then scp `kubelet.exe` to your node
+```
+mkdir c:\tmp
+cd c:\tmp
+Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD azureuser@SERVER-IP:/tmp/kubelet.exe c:\tmp")
+.\kubelet.exe --version
+```
+
+4. Backup your original binaries first
+```
+cp c:\k c:\k-backup -Recurse
+```
+
+5. Stop `kubeproxy`, `kubelet` services, replace `kubelet.exe` and then start these services 
+```
+stop-service kubeproxy
+stop-service kubelet
+cp C:\tmp\kubelet.exe c:\k
+start-service kubeproxy
+start-service kubelet
+```
+
 ### build kubernetes on Linux
 
 ##### Q: got an error "runtime: goroutine stack exceeds 1000000000-byte limit" running `make` command
