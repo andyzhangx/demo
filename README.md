@@ -19,6 +19,9 @@ development practices of kubernetes on Azure
 ### [linux](https://github.com/andyzhangx/Demo/edit/master/linux) 
 persistent volume(pv) examples, best practices, project status on Linux
 
+### [notes](https://github.com/andyzhangx/Demo/edit/master/notes) 
+kubernetes notes
+
 ### [pv](https://github.com/andyzhangx/Demo/edit/master/pv) 
 all persistent volume(pv) examples
 
