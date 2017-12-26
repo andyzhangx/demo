@@ -1,5 +1,17 @@
 ## 1. install flex volume driver on every Windows node
 make a plugin directory, e.g. `C:\k\volumeplugins\test~example.cmd` and put driver file https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/flexvolume/example.cmd under `C:\k\volumeplugins\test~example.cmd`
+```
+start powershell
+mkdir C:\k\volumeplugins
+cd C:\k\volumeplugins
+mkdir test~example.cmd
+cd C:\k\volumeplugins\test~example.cmd
+$storageDir = $pwd
+$webclient = New-Object System.Net.WebClient
+$url = "https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/flexvolume/example.cmd"
+$file = "$storageDir\example.cmd"
+$webclient.DownloadFile($url,$file)
+```
 
 ## 2. specify `volume-plugin-dir` value in Windows kubelet service config
 edit file `c:\k\kubeletstart.ps1`, append following config
