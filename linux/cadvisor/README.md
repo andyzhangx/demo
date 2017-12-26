@@ -1,9 +1,5 @@
 ## Get monitoring metrics from kubelet
-#### 1. Get node name
-```
-kubectl get no
-```
-
+#### 1. Get node name by `kubectl get no`
 ```
 NAME                        STATUS    AGE       VERSION
 k8s-agentpool1-55859097-0   Ready     29d       v1.7.9-dirty
@@ -21,4 +17,3 @@ Log on to node `k8s-agentpool1-55859097-0`, run following command:
 curl http://localhost:4194/containers/
 ```
 
-#### Links
