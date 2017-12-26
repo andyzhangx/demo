@@ -1,13 +1,15 @@
 # Dynamic Provisioning for azure disk in Linux
 ## 1. create an azure disk storage class if `hdd` does not exist
 #### for k8s version >= v1.7.2
-##### option#1: k8s agent pool is based on blob disk(unmanaged) VM
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
-
-##### option#2: k8s agent pool is based on managed disk VM
+##### option#1: k8s agent pool is based on managed disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml```
 
-###### Note: managed disk mount feature is only supported from version v1.7.2
+##### option#2: k8s agent pool is based on blob disk(unmanaged) VM
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
+
+###### Note: 
+1. managed disk mount feature is only supported from version v1.7.2
+2. AKS cluster use managed disk by default, there are already `managed-standard`, `managed-premium` built-in azure disk storage classes.
 
 #### for k8s version < 1.7.2
 download `storageclass-azuredisk-old.yaml` and modify `skuName`, `location` values
