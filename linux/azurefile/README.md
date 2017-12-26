@@ -91,7 +91,7 @@ root@nginx-azurefile:/# mount | grep cifs
 
 2. [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
 
-3. `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5)
+3. `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5). For version v1.8.0-v1.8.4, since [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) is not available, as a workaround, you could specify a [securityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for the container with: `runAsUser: 0`
 
 | version | `fileMode`, `dirMode` value |
 | ---- | ---- |
@@ -100,6 +100,7 @@ root@nginx-azurefile:/# mount | grep cifs
 | v1.8.6 or above | 0755 |
 | v1.9.0 | 0700 |
 | v1.9.1 or above | 0755 |
+
 
 #### Links
 [Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
