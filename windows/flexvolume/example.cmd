@@ -4,9 +4,7 @@ rem   File Name:
 rem       example.cmd
 rem 
 rem   Abstract:
-rem       This script is an example script using flexvolume on Windows node, it will do
-rem 	  1. mount: make a mount directory
-rem 	  2. unmount: remove the mount directory
+rem       This script is an example script using flexvolume on Windows node, it will do nothing
 rem   Note: This is a FlexVolume Driver Without Master-initiated Attach/Detach
 rem '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -29,7 +27,7 @@ goto :eof
 :mount
 rem following line is only for debugging purpose
 rem @echo "mount", %~2, %~3, %~4 >> c:\k\example.log
-md %~2
+rem md %~2
 @echo {"status": "Success"}
 goto :eof
 
