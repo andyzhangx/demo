@@ -2,7 +2,7 @@
 #### 1. Get node name by `kubectl get no`
 ```
 NAME                    STATUS    ROLES     AGE       VERSION
-26253k8s9000            Ready     <none>    5h        v1.10.0-alpha.1.258+7dd82519da3f8c
+26253k8s9000            Ready     <none>    5h        v1.9.0-alpha.1.258+7dd82519da3f8c
 k8s-master-26253276-0   Ready     master    5h        v1.8.4
 ```
 
