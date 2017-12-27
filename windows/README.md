@@ -30,7 +30,7 @@ Note: value of `Support on Windows` is empty means I don't have a chance to vali
 | downwardAPI | No |  | Same issue with secret, due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419) |
 | emptyDir | Yes | [emptydir](https://github.com/andyzhangx/Demo/tree/master/windows/emptydir) | tmpfs is not supported on Windows Server |
 | fc (fibre channel) |  |  |  |
-| flexvolume | Yes | [flexvolume](https://github.com/andyzhangx/Demo/tree/master/windows/flexvolume) | working on this [feature](https://github.com/kubernetes/kubernetes/issues/56875) [PR#56921](https://github.com/kubernetes/kubernetes/pull/56921) (code merged) |
+| flexvolume | Yes | [flexvolume](https://github.com/andyzhangx/Demo/tree/master/windows/flexvolume) | working on this [feature](https://github.com/kubernetes/kubernetes/issues/56875) [PR#56921](https://github.com/kubernetes/kubernetes/pull/56921) (code merged, support from v1.9.1) |
 | flocker |  |  |  |
 | gitRepo | No | [gitrepo](https://github.com/andyzhangx/Demo/tree/master/windows/gitrepo) | git is not built-in on Windows host now: [Enable gitRepo Volume on Windows](https://github.com/kubernetes/kubernetes/issues/57546) |
 | glusterfs | No |  | Windows doesn't have a native GlusterFS client, could use NFS instead |
