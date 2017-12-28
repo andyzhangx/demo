@@ -8,7 +8,7 @@
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
 
 ###### Note: 
-1. managed disk mount feature is only supported from version v1.7.2
+1. managed disk mount feature is only supported from v1.7.2
 2. AKS cluster use managed disk by default, there are already `managed-standard`, `managed-premium` built-in azure disk storage classes.
 
 #### for k8s version < 1.7.2
