@@ -50,6 +50,11 @@ D:\test>dir
                2 Dir(s)   5,334,327,296 bytes free
 ```
 
+### known issues of Azure disk on Windows feature
+1. The Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more PRs than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
+
+2. [Allow windows mount path on windows](https://github.com/kubernetes/kubernetes/pull/51240) is available from v.17.x, v1.8.3 or above
+
 #### Links
 [Azure Disk Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-disk)
 
