@@ -1,6 +1,8 @@
 ## Dynamic Provisioning for Azure disk mount on Windows Server version 1709 
-#### Attention:
-Azure disk mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), with the exception that **v1.8.0, v1.8.1, v1.8.2** does not support this feature. And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
+#### Note:
+1. The Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more features than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
+
+2. Azure disk mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), with the exception that **v1.8.0, v1.8.1, v1.8.2** does not support this feature. And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
 ```
 microsoft/aspnet:4.7.1-windowsservercore-1709
 microsoft/windowsservercore:1709
@@ -51,9 +53,7 @@ D:\test>dir
 ```
 
 ### known issues of Azure disk on Windows feature
-1. The Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more PRs than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
-
-2. [Allow windows mount path on windows](https://github.com/kubernetes/kubernetes/pull/51240) is available from v.17.x, v1.8.3 or above
+1. [Allow windows mount path on windows](https://github.com/kubernetes/kubernetes/pull/51240) is available from v1.7.x, v1.8.3 or above, as a workaround, you could use linux style `mountPath`, e.g. `/mnt/`, this path will be converted into `c:/mnt/`
 
 #### Links
 [Azure Disk Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-disk)
