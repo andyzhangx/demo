@@ -73,7 +73,7 @@ docker: Error response from daemon: container b08d4e031b8203446aedf7cc81ea110ac5
 
 3. About k8s version on Windows node (deployed by acs-engine).
 
-k8s version on Windows node use https://github.com/Azure/kubernetes, while all Linux nodes(including master) use https://github.com/kubernetes/kubernetes.
+Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more features than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes), while all Linux nodes(including master) use  [upstream](https://github.com/kubernetes/kubernetes).
 
 4. How to check windows version in acs-engine template
 
