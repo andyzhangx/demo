@@ -47,14 +47,15 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 # Static Provisioning for azure disk
 #### 1. create an azure disk manually in the same resource group and modify `nginx-pod-azuredisk.yaml`
-##### unmanged disk
-```
-wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
-vi nginx-pod-azuredisk.yaml
-```
 ##### managed disk
 ```
 wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-mgrdisk.yaml
+vi nginx-pod-azuredisk.yaml
+```
+
+##### unmanged disk
+```
+wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
 vi nginx-pod-azuredisk.yaml
 ```
 
@@ -78,6 +79,9 @@ tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
+
+### known issues of Azure disk feature
+1. [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
 
 #### Links
 [Azure Disk Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-disk)
