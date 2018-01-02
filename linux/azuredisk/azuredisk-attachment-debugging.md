@@ -24,9 +24,9 @@ $ sudo lsscsi
 [3:0:0:2]    disk    Msft     Virtual Disk     1.0   /dev/sde
 ```
 
-#### Run `sudo df -aTH` to get all mounting info
+#### Run `sudo df -aTH | grep dev` to get all mounting info
 ```
-$ sudo df -aTH
+$ sudo df -aTH | grep dev
 Filesystem     Type        Size  Used Avail Use% Mounted on
 ...
 /dev/sdd       ext4         53G  867M   50G   2% /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/b3022915953
