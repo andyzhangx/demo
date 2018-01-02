@@ -1,0 +1,664 @@
+{
+  "node": {
+   "nodeName": "k8s-agentpool1-10841272-0",
+   "systemContainers": [
+    {
+     "name": "kubelet",
+     "startTime": "2018-01-02T02:47:42Z",
+     "cpu": {
+      "time": "2018-01-02T03:03:57Z",
+      "usageNanoCores": 28445042,
+      "usageCoreNanoSeconds": 24168574979
+     },
+     "memory": {
+      "time": "2018-01-02T03:03:57Z",
+      "usageBytes": 195407872,
+      "workingSetBytes": 195264512,
+      "rssBytes": 59199488,
+      "pageFaults": 164969,
+      "majorPageFaults": 0
+     },
+     "userDefinedMetrics": null
+    },
+    {
+     "name": "runtime",
+     "startTime": "2018-01-02T02:47:42Z",
+     "cpu": {
+      "time": "2018-01-02T03:03:57Z",
+      "usageNanoCores": 4062324,
+      "usageCoreNanoSeconds": 43153174784
+     },
+     "memory": {
+      "time": "2018-01-02T03:03:57Z",
+      "usageBytes": 1460396032,
+      "workingSetBytes": 167690240,
+      "rssBytes": 87101440,
+      "pageFaults": 278164,
+      "majorPageFaults": 0
+     },
+     "userDefinedMetrics": null
+    }
+   ],
+   "startTime": "2018-01-02T02:47:42Z",
+   "cpu": {
+    "time": "2018-01-02T03:03:51Z",
+    "usageNanoCores": 43968240,
+    "usageCoreNanoSeconds": 142697404309
+   },
+   "memory": {
+    "time": "2018-01-02T03:03:51Z",
+    "availableBytes": 6656348160,
+    "usageBytes": 2427203584,
+    "workingSetBytes": 637640704,
+    "rssBytes": 442368,
+    "pageFaults": 43618,
+    "majorPageFaults": 87
+   },
+   "network": {
+    "time": "2018-01-02T03:03:51Z",
+    "rxBytes": 442100829,
+    "rxErrors": 0,
+    "txBytes": 3691374,
+    "txErrors": 0
+   },
+   "fs": {
+    "time": "2018-01-02T03:03:51Z",
+    "availableBytes": 28047007744,
+    "capacityBytes": 31158935552,
+    "usedBytes": 3095150592,
+    "inodesFree": 3755259,
+    "inodes": 3840000,
+    "inodesUsed": 84741
+   },
+   "runtime": {
+    "imageFs": {
+     "time": "2018-01-02T03:03:51Z",
+     "availableBytes": 28047007744,
+     "capacityBytes": 31158935552,
+     "usedBytes": 1268954351,
+     "inodesFree": 3755259,
+     "inodes": 3840000,
+     "inodesUsed": 84741
+    }
+   }
+  },
+  "pods": [
+   {
+    "podRef": {
+     "name": "heapster-2375592546-2t3g5",
+     "namespace": "kube-system",
+     "uid": "55810424-ef68-11e7-b5f0-0017fa006d97"
+    },
+    "startTime": "2018-01-02T02:55:05Z",
+    "containers": [
+     {
+      "name": "heapster",
+      "startTime": "2018-01-02T02:55:06Z",
+      "cpu": {
+       "time": "2018-01-02T03:03:58Z",
+       "usageNanoCores": 144317,
+       "usageCoreNanoSeconds": 235836056
+      },
+      "memory": {
+       "time": "2018-01-02T03:03:58Z",
+       "availableBytes": 203177984,
+       "usageBytes": 10731520,
+       "workingSetBytes": 10731520,
+       "rssBytes": 10088448,
+       "pageFaults": 3825,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:03:58Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 49152,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 12
+      },
+      "logs": {
+       "time": "2018-01-02T03:03:58Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 20480,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     },
+     {
+      "name": "heapster-nanny",
+      "startTime": "2018-01-02T02:55:06Z",
+      "cpu": {
+       "time": "2018-01-02T03:04:02Z",
+       "usageNanoCores": 272494,
+       "usageCoreNanoSeconds": 197027684
+      },
+      "memory": {
+       "time": "2018-01-02T03:04:02Z",
+       "availableBytes": 88580096,
+       "usageBytes": 5791744,
+       "workingSetBytes": 5791744,
+       "rssBytes": 5206016,
+       "pageFaults": 2367,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:04:02Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 49152,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 12
+      },
+      "logs": {
+       "time": "2018-01-02T03:04:02Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 20480,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     }
+    ],
+    "network": {
+     "time": "2018-01-02T03:04:03Z",
+     "rxBytes": 1838000,
+     "rxErrors": 0,
+     "txBytes": 171162,
+     "txErrors": 0
+    },
+    "volume": [
+     {
+      "time": "2018-01-02T02:55:42Z",
+      "availableBytes": 3646980096,
+      "capacityBytes": 3646992384,
+      "usedBytes": 12288,
+      "inodesFree": 890370,
+      "inodes": 890379,
+      "inodesUsed": 9,
+      "name": "heapster-token-fqw6r"
+     }
+    ]
+   },
+   {
+    "podRef": {
+     "name": "kube-dns-v20-4120994333-8j26g",
+     "namespace": "kube-system",
+     "uid": "ecce7b67-ef67-11e7-b5f0-0017fa006d97"
+    },
+    "startTime": "2018-01-02T02:53:13Z",
+    "containers": [
+     {
+      "name": "dnsmasq",
+      "startTime": "2018-01-02T02:54:54Z",
+      "cpu": {
+       "time": "2018-01-02T03:04:01Z",
+       "usageNanoCores": 81005,
+       "usageCoreNanoSeconds": 216458385
+      },
+      "memory": {
+       "time": "2018-01-02T03:04:01Z",
+       "usageBytes": 6057984,
+       "workingSetBytes": 6053888,
+       "rssBytes": 5181440,
+       "pageFaults": 2749,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:04:01Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 57344,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 14
+      },
+      "logs": {
+       "time": "2018-01-02T03:04:01Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 20480,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     },
+     {
+      "name": "healthz",
+      "startTime": "2018-01-02T02:55:10Z",
+      "cpu": {
+       "time": "2018-01-02T03:03:57Z",
+       "usageNanoCores": 1474090,
+       "usageCoreNanoSeconds": 756036758
+      },
+      "memory": {
+       "time": "2018-01-02T03:03:57Z",
+       "availableBytes": 46424064,
+       "usageBytes": 6004736,
+       "workingSetBytes": 6004736,
+       "rssBytes": 4829184,
+       "pageFaults": 66894,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:03:57Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 49152,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 12
+      },
+      "logs": {
+       "time": "2018-01-02T03:03:57Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 16384,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     },
+     {
+      "name": "kubedns",
+      "startTime": "2018-01-02T02:53:49Z",
+      "cpu": {
+       "time": "2018-01-02T03:04:03Z",
+       "usageNanoCores": 603172,
+       "usageCoreNanoSeconds": 415788951
+      },
+      "memory": {
+       "time": "2018-01-02T03:04:03Z",
+       "availableBytes": 170295296,
+       "usageBytes": 7962624,
+       "workingSetBytes": 7962624,
+       "rssBytes": 7241728,
+       "pageFaults": 2752,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:04:03Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 53248,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 13
+      },
+      "logs": {
+       "time": "2018-01-02T03:04:03Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 24576,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     }
+    ],
+    "network": {
+     "time": "2018-01-02T03:03:50Z",
+     "rxBytes": 412389,
+     "rxErrors": 0,
+     "txBytes": 120421,
+     "txErrors": 0
+    },
+    "volume": [
+     {
+      "time": "2018-01-02T02:53:42Z",
+      "availableBytes": 3646980096,
+      "capacityBytes": 3646992384,
+      "usedBytes": 12288,
+      "inodesFree": 890370,
+      "inodes": 890379,
+      "inodesUsed": 9,
+      "name": "kube-dns-token-dw54w"
+     }
+    ]
+   },
+   {
+    "podRef": {
+     "name": "kubernetes-dashboard-1028809007-015wx",
+     "namespace": "kube-system",
+     "uid": "ed2f08e0-ef67-11e7-b5f0-0017fa006d97"
+    },
+    "startTime": "2018-01-02T02:53:14Z",
+    "containers": [
+     {
+      "name": "kubernetes-dashboard",
+      "startTime": "2018-01-02T02:54:44Z",
+      "cpu": {
+       "time": "2018-01-02T03:03:53Z",
+       "usageNanoCores": 119304,
+       "usageCoreNanoSeconds": 227600247
+      },
+      "memory": {
+       "time": "2018-01-02T03:03:53Z",
+       "usageBytes": 19955712,
+       "workingSetBytes": 19955712,
+       "rssBytes": 19238912,
+       "pageFaults": 5946,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:03:53Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 49152,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 12
+      },
+      "logs": {
+       "time": "2018-01-02T03:03:53Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 20480,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     }
+    ],
+    "network": {
+     "time": "2018-01-02T03:03:58Z",
+     "rxBytes": 37500,
+     "rxErrors": 0,
+     "txBytes": 60384,
+     "txErrors": 0
+    },
+    "volume": [
+     {
+      "time": "2018-01-02T02:53:42Z",
+      "availableBytes": 3646980096,
+      "capacityBytes": 3646992384,
+      "usedBytes": 12288,
+      "inodesFree": 890370,
+      "inodes": 890379,
+      "inodesUsed": 9,
+      "name": "kubernetes-dashboard-token-zkvtb"
+     }
+    ]
+   },
+   {
+    "podRef": {
+     "name": "tiller-deploy-3087232647-wts0q",
+     "namespace": "kube-system",
+     "uid": "ec8057dd-ef67-11e7-b5f0-0017fa006d97"
+    },
+    "startTime": "2018-01-02T02:53:12Z",
+    "containers": [
+     {
+      "name": "tiller",
+      "startTime": "2018-01-02T02:53:32Z",
+      "cpu": {
+       "time": "2018-01-02T03:03:45Z",
+       "usageNanoCores": 136146,
+       "usageCoreNanoSeconds": 206746141
+      },
+      "memory": {
+       "time": "2018-01-02T03:03:45Z",
+       "availableBytes": 147075072,
+       "usageBytes": 10211328,
+       "workingSetBytes": 10211328,
+       "rssBytes": 9527296,
+       "pageFaults": 3772,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:03:45Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 49152,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 12
+      },
+      "logs": {
+       "time": "2018-01-02T03:03:45Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 20480,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     }
+    ],
+    "network": {
+     "time": "2018-01-02T03:03:58Z",
+     "rxBytes": 66702,
+     "rxErrors": 0,
+     "txBytes": 58794,
+     "txErrors": 0
+    },
+    "volume": [
+     {
+      "time": "2018-01-02T02:53:42Z",
+      "availableBytes": 3646980096,
+      "capacityBytes": 3646992384,
+      "usedBytes": 12288,
+      "inodesFree": 890370,
+      "inodes": 890379,
+      "inodesUsed": 9,
+      "name": "tiller-token-65xn9"
+     }
+    ]
+   },
+   {
+    "podRef": {
+     "name": "kube-proxy-2f5qm",
+     "namespace": "kube-system",
+     "uid": "f970e914-ef67-11e7-b5f0-0017fa006d97"
+    },
+    "startTime": "2018-01-02T02:52:35Z",
+    "containers": [
+     {
+      "name": "kube-proxy",
+      "startTime": "2018-01-02T02:52:35Z",
+      "cpu": {
+       "time": "2018-01-02T03:03:50Z",
+       "usageNanoCores": 1007725,
+       "usageCoreNanoSeconds": 1471004004
+      },
+      "memory": {
+       "time": "2018-01-02T03:03:50Z",
+       "usageBytes": 21209088,
+       "workingSetBytes": 21209088,
+       "rssBytes": 2060288,
+       "pageFaults": 7637,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:03:50Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 65536,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 18
+      },
+      "logs": {
+       "time": "2018-01-02T03:03:50Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 20480,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     }
+    ],
+    "network": {
+     "time": "2018-01-02T03:03:56Z",
+     "rxBytes": 442180681,
+     "rxErrors": 0,
+     "txBytes": 3720032,
+     "txErrors": 0
+    },
+    "volume": [
+     {
+      "time": "2018-01-02T02:52:42Z",
+      "availableBytes": 3646980096,
+      "capacityBytes": 3646992384,
+      "usedBytes": 12288,
+      "inodesFree": 890370,
+      "inodes": 890379,
+      "inodesUsed": 9,
+      "name": "default-token-8g38j"
+     }
+    ]
+   },
+   {
+    "podRef": {
+     "name": "kube-dns-v20-4120994333-stlsf",
+     "namespace": "kube-system",
+     "uid": "eccf05cf-ef67-11e7-b5f0-0017fa006d97"
+    },
+    "startTime": "2018-01-02T02:53:13Z",
+    "containers": [
+     {
+      "name": "healthz",
+      "startTime": "2018-01-02T02:55:12Z",
+      "cpu": {
+       "time": "2018-01-02T03:04:00Z",
+       "usageNanoCores": 1602171,
+       "usageCoreNanoSeconds": 784010721
+      },
+      "memory": {
+       "time": "2018-01-02T03:04:00Z",
+       "availableBytes": 46501888,
+       "usageBytes": 5926912,
+       "workingSetBytes": 5926912,
+       "rssBytes": 4849664,
+       "pageFaults": 67430,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:04:00Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 49152,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 12
+      },
+      "logs": {
+       "time": "2018-01-02T03:04:00Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 16384,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     },
+     {
+      "name": "dnsmasq",
+      "startTime": "2018-01-02T02:55:05Z",
+      "cpu": {
+       "time": "2018-01-02T03:03:48Z",
+       "usageNanoCores": 61735,
+       "usageCoreNanoSeconds": 216385822
+      },
+      "memory": {
+       "time": "2018-01-02T03:03:48Z",
+       "usageBytes": 8122368,
+       "workingSetBytes": 8118272,
+       "rssBytes": 7344128,
+       "pageFaults": 2995,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:03:48Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 57344,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 14
+      },
+      "logs": {
+       "time": "2018-01-02T03:03:48Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 20480,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     },
+     {
+      "name": "kubedns",
+      "startTime": "2018-01-02T02:54:06Z",
+      "cpu": {
+       "time": "2018-01-02T03:04:00Z",
+       "usageNanoCores": 596989,
+       "usageCoreNanoSeconds": 437114977
+      },
+      "memory": {
+       "time": "2018-01-02T03:04:00Z",
+       "availableBytes": 170311680,
+       "usageBytes": 7946240,
+       "workingSetBytes": 7946240,
+       "rssBytes": 7245824,
+       "pageFaults": 2826,
+       "majorPageFaults": 0
+      },
+      "rootfs": {
+       "time": "2018-01-02T03:04:00Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 53248,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 13
+      },
+      "logs": {
+       "time": "2018-01-02T03:04:00Z",
+       "availableBytes": 28047007744,
+       "capacityBytes": 31158935552,
+       "usedBytes": 24576,
+       "inodesFree": 3755259,
+       "inodes": 3840000,
+       "inodesUsed": 84741
+      },
+      "userDefinedMetrics": null
+     }
+    ],
+    "network": {
+     "time": "2018-01-02T03:03:52Z",
+     "rxBytes": 405167,
+     "rxErrors": 0,
+     "txBytes": 119402,
+     "txErrors": 0
+    },
+    "volume": [
+     {
+      "time": "2018-01-02T02:53:42Z",
+      "availableBytes": 3646980096,
+      "capacityBytes": 3646992384,
+      "usedBytes": 12288,
+      "inodesFree": 890370,
+      "inodes": 890379,
+      "inodesUsed": 9,
+      "name": "kube-dns-token-dw54w"
+     }
+    ]
+   }
+  ]
+ }
