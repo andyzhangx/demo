@@ -36,7 +36,7 @@ Note: value of `Support on Windows` is empty means I don't have a chance to vali
 | glusterfs | No |  | Windows doesn't have a native GlusterFS client, could use NFS instead |
 | hostpath | Yes | [hostpath](https://github.com/andyzhangx/Demo/tree/master/windows/hostpath) |  |
 | iscsi | No |  | Windows container does not support iSCSI symbolic link: [Enable iSCSI volume on Windows](https://github.com/kubernetes/kubernetes/issues/57548) |
-| local |  |  | It's alpha in k8s v1.9 |
+| local |  |  | It's alpha in k8s v1.9, [Local Persistent Storage User Guide](https://github.com/kubernetes-incubator/external-storage/tree/master/local-volume) |
 | nfs | No | | Pending: there is no NFSv4 client support on Windows now, see: [add NFS volume support for windows](https://github.com/kubernetes/kubernetes/issues/56188)  |
 | PortworxVolume |  |  |  |
 | projected |  |  |  |
