@@ -103,6 +103,9 @@ https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class
 ### Q: How to delete the pod by force?
 ```kubectl delete pod PODNAME --grace-period=0 --force```
 
+### Assign a Public IP to a VM in Azure portal
+Click under network\network interface\ip config\enable public IP address
+
 ## Advanced skills
 ### Q: How to open feature gate in kubernetes on azure?
 Take [Growing Persistent Volume size](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/storage/grow-volume-size.md) as an example:
