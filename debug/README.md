@@ -37,7 +37,7 @@ vi $id.log
 
 ### Q: How to get k8s kubelet logs on linux agent?
 Prerequisite:
-assign a public ip to the agent in azure portal and use ssh client to connect to that agent. (only for debugging purpose)
+[assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use ssh client to connect to that agent. (only for debugging purpose)
 1. get the "CONTAINER ID" of "/hyperkube kubelet"
 ```
 docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'
@@ -55,7 +55,7 @@ vi $id.log
 
 ### Q: How to get k8s kubelet logs on Windows agent?
 Prerequisite:
-assign a public ip to the agent in azure portal and use RDP to connect to that agent. (only for debugging purpose)
+[assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use RDP to connect to that agent. (only for debugging purpose)
 
 1. open a powershell window
 ```
@@ -97,8 +97,7 @@ first edit below file, set the `default` class as false:
 ```
 sudo vi /etc/kubernetes/addons/azure-storage-classes.yaml
 ```
-And then follow below guide to set the default class:
-https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
+And then follow this [guide](https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/) to set the default class:
 
 ### Q: How to delete the pod by force?
 ```kubectl delete pod PODNAME --grace-period=0 --force```
