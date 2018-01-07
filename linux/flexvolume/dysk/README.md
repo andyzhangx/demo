@@ -7,7 +7,7 @@ kubectl create secret generic dyskcreds --from-literal accountname=USERNAME --fr
 ```
 sudo mkdir -p /etc/kubernetes/volumeplugins/foo~dysk
 cd /etc/kubernetes/volumeplugins/foo~dysk
-sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk
+sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/dysk
 sudo chmod a+x dysk
 ```
 #### Note:
@@ -25,7 +25,7 @@ sudo systemctl restart kubelet
 ```
 
 ## 4. create a pod with flexvolume-dysk mount on linux
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flexvolume-dysk.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/nginx-flexvolume-dysk.yaml
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po nginx-flexvolume-dysk
@@ -66,7 +66,6 @@ Which means your [FlexVolume driver does not need Master-initiated Attach/Detach
 MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-secret
 ```
 
-2. You will get `Host down` error if you don't specify the dysk version
 
 ### Links
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
