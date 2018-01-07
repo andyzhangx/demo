@@ -22,7 +22,7 @@ sudo systemctl restart kubelet
 ```
 
 ## 4. create a pod with flexvolume-cifs mount on linux
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flexvolume-cifs.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flex-cifs.yaml
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po nginx-flexvolume-cifs
