@@ -1,6 +1,6 @@
 ## 1. create a secret which stores dysk account name and password
 ```
-kubectl create secret generic dyskcreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="foo/dysk"
+kubectl create secret generic dyskcreds --from-literal accountname=USERNAME --from-literal accountkey="PASSWORD" --type="foo/dysk"
 ```
 
 ## 2. install flex volume driver on every linux agent node
@@ -11,7 +11,10 @@ sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvol
 sudo chmod a+x dysk
 ```
 #### Note:
-Make sure `jq` package is installed on every node.
+Make sure `jq` package is installed on every node: 
+```
+sudo apt install jq -y
+```
 
 ## 3. specify `volume-plugin-dir` in kubelet service config
 ```
