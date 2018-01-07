@@ -19,6 +19,7 @@ sudo apt install jq -y
 ## 3. specify `volume-plugin-dir` in kubelet service config
 ```
 sudo vi /etc/systemd/system/kubelet.service
+  --volume=/etc/kubernetes/volumeplugins:/etc/kubernetes/volumeplugins:rw \
         --volume-plugin-dir=/etc/kubernetes/volumeplugins \
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
