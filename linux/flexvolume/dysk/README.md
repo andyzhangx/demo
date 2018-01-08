@@ -33,6 +33,8 @@ sudo vi /etc/systemd/system/kubelet.service
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
+Note:
+`/etc/kubernetes/volumeplugins` will be default flexvolume plugin directory in acs-engine, there is a PR [change flexvolume plugin dir to /etc/kubernetes/volumeplugins in Linux](https://github.com/Azure/acs-engine/pull/1991) to address this.
 
 ## 4. create a pod with flexvolume-dysk mount on linux
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/nginx-flex-dysk.yaml
