@@ -16,5 +16,5 @@ spec:
       secretRef:
         name: cifscreds	
       options:
-        source: "//andytestx.file.core.windows.net/k8stest"
+        source: "//STORAGE-ACCOUNT.file.core.windows.net/SHARE-NAME"
         mountOptions: "vers=3.0,dir_mode=0700,file_mode=0600"
