@@ -50,7 +50,7 @@ Filesystem         Size  Used Avail Use% Mounted on
 overlay            291G  3.9G  287G   2% /
 tmpfs              3.4G     0  3.4G   0% /dev
 tmpfs              3.4G     0  3.4G   0% /sys/fs/cgroup
-/dev/dyskGdPdBUiF  2.0G  3.0M  1.9G   1% /data
+/dev/dyskI7cFTURv  5.8G   12M  5.5G   1% /data
 /dev/sda1          291G  3.9G  287G   2% /etc/hosts
 shm                 64M     0   64M   0% /dev/shm
 tmpfs              3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
@@ -80,3 +80,5 @@ MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
 
 More clear steps about flexvolume by Redhat doc: [Persistent Storage Using FlexVolume Plug-ins](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html)
+
+[dysk](https://github.com/khenidak/dysk)
