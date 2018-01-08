@@ -21,7 +21,7 @@
 DIR=$(dirname "$(readlink -f "$0")")
 JQ="/usr/bin/jq"
 DYSKCTL=$DIR/dyskctl
-ERRORLOG="/tmp/dysk.err.log"
+ERRORLOG="/var/log/dysk.err.log"
 
 usage() {
 	err "Invalid usage. Usage: "
@@ -89,7 +89,7 @@ unmount() {
 	MNTPATH="$1"
 	
 	#find device name
-	devname=`findmnt -n ${MNTPATH} 2>/dev/null -J | "$JQ" -r '.filesystems' | "$JQ" '.[0]' | "$JQ" -r '.source'`
+	devname=`findmnt -n -o SOURCE ${MNTPATH}`
 	if [ ${#devname} -lt 5 ]; then
 		log '{"status": "Success"}'
 		exit 0
