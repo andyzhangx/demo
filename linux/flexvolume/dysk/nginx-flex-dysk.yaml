@@ -1,152 +1,19 @@
-#!/bin/bash
-
-# Credits: taken and fixed from
-# http://stackoverflow.com/questions/38120916/kubernetes-flexvolume-plugin-for-cifs
-
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#	 http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# Notes:
-#  - Please install "jq" package before using this driver.
-DIR=$(dirname "$(readlink -f "$0")")
-JQ="/usr/bin/jq"
-DYSKCTL=$DIR/dyskctl
-ERRORLOG="/tmp/dysk.err.log"
-
-usage() {
-	err "Invalid usage. Usage: "
-	err "\t$0 init"
-	err "\t$0 mount <mount dir> <json params>"
-	err "\t$0 unmount <mount dir>"
-	exit 1
-}
-
-err() {
-	echo $* 1>&2
-}
-
-log() {
-	echo $* >&1
-}
-
-ismounted() {
-	MOUNT=`findmnt -n ${MNTPATH} 2>/dev/null | cut -d' ' -f1`
-	[ "${MOUNT}" == "${MNTPATH}" ]
-}
-
-mount() {
-	MNTPATH="$1"
-	ACCOUNTNAME=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/accountname"] // empty'|base64 -d)
-	ACCOUNTKEY=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/accountkey"] // empty'|base64 -d)
-	#READ_MODE=$(echo "$2"|"$JQ" -r '.["kubernetes.io/readwrite"]')
-	#MOUNT_OPTIONS=$(echo "$2"|"$JQ" -r '.mountOptions // empty')
-		
-	if ismounted ; then
-		log '{"status": "Success"}'
-		exit 0
-	fi
-
-	mkdir -p ${MNTPATH} >/dev/null 2>$ERRORLOG
-
-	result=`"$DYSKCTL" mount auto-create -a "${ACCOUNTNAME}" -k "${ACCOUNTKEY}"  -o json 2>"${ERRORLOG}"`
-	diskname=`echo $result | "jq" -r '.Name'`
-	if [ ${#diskname} -lt 5 ]; then
-		errorLog=`cat "${ERRORLOG}"`
-		err '{ "status": "Failure", "message": "Failed to dyskctl mount auto-create, mountPath:'${MNTPATH}', accountname:'${ACCOUNTNAME}', error log:'${errorLog}''
-		exit 1
-	fi
-	
-	#TODO make fileType(ext4) as a parameter
-	mkfs.ext4 /dev/$diskname >/dev/null 2>$ERRORLOG
-	if [ $? -ne 0 ]; then
-		errorLog=`cat "${ERRORLOG}"`
-		err '{ "status": "Failure", "message": "Failed to format device /dev/$'${diskname}', mountPath:'${MNTPATH}', accountname:'${ACCOUNTNAME}', error log:'${errorLog}''
-		exit 1
-	fi
-	
-	/bin/mount /dev/$diskname "${MNTPATH}" >/dev/null 2>$ERRORLOG
-	if [ $? -ne 0 ]; then
-		errorLog=`cat "${ERRORLOG}"`
-		err '{ "status": "Failure", "message": "Failed to mount device /dev/$'${diskname}' at '${MNTPATH}', accountname:'${ACCOUNTNAME}', error log:'${errorLog}''
-		exit 1
-	fi
-	log '{"status": "Success"}'
-	exit 0
-}
-
-unmount() {
-	MNTPATH="$1"
-	if ! ismounted ; then
-		log '{"status": "Success"}'
-		exit 0
-	fi
-	
-	#find device name
-	devname=`findmnt -n ${MNTPATH} 2>/dev/null -J | "$JQ" -r '.filesystems' | "$JQ" '.[0]' | "$JQ" -r '.source'`
-	if [ ${#devname} -lt 5 ]; then
-		err '{ "status": "Failure", "message": "Failed to find device name according to mountPath: '${MNTPATH}', returned device name: '${devname}''
-		exit 1
-	fi
-	
-	diskname=`echo $diskname | cut -d'/' -f3`
-	if [ ${#devname} -lt 5 ]; then
-		err '{ "status": "Failure", "message": "Failed to parse disk name according to mountPath: '${MNTPATH}', returned disk name: '${devname}''
-		exit 1
-	fi	
-	
-	umount "${MNTPATH}" >/dev/null 2>$ERRORLOG
-	if [ $? -ne 0 ]; then
-		errorLog=`cat "${ERRORLOG}"`
-		err '{ "status": "Failed", "message": "Failed to unmount volume at '${MNTPATH}'"}, error log:'${errorLog}''
-		exit 1
-	fi
-	rmdir "${MNTPATH}" >/dev/null 2>$ERRORLOG
-
-	$DYSKCTL unmount -d $diskname >/dev/null 2>$ERRORLOG
-	if [ $? -ne 0 ]; then
-		errorLog=`cat "${ERRORLOG}"`
-		err '{ "status": "Failed", "message": "Failed to dyskctl unmount disk('${diskname}')", error log: '${errorLog}'}, error log:'${errorLog}''
-		exit 1
-	fi	
-	
-	log '{"status": "Success"}'
-	exit 0
-}
-
-op=$1
-
-if [ "$op" = "init" ]; then
-	log '{"status": "Success", "capabilities": {"attach": false}}'
-	exit 0
-fi
-
-if [ $# -lt 2 ]; then
-	usage
-fi
-
-shift
-
-case "$op" in
-	mount)
-		mount $*
-		;;			
-	unmount)
-		unmount $*
-		;;
-	*)
-	usage
-esac
-
-exit 1
-
-
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-flex-dysk
+spec:
+  containers:
+  - name: nginx-flex-dysk
+    image: nginx
+    volumeMounts:
+    - name: test
+      mountPath: /data
+  volumes:
+  - name: test
+    flexVolume:
+      driver: "foo/dysk"
+      secretRef:
+        name: dyskcreds
+      options:
+        size: "5"
