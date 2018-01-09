@@ -20,6 +20,12 @@ run `docker ps -a` to get all containers, if there is any stopped container, usi
 `docker ps CONTAINER-ID > CONTAINER-ID.log 2>&1 &`
 
 ##### Q: Get controller manager logs on master
+Option#1:
+```
+kubectl logs `kubectl get po --all-namespaces | grep controller-manager | cut -d ' ' -f4` --namespace=kube-system
+```
+
+Option#2:
 1. get the "CONTAINER ID" of "/hyperkube controlle"
 ```
 docker ps -a | grep "hyperkube controlle" | awk -F ' ' '{print $1}'
