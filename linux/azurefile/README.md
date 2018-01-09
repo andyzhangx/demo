@@ -46,7 +46,7 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
 
-2. To specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster, if you are using AKS, the specified storage account should be in `shadow resource group`(begin with `MC_`) which contains all resources of your aks cluster. 
+2. To specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster, if you are using AKS, the specified storage account should be in `shadow resource group`(naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`) which contains all resources of your aks cluster. 
 
 # Static Provisioning for azure file in Linux (support from v1.5.0)
 kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file, only static provisioning is supported for azure file which means a storage account should be created before using azure file mount feature.
