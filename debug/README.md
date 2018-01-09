@@ -22,7 +22,7 @@ run `docker ps -a` to get all containers, if there is any stopped container, usi
 ##### Q: Get controller manager logs on master
 Option#1:
 ```
-kubectl logs `kubectl get po --all-namespaces | grep controller-manager | cut -d ' ' -f4` --namespace=kube-system
+kubectl logs `kubectl get po --all-namespaces | grep controller-manager | cut -d ' ' -f4` --namespace=kube-system >> controller-manager.log
 ```
 
 Option#2:
