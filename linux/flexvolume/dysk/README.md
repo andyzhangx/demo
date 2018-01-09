@@ -40,10 +40,10 @@ Note:
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/nginx-flex-dysk.yaml
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
-watch kubectl describe po nginx-flex-dysk
+```watch kubectl describe po nginx-flex-dysk```
 
 ## 5. enter the pod container to do validation
-kubectl exec -it nginx-flex-dysk -- bash
+```kubectl exec -it nginx-flex-dysk -- bash```
 
 ```
 azureuser@k8s-master-77890142-0:~$ kubectl exec -it nginx-flex-dysk -- bash
@@ -86,4 +86,4 @@ MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-
 
 More clear steps about flexvolume by Redhat doc: [Persistent Storage Using FlexVolume Plug-ins](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html)
 
-[dysk](https://github.com/khenidak/dysk)
+[dysk - Fast kernel-mode mount/unmount of AzureDisk](https://github.com/khenidak/dysk)
