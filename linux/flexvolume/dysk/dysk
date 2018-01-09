@@ -47,14 +47,15 @@ mount() {
 	#READ_MODE=$(echo "$2"|"$JQ" -r '.["kubernetes.io/readwrite"]')
 	SIZE=$(echo "$2"|"$JQ" -r '.size // empty')
 		
-	MOUNT=`findmnt -n ${MNTPATH} 2>/dev/null | cut -d' ' -f1`
-	if [ "${MOUNT}" = "${MNTPATH}" ]; then
+	if ismounted ; then
 		log '{"status": "Success"}'
 		exit 0
 	fi
 
-	mkdir -p ${MNTPATH} >/dev/null 2>$ERRORLOG
+	echo "begin to mkdir -p ${MNTPATH}" >>$ERRORLOG
+	mkdir -p ${MNTPATH} >>$ERRORLOG 2>&1
 
+	echo "begin to "${DYSKCTL}" mount auto-create -a "${ACCOUNTNAME}" -k ... -n "${SIZE}"" >>$ERRORLOG
 	result=`"$DYSKCTL" mount auto-create -a "${ACCOUNTNAME}" -k "${ACCOUNTKEY}" -n "${SIZE}" -o json 2>"${ERRORLOG}"`
 	diskname=`echo $result | "jq" -r '.Name'`
 	if [ ${#diskname} -lt 5 ]; then
@@ -64,14 +65,16 @@ mount() {
 	fi
 	
 	#TODO make fileType(ext4) as a parameter
-	mkfs.ext4 /dev/$diskname >/dev/null 2>$ERRORLOG
+	echo "begin to mkfs.ext4 /dev/${diskname}" >>$ERRORLOG
+	mkfs.ext4 /dev/$diskname >>$ERRORLOG 2>&1
 	if [ $? -ne 0 ]; then
 		errorLog=`cat "${ERRORLOG}"`
 		err '{ "status": "Failure", "message": "Failed to format device /dev/$'${diskname}', mountPath:'${MNTPATH}', accountname:'${ACCOUNTNAME}', error log:'${errorLog}''
 		exit 1
 	fi
 	
-	/bin/mount /dev/$diskname "${MNTPATH}" >/dev/null 2>$ERRORLOG
+	echo "begin to /bin/mount /dev/${diskname} "${MNTPATH}"" >>$ERRORLOG
+	/bin/mount /dev/$diskname "${MNTPATH}" >>$ERRORLOG 2>&1
 	if [ $? -ne 0 ]; then
 		errorLog=`cat "${ERRORLOG}"`
 		err '{ "status": "Failure", "message": "Failed to mount device /dev/$'${diskname}' at '${MNTPATH}', accountname:'${ACCOUNTNAME}', error log:'${errorLog}''
@@ -83,29 +86,37 @@ mount() {
 
 unmount() {
 	MNTPATH="$1"
+
+	if ! ismounted ; then
+		log '{"status": "Success"}'
+		exit 0
+	fi
 	
+	echo "begin to find ${MNTPATH}" >>$ERRORLOG
 	#find device name
 	devname=`findmnt -n -o SOURCE ${MNTPATH}`
 	if [ ${#devname} -lt 5 ]; then
 		log '{"status": "Success"}'
 		exit 0
 	fi
+
+	echo "begin to umount $MNTPATH, devname: $devname" >>$ERRORLOG
+	/bin/umount $MNTPATH >>$ERRORLOG 2>&1
+	if [ $? -ne 0 ]; then
+		errorLog=`cat "${ERRORLOG}"`
+		err '{ "status": "Failed", "message": "Failed to unmount volume at '${MNTPATH}'"}, error log:'${errorLog}''
+		exit 1
+	fi
+	rmdir "${MNTPATH}" >>$ERRORLOG 2>&1
 	
 	diskname=`echo $devname | cut -d '/' -f3`
 	if [ ${#diskname} -lt 5 ]; then
 		err '{ "status": "Failure", "message": "Failed to parse disk name according to devname('${devname}'), returned disk name: '${diskname}, mountPath: '${MNTPATH}'''
 		exit 1
 	fi	
-	
-	umount "${MNTPATH}" >/dev/null 2>$ERRORLOG
-	if [ $? -ne 0 ]; then
-		errorLog=`cat "${ERRORLOG}"`
-		err '{ "status": "Failed", "message": "Failed to unmount volume at '${MNTPATH}'"}, error log:'${errorLog}''
-		exit 1
-	fi
-	rmdir "${MNTPATH}" >/dev/null 2>$ERRORLOG
 
-	$DYSKCTL unmount -d $diskname >/dev/null 2>$ERRORLOG
+	echo "begin to $DYSKCTL unmount -d $diskname" >>$ERRORLOG
+	$DYSKCTL unmount -d $diskname >>$ERRORLOG 2>&1
 	if [ $? -ne 0 ]; then
 		errorLog=`cat "${ERRORLOG}"`
 		err '{ "status": "Failed", "message": "Failed to dyskctl unmount disk('${diskname}')", error log: '${errorLog}'}, error log:'${errorLog}''
