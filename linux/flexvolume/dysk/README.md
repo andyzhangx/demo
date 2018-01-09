@@ -25,7 +25,7 @@ Make sure `jq` package is installed on every node:
 sudo apt install jq -y
 ```
 
-## 3. specify `volume-plugin-dir` in kubelet service config
+## 3. specify `volume-plugin-dir` in kubelet service config (skip this step from acs-engine v0.12.0)
 ```
 sudo vi /etc/systemd/system/kubelet.service
   --volume=/etc/kubernetes/volumeplugins:/etc/kubernetes/volumeplugins:rw \
@@ -34,7 +34,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
 Note:
-`/etc/kubernetes/volumeplugins` will be default flexvolume plugin directory in acs-engine, there is a PR [change flexvolume plugin dir to /etc/kubernetes/volumeplugins in Linux](https://github.com/Azure/acs-engine/pull/1991) to address this.
+`/etc/kubernetes/volumeplugins` has already been the default flexvolume plugin directory in acs-engine (starting from v0.12.0)
 
 ## 4. create a pod with flexvolume-dysk mount on linux
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/nginx-flex-dysk.yaml
