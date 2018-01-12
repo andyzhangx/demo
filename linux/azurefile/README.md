@@ -109,5 +109,7 @@ root@nginx-azurefile:/# mount | grep cifs
 
 [Azure Files scale targets](https://docs.microsoft.com/en-us/azure/storage/common/storage-scalability-targets#azure-files-scale-targets)
 
+[Persistent volumes with Azure files - dynamic provisioning](https://docs.microsoft.com/en-us/azure/aks/azure-files-dynamic-pv)
+
 [Using Azure Files with Kubernetes](https://docs.microsoft.com/en-us/azure/aks/azure-files)
 
