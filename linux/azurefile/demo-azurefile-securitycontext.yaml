@@ -1,0 +1,21 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: demo-azurefile-securitycontext
+spec:
+  securityContext:
+    runAsUser: 0
+  containers:
+  - image: gcr.io/google-samples/node-hello:1.0
+    name: demo-azurefile-securitycontext
+    command:
+    - "/bin/sh"
+    - "-c"
+    - while true; do echo $(date) >> /mnt/blobfile/outfile; sleep 1; done
+    volumeMounts:
+    - name: blobfile01
+      mountPath: "/mnt/blobfile"
+  volumes:
+  - name: blobfile01
+    persistentVolumeClaim:
+      claimName: pvc-azurefile
