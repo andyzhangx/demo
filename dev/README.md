@@ -104,6 +104,10 @@ Other:
 /var/lib/kubelet/pods/26a3137c-d4e5-11e7-bc95-000d3a041274/plugins/kubernetes.io~empty-dir
 ```
 
+### Clean disk space on Windows
+```
+rm -Recurse -Force C:\Windows\Temp\*
+```
 
 #### Links
 [How to update hyperkube image directly in k8s master](https://github.com/andyzhangx/Demo/blob/master/dev/update-hyperkube.md)
