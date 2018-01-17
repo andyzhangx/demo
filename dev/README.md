@@ -107,3 +107,5 @@ Other:
 
 #### Links
 [How to update hyperkube image directly in k8s master](https://github.com/andyzhangx/Demo/blob/master/dev/update-hyperkube.md)
+
+[Azure subscription and service limits, quotas, and constraints](https://docs.microsoft.com/en-us/azure/azure-subscription-service-limits)
