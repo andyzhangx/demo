@@ -85,6 +85,8 @@ open file _output/`dnsPrefix`/azuredeploy.json under acs-engine:
 ```
 
 ##### Links
+[Using Windows Server Containers in Kubernetes](https://kubernetes.io/docs/getting-started-guides/windows/)
+
 [Microsoft Azure Container Service Engine - Kubernetes Windows Walkthrough](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
 
 [Windows Server version 1709](https://docs.microsoft.com/en-us/windows-server/get-started/whats-new-in-windows-server-1709)
