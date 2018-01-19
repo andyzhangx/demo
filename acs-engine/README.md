@@ -15,7 +15,7 @@ watch kubectl get storageclass
 
 ### Change `/var/lib/docker` to `/mnt` which has 100GB disk space
 **Attention**:
-Before stopping your container data, you need to make sure there is no important running containers on your host, in k8s, you could run `kubectl drain NODE-NAME` to move all pods to other nodes.
+Before stopping your container service, you need to make sure there is no important running containers on your host, in k8s, you could run `kubectl drain NODE-NAME` to move all pods to other nodes.
 
 1. Move docker data in `/var/lib/docker` to `/mnt`
 ```
