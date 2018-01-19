@@ -8,13 +8,13 @@ kubectl create secret generic dyskcreds --from-literal accountname=USERNAME --fr
 ```
 sudo mkdir -p /etc/kubernetes/volumeplugins/foo~dysk
 cd /etc/kubernetes/volumeplugins/foo~dysk
-sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/dysk
+sudo wget -O dysk https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/dysk
 sudo chmod a+x dysk
 
-sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/4.11.0-1016-azure/dysk.ko
+sudo wget -O dysk.ko https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/4.11.0-1015-azure/dysk.ko
 sudo insmod dysk.ko
 sudo lsmod | grep dysk
-sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/4.11.0-1016-azure/dyskctl
+sudo wget -O dyskctl https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/4.11.0-1016-azure/dyskctl
 sudo chmod a+x dyskctl
 sudo ./dyskctl list
 ```
