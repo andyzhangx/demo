@@ -1,0 +1,32 @@
+apiVersion: "apps/v1beta1"
+kind: StatefulSet
+metadata:
+  name: statefulset-azurefile
+  labels:
+    k8s-app: azurefile
+    version: v1
+spec:
+  serviceName: statefulset-azurefile
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: azurefile
+        version: v1
+    spec:
+      containers:
+      - name: statefulset-azurefile
+        image: nginx
+        volumeMounts:
+        - name: persistent-storage
+          mountPath: /mnt/azurefile
+  volumeClaimTemplates:
+  - metadata:
+      name: persistent-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: azurefile
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      resources:
+        requests:
+          storage: 5Gi
