@@ -18,4 +18,5 @@
 ```kubectl exec -it statefulset-azuredisk-0 -- bash```
 
 ### Note:
-azure disk only support RWO, so only one replica is allowed for a stateful set with azure disk mount
+1. azure disk only supports RWO, so only one replica is allowed for a stateful set with azure disk mount
+2. azure file supports RWX, multiple replicas are allowed for a stateful set with azure file mount
