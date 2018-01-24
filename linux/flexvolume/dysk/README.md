@@ -11,10 +11,10 @@ cd /etc/kubernetes/volumeplugins/foo~dysk
 sudo wget -O dysk https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/dysk
 sudo chmod a+x dysk
 
-sudo wget -O dysk.ko https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/4.11.0-1015-azure/dysk.ko
+sudo wget -O dysk.ko https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/4.13.0-1005-azure/dysk.ko
 sudo insmod dysk.ko
 sudo lsmod | grep dysk
-sudo wget -O dyskctl https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/4.11.0-1016-azure/dyskctl
+sudo wget -O dyskctl https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/dyskctl
 sudo chmod a+x dyskctl
 sudo ./dyskctl list
 ```
