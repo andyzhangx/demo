@@ -1,13 +1,13 @@
 # Kubernetes volume driver for Dysk
 ## 1. create a secret which stores dysk account name and password
 ```
-kubectl create secret generic dyskcreds --from-literal accountname=USERNAME --from-literal accountkey="PASSWORD" --type="foo/dysk"
+kubectl create secret generic dyskcreds --from-literal accountname=USERNAME --from-literal accountkey="PASSWORD" --type="dysk/dysk"
 ```
 
 ## 2. install flex volume driver on every linux agent node
 ```
-sudo mkdir -p /etc/kubernetes/volumeplugins/foo~dysk
-cd /etc/kubernetes/volumeplugins/foo~dysk
+sudo mkdir -p /etc/kubernetes/volumeplugins/dysk~dysk
+cd /etc/kubernetes/volumeplugins/dysk~dysk
 sudo wget -O dysk https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/dysk
 sudo chmod a+x dysk
 
@@ -34,9 +34,9 @@ sudo systemctl restart kubelet
 ```
 Note:
 1. `/etc/kubernetes/volumeplugins` has already been the default flexvolume plugin directory in acs-engine (starting from v0.12.0)
-2. There would be one line of [kubelet log](https://github.com/andyzhangx/Demo/tree/master/debug#q-how-to-get-k8s-kubelet-logs-on-linux-agent) like below showing that `flexvolume-foo/dysk` is loaded correctly
+2. There would be one line of [kubelet log](https://github.com/andyzhangx/Demo/tree/master/debug#q-how-to-get-k8s-kubelet-logs-on-linux-agent) like below showing that `flexvolume-dysk/dysk` is loaded correctly
 ```
-I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-foo/dysk"
+I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-dysk/dysk"
 ```
 
 ## 4. create a pod with flexvolume-dysk mount on linux
@@ -78,7 +78,7 @@ Which means your [FlexVolume driver does not need Master-initiated Attach/Detach
 `findmnt` in `v1.8.4` is `findmnt from util-linux 2.25.2`, while in Ubuntu 16.04, kernel version `4.11.0-1015-azure`, it's `findmnt from util-linux 2.27.1`, and `v2.25.2` does not support `-J` parameter
 
 ### about this dysk flexvolume driver usage
-1. You will get following error if you don't specify your secret type as driver name `foo/dysk`
+1. You will get following error if you don't specify your secret type as driver name `dysk/dysk`
 ```
 MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-secret
 ```
