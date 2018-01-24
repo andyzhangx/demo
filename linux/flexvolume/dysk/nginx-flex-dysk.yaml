@@ -12,7 +12,7 @@ spec:
   volumes:
   - name: test
     flexVolume:
-      driver: "foo/dysk"
+      driver: "dysk/dysk"
       secretRef:
         name: dyskcreds
       options:
