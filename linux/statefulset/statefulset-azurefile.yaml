@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: statefulset-azurefile
   labels:
-    k8s-app: azurefile
+    k8s-app: nginx
     version: v1
 spec:
   serviceName: statefulset-azurefile
@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        k8s-app: azurefile
+        k8s-app: nginx
         version: v1
     spec:
       containers:
