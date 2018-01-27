@@ -21,3 +21,10 @@ Prerequisite: [create a pvc-azuredisk](https://github.com/andyzhangx/Demo/tree/m
 
 #### enter the pod container to do validation
 ```kubectl exec -it deployment-azuredisk-0 -- bash```
+
+### Note:
+1. azure disk only supports [RWO](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), so only one replica is allowed for a deployment with azure disk mount
+2. azure file supports [RWX](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), multiple replicas are allowed for a deployment with azure file mount
+
+#### Links
+[StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/)
