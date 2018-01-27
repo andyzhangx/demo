@@ -7,6 +7,9 @@ metadata:
   name: deployment-azurefile
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: deployment-azurefile  
   template:
     metadata:
       labels:
