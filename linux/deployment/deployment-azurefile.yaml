@@ -3,17 +3,17 @@ apiVersion: extensions/v1beta1
 kind: deployment
 metadata:
   labels:
-    app: deployment-azurefile
+    app: nginx
   name: deployment-azurefile
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deployment-azurefile  
+      app: nginx  
   template:
     metadata:
       labels:
-        app: deployment-azurefile
+        app: nginx
       name: deployment-azurefile
     spec:
       containers:
