@@ -1,20 +1,20 @@
 ---
 apiVersion: extensions/v1beta1
-kind: Deployment
+kind: deployment
 metadata:
   labels:
-    app: nginx-azurefile
-  name: nginx-azurefile
+    app: deployment-azurefile
+  name: deployment-azurefile
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: nginx-azurefile
-      name: nginx-azurefile
+        app: deployment-azurefile
+      name: deployment-azurefile
     spec:
       containers:
-      - name: nginx-azurefile
+      - name: deployment-azurefile
         image: nginx
         command:
         - "/bin/sh"
