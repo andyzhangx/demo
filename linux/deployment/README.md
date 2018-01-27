@@ -27,4 +27,4 @@ Prerequisite: [create a pvc-azuredisk](https://github.com/andyzhangx/Demo/tree/m
 2. azure file supports [RWX](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), multiple replicas are allowed for a deployment with azure file mount
 
 #### Links
-[StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/)
+[Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
