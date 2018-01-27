@@ -24,4 +24,4 @@ Prerequisite:
 2. azure file supports [RWX](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), multiple replicas are allowed for a stateful set with azure file mount
 
 #### Links
-[Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+[StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/)
