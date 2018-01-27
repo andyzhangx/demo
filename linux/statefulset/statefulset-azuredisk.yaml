@@ -1,9 +1,9 @@
-apiVersion: "apps/v1beta1"
+apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
   name: statefulset-azuredisk
   labels:
-    k8s-app: azuredisk
+    k8s-app: nginx
     version: v1
 spec:
   serviceName: statefulset-azuredisk
@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels:
-        k8s-app: azuredisk
+        k8s-app: nginx
         version: v1
     spec:
       containers:
