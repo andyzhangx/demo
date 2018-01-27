@@ -9,7 +9,8 @@
 
 
 ## 2. create a stateful set with azure disk mount
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/statefulset/statefulset-azuredisk.yaml```
+Prerequisite: [create a pvc-azuredisk](https://github.com/andyzhangx/Demo/tree/master/linux/azuredisk) first, and then run following command:
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/statefulset/statefulset-azuredisk-pvc.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```watch kubectl describe po statefulset-azuredisk```

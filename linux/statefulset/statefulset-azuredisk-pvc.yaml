@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  labels:
+    app: nginx
+  name: statefulset-azuredisk
+spec:
+  serviceName: statefulset-azuredisk
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx  
+  template:
+    metadata:
+      labels:
+        app: nginx
+      name: statefulset-azuredisk
+    spec:
+      containers:
+      - name: statefulset-azuredisk
+        image: nginx
+        command:
+        - "/bin/sh"
+        - "-c"
+        - while true; do echo $(date) >> /mnt/blobfile/outfile; sleep 1; done		
+        volumeMounts:
+        - name: blobfile01
+          mountPath: "/mnt/blobfile"
+      volumes:
+      - name: blobfile01
+        persistentVolumeClaim:
+          claimName: pvc-azuredisk
+
