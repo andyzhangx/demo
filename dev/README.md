@@ -91,10 +91,42 @@ hack/verify-gofmt.sh
 ```
 
 ## Azure disk & file mount process
+#### Linux
+On master node:
+
+1. In `func (a *azureDiskAttacher) Attach(spec *volume.Spec, nodeName types.NodeName)`
+```
+      1) Get a free disk LUN number "diskController.GetNextDiskLun(nodeName)"
+      2) Attach data disk by "diskController.AttachDisk" with LUN number
+      3) return the LUN number
+```
+
 On agent node:
+
+2. In `func (a *azureDiskAttacher) WaitForAttach(spec *volume.Spec, devicePath string, ...)`
+```
+      1) rescan SCSI "scsiHostRescan(io, exec)"
+      2) find disk identifier(/dev/disk/azure/lunx) by LUN number passed from master "findDiskByLun"
+      3) format data disk "formatIfNotFormatted"
+```
+
+3. In `func (attacher *azureDiskAttacher) MountDevice(spec *volume.Spec, devicePath string, deviceMountPath string)`
+```
+      1) make a device mount dir, e.g. /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426
+      2) mount /dev/disk/azure/lunx /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426
+```
+
+4. In `func (m *azureDiskMounter) SetUpAt(dir string, fsGroup *int64)`
+```
+      1) mkdir a pod dir, e.g. /var/lib/kubelet/pods/950f2eb8-d4e7-11e7-bc95-000d3a041274/volumes/kubernetes.io~azure-disk/pvc-67e4e319-d4e7-11e7-bc95-000d3a041274
+      2) mount --bind /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426 /var/lib/kubelet/pods/950f2eb8-d4e7-11e7-bc95-000d3a041274/volumes/kubernetes.io~azure-disk/pvc-67e4e319-d4e7-11e7-bc95-000d3a041274
+```
+In pod volume mapping, it only uses `/var/lib/kubelet/pods/950f2eb8-d4e7-11e7-bc95-000d3a041274/volumes/kubernetes.io~azure-disk/pvc-67e4e319-d4e7-11e7-bc95-000d3a041274` 
+
+The whole mounting chain would be like following:
 ```
 /dev/sdc <--
-/var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426 <--
+/var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426 <-- (bind mount)
 /var/lib/kubelet/pods/950f2eb8-d4e7-11e7-bc95-000d3a041274/volumes/kubernetes.io~azure-disk/pvc-67e4e319-d4e7-11e7-bc95-000d3a041274 <--
 /mnt/azure #mountPath in container
 ```
