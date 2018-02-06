@@ -14,7 +14,7 @@ You could check Windows version by following command, below is an example using 
 ```
 kubectl exec -it WINDOWS-PODNAME -- cmd
 C:\Users\azureuser>ver
-Microsoft Windows [Version 10.0.16299.19]
+Microsoft Windows [Version 10.0.16299.19]  (or above)
 ```
 
 Find more details about [Supported Windows versions](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
