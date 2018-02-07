@@ -38,6 +38,12 @@ sudo systemctl restart kubelet
 ```
 
 #### Links
+[Create a Service Principal](https://github.com/Azure/acs-engine/blob/master/docs/serviceprincipal.md#creating-a-service-principal)
+
+[acs-engine Cluster Definition](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md)
+
 [Make kubernetes dashboard as external access](https://github.com/Azure/devops-sample-solution-for-azure-china/tree/master-dev/acs-engine#9-config-kubernetes-dashboard-optional)
 
 [Accessing Dashboard 1.7.X and above](https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above)
+
+
