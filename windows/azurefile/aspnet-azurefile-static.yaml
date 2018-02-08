@@ -1,0 +1,20 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: aspnet-azurefile
+spec:
+  containers:
+  - image: microsoft/aspnet:4.7.1-windowsservercore-1709
+    name: aspnet-azurefile
+    volumeMounts:
+    - name: azurefile01
+      mountPath: '/mnt/azure'
+  nodeSelector:
+    beta.kubernetes.io/os: windows
+  volumes:
+  - name: azurefile01
+    azureFile:
+      secretName: azure-secret
+      shareName: k8stest
+      readOnly: false
