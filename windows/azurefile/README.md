@@ -73,6 +73,7 @@ vi azure-secrect.yaml
 
 In the secret file, base64-encode azurestorageaccountname and azurestorageaccountkey. 
 For the base64-encode, you could leverage this site: https://www.base64encode.net/
+
 3. create the secret for azure file
 ```
 kubectl create -f azure-secrect.yaml
