@@ -62,22 +62,29 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 
 # Static Provisioning for azure file on Windows Server version 1709(support from v1.7.x)
 ## 1. create a secret for azure file
-Create an azure file share in the Azure storage account, get the connection info of that azure file and then create a secret that contains the base64 encoded Azure Storage account name and key. In the secret file, base64-encode Azure Storage account name and pair it with name azurestorageaccountname, and base64-encode Azure Storage access key and pair it with name azurestorageaccountkey. For the base64-encode, you could leverage this site: https://www.base64encode.net/
+1) create an azure file share in Azure storage account in the same resource group with k8s cluster, get connection info of that azure file
+2) create a `azure-secrect.yaml` file that contains base64 encoded Azure Storage account name and key.
 
-#### 2. download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` values
+download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/azure-secrect.yaml
 vi azure-secrect.yaml
+```
+
+In the secret file, base64-encode azurestorageaccountname and azurestorageaccountkey. 
+For the base64-encode, you could leverage this site: https://www.base64encode.net/
+3. create the secret for azure file
+```
 kubectl create -f azure-secrect.yaml
 ```
 
-## 3. create a pod with azure file
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/aspnet-pod-azurefile.yaml```
+## 2. create a pod with azure file
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/aspnet-azurefile-static.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```watch kubectl describe po aspnet-azurefile```
 
-## 4. enter the pod container to do validation
+## 3. enter the pod container to do validation
 ```kubectl exec -it aspnet-azurefile -- cmd```
 
 ```
