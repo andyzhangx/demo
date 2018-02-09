@@ -1,0 +1,232 @@
+#!/bin/bash
+
+#set -eo pipefail
+
+# Notes:
+#  - Please install "jq" package before using this driver.
+
+# leases are kept in etcd as config maps and linked to volumes by labels.
+# [read-only] mounting:
+# - if a lease found in etcd use it. if lease is bad /*TODO:!*/
+# -- if not, loop [for x seconds]
+# --- if not create (no breaking of existing lease), then save it in etcd.
+# --- if lease failed (an existing one exists).
+# --- check etcd, if lease found use it.
+# --- if loop failed break lease create new one. /*TODO: Shall we? */
+# [read-write] mounting:
+# - break lease * the assumption is we might be in a split brain cluster *
+# - create new lease, save it in etcd.
+# - use it
+# -- ** this means that if other ro mounts exists, then will break and restart ** --
+# unmounting
+# -- we break lease and attempt to delete the linked lease in etcd.
+
+
+# *** ReadWriteOnce handles that the disk is not mounted rw on multiple nodes ***
+
+DIR=$(dirname "$(readlink -f "$0")")
+JQ="/usr/bin/jq"
+DYSKCTL=$DIR/dyskctl
+LOG="/var/log/dysk.log"
+
+# if kubelet running in a container (such the case of aks/acs-engine clsuters) we need to execute
+# the bin directly. And since it has no access to anything other vol, we keep the dyskctl with 
+# the flex vol driver
+usage() {
+  err "Invalid usage. Usage: "
+  err "\t$0 init"
+  err "\t$0 mount <mount dir> <json params>"
+  err "\t$0 unmount <mount dir>"
+  exit 1
+}
+
+err() {
+  echo $* 1>&2
+}
+
+log() {
+  echo $* >&1
+}
+
+ismounted() {
+  MOUNT=`findmnt -n ${MNTPATH} 2>/dev/null | cut -d' ' -f1`
+  [ "${MOUNT}" = "${MNTPATH}" ]
+}
+
+mount() {
+  MNTPATH="$1"
+  shift 1 
+
+  local ACCOUNTNAME="$(echo  "$@" |"$JQ" -r '.["kubernetes.io/secret/accountname"] // empty' | base64 -d)"
+  local ACCOUNTKEY="$(echo "$@" | "$JQ" -r '.["kubernetes.io/secret/accountkey"] // empty' | tr -d '\n' | tr -d ' ' | base64 -d)"
+  local FS_TYPE="$(echo  "$@" |  "$JQ" -r '.["kubernetes.io/fsType"] //empty')"
+  local READ_ONLY="$(echo  "$@" |  "$JQ" -r '.["kubernetes.io/readOnly"] //empty')"
+
+  local CONTAINER_NAME="$(echo "$@" | "$JQ" -r '.container //empty')"
+  local BLOB_NAME="$(echo "$@" | "$JQ" -r '.blob //empty')"  
+  local VOL_ACCOUNT_NAME="$(echo "$@" | "$JQ" -r '.accountName //empty')"
+  local SIZE="$(echo "$@" | "$JQ" -r '.size //empty')"
+  
+  ## ------------------------------
+  ## Beging validation + defaulting
+  ## ------------------------------
+  if [ -z "${VOL_ACCOUNT_NAME}" ] || [ "${ACCOUNTNAME}" != "${VOL_ACCOUNT_NAME}" ]; then
+    echo "`date` ERR: volume is referencing the wrong account name Vol:${VOL_ACCOUNT_NAME} Secret:${ACCOUNTNAME}" >> $LOG
+    errorLog=`tail -n 1 "${LOG}"`
+    err "{\"status\": \"Failure\", \"message\": \"validation failed, error log:${errorLog}\"}"
+    exit 1
+  fi
+  
+  local container_param=""
+  if [ ! -z "${CONTAINER_NAME}" ]; then
+    container_param="-c ${CONTAINER_NAME}"
+  fi
+  
+  local pageblob_param=""
+  local lease_command=""
+  local autocreate_command=""
+  if [ ! -z "${BLOB_NAME}" ]; then
+    pageblob_param="-p ${BLOB_NAME}"
+    lease_command="--auto-lease --break-lease"
+  else
+    #TODO: add $SIZE check here [1, 1023]
+    autocreate_command="auto-create -n ${SIZE}"
+  fi
+  
+  if ismounted ; then
+    local devname=`findmnt -n -o SOURCE ${MNTPATH}`
+    log "{\"status\": \"Success\" , \"message\" :  \"log:INF: Mountpoint: ${MNTPATH} has ${devname} already mounted\"}"
+    exit 0
+  fi
+
+  # set fs to ext4 if not provided by user
+  if [ -z "${FS_TYPE}" ]; then
+    echo "`date` INF:fstype was empty and will set it to ext4" >>$LOG
+    FS_TYPE="ext4"
+  fi
+
+  read_only_param=""
+  if [ $READ_ONLY ]; then
+    read_only_param="--read-only"
+  fi
+
+  echo "`date` EXEC: mkdir -p ${MNTPATH}" >> $LOG
+  mkdir -p ${MNTPATH} >>$LOG 2>&1
+
+  command_execute="${DYSKCTL} mount ${autocreate_command} -a "${ACCOUNTNAME}" -k "${ACCOUNTKEY}" ${container_param} ${pageblob_param} ${lease_command} ${read_only_param}"
+  # we don't output ACCOUNTKEY here
+  output_comand="${DYSKCTL} mount ${autocreate_command} -a "${ACCOUNTNAME}" -k ... ${container_param} ${pageblob_param} ${lease_command} ${read_only_param}"
+  echo "`date` INF: dysk mount command - ${output_comand} " >> $LOG
+
+  result=$(eval "${command_execute} -o json 2>>${LOG}")
+  diskname=`echo "$result" | "$JQ" -r '.Name //empty'`
+  if [ ${#diskname} -lt 5 ]; then
+    errorLog=`tail -n 1 "${LOG}"`
+    err "{\"status\": \"Failure\", \"message\": \"Failed to DYSKCTL mount auto-create, mountPath:${MNTPATH}, accountname:${ACCOUNTNAME}, error log:${errorLog}\" }"
+    exit 1
+  fi
+
+  if [ !$READ_ONLY ]; then
+    #formatting
+    VOLFSTYPE=$(blkid -o udev ${diskname} 2>/dev/null | grep "ID_FS_TYPE" | cut -d"=" -f2 || echo -n "")
+    if [ -z "${VOLFSTYPE}" ]; then
+      echo "`date` INF: disk:${diskname} is not formatted and will be formatted to ${FS_TYPE}" >> $LOG
+      mkfs -t ${FS_TYPE} /dev/${diskname} >/dev/null 2>&1
+      if [ "$?" != "0" ]; then
+        err "{ \"status\": \"Failure\", \"message\": \"Failed to create fs ${FSTYPE} on device ${diskname}\"}"
+        exit 1
+      fi
+    else
+      echo "`date` INF: disk:${diskname} has fstype:${VOLFSTYPE} and will not be formatted" >> $LOG
+    fi
+  fi
+
+  #mounting
+  echo "`date` EXEC: /bin/mount /dev/${diskname} "${MNTPATH}"" >>$LOG
+  /bin/mount /dev/$diskname "${MNTPATH}" >>$LOG 2>&1
+  if [ "$?" != "0" ]; then
+    errorLog=`tail -n 1 "${LOG}"`
+    err "{ \"status\": \"Failure\", \"message\": \"Failed to mount device /dev/${diskname} at ${MNTPATH}, accountname:${ACCOUNTNAME}, error log:${errorLog}\"}"
+    exit 1
+  fi
+
+  errorLog=`tail -n 1 "${LOG}"`
+  log "{\"status\": \"Success\" , \"message\" :  \"log:${errorLog}\" }"
+  exit 0
+}
+
+unmount() {
+  MNTPATH="$1"
+
+  if ! ismounted ; then
+    log '{"status": "Success"}'
+    exit 0
+  fi
+
+  #find device name
+  local devname=`findmnt -n -o SOURCE ${MNTPATH}`
+  if [ ${#devname} -lt 5 ]; then
+    echo "`date` INF: mount path:${MNTPATH} has no mounts" >> $LOG
+    log '{"status": "Success"}'
+    exit 0
+  fi
+
+  echo "`date` EXEC: umount $MNTPATH, devname: $devname" >>$LOG
+  /bin/umount $MNTPATH >> $LOG 2>&1
+  if [ "$?" != "0" ]; then
+    errorLog=`tail -n 1 "${LOG}"`
+    err '{ "status": "Failed", "message": "Failed to unmount volume at '${MNTPATH}'"}, error log:'${errorLog}''
+    exit 1
+  fi
+
+  echo "`date` EXEC: rmdir ${MNTPATH}" >> $LOG
+  rmdir "${MNTPATH}" >> $LOG 2>&1
+
+  local diskname=`echo $devname | cut -d '/' -f3`
+  if [ ${#diskname} -lt 5 ]; then
+    err '{ "status": "Failure", "message": "Failed to parse disk name according to devname('${devname}'), returned disk name: '${diskname}, mountPath: '${MNTPATH}'''
+    exit 1
+  fi
+
+  echo "`date` EXEC:dyskctl unmount -d $diskname" >>$LOG
+  ${DYSKCTL} unmount -d $diskname >>$LOG 2>&1
+  if [ $? -ne 0 ]; then
+    errorLog=`tail -n 1 "${LOG}"`
+    err "{ \"status\": \"Failed\", \"message\": \"Failed to dyskctl unmount disk(${diskname}) error log: ${errorLog}\"}"
+    exit 1
+  fi
+
+  log '{"status": "Success"}'
+  exit 0
+}
+
+## ---------------
+## main
+## ---------------
+
+op=$1
+
+if [ "$op" = "init" ]; then
+  log '{"status": "Success", "capabilities": {"attach": false}}'
+  exit 0
+fi
+
+if [ $# -lt 2 ]; then
+  usage
+fi
+
+shift
+
+case "$op" in
+  mount)
+    mount $*
+    ;;
+  unmount)
+    unmount $*
+    ;;
+  *)
+  usage
+esac
+
+exit 1
+
