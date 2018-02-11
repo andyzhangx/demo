@@ -107,13 +107,14 @@ On agent node:
 ```
       1) rescan SCSI "scsiHostRescan(io, exec)"
       2) find disk identifier(/dev/disk/azure/lunx) by LUN number passed from master "findDiskByLun"
-      3) format data disk "formatIfNotFormatted"
+      3) format data disk "formatIfNotFormatted", e.g.
+      mkfs.ext4 -F /dev/disk/azure/scsi1/lun0
 ```
 
 3. In `func (attacher *azureDiskAttacher) MountDevice(spec *volume.Spec, devicePath string, deviceMountPath string)`
 ```
       1) make a device mount dir, e.g. /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426
-      2) mount /dev/disk/azure/lunx /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/m358246426
+      2) mount -t ext4 -o defaults /dev/disk/azure/scsi1/lun0 /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/b3492765522
 ```
 
 4. In `func (m *azureDiskMounter) SetUpAt(dir string, fsGroup *int64)`
