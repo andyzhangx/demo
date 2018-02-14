@@ -28,7 +28,7 @@ Prerequisite: [create a pvc-azuredisk](https://github.com/andyzhangx/Demo/tree/m
 ### Note:
 1. azure disk only supports [RWO](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), so only one replica is allowed for a deployment with azure disk mount
 2. azure file supports [RWX](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), multiple replicas are allowed for a deployment with azure file mount
-3. For deployment with azure disk mount, there will be `Multi-Attach error` when scheduling a pod from one node to another, it's by design since attach/detach disk in VM costs miniutes. After around 3 min, disk mounting will be successful.
+3. For deployment with azure disk mount, there will be `Multi-Attach error` when scheduling a pod from one node to another, it's by design since attach/detach disk in VM costs minutes. After around 3 min, disk mounting will be successful.
 
 ```
 Events:
