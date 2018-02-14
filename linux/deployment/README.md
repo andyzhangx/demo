@@ -15,10 +15,10 @@ Below are only POC Deployment examples with azure disk & file mount, should **no
 ## 2. create a deployment with azure disk mount
 Prerequisite: [create a pvc-azuredisk](https://github.com/andyzhangx/Demo/tree/master/linux/azuredisk) first, and then run following command:
 
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/deployment/deployment-disk.yaml```
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/deployment/deployment-azuredisk.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
-```watch kubectl describe po deployment-azurefile```
+```watch kubectl describe po deployment-azuredisk```
 
 #### enter the pod container to do validation
 ```kubectl exec -it deployment-azuredisk-0 -- bash```
