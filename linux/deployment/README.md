@@ -1,5 +1,5 @@
 ## Attention: 
-azure disk & azure file volume mounts in k8s Deployment may cause inconsistent race condition error since a new pod is being recreated when the old pod is being deleted on same node. So we would stongly suggest **using StatefulSet instead of Deployment** when there are azure disk & azure file volume mounts. You could reach StatefulSet example [here](https://github.com/andyzhangx/Demo/blob/master/linux/statefulset/README.md)
+azure disk & azure file volume mounts in k8s Deployment may cause inconsistent race condition error since a new pod is being recreated when the old pod is being deleted on same node. So we would stongly suggest **using StatefulSet instead of Deployment** when there are azure disk & azure file volume mounts. Here is the [StatefulSet example](https://github.com/andyzhangx/Demo/blob/master/linux/statefulset/README.md)
 
 Below are only POC Deployment examples with azure disk & file mount, should **not** use Deployment with azure disk & azure file volume mounts in production.
 
@@ -14,6 +14,7 @@ Below are only POC Deployment examples with azure disk & file mount, should **no
 
 ## 2. create a deployment with azure disk mount
 Prerequisite: [create a pvc-azuredisk](https://github.com/andyzhangx/Demo/tree/master/linux/azuredisk) first, and then run following command:
+
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/deployment/deployment-disk.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
