@@ -4,7 +4,7 @@
 ##### option#1: k8s agent pool is based on managed disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml```
 
-##### option#2: k8s agent pool is based on blob disk(unmanaged) VM
+##### option#2: k8s agent pool is based on blob based(unmanaged) disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
 
 ###### Note: 
@@ -53,7 +53,7 @@ wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/De
 vi nginx-pod-azuredisk.yaml
 ```
 
-##### unmanged disk
+##### blob based(unmanaged) disk 
 ```
 wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
 vi nginx-pod-azuredisk.yaml

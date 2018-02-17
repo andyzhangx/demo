@@ -14,7 +14,7 @@ microsoft/iis:windowsservercore-1709
 ##### option#1: k8s agent pool is based on managed disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml```
 
-##### option#2: k8s agent pool is based on blob disk(unmanaged) VM
+##### option#2: k8s agent pool is based on blob based(unmanaged) disk VM
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
 
 ###### Note: 
