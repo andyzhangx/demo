@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-flex-flobfuse
+  name: nginx-flex-blobfuse
 spec:
   containers:
-  - name: nginx-flex-flobfuse
+  - name: nginx-flex-blobfuse
     image: nginx
     volumeMounts:
     - name: test
@@ -12,8 +12,7 @@ spec:
   volumes:
   - name: test
     flexVolume:
-      driver: "flobfuse/flobfuse"
-      readOnly: true
+      driver: "blobfuse/blobfuse"
       secretRef:
         name: blobfusecreds
       options:
