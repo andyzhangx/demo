@@ -65,21 +65,6 @@ shm              64M     0   64M   0% /dev/shm
 tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
-### Known issues
-1. From v1.8.0, `echo -e` or `echo -ne` is not allowed in flexvolume driver script, related issue: [Error creating Flexvolume plugin from directory flexvolume](https://github.com/kubernetes/kubernetes/issues/54494)
-
-2. You may get following error in the kubelet log when trying to use a flexvolume:
-```
-Volume has not been added to the list of VolumesInUse
-```
-You could let flexvolume plugin return following:
-```
-echo {"status": "Success", "capabilities": {"attach": false}}
-```
-Which means your [FlexVolume driver does not need Master-initiated Attach/Detach](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html#flex-volume-drivers-without-master-initiated-attach-detach)
-
-3. The default plugin direcotory `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` does not work on k8s cluster set up by acs-engine due to [bug](https://github.com/Azure/acs-engine/issues/1907)
-
 ### about this blobfuse flexvolume driver usage
 1. You will get following error if you don't specify your secret type as driver name `blobfuse/blobfuse`
 ```
