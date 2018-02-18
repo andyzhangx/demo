@@ -13,13 +13,15 @@ sudo chmod a+x blobfuse
 #### Note:
 Make sure `jq` package is installed on every node.
 
-## 3. specify `volume-plugin-dir` in kubelet service config
+## 3. specify `volume-plugin-dir` in kubelet service config (skip this step from acs-engine v0.12.0)
 ```
 sudo vi /etc/systemd/system/kubelet.service
+  --volume=/etc/kubernetes/volumeplugins:/etc/kubernetes/volumeplugins:rw \
         --volume-plugin-dir=/etc/kubernetes/volumeplugins \
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
+
 Note:
 1. `/etc/kubernetes/volumeplugins` has already been the default flexvolume plugin directory in acs-engine (starting from v0.12.0)
 2. There would be one line of [kubelet log](https://github.com/andyzhangx/Demo/tree/master/debug#q-how-to-get-k8s-kubelet-logs-on-linux-agent) like below showing that `flexvolume-blobfuse/blobfuse` is loaded correctly
