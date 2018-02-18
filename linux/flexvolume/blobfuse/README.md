@@ -1,9 +1,4 @@
-## 1. create a secret which stores blobfuse account name and password
-```
-kubectl create secret generic blobfusecreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="blobfuse/blobfuse"
-```
-
-## 2. install flex volume driver on every linux agent node
+## 1. install flex volume driver on every linux agent node
 ```
 sudo mkdir -p /etc/kubernetes/volumeplugins/blobfuse~blobfuse
 cd /etc/kubernetes/volumeplugins/blobfuse~blobfuse
@@ -13,7 +8,7 @@ sudo chmod a+x blobfuse
 #### Note:
 Make sure `jq` package is installed on every node.
 
-## 3. specify `volume-plugin-dir` in kubelet service config (skip this step from acs-engine v0.12.0)
+## 2. specify `volume-plugin-dir` in kubelet service config (skip this step from acs-engine v0.12.0)
 ```
 sudo vi /etc/systemd/system/kubelet.service
   --volume=/etc/kubernetes/volumeplugins:/etc/kubernetes/volumeplugins:rw \
@@ -29,8 +24,21 @@ Note:
 I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-blobfuse/blobfuse"
 ```
 
-## 4. create a pod with flexvolume-blobfuse mount on linux
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flex-blobfuse.yaml
+## 3. create a secret which stores blobfuse account name and password
+```
+kubectl create secret generic blobfusecreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="blobfuse/blobfuse"
+```
+
+## 4. create a pod with flexvolume blobfuse mount driver on linux
+ - download `nginx-flex-blobfuse.yaml` file and modify `container` field
+```
+wget -O nginx-flex-blobfuse.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flex-blobfuse.yaml
+vi nginx-flex-blobfuse.yaml
+```
+ - create a pod with flexvolume blobfuse driver mount
+```
+kubectl create -f nginx-flex-blobfuse.yaml
+```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po nginx-flexvolume-blobfuse
