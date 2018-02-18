@@ -20,6 +20,12 @@ sudo vi /etc/systemd/system/kubelet.service
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
+Note:
+1. `/etc/kubernetes/volumeplugins` has already been the default flexvolume plugin directory in acs-engine (starting from v0.12.0)
+2. There would be one line of [kubelet log](https://github.com/andyzhangx/Demo/tree/master/debug#q-how-to-get-k8s-kubelet-logs-on-linux-agent) like below showing that `flexvolume-dysk/dysk` is loaded correctly
+```
+I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-dysk/dysk"
+```
 
 ## 4. create a pod with flexvolume-blobfuse mount on linux
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flex-blobfuse.yaml
