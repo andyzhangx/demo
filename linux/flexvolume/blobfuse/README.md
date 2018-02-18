@@ -32,7 +32,7 @@ kubectl create secret generic blobfusecreds --from-literal username=USERNAME --f
 ## 4. create a pod with flexvolume blobfuse mount driver on linux
  - download `nginx-flex-blobfuse.yaml` file and modify `container` field
 ```
-wget -O nginx-flex-blobfuse.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flex-blobfuse.yaml
+wget -O nginx-flex-blobfuse.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/nginx-flex-blobfuse.yaml
 vi nginx-flex-blobfuse.yaml
 ```
  - create a pod with flexvolume blobfuse driver mount
@@ -41,7 +41,7 @@ kubectl create -f nginx-flex-blobfuse.yaml
 ```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
-watch kubectl describe po nginx-flexvolume-blobfuse
+watch kubectl describe po nginx-flex-blobfuse
 
 ## 5. enter the pod container to do validation
 kubectl exec -it nginx-flexvolume-blobfuse -- bash
