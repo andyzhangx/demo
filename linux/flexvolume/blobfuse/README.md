@@ -1,8 +1,14 @@
 ## 1. install flex volume driver on every linux agent node
 ```
-sudo mkdir -p /etc/kubernetes/volumeplugins/blobfuse~blobfuse
+sudo apt install jq -y
+
+sudo mkdir -p /etc/kubernetes/volumeplugins/blobfuse~blobfuse/bin
+cd /etc/kubernetes/volumeplugins/blobfuse~blobfuse/bin
+sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/binary/ubuntu1604-4.4.0-104-generic/blobfuse
+sudo chmod a+x blobfuse
+
 cd /etc/kubernetes/volumeplugins/blobfuse~blobfuse
-sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse
+sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse
 sudo chmod a+x blobfuse
 ```
 #### Note:
@@ -44,18 +50,19 @@ kubectl create -f nginx-flex-blobfuse.yaml
 watch kubectl describe po nginx-flex-blobfuse
 
 ## 5. enter the pod container to do validation
-kubectl exec -it nginx-flexvolume-blobfuse -- bash
+kubectl exec -it nginx-flex-blobfuse -- bash
 
 ```
 root@nginx-flex-blobfuse:/# df -h
-Filesystem                                 Size  Used Avail Use% Mounted on
-overlay                                    291G  3.3G  288G   2% /
-tmpfs                                      3.4G     0  3.4G   0% /dev
-tmpfs                                      3.4G     0  3.4G   0% /sys/fs/cgroup
-//andytestx.file.core.windows.net/k8stest  3.0G   16M  3.0G   1% /data
-/dev/sda1                                  291G  3.3G  288G   2% /etc/hosts
-shm                                         64M     0   64M   0% /dev/shm
-tmpfs                                      3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
+root@nginx-flex-blobfuse:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          30G  5.5G   24G  19% /
+tmpfs           3.4G     0  3.4G   0% /dev
+tmpfs           3.4G     0  3.4G   0% /sys/fs/cgroup
+blobfuse         30G  5.5G   24G  19% /data
+/dev/sda1        30G  5.5G   24G  19% /etc/hosts
+shm              64M     0   64M   0% /dev/shm
+tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
 ### Known issues
