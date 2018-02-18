@@ -1,14 +1,14 @@
-## 1. create a secret which stores cifs account name and password
+## 1. create a secret which stores blobfuse account name and password
 ```
-kubectl create secret generic cifscreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="foo/cifs"
+kubectl create secret generic blobfusecreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="blobfuse/blobfuse"
 ```
 
 ## 2. install flex volume driver on every linux agent node
 ```
-sudo mkdir -p /etc/kubernetes/volumeplugins/foo~cifs
-cd /etc/kubernetes/volumeplugins/foo~cifs
-sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/cifs
-sudo chmod a+x cifs
+sudo mkdir -p /etc/kubernetes/volumeplugins/blobfuse~blobfuse
+cd /etc/kubernetes/volumeplugins/blobfuse~blobfuse
+sudo wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse
+sudo chmod a+x blobfuse
 ```
 #### Note:
 Make sure `jq` package is installed on every node.
@@ -21,17 +21,17 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
 
-## 4. create a pod with flexvolume-cifs mount on linux
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flex-cifs.yaml
+## 4. create a pod with flexvolume-blobfuse mount on linux
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/nginx-flex-blobfuse.yaml
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
-watch kubectl describe po nginx-flexvolume-cifs
+watch kubectl describe po nginx-flexvolume-blobfuse
 
 ## 5. enter the pod container to do validation
-kubectl exec -it nginx-flexvolume-cifs -- bash
+kubectl exec -it nginx-flexvolume-blobfuse -- bash
 
 ```
-root@nginx-flex-cifs:/# df -h
+root@nginx-flex-blobfuse:/# df -h
 Filesystem                                 Size  Used Avail Use% Mounted on
 overlay                                    291G  3.3G  288G   2% /
 tmpfs                                      3.4G     0  3.4G   0% /dev
@@ -57,13 +57,11 @@ Which means your [FlexVolume driver does not need Master-initiated Attach/Detach
 
 3. The default plugin direcotory `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` does not work on k8s cluster set up by acs-engine due to [bug](https://github.com/Azure/acs-engine/issues/1907)
 
-### about this cifs flexvolume driver usage
-1. You will get following error if you don't specify your secret type as driver name `foo/cifs`
+### about this blobfuse flexvolume driver usage
+1. You will get following error if you don't specify your secret type as driver name `blobfuse/blobfuse`
 ```
 MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-secret
 ```
-
-2. You will get `Host down` error if you don't specify the cifs version
 
 ### Links
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
