@@ -8,7 +8,7 @@ sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/l
 sudo chmod a+x blobfuse
 
 cd /etc/kubernetes/volumeplugins/azure~blobfuse
-sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse
+sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/blobfuse
 sudo chmod a+x blobfuse
 ```
 #### Note:
