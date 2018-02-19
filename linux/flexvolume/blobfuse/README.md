@@ -72,6 +72,8 @@ MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-
 ```
 
 ### Links
+[azure-storage-fuse](https://github.com/Azure/azure-storage-fuse)
+
 [Flexvolume doc](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md)
 
 More clear steps about flexvolume by Redhat doc: [Persistent Storage Using FlexVolume Plug-ins](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html)
