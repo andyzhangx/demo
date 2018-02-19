@@ -25,9 +25,9 @@ sudo systemctl restart kubelet
 
 Note:
 1. `/etc/kubernetes/volumeplugins` has already been the default flexvolume plugin directory in acs-engine (starting from v0.12.0)
-2. There would be one line of [kubelet log](https://github.com/andyzhangx/Demo/tree/master/debug#q-how-to-get-k8s-kubelet-logs-on-linux-agent) like below showing that `flexvolume-blobfuse/blobfuse` is loaded correctly
+2. There would be one line of [kubelet log](https://github.com/andyzhangx/Demo/tree/master/debug#q-how-to-get-k8s-kubelet-logs-on-linux-agent) like below showing that `flexvolume-azure/blobfuse` is loaded correctly
 ```
-I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-blobfuse/blobfuse"
+I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-azure/blobfuse"
 ```
 
 ## 3. create a secret which stores blobfuse account name and password
