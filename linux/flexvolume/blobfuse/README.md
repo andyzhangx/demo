@@ -54,7 +54,6 @@ kubectl exec -it nginx-flex-blobfuse -- bash
 
 ```
 root@nginx-flex-blobfuse:/# df -h
-root@nginx-flex-blobfuse:/# df -h
 Filesystem      Size  Used Avail Use% Mounted on
 overlay          30G  5.5G   24G  19% /
 tmpfs           3.4G     0  3.4G   0% /dev
