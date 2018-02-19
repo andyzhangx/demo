@@ -12,7 +12,7 @@ spec:
   volumes:
   - name: test
     flexVolume:
-      driver: "blobfuse/blobfuse"
+      driver: "azure/blobfuse"
       secretRef:
         name: blobfusecreds
       options:

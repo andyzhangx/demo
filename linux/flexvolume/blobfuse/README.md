@@ -2,12 +2,12 @@
 ```
 sudo apt install jq -y
 
-sudo mkdir -p /etc/kubernetes/volumeplugins/blobfuse~blobfuse/bin
-cd /etc/kubernetes/volumeplugins/blobfuse~blobfuse/bin
+sudo mkdir -p /etc/kubernetes/volumeplugins/azure~blobfuse/bin
+cd /etc/kubernetes/volumeplugins/azure~blobfuse/bin
 sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/binary/ubuntu1604-4.4.0-104-generic/blobfuse
 sudo chmod a+x blobfuse
 
-cd /etc/kubernetes/volumeplugins/blobfuse~blobfuse
+cd /etc/kubernetes/volumeplugins/azure~blobfuse
 sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse
 sudo chmod a+x blobfuse
 ```
@@ -32,7 +32,7 @@ I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-b
 
 ## 3. create a secret which stores blobfuse account name and password
 ```
-kubectl create secret generic blobfusecreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="blobfuse/blobfuse"
+kubectl create secret generic blobfusecreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="azure/blobfuse"
 ```
 
 ## 4. create a pod with flexvolume blobfuse mount driver on linux
