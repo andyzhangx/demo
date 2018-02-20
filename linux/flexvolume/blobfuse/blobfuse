@@ -4,7 +4,7 @@
 #  - Please install "jq" package before using this driver.
 
 DIR=$(dirname "$(readlink -f "$0")")
-JQ="/usr/bin/jq"
+JQ="$DIR/jq"
 BLOBFUSE=$DIR/bin/blobfuse
 LOG="/var/log/blobfuse.log"
 
@@ -31,9 +31,9 @@ ismounted() {
 
 mount() {
 	MNTPATH="$1"
-    local ACCOUNTNAME=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/username"] // empty'|base64 -d)
-    local ACCOUNTKEY=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/password"] // empty'|base64 -d)
-    local CONTAINER_NAME="$(echo "$2" | "$JQ" -r '.container //empty')"
+	local ACCOUNTNAME=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/username"] // empty'|base64 -d)
+	local ACCOUNTKEY=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/password"] // empty'|base64 -d)
+	local CONTAINER_NAME="$(echo "$2" | "$JQ" -r '.container //empty')"
 	
 	if [ -z "${CONTAINER_NAME}" ]; then
 		echo "`date` ERR: container is empty" >> $LOG
