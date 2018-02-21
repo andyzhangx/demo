@@ -1,4 +1,26 @@
-## 1. install flex volume driver on every linux agent node
+## 1. specify `volume-plugin-dir` in kubelet service config (skip this step from acs-engine v0.12.0)
+```
+sudo vi /etc/systemd/system/kubelet.service
+  --volume=/etc/kubernetes/volumeplugins:/etc/kubernetes/volumeplugins:rw \
+        --volume-plugin-dir=/etc/kubernetes/volumeplugins \
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+```
+
+Note:
+ - `/etc/kubernetes/volumeplugins` has already been the default flexvolume plugin directory in acs-engine (starting from v0.12.0)
+ - There would be one line of [kubelet log](https://github.com/andyzhangx/Demo/tree/master/debug#q-how-to-get-k8s-kubelet-logs-on-linux-agent) like below showing that `flexvolume-azure/blobfuse` is loaded correctly
+```
+I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-azure/blobfuse"
+```
+
+## 2. install blobfuse flex volume driver on every agent node (take Ubuntu 16.04 as an example)
+### Option#1. Automatically install
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer.yaml
+```
+
+### Option#2. Manually install on every agent node
 ```
 sudo apt install jq -y
 
@@ -10,24 +32,6 @@ sudo chmod a+x blobfuse
 cd /etc/kubernetes/volumeplugins/azure~blobfuse
 sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/blobfuse
 sudo chmod a+x blobfuse
-```
-#### Note:
-Make sure `jq` package is installed on every node.
-
-## 2. specify `volume-plugin-dir` in kubelet service config (skip this step from acs-engine v0.12.0)
-```
-sudo vi /etc/systemd/system/kubelet.service
-  --volume=/etc/kubernetes/volumeplugins:/etc/kubernetes/volumeplugins:rw \
-        --volume-plugin-dir=/etc/kubernetes/volumeplugins \
-sudo systemctl daemon-reload
-sudo systemctl restart kubelet
-```
-
-Note:
-1. `/etc/kubernetes/volumeplugins` has already been the default flexvolume plugin directory in acs-engine (starting from v0.12.0)
-2. There would be one line of [kubelet log](https://github.com/andyzhangx/Demo/tree/master/debug#q-how-to-get-k8s-kubelet-logs-on-linux-agent) like below showing that `flexvolume-azure/blobfuse` is loaded correctly
-```
-I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-azure/blobfuse"
 ```
 
 ## 3. create a secret which stores blobfuse account name and password
