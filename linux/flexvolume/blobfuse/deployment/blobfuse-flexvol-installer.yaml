@@ -17,10 +17,17 @@ spec:
       containers:
       - name: blobfuse-flexvol-installer
         image: andyzhangx/blobfuse-flexvol-installer:1.0
+        securityContext:
+          privileged: true        
         volumeMounts:
         - name: volplugins
           mountPath: /etc/kubernetes/volumeplugins/
+        - name: usrlib
+          mountPath: /usr/lib/         
       volumes:
+      - name: usrlib
+        hostPath:
+          path: /usr/lib/      
       - name: volplugins
         hostPath:
           path: /etc/kubernetes/volumeplugins/
