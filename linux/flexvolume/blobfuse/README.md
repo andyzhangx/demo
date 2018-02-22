@@ -33,12 +33,10 @@ kubectl get po --namespace=kube-system
 
 ### Option#2. Manually install on every agent node
 ```
-sudo apt install jq -y
-
 sudo mkdir -p /etc/kubernetes/volumeplugins/azure~blobfuse/bin
 cd /etc/kubernetes/volumeplugins/azure~blobfuse/bin
 
-$version=1.9
+version=1.9
 sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/binary/kubelet/$version/blobfuse
 sudo chmod a+x blobfuse
 
