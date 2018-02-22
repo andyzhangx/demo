@@ -5,7 +5,7 @@ set -eo pipefail
 LOG="/var/log/blobfuse-flexvol-installer.log"
 target_dir="${TARGET_DIR}"
 
-if [[ -z "${target_dir}" ]];then
+if [[ -z "${target_dir}" ]]; then
   target_dir="/etc/kubernetes/volumeplugins"
 fi
 
@@ -17,9 +17,10 @@ mkdir -p ${blobfuse_bin_dir}
 
 #download blobfuse binary
 version="v1.9"
-kubelet_location=`whereis kubelet | awk -F ' ' '{print $2}'`
-if [[ $kubelet_location == *"kubelet" ]]; then
-	version=`kubelet --version | awk -F ' ' '{print $2}' | awk -F '.' '{print $1"."$2}'`
+if [[ -z "${KUBELET_VERSION}" ]]; then
+	echo "ERR: could not get env var: KUBELET_VERSION, use default kubelet version ${version}" >>$LOG
+else
+	version=`echo ${KUBELET_VERSION} | awk -F '.' '{print $1"."$2}'`
 fi
 
 wget -O ${blobfuse_bin_dir}/blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/binary/kubelet/$version/blobfuse >>$LOG	
