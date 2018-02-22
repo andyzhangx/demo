@@ -16,11 +16,16 @@ I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-a
 
 ## 2. install blobfuse flex volume driver on every agent node (take Ubuntu 16.04 as an example)
 ### Option#1. Automatically install
+ - download `blobfuse-flexvol-installer.yaml` and change `KUBELET_VERSION` var according to kubelet version(e.g. v1.8, v1.9)
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer.yaml
+https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer.yaml
+vi blobfuse-flexvol-installer.yaml
 ```
-
-Use following command lines to check daemonset status:
+ - create daemonset to install blobfuse driver
+```
+kubectl create -f blobfuse-flexvol-installer.yaml
+```
+ - Use following command lines to check daemonset status:
 ```
 kubectl describe daemonset blobfuse-flexvol-installer --namespace=kube-system
 kubectl get po --namespace=kube-system
@@ -32,7 +37,9 @@ sudo apt install jq -y
 
 sudo mkdir -p /etc/kubernetes/volumeplugins/azure~blobfuse/bin
 cd /etc/kubernetes/volumeplugins/azure~blobfuse/bin
-sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/binary/ubuntu1604-4.4.0-104-generic/blobfuse
+
+$version=1.9
+sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/binary/kubelet/$version/blobfuse
 sudo chmod a+x blobfuse
 
 cd /etc/kubernetes/volumeplugins/azure~blobfuse
