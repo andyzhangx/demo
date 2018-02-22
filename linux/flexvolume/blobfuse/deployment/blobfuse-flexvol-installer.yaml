@@ -16,7 +16,10 @@ spec:
     spec:
       containers:
       - name: blobfuse-flexvol-installer
-        image: andyzhangx/blobfuse-flexvol-installer:1.0        
+        image: andyzhangx/blobfuse-flexvol-installer:1.0
+        env:
+        - name: KUBELET_VERSION
+          value: "v1.8"        
         volumeMounts:
         - name: volplugins
           mountPath: /etc/kubernetes/volumeplugins/
