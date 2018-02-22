@@ -4,7 +4,7 @@
 #  - Please install "jq" package before using this driver.
 
 DIR=$(dirname "$(readlink -f "$0")")
-JQ="$DIR/jq"
+JQ="/usr/bin/jq"
 BLOBFUSE=$DIR/bin/blobfuse
 LOG="/var/log/blobfuse.log"
 
