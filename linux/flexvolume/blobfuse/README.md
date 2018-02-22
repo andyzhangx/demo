@@ -25,7 +25,7 @@ vi blobfuse-flexvol-installer.yaml
 ```
 kubectl create -f blobfuse-flexvol-installer.yaml
 ```
- - Use following command lines to check daemonset status:
+ - check daemonset status:
 ```
 kubectl describe daemonset blobfuse-flexvol-installer --namespace=kube-system
 kubectl get po --namespace=kube-system
