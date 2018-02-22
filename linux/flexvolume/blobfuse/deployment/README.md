@@ -1,4 +1,4 @@
-## Build blobfuse-flexvol-installer image
+## 1. Build blobfuse-flexvol-installer image
 
 ```
 mkdir blobfuse-flexvol-installer
@@ -9,7 +9,7 @@ wget -O install.sh https://raw.githubusercontent.com/andyzhangx/Demo/master/linu
 
 docker build --no-cache -t andyzhangx/blobfuse-flexvol-installer:1.0 .
 ```
-## Test blobfuse-flexvol-installer image
+## 2. Test blobfuse-flexvol-installer image
 ```
 docker run -d --name flex andyzhangx/blobfuse-flexvol-installer:1.0
 docker exec -it flex bash
@@ -24,7 +24,7 @@ if you cannot `docker exec -it flex bash`, run followng command to check logs:
 docker logs flex
 ```
 
-## Push blobfuse-flexvol-installer image
+## 3. Push blobfuse-flexvol-installer image
 ```
 docker login
 docker push andyzhangx/blobfuse-flexvol-installer:1.0
