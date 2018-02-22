@@ -18,7 +18,7 @@ I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-a
 ### Option#1. Automatically install
  - download `blobfuse-flexvol-installer.yaml` and change `KUBELET_VERSION` var according to kubelet version(e.g. v1.8, v1.9)
 ```
-https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer.yaml
+wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer.yaml
 vi blobfuse-flexvol-installer.yaml
 ```
  - create daemonset to install blobfuse driver
