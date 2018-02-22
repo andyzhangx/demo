@@ -80,10 +80,11 @@ tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
 ### about this blobfuse flexvolume driver usage
-1. You will get following error if you don't specify your secret type as driver name `blobfuse/blobfuse`
+ - You will get following error if you don't specify your secret type as driver name `blobfuse/blobfuse`
 ```
 MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-secret
 ```
+ - Flexvolume is a GA feature from Kubernetes **1.8** release onwards.
 
 ### Links
 [azure-storage-fuse](https://github.com/Azure/azure-storage-fuse)
