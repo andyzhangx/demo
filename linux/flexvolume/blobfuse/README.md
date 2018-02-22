@@ -20,6 +20,12 @@ I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-a
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer.yaml
 ```
 
+Use following command lines to check daemonset status:
+```
+kubectl describe daemonset blobfuse-flexvol-installer --namespace=kube-system
+kubectl get po --namespace=kube-system
+```
+
 ### Option#2. Manually install on every agent node
 ```
 sudo apt install jq -y
