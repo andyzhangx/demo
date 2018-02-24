@@ -4,11 +4,11 @@
 
 edit yaml files under `/etc/kubernetes/manifests/`, change `--v=2` value and then run `sudo service docker restart`
 
- - for `kubelet`:
+ - for kubelet on Linux agent::
 
 edit yaml file under `/etc/systemd/system/kubelet.service`, change `--v=2` value and then run `sudo systemctl restart kubelet`
 
-#### On Windows agent
+ - for kubelet on Windows agent:
 edit `c:\k\kubeletstart.ps1`, check the parameter(`--v=2`) in `c:\k\kubelet.exe` command
 restart `Kubelet` service
 
