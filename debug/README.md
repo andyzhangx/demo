@@ -4,13 +4,16 @@
 
 edit yaml files under `/etc/kubernetes/manifests/`, change `--v=2` value and then run `sudo service docker restart`
 
- - for kubelet on Linux agent::
+ - for kubelet on Linux agent:
 
 edit yaml file under `/etc/systemd/system/kubelet.service`, change `--v=2` value and then run `sudo systemctl restart kubelet`
 
  - for kubelet on Windows agent:
+ 
 edit `c:\k\kubeletstart.ps1`, check the parameter(`--v=2`) in `c:\k\kubelet.exe` command
 restart `Kubelet` service
+ - Note:
+ `--v=2` means only output log level <=2 messages, the bigger log level the more logging.
 
 ### Q: There is no k8s component container running on master, how to do troubleshooting?
 run `journalctl -u kubelet` to get the kubelet related logs
