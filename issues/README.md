@@ -1,9 +1,9 @@
 ## This page lists known k8s on azure issues and corresponding fixes
 
 ### azure disk plugin known issues
- - Multi-Attach disk error when scheduling a pod with azure disk mount from one node to another
+#### Multi-Attach disk error when scheduling a pod with azure disk mount from one node to another
  
- - disk unavailable after attach/detach a data disk on a node
+#### disk unavailable after attach/detach a data disk on a node
 **Issue description**:
 From k8s v1.7, default host cache setting changed from `None` to `ReadWrite`, this change would lead to device name change after attach multiple disks on a node, finally lead to disk unavailable from pod. When access data disk inside a pod, will get following error:
 ```
@@ -25,16 +25,16 @@ azureuser@k8s-agentpool2-40588258-0:~$ tree /dev/disk/azure
     â””â”€â”€ lun6 -> ../../../sdi
 ```
  
-| Issue List |
+| Related issue list |
 | ---- |
 | [device name change due to azure disk host cache setting](https://github.com/kubernetes/kubernetes/issues/60344) | 
 | [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/kubernetes/kubernetes/issues/57444) |
 | [Disk error when pods are mounting a certain amount of volumes on a node](https://github.com/Azure/AKS/issues/201) |
 | [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/Azure/acs-engine/issues/1918) |
 
-**Fix**:
+**Fix or workaround**:
 
-add `cachingmode: None` in azure disk storage class, e.g.
+ - add `cachingmode: None` in azure disk storage class(default is `ReadWrite`), e.g.
 ```
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -47,7 +47,7 @@ parameters:
   cachingmode: None
 ```
 
-PR [fix device name change issue for azure disk](https://github.com/kubernetes/kubernetes/pull/60346) could fix this issue too, it will change default `cachingmode` value from `ReadWrite` to `None`.
+ - PR [fix device name change issue for azure disk](https://github.com/kubernetes/kubernetes/pull/60346) could fix this issue too, it will change default `cachingmode` value from `ReadWrite` to `None`.
 
 ### azure file plugin known issues
 
