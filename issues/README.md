@@ -1,9 +1,19 @@
 ## This page lists known k8s on azure issues and corresponding fixes
 
 ### azure disk plugin known issues
-#### Multi-Attach disk error when scheduling a pod with azure disk mount from one node to another
- 
-#### disk unavailable after attach/detach a data disk on a node
+#### 1. Multi-Attach disk error
+when scheduling a pod with azure disk mount from one node to another
+**Issue description**:
+
+| Related issue list |
+| ---- |
+| [Azure Disk Detach are not working with multiple disk detach on the same Node](https://github.com/kubernetes/kubernetes/issues/60101) |
+
+
+**Fix or workaround**:
+[fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183)
+
+#### 2. disk unavailable after attach/detach a data disk on a node
 **Issue description**:
 From k8s v1.7, default host cache setting changed from `None` to `ReadWrite`, this change would lead to device name change after attach multiple disks on a node, finally lead to disk unavailable from pod. When access data disk inside a pod, will get following error:
 ```
@@ -33,7 +43,6 @@ azureuser@k8s-agentpool2-40588258-0:~$ tree /dev/disk/azure
 | [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/Azure/acs-engine/issues/1918) |
 
 **Fix or workaround**:
-
  - add `cachingmode: None` in azure disk storage class(default is `ReadWrite`), e.g.
 ```
 kind: StorageClass
