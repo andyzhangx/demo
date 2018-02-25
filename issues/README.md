@@ -4,7 +4,7 @@
 ### 1. Multi-Attach disk error
 **Issue description**:
 
-In some corner case, when scheduling a pod with azure disk mount from one node to another, there could be lots of `Multi-Attach` error due to the disk not being released in time from the previous node. This issue is due to lack of lock before DetachDisk, actually there should be a global lock for both AttachDisk and DetachDisk opertions, only one AttachDisk or DetachDisk opertion is allowed at one time.
+In some corner case, when scheduling a pod with azure disk mount from one node to another, there could be lots of `Multi-Attach` error due to the disk not being released in time from the previous node. This issue is due to lack of lock before DetachDisk operation, actually there should be a central lock for both AttachDisk and DetachDisk opertions, only one AttachDisk or DetachDisk operation is allowed at one time.
 
 The `Multi-Attach` error could be like following:
 ```
