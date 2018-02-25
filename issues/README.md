@@ -36,11 +36,11 @@ option#2:
 
  | k8s version | fixed version |
 | ---- | ---- |
-| v1.6.x | could not fix since no cherry-pick is allowed for v1.6 |
-| v1.8.x | in cherry-pick |
-| v1.8.x | in cherry-pick |
-| v1.9.x | in cherry-pick |
-| v1.10.x | fixed in v1.10.0 |
+| v1.6 | could not fix since no cherry-pick is allowed for v1.6 |
+| v1.8 | in cherry-pick |
+| v1.8 | in cherry-pick |
+| v1.9 | in cherry-pick |
+| v1.10 | fixed in v1.10.0 |
 
 ## 2. disk unavailable after attach/detach a data disk on a node
 **Issue description**:
@@ -91,11 +91,11 @@ parameters:
  
  | k8s version | fixed version |
 | ---- | ---- |
-| v1.6.x | no such issue as default `cachingmode` is `None` |
-| v1.8.x | in cherry-pick |
-| v1.8.x | in cherry-pick |
-| v1.9.x | in cherry-pick |
-| v1.10.x | fixed in v1.10.0 |
+| v1.6 | no such issue as default `cachingmode` is `None` |
+| v1.8 | in cherry-pick |
+| v1.8 | in cherry-pick |
+| v1.9 | in cherry-pick |
+| v1.10 | fixed in v1.10.0 |
 
 ## azure file plugin known issues
 
