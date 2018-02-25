@@ -1,7 +1,7 @@
-## This page lists known k8s on azure issues and corresponding fixes
+# This page lists known k8s on azure issues and corresponding fixes
 
-### azure disk plugin known issues
-#### 1. Multi-Attach disk error
+## azure disk plugin known issues
+### 1. Multi-Attach disk error
 when scheduling a pod with azure disk mount from one node to another
 **Issue description**:
 
@@ -13,7 +13,7 @@ when scheduling a pod with azure disk mount from one node to another
 **Fix or workaround**:
 [fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183)
 
-#### 2. disk unavailable after attach/detach a data disk on a node
+### 2. disk unavailable after attach/detach a data disk on a node
 **Issue description**:
 From k8s v1.7, default host cache setting changed from `None` to `ReadWrite`, this change would lead to device name change after attach multiple disks on a node, finally lead to disk unavailable from pod. When access data disk inside a pod, will get following error:
 ```
@@ -58,7 +58,7 @@ parameters:
 
  - PR [fix device name change issue for azure disk](https://github.com/kubernetes/kubernetes/pull/60346) could fix this issue too, it will change default `cachingmode` value from `ReadWrite` to `None`.
 
-### azure file plugin known issues
+## azure file plugin known issues
 
 
-### azure network known issues
+## azure network known issues
