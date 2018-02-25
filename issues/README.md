@@ -3,6 +3,7 @@
 ## azure disk plugin known issues
 ### 1. Multi-Attach disk error
 **Issue description**:
+
 when scheduling a pod with azure disk mount from one node to another, there could be lots of `Multi-Attach` error. This issue is because there is lock before detaching azure disk, actually there should be a global lock for both AttachDisk and DetachDisk functions, that is there could only be one AttachDisk or DetachDisk at one time.
 
 | Related issue list |
@@ -11,10 +12,12 @@ when scheduling a pod with azure disk mount from one node to another, there coul
 
 
 **Fix or workaround**:
+
 [fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183)
 
 ### 2. disk unavailable after attach/detach a data disk on a node
 **Issue description**:
+
 From k8s v1.7, default host cache setting changed from `None` to `ReadWrite`, this change would lead to device name change after attach multiple disks on a node, finally lead to disk unavailable from pod. When access data disk inside a pod, will get following error:
 ```
 [root@admin-0 /]# ls /datadisk
@@ -43,6 +46,7 @@ azureuser@k8s-agentpool2-40588258-0:~$ tree /dev/disk/azure
 | [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/Azure/acs-engine/issues/1918) |
 
 **Fix or workaround**:
+
  - add `cachingmode: None` in azure disk storage class(default is `ReadWrite`), e.g.
 ```
 kind: StorageClass
