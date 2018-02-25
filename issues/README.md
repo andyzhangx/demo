@@ -4,16 +4,25 @@
 ### 1. Multi-Attach disk error
 **Issue description**:
 
-when scheduling a pod with azure disk mount from one node to another, there could be lots of `Multi-Attach` error. This issue is because there is lock before detaching azure disk, actually there should be a global lock for both AttachDisk and DetachDisk functions, that is there could only be one AttachDisk or DetachDisk at one time.
+In some corner case, when scheduling a pod with azure disk mount from one node to another, there could be lots of `Multi-Attach` error due to the disk not being released in time from the previous node. This issue is due to lack of lock before DetachDisk, actually there should be a global lock for both AttachDisk and DetachDisk opertions, only one AttachDisk or DetachDisk opertion is allowed at one time.
 
 | Related issue list |
 | ---- |
 | [Azure Disk Detach are not working with multiple disk detach on the same Node](https://github.com/kubernetes/kubernetes/issues/60101) |
-
+| [Since Intel CPU Azure update, new Azure Disks are not mounting, very critical... ](https://github.com/Azure/acs-engine/issues/2002) |
+| [Busy azure-disk regularly fail to mount causing K8S Pod deployments to halt](https://github.com/Azure/ACS/issues/12) |
 
 **Fix or workaround**:
 
-[fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183)
+PR [fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183)
+
+ | k8s version | fixed version |
+| ---- | ---- |
+| v1.6.x | could not fix since no cherry-pick is allowed for v1.6 |
+| v1.8.x | in cherry-pick |
+| v1.8.x | in cherry-pick |
+| v1.9.x | in cherry-pick |
+| v1.10.x | fixed in v1.10.0 |
 
 ### 2. disk unavailable after attach/detach a data disk on a node
 **Issue description**:
@@ -61,6 +70,14 @@ parameters:
 ```
 
  - PR [fix device name change issue for azure disk](https://github.com/kubernetes/kubernetes/pull/60346) could fix this issue too, it will change default `cachingmode` value from `ReadWrite` to `None`.
+ 
+ | k8s version | fixed version |
+| ---- | ---- |
+| v1.6.x | no such issue as default `cachingmode` is `None` |
+| v1.8.x | in cherry-pick |
+| v1.8.x | in cherry-pick |
+| v1.9.x | in cherry-pick |
+| v1.10.x | code in review |
 
 ## azure file plugin known issues
 
