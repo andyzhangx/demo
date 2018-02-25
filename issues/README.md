@@ -6,6 +6,11 @@
 
 In some corner case, when scheduling a pod with azure disk mount from one node to another, there could be lots of `Multi-Attach` error due to the disk not being released in time from the previous node. This issue is due to lack of lock before DetachDisk, actually there should be a global lock for both AttachDisk and DetachDisk opertions, only one AttachDisk or DetachDisk opertion is allowed at one time.
 
+The error could be like following:
+```
+14h	1m	439	{controller-manager }	Warning	FailedMount	Failed to attach volume "pvc-95aa8dbf-082e-11e7-af1a-000d3a2735d9" on node "k8s-agent-1da8a8df-2" with: Attach volume "clst-west-eu-dev-dynamic-pvc-95aa8dbf-082e-11e7-af1a-000d3a2735d9.vhd" to instance "k8s-agent-1DA8A8DF-2" failed with compute.VirtualMachinesClient#CreateOrUpdate: Failure responding to request: StatusCode=409 -- Original Error: autorest/azure: Service returned an error. Status=409 Code="AttachDiskWhileBeingDetached" Message="Cannot attach data disk 'clst-west-eu-dev-dynamic-pvc-f843f8fa-0663-11e7-af1a-000d3a2735d9.vhd' to VM 'k8s-agent-1DA8A8DF-2' because the disk is currently being detached. Please wait until the disk is completely detached and then try again."
+```
+
 | Related issue list |
 | ---- |
 | [Azure Disk Detach are not working with multiple disk detach on the same Node](https://github.com/kubernetes/kubernetes/issues/60101) |
