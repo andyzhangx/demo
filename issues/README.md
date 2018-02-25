@@ -13,8 +13,21 @@ In some corner case, when scheduling a pod with azure disk mount from one node t
 | [Busy azure-disk regularly fail to mount causing K8S Pod deployments to halt](https://github.com/Azure/ACS/issues/12) |
 
 **Fix or workaround**:
-
-PR [fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183)
+ - Following workarounds could mitigate this issue
+ 
+option#1: Update every agent node has on Azure cloud shell:
+ ```
+$vm = Get-AzureRMVM -ResourceGroupName $rg -Name $vmname  
+Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
+ ```
+option#2: 
+1) kubectl cordon <node>
+2) delete any pods on node with stateful sets
+3) kubectl drain <node>
+4) restart the Azure VM for node via the API or portal, wait untli VM is "Running"
+5) kubectl uncordon <node>
+ 
+ - PR [fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183) has fixed this issue by add a lock before DetachDisk
 
  | k8s version | fixed version |
 | ---- | ---- |
