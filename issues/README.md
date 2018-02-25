@@ -95,7 +95,7 @@ parameters:
 | v1.8.x | in cherry-pick |
 | v1.8.x | in cherry-pick |
 | v1.9.x | in cherry-pick |
-| v1.10.x | code in review |
+| v1.10.x | fixed in v1.10.0 |
 
 ## azure file plugin known issues
 
