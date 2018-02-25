@@ -1,4 +1,4 @@
-# known k8s on azure issues and corresponding fix/workaround
+# known k8s on azure issues and fix/workaround
 
 ## azure disk plugin known issues
 ### 1. Multi-Attach disk error
@@ -42,7 +42,7 @@ option#2:
 | v1.9.x | in cherry-pick |
 | v1.10.x | fixed in v1.10.0 |
 
-### 2. disk unavailable after attach/detach a data disk on a node
+## 2. disk unavailable after attach/detach a data disk on a node
 **Issue description**:
 
 From k8s v1.7, default host cache setting changed from `None` to `ReadWrite`, this change would lead to device name change after attach multiple disks on a node, finally lead to disk unavailable from pod. When access data disk inside a pod, will get following error:
