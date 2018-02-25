@@ -1,4 +1,4 @@
-# known k8s on azure issues and fix/workaround
+# known k8s on azure issues and fixes
 
 ## azure disk plugin known issues
 ### 1. Multi-Attach disk error
