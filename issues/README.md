@@ -26,11 +26,11 @@ $vm = Get-AzureRMVM -ResourceGroupName $rg -Name $vmname
 Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
  ```
 option#2: 
-1) kubectl cordon <node>
+1) kubectl cordon node
 2) delete any pods on node with stateful sets
-3) kubectl drain <node>
+3) kubectl drain node
 4) restart the Azure VM for node via the API or portal, wait untli VM is "Running"
-5) kubectl uncordon <node>
+5) kubectl uncordon node
  
  - PR [fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183) has fixed this issue by add a lock before DetachDisk
 
