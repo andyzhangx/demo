@@ -1,7 +1,7 @@
 # known k8s on azure issues and fixes
 
 ## azure disk plugin known issues
-### 1. Multi-Attach disk error
+### 1. disk attach error
 **Issue description**:
 
 In some corner case, when scheduling a pod with azure disk mount from one node to another, there could be lots of disk attach error due to the disk not being released in time from the previous node. This issue is due to lack of lock before DetachDisk operation, actually there should be a central lock for both AttachDisk and DetachDisk opertions, only one AttachDisk or DetachDisk operation is allowed at one time.
