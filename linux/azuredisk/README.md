@@ -83,6 +83,7 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ### known issues of Azure disk feature
 1. [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
 2. Time cost for Azure Disk PVC mount on a pod is around 1 minute, and there is a [using cache fix](https://github.com/kubernetes/kubernetes/pull/57432) for this issue, which could reduce the mount time cost to around 30s.
+3. An Azure disk can only be mounted with Access mode type `ReadWriteOnce`, which makes it available to only a single node. If needing to share a persistent volume across multiple nodes, consider using [Azure File](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile).
 
 #### Links
 [Azure Disk Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-disk)
