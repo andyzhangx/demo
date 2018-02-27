@@ -11,34 +11,30 @@ The disk attach error could be like following:
 Cannot attach data disk 'cdb-dynamic-pvc-92972088-11b9-11e8-888f-000d3a018174' to VM 'kn-edge-0' because the disk is currently being detached or the last detach operation failed. Please wait until the disk is completely detached and then try again or delete/detach the disk explicitly again.
 ```
 
+**Related issues**
+ - [Azure Disk Detach are not working with multiple disk detach on the same Node](https://github.com/kubernetes/kubernetes/issues/60101)
+ - [Since Intel CPU Azure update, new Azure Disks are not mounting, very critical... ](https://github.com/Azure/acs-engine/issues/2002)
+ - [Busy azure-disk regularly fail to mount causing K8S Pod deployments to halt](https://github.com/Azure/ACS/issues/12)
 
-
-| Related issue list |
-| ---- |
-| [Azure Disk Detach are not working with multiple disk detach on the same Node](https://github.com/kubernetes/kubernetes/issues/60101) |
-| [Since Intel CPU Azure update, new Azure Disks are not mounting, very critical... ](https://github.com/Azure/acs-engine/issues/2002) |
-| [Busy azure-disk regularly fail to mount causing K8S Pod deployments to halt](https://github.com/Azure/ACS/issues/12) |
-
-**Fix or workaround**:
- - Following workarounds could mitigate this issue
- 
-option#1: Update every agent node has on Azure cloud shell:
+**Workaround**:
+ - option#1: Update every agent node has on Azure cloud shell:
  ```
 $vm = Get-AzureRMVM -ResourceGroupName $rg -Name $vmname  
 Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
  ```
-option#2: 
+ - option#2: 
 1) kubectl cordon node
 2) delete any pods on node with stateful sets
 3) kubectl drain node
 4) restart the Azure VM for node via the API or portal, wait untli VM is "Running"
 5) kubectl uncordon node
  
+**Fix**
  - PR [fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183) has fixed this issue by add a lock before DetachDisk
 
- | k8s version | fixed version |
+| k8s version | fixed version |
 | ---- | ---- |
-| v1.6 | could not fix since no cherry-pick is allowed for v1.6 |
+| v1.6 | no fix since no cherry-pick is allowed for v1.6 any more |
 | v1.8 | in cherry-pick |
 | v1.8 | in cherry-pick |
 | v1.9 | in cherry-pick |
@@ -67,15 +63,13 @@ azureuser@k8s-agentpool2-40588258-0:~$ tree /dev/disk/azure
     â””â”€â”€ lun6 -> ../../../sdi
 ```
  
-| Related issue list |
-| ---- |
-| [device name change due to azure disk host cache setting](https://github.com/kubernetes/kubernetes/issues/60344) | 
-| [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/kubernetes/kubernetes/issues/57444) |
-| [Disk error when pods are mounting a certain amount of volumes on a node](https://github.com/Azure/AKS/issues/201) |
-| [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/Azure/acs-engine/issues/1918) |
+**Related issues**
+ - [device name change due to azure disk host cache setting](https://github.com/kubernetes/kubernetes/issues/60344)
+ - [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/kubernetes/kubernetes/issues/57444)
+ - [Disk error when pods are mounting a certain amount of volumes on a node](https://github.com/Azure/AKS/issues/201)
+ - [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/Azure/acs-engine/issues/1918)
 
-**Fix or workaround**:
-
+**Workaround**:
  - add `cachingmode: None` in azure disk storage class(default is `ReadWrite`), e.g.
 ```
 kind: StorageClass
@@ -89,9 +83,10 @@ parameters:
   cachingmode: None
 ```
 
+**Fix**
  - PR [fix device name change issue for azure disk](https://github.com/kubernetes/kubernetes/pull/60346) could fix this issue too, it will change default `cachingmode` value from `ReadWrite` to `None`.
  
- | k8s version | fixed version |
+| k8s version | fixed version |
 | ---- | ---- |
 | v1.6 | no such issue as default `cachingmode` is `None` |
 | v1.8 | in cherry-pick |
