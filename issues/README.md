@@ -102,7 +102,17 @@ parameters:
 ## azure file plugin known issues
 ### 1. azure file file/dir mode issue
 
-### 2. azure file dynamic provision permission issue in acs-engine
+### 2. permission issue of azure file dynamic provision in acs-engine
+**error logs**:
+```
+Events:
+  Type     Reason              Age   From                         Message
+  ----     ------              ----  ----                         -------
+  Warning  ProvisioningFailed  8s    persistentvolume-controller  Failed to provision volume with StorageClass "azurefile": Couldn't create secret secrets is forbidden: User "system:serviceaccount:kube-syste
+m:persistent-volume-binder" cannot create secrets in the namespace "default"
+  Warning  ProvisioningFailed  8s    persistentvolume-controller  Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
+```
+
 | Related issue list |
 | ---- |
 | [azure file PVC need secrets create permission for persistent-volume-binder](https://github.com/kubernetes/kubernetes/issues/59543) |
