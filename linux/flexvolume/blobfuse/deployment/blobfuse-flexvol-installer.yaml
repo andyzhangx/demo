@@ -19,7 +19,7 @@ spec:
         image: andyzhangx/blobfuse-flexvol-installer:1.0
         env:
         - name: KUBELET_VERSION
-          value: "v1.8"        
+          value: v1.9        
         volumeMounts:
         - name: volplugins
           mountPath: /etc/kubernetes/volumeplugins/
