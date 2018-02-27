@@ -16,4 +16,4 @@ spec:
       secretRef:
         name: blobfusecreds
       options:
-        container: "CONTAINER-NAME"
+        container: CONTAINER-NAME
