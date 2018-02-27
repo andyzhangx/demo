@@ -2,7 +2,7 @@
 
 ## azure disk plugin known issues
 ### 1. disk attach error
-**Issue description**:
+**Issue details**:
 
 In some corner case(detaching multiple disks on a node simultaneously), when scheduling a pod with azure disk mount from one node to another, there could be lots of disk attach error(no recovery) due to the disk not being released in time from the previous node. This issue is due to lack of lock before DetachDisk operation, actually there should be a central lock for both AttachDisk and DetachDisk opertions, only one AttachDisk or DetachDisk operation is allowed at one time.
 
@@ -44,8 +44,8 @@ option#2:
 | v1.9 | in cherry-pick |
 | v1.10 | fixed in v1.10.0 |
 
-## 2. disk unavailable after attach/detach a data disk on a node
-**Issue description**:
+### 2. disk unavailable after attach/detach a data disk on a node
+**Issue details**:
 
 From k8s v1.7, default host cache setting changed from `None` to `ReadWrite`, this change would lead to device name change after attach multiple disks on a node, finally lead to disk unavailable from pod. When access data disk inside a pod, will get following error:
 ```
@@ -100,6 +100,14 @@ parameters:
 | v1.10 | fixed in v1.10.0 |
 
 ## azure file plugin known issues
+### 1. azure file file/dir mode issue
 
+### 2. azure file dynamic provision permission issue in acs-engine
+| Related issue list |
+| ---- |
+| [azure file PVC need secrets create permission for persistent-volume-binder](https://github.com/kubernetes/kubernetes/issues/59543) |
+ - PR [fix azure file dynamic provision permission issue](https://github.com/Azure/acs-engine/pull/2238)
+ 
+### 3. mount options support of azure file
 
 ## azure network known issues
