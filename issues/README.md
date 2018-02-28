@@ -88,7 +88,7 @@ parameters:
  
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.6 | no such issue as default `cachingmode` is `None` |
+| v1.6 | no such issue as `cachingmode` is already `None` by default |
 | v1.8 | in cherry-pick |
 | v1.8 | in cherry-pick |
 | v1.9 | in cherry-pick |
@@ -96,8 +96,15 @@ parameters:
 
 ## azure file plugin known issues
 ### 1. azure file file/dir mode issue
+**Issue details**:
+
+
 
 ### 2. permission issue of azure file dynamic provision in acs-engine
+**Issue details**:
+
+From acs-engine v0.12.0, RBAC is enabled, azure file dynamic provision does not work from this version
+
 **error logs**:
 ```
 Events:
@@ -109,13 +116,16 @@ m:persistent-volume-binder" cannot create secrets in the namespace "default"
 ```
 
 **Related issues**
-[azure file PVC need secrets create permission for persistent-volume-binder](https://github.com/kubernetes/kubernetes/issues/59543)
+ - [azure file PVC need secrets create permission for persistent-volume-binder](https://github.com/kubernetes/kubernetes/issues/59543)
 
 **Workaround**:
-
+ - Add a ClusterRole and ClusterRoleBinding for [azure file dynamic privision](https://github.com/andyzhangx/Demo/tree/master/linux/azurefile#dynamic-provisioning-for-azure-file-in-linux-support-from-v170)
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/rbac/azure-cloud-provider-deployment.yaml
+```
 
 **Fix**
- - PR [fix azure file dynamic provision permission issue](https://github.com/Azure/acs-engine/pull/2238)
+ - PR in acs-engine: [fix azure file dynamic provision permission issue](https://github.com/Azure/acs-engine/pull/2238)
  
 ### 3. mount options support of azure file
 
