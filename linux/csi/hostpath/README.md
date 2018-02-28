@@ -38,3 +38,5 @@ tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 [Introducing Container Storage Interface (CSI) Alpha for Kubernetes](http://blog.kubernetes.io/2018/01/introducing-container-storage-interface.html)
 
 [Kubernetes CSI Documentation](https://kubernetes-csi.github.io/docs/Home.html)
+
+[CSI Volume Plugins in Kubernetes Design Doc](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/storage/container-storage-interface.md)
