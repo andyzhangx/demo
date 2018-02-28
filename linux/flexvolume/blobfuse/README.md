@@ -1,4 +1,5 @@
- - Flexvolume is a GA feature from Kubernetes **1.8** release, prior to v1.8 is depreciated since does not support flex volume driver dynamic detection.
+# Kubernetes volume driver for blobfuse
+ - Flexvolume is GA from Kubernetes **1.8** release, prior to v1.8 version is depreciated since it does not support flex volume driver dynamic detection.
 
 ## 1. specify `volume-plugin-dir` in kubelet service config (skip this step in AKS or from acs-engine v0.12.0)
 ```
