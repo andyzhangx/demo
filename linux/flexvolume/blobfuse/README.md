@@ -81,6 +81,7 @@ blobfuse         30G  5.5G   24G  19% /data
 shm              64M     0   64M   0% /dev/shm
 tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
+In the above example, there is a `/data` directory mounted as blobfuse filesystem.
 
 ### about this blobfuse flexvolume driver usage
  - You will get following error if you don't specify your secret type as driver name `blobfuse/blobfuse`
