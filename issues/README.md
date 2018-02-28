@@ -162,3 +162,8 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 **Fix**
 
 ## azure network known issues
+### 1. network interface failed
+**Workaround**:
+```
+az network nic update -g RG-NAME -n NIC-NAME
+```
