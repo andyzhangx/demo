@@ -1,6 +1,7 @@
 # blobfuse flex volume driver for Kubernetes 
- - Flexvolume is GA from Kubernetes **1.8** release, prior to v1.8 version is depreciated since it does not support flex volume driver dynamic detection.
+ - Flexvolume is GA from Kubernetes **1.8** release, v1.7 is depreciated since it does not support flex volume driver dynamic detection.
 
+# Install
 ## 1. specify `volume-plugin-dir` in kubelet service config (skip this step in AKS or from acs-engine v0.12.0)
 ```
 sudo vi /etc/systemd/system/kubelet.service
@@ -48,12 +49,13 @@ sudo wget -O blobfuse https://raw.githubusercontent.com/andyzhangx/Demo/master/l
 sudo chmod a+x blobfuse
 ```
 
-## 3. create a secret which stores blobfuse account name and password
+# Basic Usage
+## 1. create a secret which stores blobfuse account name and password
 ```
 kubectl create secret generic blobfusecreds --from-literal username=USERNAME --from-literal password="PASSWORD" --type="azure/blobfuse"
 ```
 
-## 4. create a pod with flexvolume blobfuse mount driver on linux
+## 2. create a pod with flexvolume blobfuse mount driver on linux
  - download `nginx-flex-blobfuse.yaml` file and modify `container` field
 ```
 wget -O nginx-flex-blobfuse.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/nginx-flex-blobfuse.yaml
@@ -67,7 +69,7 @@ kubectl create -f nginx-flex-blobfuse.yaml
 #### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po nginx-flex-blobfuse
 
-## 5. enter the pod container to do validation
+## 3. enter the pod container to do validation
 kubectl exec -it nginx-flex-blobfuse -- bash
 
 ```
