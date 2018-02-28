@@ -1,4 +1,4 @@
-## hostpath csi driver example
+## hostpath CSI driver example
 
 ### 1. Set up [External Attacher](https://github.com/kubernetes-csi/external-attacher), [External Provisioner](https://github.com/kubernetes-csi/external-provisioner), [Driver Registrar](https://github.com/kubernetes-csi/driver-registrar), and ClusterRole permissions 
 ```
@@ -35,4 +35,6 @@ tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
  - CSI hostpath driver would mkdir under `/var/lib/kubelet/pods/5a6d98a3-1c57-11e8-a48d-000d3afdbef1/volumes/kubernetes.io~csi/kubernetes-dynamic-pvc-5a7519c9-1c57-11e8-99dd-bab516dca496/mount`, mount to `/data` dir in the above example
 
 #### Links
+[Introducing Container Storage Interface (CSI) Alpha for Kubernetes](http://blog.kubernetes.io/2018/01/introducing-container-storage-interface.html)
+
 [Kubernetes CSI Documentation](https://kubernetes-csi.github.io/docs/Home.html)
