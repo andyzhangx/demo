@@ -94,6 +94,10 @@ parameters:
 | v1.9 | in cherry-pick |
 | v1.10 | fixed in v1.10.0 |
 
+### 3. [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
+
+### 4. Time cost for Azure Disk PVC mount on a pod is around 1 minute, and there is a [using cache fix](https://github.com/kubernetes/kubernetes/pull/57432) for this issue, which could reduce the mount time cost to around 30s.
+
 ## azure file plugin known issues
 ### 1. azure file file/dir mode setting issue
 **Issue details**:
