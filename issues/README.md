@@ -95,10 +95,18 @@ parameters:
 | v1.10 | fixed in v1.10.0 |
 
 ## azure file plugin known issues
-### 1. azure file file/dir mode issue
+### 1. azure file file/dir mode setting issue
 **Issue details**:
 
+`fileMode`, `dirMode` value would be different in different versions, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5). For version v1.8.0-v1.8.4, since [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) is not available, as a workaround, specify a [securityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for the container with: `runAsUser: 0`, here is an [example](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/demo-azurefile-securitycontext.yaml)
 
+| version | `fileMode`, `dirMode` value |
+| ---- | ---- |
+| v1.6.x, v1.7.x | 0777 |
+| v1.8.0-v1.8.5 | 0700 |
+| v1.8.6 or above | 0755 |
+| v1.9.0 | 0700 |
+| v1.9.1 or above | 0755 |
 
 ### 2. permission issue of azure file dynamic provision in acs-engine
 **Issue details**:
@@ -127,6 +135,6 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-e
 **Fix**
  - PR in acs-engine: [fix azure file dynamic provision permission issue](https://github.com/Azure/acs-engine/pull/2238)
  
-### 3. mount options support of azure file
+### 3. [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
 
 ## azure network known issues
