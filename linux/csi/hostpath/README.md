@@ -14,11 +14,22 @@ web-server              1/1       Running   0          21m
 ```
 ### 2. create the pod based on hostpath csi driver
 ```
-kubectl create -f https://raw.githubusercontent.com/lpabon/csi-workspace/master/demo/pod.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/csi/hostpath/nginx-csi-hostpath.yaml
 ```
 
 ### 3. enter the pod container to do validation
-```kubectl exec -it nginx -- bash```
+```
+azureuser@k8s-master-87187153-0:~$ kubectl exec -it  nginx-csi-hostpath -- bash
+root@nginx-csi-hostpath:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          30G  8.9G   21G  31% /
+tmpfs           3.4G     0  3.4G   0% /dev
+tmpfs           3.4G     0  3.4G   0% /sys/fs/cgroup
+overlay          30G  8.9G   21G  31% /data
+/dev/sda1        30G  8.9G   21G  31% /etc/hosts
+shm              64M     0   64M   0% /dev/shm
+tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
+```
 
 #### Links
 [https://kubernetes-csi.github.io/docs/Home.html](https://kubernetes-csi.github.io/docs/Home.html)
