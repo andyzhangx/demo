@@ -2,7 +2,7 @@
 
 ### 1. Set up [External Attacher](https://github.com/kubernetes-csi/external-attacher), [External Provisioner](https://github.com/kubernetes-csi/external-provisioner), [Driver Registrar](https://github.com/kubernetes-csi/driver-registrar), and ClusterRole permissions 
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/csi/hostpath/hostPath.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/csi/hostpath/csi-hostpath.yaml
 ```
 
  - watch the status of all component pods until its `Status` changed from `Pending` to `Running`
