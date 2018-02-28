@@ -94,9 +94,11 @@ parameters:
 | v1.9 | in cherry-pick |
 | v1.10 | fixed in v1.10.0 |
 
-### 3. [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
+### 3. Azure disk support on Sovereign Cloud
+[Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
 
-### 4. Time cost for Azure Disk PVC mount on a pod is around 1 minute, and there is a [using cache fix](https://github.com/kubernetes/kubernetes/pull/57432) for this issue, which could reduce the mount time cost to around 30s.
+### 4. Time cost for Azure Disk PVC mount
+Time cost for Azure Disk PVC mount on a pod is around 1 minute, and there is a [using cache fix](https://github.com/kubernetes/kubernetes/pull/57432) for this issue, which could reduce the mount time cost to around 30s.
 
 ## azure file plugin known issues
 ### 1. azure file file/dir mode setting issue
@@ -139,6 +141,15 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-e
 **Fix**
  - PR in acs-engine: [fix azure file dynamic provision permission issue](https://github.com/Azure/acs-engine/pull/2238)
  
-### 3. [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
+### 3. Azure file support on Sovereign Cloud
+[Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
+
+### 4. azure file dynamic provision failed due to cluster name length issue
+**Issue details**:
+
+There is a [bug](https://github.com/kubernetes/kubernetes/pull/48326) of azure file dynamic provision in [v1.7.0, v1.7.10] (fixed in v1.7.11 or above, v1.8.0): cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
+```
+persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
+```
 
 ## azure network known issues
