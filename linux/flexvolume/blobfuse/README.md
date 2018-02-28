@@ -1,4 +1,6 @@
-## 1. specify `volume-plugin-dir` in kubelet service config (skip this step from acs-engine v0.12.0)
+ - Flexvolume is a GA feature from Kubernetes **1.8** release, prior to v1.8 is depreciated since does not support flex volume driver dynamic detection.
+
+## 1. specify `volume-plugin-dir` in kubelet service config (skip this step in AKS or from acs-engine v0.12.0)
 ```
 sudo vi /etc/systemd/system/kubelet.service
   --volume=/etc/kubernetes/volumeplugins:/etc/kubernetes/volumeplugins:rw \
@@ -84,7 +86,6 @@ tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 MountVolume.SetUp failed for volume "azure" : Couldn't get secret default/azure-secret
 ```
- - Flexvolume is a GA feature from Kubernetes **1.8** release onwards.
 
 ### Links
 [azure-storage-fuse](https://github.com/Azure/azure-storage-fuse)
