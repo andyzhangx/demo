@@ -108,9 +108,13 @@ m:persistent-volume-binder" cannot create secrets in the namespace "default"
   Warning  ProvisioningFailed  8s    persistentvolume-controller  Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
 
-| Related issue list |
-| ---- |
-| [azure file PVC need secrets create permission for persistent-volume-binder](https://github.com/kubernetes/kubernetes/issues/59543) |
+**Related issues**
+[azure file PVC need secrets create permission for persistent-volume-binder](https://github.com/kubernetes/kubernetes/issues/59543)
+
+**Workaround**:
+
+
+**Fix**
  - PR [fix azure file dynamic provision permission issue](https://github.com/Azure/acs-engine/pull/2238)
  
 ### 3. mount options support of azure file
