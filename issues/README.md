@@ -34,7 +34,7 @@ Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.6 | no fix since no cherry-pick is allowed for v1.6 any more |
+| v1.6 | no fix since v1.6 does not accept any cherry-pick |
 | v1.8 | in cherry-pick |
 | v1.8 | in cherry-pick |
 | v1.9 | in cherry-pick |
@@ -151,5 +151,14 @@ There is a [bug](https://github.com/kubernetes/kubernetes/pull/48326) of azure f
 ```
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
+
+### 5. azure file dynamic provision failed due to no storage account in current resource group
+**Issue details**:
+
+**Related issues**
+
+**Workaround**:
+
+**Fix**
 
 ## azure network known issues
