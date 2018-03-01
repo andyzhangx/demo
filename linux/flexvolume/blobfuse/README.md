@@ -20,15 +20,9 @@ I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-a
 
 ## 2. install blobfuse flex volume driver on every agent node (take Ubuntu 16.04 as an example)
 ### Option#1. Automatically install
- - download `blobfuse-flexvol-installer.yaml` and change `KUBELET_VERSION` value according to kubelet version, e.g. v1.9(by default), v1.8
-```
-wget -O blobfuse-flexvol-installer.yaml  https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer.yaml
-vi blobfuse-flexvol-installer.yaml
-```
  - create daemonset to install blobfuse driver
-```
-kubectl create -f blobfuse-flexvol-installer.yaml
-```
+v1.9: ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer-1.9.yaml```
+v1.8: ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/blobfuse/deployment/blobfuse-flexvol-installer-1.8.yaml```
  - check daemonset status:
 ```
 kubectl describe daemonset blobfuse-flexvol-installer --namespace=kube-system
