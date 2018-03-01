@@ -35,7 +35,7 @@ Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.6 | no fix since v1.6 does not accept any cherry-pick |
-| v1.8 | in cherry-pick |
+| v1.7 | in cherry-pick |
 | v1.8 | in cherry-pick |
 | v1.9 | in cherry-pick |
 | v1.10 | fixed in v1.10.0 |
@@ -89,7 +89,7 @@ parameters:
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.6 | no such issue as `cachingmode` is already `None` by default |
-| v1.8 | in cherry-pick |
+| v1.7 | in cherry-pick |
 | v1.8 | in cherry-pick |
 | v1.9 | in cherry-pick |
 | v1.10 | fixed in v1.10.0 |
@@ -160,6 +160,27 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 **Workaround**:
 
 **Fix**
+
+### 6. azure file plugin on Windows does not work after node restart
+**Issue details**:
+azure file plugin on Windows does not work after node restart, this is due to `New-SmbGlobalMapping` cmdlet has lost account name/key after reboot
+
+**Related issues**
+ - [azure file plugin on Windows does not work after node restart](https://github.com/kubernetes/kubernetes/issues/60624)
+
+**Workaround**:
+ - delete the original pod with azure file mount
+ - create the pod again
+
+**Fix**
+ - PR [fix azure file plugin failure issue on Windows after node restart](https://github.com/kubernetes/kubernetes/pull/60625)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.7 |  |
+| v1.8 |  |
+| v1.9 |  |
+| v1.10 | code review in v1.10.0 |
 
 ## azure network known issues
 ### 1. network interface failed
