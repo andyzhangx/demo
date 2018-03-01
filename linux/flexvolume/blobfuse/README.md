@@ -36,6 +36,7 @@ kubectl get po --namespace=kube-system
 ```
 
 ### Option#2. Manually install on every agent node
+Take k8s v1.9 as an example:
 ```
 version=v1.9
 sudo mkdir -p /etc/kubernetes/volumeplugins/azure~blobfuse/bin
