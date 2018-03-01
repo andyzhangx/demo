@@ -17,7 +17,7 @@ Cannot attach data disk 'cdb-dynamic-pvc-92972088-11b9-11e8-888f-000d3a018174' t
  - [Busy azure-disk regularly fail to mount causing K8S Pod deployments to halt](https://github.com/Azure/ACS/issues/12)
 
 **Workaround**:
- - option#1: Update every agent node has on Azure cloud shell:
+ - option#1: Update every agent node that has this issue on Azure cloud shell:
  ```
 $vm = Get-AzureRMVM -ResourceGroupName $rg -Name $vmname  
 Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
