@@ -167,3 +167,20 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 ```
 az network nic update -g RG-NAME -n NIC-NAME
 ```
+
+## Other issues
+### 1. `GET/VirtualMachine` has too many ARM api calls
+**Issue details**:
+There could be ARM api throttling due to too many ARM api calls in a time period.
+
+**error logs**:
+```
+"OperationNotAllowed",\r\n    "message": "The server rejected the request because too many requests have been received for this subscription.
+```
+
+**Workaround**:
+ - Make sure that instance metadata is used. (set true in azure.json) on all nodes (require restarting kubelet+ all master roles on masters and kubelet on nodes).
+ - There is a large # of put against ROUTES, was that a multiple scale events, or multiple cluster creation? If that is not the case or they operate large # of clusters in the same subscription then increase "--route-reconciliation-period" on controller-manager (require restart of controller manager). 
+
+**Fix**
+ - we have used cache in GET/VirtualMachine in v1.9.2: [Add cache for VirtualMachinesClient.Get in azure cloud provider](https://github.com/kubernetes/kubernetes/pull/57432)
