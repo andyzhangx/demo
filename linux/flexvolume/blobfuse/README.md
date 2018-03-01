@@ -1,5 +1,5 @@
 # blobfuse flex volume driver for Kubernetes (Preview)
- - Flexvolume is GA from Kubernetes **1.8** release, v1.7 is depreciated since it does not support flex volume driver dynamic detection.
+ - supported Kubernetes version: v1.8, v1.9
 
 # Install
 ## 1. specify `volume-plugin-dir` in kubelet service config (skip this step in [AKS](https://azure.microsoft.com/en-us/services/container-service/) or from [acs-engine](https://github.com/Azure/acs-engine) v0.12.0)
@@ -17,7 +17,8 @@ Note:
 ```
 I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-azure/blobfuse"
 ```
-
+ - Flexvolume is GA from Kubernetes **1.8** release, v1.7 is depreciated since it does not support flex volume driver dynamic detection.
+ 
 ## 2. install blobfuse flex volume driver on every agent node (take Ubuntu 16.04 as an example)
 ### Option#1. Automatically install
 create daemonset to install blobfuse driver
