@@ -21,7 +21,7 @@ I0122 08:24:47.761479    2963 plugins.go:469] Loaded volume plugin "flexvolume-a
  - Flexvolume is GA from Kubernetes **1.8** release, v1.7 is depreciated since it does not support flex volume driver dynamic detection.
  
 ## 2. install blobfuse flex volume driver on every agent node (take Ubuntu 16.04 as an example)
-### Option#1. Automatically install
+### Option#1. Automatically install by k8s daemonset
 create daemonset to install blobfuse driver
  - v1.9: 
 ```
@@ -37,7 +37,7 @@ kubectl describe daemonset blobfuse-flexvol-installer --namespace=kube-system
 kubectl get po --namespace=kube-system
 ```
 
-### Option#2. Manually install on every agent node
+### Option#2. Manually install on every agent node (depreciated)
 Take k8s v1.9 as an example:
 ```
 version=v1.9
