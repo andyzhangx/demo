@@ -1,3 +1,5 @@
+# Attention: this page is not maintained any more, we have moved blobfuse driver and doc to [kubernetes-drivers](https://github.com/andyzhangx/kubernetes-drivers/tree/master/flexvolume/blobfuse).
+
 # blobfuse flex volume driver for Kubernetes (Preview)
  - supported Kubernetes version: v1.8, v1.9
 
