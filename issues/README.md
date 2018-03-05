@@ -205,3 +205,8 @@ There could be ARM api throttling due to too many ARM api calls in a time period
 
 **Fix**
  - we have used cache in GET/VirtualMachine in v1.9.2: [Add cache for VirtualMachinesClient.Get in azure cloud provider](https://github.com/kubernetes/kubernetes/pull/57432)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.9 | fixed in v1.9.2 |
+| v1.10 | fixed |
