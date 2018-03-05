@@ -49,7 +49,7 @@ Prerequisite:
 [assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use ssh client to connect to that agent. (only for debugging purpose)
 1. get the "CONTAINER ID" of "/hyperkube kubelet"
 ```
-docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'
+docker ps -a | grep "hyperkube kubele" | awk -F ' ' '{print $1}'
 ```
 2. get kubelet logs
 ```
@@ -57,7 +57,7 @@ docker logs "CONTAINER ID" > "CONTAINER ID".log 2>&1 &
 ```
 Or use below command lines directly:
 ```
-id=`docker ps -a | grep "hyperkube kubelet" | awk -F ' ' '{print $1}'`
+id=`docker ps -a | grep "hyperkube kubele" | awk -F ' ' '{print $1}'`
 docker logs $id > $id.log 2>&1
 vi $id.log
 ```
