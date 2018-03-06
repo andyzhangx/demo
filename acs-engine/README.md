@@ -37,6 +37,11 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
 
+**related issues**
+ - [Put /var/lib/docker under /mnt?](https://github.com/Azure/acs-engine/issues/1307)
+ - [Document Usage of Ephemeral Disks](https://github.com/Azure/acs-engine/issues/543)
+ - [Add customized config: use /mnt (the ephemeral/temp drive) for pod volumes](https://github.com/Azure/acs-engine/issues/2099)
+
 #### Links
 [Create a Service Principal](https://github.com/Azure/acs-engine/blob/master/docs/serviceprincipal.md#creating-a-service-principal)
 
