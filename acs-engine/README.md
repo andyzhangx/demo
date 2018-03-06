@@ -26,7 +26,11 @@ sudo service docker start
 ```
 
 2. Set volume path mapping in `/etc/systemd/system/kubelet.service`
-```sudo vi /etc/systemd/system/kubelet.service```, append following (**this is the key point here**)
+```
+sudo vi /etc/systemd/system/kubelet.service
+```
+
+append following (**this is the key point here**)
 ```
 --volume=/mnt/docker:/mnt/docker:rw \
 ```
