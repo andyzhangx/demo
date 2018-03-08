@@ -182,7 +182,7 @@ azure file plugin on Windows does not work after node restart, this is due to `N
 | v1.9 |  |
 | v1.10 | code review in v1.10.0 |
 
-### 7. file permission could not be changed using azure file
+### 7. file permission could not be changed using azure file, e.g. postgresql
 **error logs** when running postgresql on azure file plugin:
 ```
 initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted
@@ -194,6 +194,9 @@ azure file plugin is using cifs/SMB protocol, file/dir permission could not be c
 
 **Workaround**:
 Azure disk plugin could solve this issue.
+
+**Related issues**
+[Persistent Volume Claim permissions](https://github.com/Azure/AKS/issues/225)
 
 ## azure network known issues
 ### 1. network interface failed
