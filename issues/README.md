@@ -193,7 +193,7 @@ fixing permissions on existing directory /var/lib/postgresql/data
 azure file plugin is using cifs/SMB protocol, file/dir permission could not be changed after mounting
 
 **Workaround**:
-Azure disk plugin could solve this issue.
+Use subPath together with azure disk plugin
 
 **Related issues**
 [Persistent Volume Claim permissions](https://github.com/Azure/AKS/issues/225)
