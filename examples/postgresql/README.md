@@ -36,5 +36,5 @@ parameters:
           name: footestdb
 ```
 
-- related issue
+- related issue:
 [Persistent Volume Claim permissions](https://github.com/Azure/AKS/issues/225)
