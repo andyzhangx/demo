@@ -1,4 +1,5 @@
-## Get monitoring metrics from kubelet is support from k8s v1.9.0
+## Get monitoring metrics from kubelet 
+ - supported from [Azure/kubernetes](https://github.com/Azure/kubernetes) v1.8.6 and k8s upstream v1.9.0 
 #### 1. Get node name by `kubectl get no`
 ```
 NAME                    STATUS    ROLES     AGE       VERSION
@@ -6,8 +7,9 @@ NAME                    STATUS    ROLES     AGE       VERSION
 k8s-master-26253276-0   Ready     master    5h        v1.8.4
 ```
 
-#### 2. Get agent metrics from kubelet by `curl http://26253k8s9000:10255/stats/summary`
+#### 2. Get agent metrics from kubelet
 ```
+# curl http://26253k8s9000:10255/stats/summary
 {
   "node": {
    "nodeName": "26253k8s9000",
@@ -84,4 +86,11 @@ k8s-master-26253276-0   Ready     master    5h        v1.8.4
 ```
 
 ##### Note:
-Get metrics from cAdvisor Web UI on Windows is not supported yet
+ - Get metrics from cAdvisor Web UI on Windows is not supported yet
+ - Related issue
+   - ["ImageGCFailed" on Windows nodes](https://github.com/Azure/acs-engine/issues/658)
+ - Related PR fixed this issue
+   - fixed in k8s upstream: [Implement CRI stats in Docker Shim](https://github.com/kubernetes/kubernetes/pull/51152)
+   - fixed in [Azure/kubernetes](https://github.com/Azure/kubernetes): [merge #51152: Implement CRI stats in Docker Shim on Windows](https://github.com/Azure/kubernetes/pull/29)
+
+
