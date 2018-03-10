@@ -51,7 +51,7 @@ Note: value of `Support on Windows` is empty means I don't have a chance to vali
 | Feature | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
 | ConfigMap | Yes | [configmap](https://github.com/andyzhangx/Demo/tree/master/windows/configmap) |  |
-| cAdvisor | Yes | [cadvisor](https://github.com/andyzhangx/Demo/tree/master/windows/cadvisor) | support from v1.9.0  |
+| cAdvisor | Yes | [cadvisor](https://github.com/andyzhangx/Demo/tree/master/windows/cadvisor) | from [Azure/kubernetes](https://github.com/Azure/kubernetes) v1.8.6 and k8s upstream v1.9.0 |
 
 ##### Note
 1. **breaking change** for Windows container running on `Windows Server version 1709`, only image tag with `1709` keyword could run on `Windows Server version 1709`, e.g.
