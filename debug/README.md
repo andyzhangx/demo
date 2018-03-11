@@ -12,7 +12,7 @@ edit yaml file under `/etc/systemd/system/kubelet.service`, change `--v=2` value
  
 edit `c:\k\kubeletstart.ps1`, check the parameter(`--v=2`) in `c:\k\kubelet.exe` command
 restart `Kubelet` service
- - Note:
+> Note:
  `--v=2` means only output log level <=2 messages, the bigger log level the more logging.
 
 ### Q: There is no k8s component container running on master, how to do troubleshooting?
