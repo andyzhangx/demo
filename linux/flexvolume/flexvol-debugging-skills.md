@@ -8,4 +8,5 @@
 | CSI | Yes | from v1.10 (Beta) | need extra deployment |
 
  - How to build binary for flexvolume driver
+ 
  Since `hyperkube` image may be different in every k8s version, binary should be built independently for every k8s version.
