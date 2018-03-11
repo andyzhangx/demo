@@ -1,10 +1,10 @@
 ## Current Status of Windows Server support for kubernetes on Azure
-### kubernetes on Windows is **under preview** status.
+> kubernetes on Windows is **under preview** status.
 
 ## k8s windows cluster could be created by two ways:
 ### 1. azure portal
 Create "Azure Conatiner Service" (**not** AKS) in azure portal, select `Windows` OS, if k8s cluster is created successfully, the master node would be still Ubuntu OS, agent node would be `Windows Server 2016 DataCenter`.
-##### Note: 
+> Note: 
 azure disk & azure file mount feature is **not** enabled on this because it's using `Windows Server 2016 DataCenter` OS, only `Windows Server version 1709` is supported for these two features.
 
 ### 2. [acs-engine](https://github.com/Azure/acs-engine)
@@ -20,7 +20,7 @@ Microsoft Windows [Version 10.0.16299.19]  (or above)
 Find more details about [Supported Windows versions](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
 
 ## k8s volume support on Windows Server 1709
-Note: value of `Support on Windows` is empty means I don't have a chance to validate it on Windows
+> Note: value of `Support on Windows` is empty means I don't have a chance to validate it on Windows
 
 | Volume | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
