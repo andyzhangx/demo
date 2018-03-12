@@ -46,6 +46,6 @@ helm init
 ```
 
 #### Links
-helm installation guide: https://github.com/kubernetes/helm/blob/master/docs/install.md
+[helm installation guide](https://github.com/kubernetes/helm/blob/master/docs/install.md)
 
-Mooncake installation guide: http://mirror.chinacloudapp.cn/help/kubernetes.html
+[Mooncake installation guide](http://mirror.kaiyuanshe.cn/help/kubernetes.html)
