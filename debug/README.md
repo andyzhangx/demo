@@ -111,8 +111,9 @@ And then follow this [guide](https://kubernetes.io/docs/tasks/administer-cluster
 ### Q: How to delete the pod by force?
 ```kubectl delete pod PODNAME --grace-period=0 --force```
 
-### Assign a Public IP to a VM in Azure portal
-Click under network\network interface\ip config\enable public IP address
+### Provide ssh access
+ - option#1: To assign a public IP adress to one VM on Azure portal, click under network\network interface\ip config\enable public IP address
+ - option#2: follow [SSH into Azure Container Service (AKS) cluster nodes](https://docs.microsoft.com/en-us/azure/aks/aks-ssh)
 
 ## Advanced skills
 ### Q: How to open feature gate in kubernetes on azure?
