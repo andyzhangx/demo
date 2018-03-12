@@ -1,6 +1,7 @@
 # helm on azure examples
 
 ### helm pod scale up issue
+**Issue details**
 you may get following error when you try to scale up a helm deployment:
 ```
 Events:
@@ -14,20 +15,13 @@ Events:
   4m            0s              2604    attachdetach                                            Warning         FailedAttachVolume      Multi-Attach error for volume "pvc-c66fbef0-d01e-11e7-b699-0a58ac1f1049" Volume is already exclusively attached to one node and can't be attached to another
 ```
 
-That's because azure disk is ReadWriteOnce(RWO) mode, it could only attach to a node, so in the scale up process, if second pod is created in another node. You need to set azure file as default storage class:
-```
-kubectl patch storageclass default -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile.yaml
-kubectl patch storageclass azurefile -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-kubectl get sc
-```
+That's because azure disk is ReadWriteOnce(RWO) access mode, it could only attach to a node, so in the scale up process, if second pod is created in another node. 
 
-Before creating a PVC, you need to make sure a storage account is created in your resourse group.
+**Workaround**
+
+Use azurefile storage class instead, it supports ReadWriteMany(RWX) access mode. Before running following command, make sure a storage account already exists in the resourse group as k8s cluster.
 ```
-helm install --set persistence.accessMode=ReadWriteMany stable/wordpress
-kubectl get deploy
-kubectl scale --replicas=3 deployment/wobbling-porcupine-wordpress
-kubectl get po -o wide
+helm install --set persistence.accessMode=ReadWriteMany,persistence.storageClass=azurefile stable/wordpress
 ```
 
 ### Helm incompatible versions issue
