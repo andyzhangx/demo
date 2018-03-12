@@ -2,6 +2,7 @@
 
 ### helm pod scale up issue
 **Issue details**
+
 you may get following error when you try to scale up a helm deployment:
 ```
 Events:
