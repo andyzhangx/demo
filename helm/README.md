@@ -30,6 +30,27 @@ kubectl scale --replicas=3 deployment/wobbling-porcupine-wordpress
 kubectl get po -o wide
 ```
 
+### Helm incompatible versions issue
+```
+$ helm install --set persistence.accessMode=ReadWriteOnce stable/wordpress
+Error: incompatible versions client[v2.8.2] server[v2.6.2]
+```
+
+**Workaround**
+ - Get server version first
+```
+$ helm version
+Client: &version.Version{SemVer:"v2.8.2", GitCommit:"a80231648a1473929271764b920a8e346f6de844", GitTreeState:"clean"}
+Server: &version.Version{SemVer:"v2.6.2", GitCommit:"be3ae4ea91b2960be98c07e8f73754e67e87963c", GitTreeState:"clean"}
+```
+ - Reinstall helm client version, make it identical to server version
+```
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh --version v2.6.2
+helm init
+```
+
 #### Links
 helm installation guide: https://github.com/kubernetes/helm/blob/master/docs/install.md
 
