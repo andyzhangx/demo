@@ -90,6 +90,8 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 
 [Persistent volumes with Azure disks](https://docs.microsoft.com/en-us/azure/aks/azure-disks-dynamic-pv)
 
-[Azure Disk Scalability and Performance Targets](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/standard-storage?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json#scalability-and-performance-targets)
+[Azure Standard Disk Scalability and Performance Targets](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/standard-storage?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json#scalability-and-performance-targets)
+
+[Azure Premium Disk Scalability and Performance Targets](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/premium-storage#premium-storage-disk-limits)
 
 [Debug Azure disk attachment issue](https://github.com/andyzhangx/Demo/blob/master/linux/azuredisk/azuredisk-attachment-debugging.md)
