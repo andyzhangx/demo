@@ -19,12 +19,12 @@ Cannot attach data disk 'cdb-dynamic-pvc-92972088-11b9-11e8-888f-000d3a018174' t
 **Workaround**:
  - option#1: Update every agent node that has this issue
  
-    in Azure cloud shell, run
+###### in Azure cloud shell, run
 ```
 $vm = Get-AzureRMVM -ResourceGroupName $rg -Name $vmname  
 Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
 ```
-    in Azure cli, run
+###### in Azure cli, run
 ```
 az vm update -g <group> -n <name>
 ```
