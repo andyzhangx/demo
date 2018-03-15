@@ -30,10 +30,10 @@ az vm update -g <group> -n <name>
 ```
 
  - option#2: 
-1) kubectl cordon node
-2) kubectl drain node
+1) ```kubectl cordon node``` #make sure no scheduling on this node
+2) ```kubectl drain node```  #schedule pod in current node to other node
 3) restart the Azure VM for node via the API or portal, wait untli VM is "Running"
-4) kubectl uncordon node
+4) ```kubectl uncordon node```
  
 **Fix**
  - PR [fix race condition issue when detaching azure disk](https://github.com/kubernetes/kubernetes/pull/60183) has fixed this issue by add a lock before DetachDisk
