@@ -1,15 +1,19 @@
 # Dynamic Provisioning for azure disk in Linux
 ## 1. create an azure disk storage class if `hdd` does not exist
 #### for k8s version >= v1.7.2
-##### option#1: k8s agent pool is based on managed disk VM
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml```
+ - option#1: k8s agent pool is based on managed disk VM
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml
+```
 
-##### option#2: k8s agent pool is based on blob based(unmanaged) disk VM
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
+ - option#2: k8s agent pool is based on blob based(unmanaged) disk VM
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml
+```
 
 ###### Note: 
-1. managed disk mount feature is only supported from v1.7.2
-2. AKS cluster use managed disk by default, there are already `managed-standard`, `managed-premium` built-in azure disk storage classes.
+ - managed disk mount feature is only supported from v1.7.2
+ - AKS cluster use managed disk by default, there are already `managed-standard`, `managed-premium` built-in azure disk storage classes.
 
 #### for k8s version < 1.7.2
 download `storageclass-azuredisk-old.yaml` and modify `skuName`, `location` values
@@ -18,7 +22,7 @@ wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-az
 vi storageclass-azuredisk-old.yaml
 kubectl create -f storageclass-azuredisk-old.yaml
 ```
-###### Note: for `storageclass-azuredisk-old.yaml`, k8s will find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure disk
+> Note: for `storageclass-azuredisk-old.yaml`, k8s will find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure disk
 
 ## 2. create an azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
@@ -47,13 +51,13 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 # Static Provisioning for azure disk
 #### 1. create an azure disk manually in the same resource group and modify `nginx-pod-azuredisk.yaml`
-##### managed disk
+ - managed disk
 ```
 wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-mgrdisk.yaml
 vi nginx-pod-azuredisk.yaml
 ```
 
-##### blob based(unmanaged) disk 
+ - blob based(unmanaged) disk 
 ```
 wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
 vi nginx-pod-azuredisk.yaml
@@ -81,9 +85,9 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
 ### known issues of Azure disk feature
-1. [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
-2. Time cost for Azure Disk PVC mount on a pod is around 1 minute, and there is a [using cache fix](https://github.com/kubernetes/kubernetes/pull/57432) for this issue, which could reduce the mount time cost to around 30s.
-3. An Azure disk can only be mounted with Access mode type `ReadWriteOnce`, which makes it available to only a single node. If needing to share a persistent volume across multiple nodes, consider using [Azure File](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile).
+ - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
+ - Time cost for Azure Disk PVC mount on a pod is around 1 minute, and there is a [using cache fix](https://github.com/kubernetes/kubernetes/pull/57432) for this issue, which could reduce the mount time cost to around 30s.
+ - An Azure disk can only be mounted with Access mode type `ReadWriteOnce`, which makes it available to only a single node. If needing to share a persistent volume across multiple nodes, consider using [Azure File](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile).
 
 #### Links
 [Azure Disk Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-disk)
