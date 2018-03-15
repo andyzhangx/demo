@@ -35,10 +35,10 @@ Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.6 | no fix since v1.6 does not accept any cherry-pick |
-| v1.7 | in cherry-pick |
-| v1.8 | in cherry-pick |
+| v1.7 | 1.7.14 |
+| v1.8 | 1.8.9 |
 | v1.9 | in cherry-pick |
-| v1.10 | fixed in v1.10.0 |
+| v1.10 | 1.10.0 |
 
 ### 2. disk unavailable after attach/detach a data disk on a node
 **Issue details**:
