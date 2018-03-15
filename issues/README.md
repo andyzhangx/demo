@@ -16,7 +16,7 @@ Cannot attach data disk 'cdb-dynamic-pvc-92972088-11b9-11e8-888f-000d3a018174' t
  - [Since Intel CPU Azure update, new Azure Disks are not mounting, very critical... ](https://github.com/Azure/acs-engine/issues/2002)
  - [Busy azure-disk regularly fail to mount causing K8S Pod deployments to halt](https://github.com/Azure/ACS/issues/12)
 
-**Workaround**:
+**Mitigation**:
  - option#1: Update every agent node that has attached or detached the disk in problem
  
 ###### in Azure cloud shell, run
