@@ -18,10 +18,15 @@ Cannot attach data disk 'cdb-dynamic-pvc-92972088-11b9-11e8-888f-000d3a018174' t
 
 **Workaround**:
  - option#1: Update every agent node that has this issue on Azure cloud shell:
- ```
+```
 $vm = Get-AzureRMVM -ResourceGroupName $rg -Name $vmname  
 Update-AzureRmVM -ResourceGroupName $rg -VM $vm -verbose -debug
- ```
+```
+ > Note: in Azure cli, run
+```
+az vm update -g <group> -n <name>
+```
+
  - option#2: 
 1) kubectl cordon node
 2) delete any pods on node with stateful sets
