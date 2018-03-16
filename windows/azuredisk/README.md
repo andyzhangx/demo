@@ -1,8 +1,8 @@
 ## Dynamic Provisioning for Azure disk mount on Windows Server version 1709 
 #### Note:
-1. The Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more features than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
+ - Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more features than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
 
-2. Azure disk mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), with the exception that **v1.8.0, v1.8.1, v1.8.2** does not support this feature. And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
+ - Azure disk mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), with the exception that **v1.8.0, v1.8.1, v1.8.2** does not support this feature. And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
 ```
 microsoft/aspnet:4.7.1-windowsservercore-1709
 microsoft/windowsservercore:1709
@@ -18,8 +18,8 @@ microsoft/iis:windowsservercore-1709
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
 
 ###### Note: 
-1. managed disk mount feature is only supported from v1.7.2
-2. AKS cluster use managed disk by default, there are already `managed-standard`, `managed-premium` built-in azure disk storage classes.
+ - managed disk mount feature is only supported from v1.7.2
+ - AKS cluster use managed disk by default, there are already `managed-standard`, `managed-premium` built-in azure disk storage classes.
 
 ## 2. create an azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
@@ -53,9 +53,9 @@ D:\test>dir
 ```
 
 ### known issues of Azure disk on Windows feature
-1. [Allow windows mount path on windows](https://github.com/kubernetes/kubernetes/pull/51240) is available from v1.7.x, v1.8.3 or above.
+ - [Allow windows mount path on windows](https://github.com/kubernetes/kubernetes/pull/51240) is available from v1.7.x, v1.8.3 or above.
 
-2. Only drive letter(e.g. `D:`) as `mountPath` works for azure disk on Windows feature due to [volume mapping would fail when hostPath is a symbolic link to a drive and containerPath is a dir path on Windows](https://github.com/moby/moby/issues/35436)
+ - Only drive letter(e.g. `D:`) as `mountPath` works for azure disk on Windows feature due to [volume mapping would fail when hostPath is a symbolic link to a drive and containerPath is a dir path on Windows](https://github.com/moby/moby/issues/35436)
 
 #### Links
 [Azure Disk Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-disk)
