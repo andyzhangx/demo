@@ -11,10 +11,14 @@ microsoft/iis:windowsservercore-1709
 
 ## 1. create an azure disk storage class if `hdd` does not exist
  - k8s agent pool is based on managed disk VM
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml```
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml
+```
 
  - k8s agent pool is based on blob based(unmanaged) disk VM
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml```
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml
+```
 
 ###### Note: 
  - managed disk mount feature is only supported from v1.7.2
