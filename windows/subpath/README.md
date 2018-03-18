@@ -126,3 +126,8 @@ Events:
   10s           8s              2       kubelet, 38156k8s9010   spec.containers{all-your-base-are-belong-to-us} Normal          Pulled                  Successfully pulled image "microsoft/aspnet:4.7.1-windowsservercore-1709"
   10s           8s              2       kubelet, 38156k8s9010   spec.containers{all-your-base-are-belong-to-us} Warning         Failed                  Error: failed to prepare subPath for volumeMount "docker-socket" of container "all-your-base-are-belong-to-us"
 ```
+```
+$ kubectl get po
+NAME            READY     STATUS                                                                                                    RESTARTS   AGE
+secbypass-win   0/1       failed to prepare subPath for volumeMount "docker-socket" of container "all-your-base-are-belong-to-us"   0          20m
+```
