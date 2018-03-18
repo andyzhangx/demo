@@ -45,9 +45,9 @@ C:\mnt\azure>dir
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.6 | no fix since v1.6 does not accept any cherry-pick |
-| v1.7 | 1.7.14 by #61047 |
-| v1.8 | 1.8.9 by #61046 |
-| v1.9 | 1.9.4 by #61045 |
+| v1.7 | 1.7.14 by #61047 |
+| v1.8 | 1.8.9 by 61046 |
+| v1.9 | 1.9.4 by 61045 |
 | v1.10 | 1.10.0 |
 
 **Logs after fix**
