@@ -40,4 +40,4 @@ C:\etc\config>dir
 ```
 
 ### Links:
-Use ConfigMap Data in Pods: https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/
+[Use ConfigMap Data in Pods](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/)
