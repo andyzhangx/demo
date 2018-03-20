@@ -50,7 +50,7 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 ## other k8s feature support on Windows Server 1709
 | Feature | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
-| ConfigMap | Yes | [configmap](./configmap) |  |
+| ConfigMap | Partially | [configmap](./configmap) | Only support environment variables, volume mount does not work |
 | cAdvisor | Yes | [cadvisor](./cadvisor) | from [Azure/kubernetes](https://github.com/Azure/kubernetes) v1.8.6 and k8s upstream v1.9.0 |
 
 ##### Note
