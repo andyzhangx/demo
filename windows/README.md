@@ -43,14 +43,14 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 | Quobyte |  |  |  |
 | rbd | No |  |  |
 | ScaleIO |  |  |  |
-| secret | Partially | [secret](./secret) | text type works, while file type(e.g. “service-account-token”) does not work due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419)  |
+| secret | Partially | [secret](./secret) | text type works, while file type(e.g. “service-account-token”) does not work due to a [docker container on Windows bug](https://github.com/kubernetes/kubernetes/issues/52419)  |
 | StorageOS |  |  |  |
 | subPath | Yes | [subpath](./subpath) |  |
 
 ## other k8s feature support on Windows Server 1709
 | Feature | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
-| ConfigMap | Partially | [configmap](./configmap) | Only support environment variables, volume mount does not work |
+| ConfigMap | Partially | [configmap](./configmap) | Only support environment variables, volume mount does not work due to a [docker container on Windows bug](https://github.com/kubernetes/kubernetes/issues/52419) |
 | cAdvisor | Yes | [cadvisor](./cadvisor) | from [Azure/kubernetes](https://github.com/Azure/kubernetes) v1.8.6 and k8s upstream v1.9.0 |
 
 ##### Note
