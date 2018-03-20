@@ -1,5 +1,5 @@
 # Use ConfigMap Data in Pods
-> Note: Following example will use ConfigMap as environment variable and volume mount
+> Note: Following example will use ConfigMap as both environment variable and volume mount
 ### 1. Define an environment variable as a key-value pair in a ConfigMap:
 ```
 kubectl create configmap special-config --from-literal=special.how=very 
