@@ -10,9 +10,9 @@ spec:
     volumeMounts:
     - name: test-volume
       mountPath: /mnt/subpath
-      subPath: waagent
+      subPath: a/b
   volumes:
   - name: test-volume
     hostPath:
-      path: /var/lib
+      path: /mnt/
 
