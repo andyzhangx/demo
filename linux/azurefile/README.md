@@ -1,4 +1,5 @@
-# Dynamic Provisioning for azure file in Linux (available from v1.7.0)
+# Azure file Dynamic Provisioning in Linux 
+> available from v1.7.0
 ## 1. create a storage class for azure file
 #### Option#1: find a suitable storage account that matches ```skuName``` in same resource group when provisioning azure file
 ```
@@ -47,7 +48,8 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 
  - To specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster, if you are using AKS, the specified storage account should be in `shadow resource group`(naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`) which contains all resources of your aks cluster. 
 
-# Static Provisioning for azure file in Linux (available from v1.5.0)
+# Azure file Static Provisioning in Linux 
+>  - available from v1.5.0
 >  - static provisioning: user must create an azure file before using azure file mount feature.
 >  - kubernetes v1.5, v1.6 does not support azure file dynamic provisioning, only static provisioning is available 
 
