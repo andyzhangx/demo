@@ -56,7 +56,6 @@ kubernetes v1.5, v1.6 does not support azure file dynamic provisioning, only sta
  - get `azurestorageaccountname`, `azurestorageaccountkey` and `shareName` of that azure file
  
 ## 1. create a secret for azure file
-
 #### Option#1: Use `kubectl create secret` to create `azure-secret`
 ```
 kubectl create secret generic azure-secret --from-literal azurestorageaccountname=NAME --from-literal azurestorageaccountkey="KEY" --type=Opaque
