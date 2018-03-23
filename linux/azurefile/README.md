@@ -1,4 +1,4 @@
-# Dynamic Provisioning for azure file in Linux (support from v1.7.0)
+# Dynamic Provisioning for azure file in Linux (available from v1.7.0)
 ## 1. create a storage class for azure file
 #### Option#1: find a suitable storage account that matches ```skuName``` in same resource group when provisioning azure file
 ```
@@ -47,8 +47,9 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 
  - To specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster, if you are using AKS, the specified storage account should be in `shadow resource group`(naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`) which contains all resources of your aks cluster. 
 
-# Static Provisioning for azure file in Linux (support from v1.5.0)
-kubernetes v1.5, v1.6 does not support azure file dynamic provisioning, only static provisioning is supported which means user must create an azure file before using azure file mount feature.
+# Static Provisioning for azure file in Linux (available from v1.5.0)
+>  - static provisioning: user must create an azure file before using azure file mount feature.
+>  - kubernetes v1.5, v1.6 does not support azure file dynamic provisioning, only static provisioning is available 
 
 ## Prerequisite
  - create an azure file share in Azure storage account in the same resource group with k8s cluster
@@ -103,11 +104,11 @@ root@nginx-azurefile:/# mount | grep cifs
 ```
 
 ### Other known issues of Azure file feature
-1. `Premium` storage type is not supported for azure file currently
+ - `Premium` storage type is not supported for azure file currently
 
-2. [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
+ - [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
 
-3. `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5). For version v1.8.0-v1.8.4, since [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) is not available, as a workaround, you could specify a [securityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for the container with: `runAsUser: 0`, here is an [example](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/demo-azurefile-securitycontext.yaml)
+ - `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5). For version v1.8.0-v1.8.4, since [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) is not available, as a workaround, you could specify a [securityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for the container with: `runAsUser: 0`, here is an [example](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/demo-azurefile-securitycontext.yaml)
 
 | version | `fileMode`, `dirMode` value |
 | ---- | ---- |
