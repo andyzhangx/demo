@@ -49,20 +49,27 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 2. To specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster, if you are using AKS, the specified storage account should be in `shadow resource group`(naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`) which contains all resources of your aks cluster. 
 
 # Static Provisioning for azure file in Linux (support from v1.5.0)
-kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file, only static provisioning is supported for azure file which means a storage account should be created before using azure file mount feature.
+kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file volume, only static provisioning is supported which means user creates an azure file before using azure file mount feature.
 
+## Prerequisite
+ - create an azure file share in Azure storage account in the same resource group with k8s cluster
+ - get `azurestorageaccountname`, `azurestorageaccountkey` and `shareName` of that azure file
+ 
 ## 1. create a secret for azure file
- - create an azure file share in Azure storage account in the same resource group with k8s cluster, get connection info of that azure file
- - create a `azure-secrect.yaml` file that contains base64 encoded Azure Storage account name and key.
 
+#### Option#1: Use `kubectl create secret` to create `azure-secret`
+```
+kubectl create secret generic azure-secret --from-literal azurestorageaccountname=NAME --from-literal azurestorageaccountkey="KEY" --type=Opaque
+```
+ 
+#### Option#2: create a `azure-secrect.yaml` file that contains base64 encoded Azure Storage account name and key
 download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/azure-secrect.yaml
 vi azure-secrect.yaml
 ```
 
-In the secret file, base64-encode azurestorageaccountname and azurestorageaccountkey. 
-For the base64-encode, you could leverage this site: https://www.base64encode.net/
+In the secret file, base64-encode azurestorageaccountname and azurestorageaccountkey. For the base64-encode, you could leverage this site: https://www.base64encode.net/
 
  - create the secret for azure file
 ```
@@ -70,7 +77,12 @@ kubectl create -f azure-secrect.yaml
 ```
 
 ## 2. create a pod with azure file
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile-static.yaml```
+download `nginx-pod-azurefile-static.yaml` file and modify `shareName` value
+```
+wget https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile-static.yaml
+vi nginx-pod-azurefile-static.yaml
+kubectl create -f nginx-pod-azurefile-static.yaml
+```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```watch kubectl describe po nginx-azurefile```
