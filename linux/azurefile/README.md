@@ -49,7 +49,7 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 2. To specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster, if you are using AKS, the specified storage account should be in `shadow resource group`(naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`) which contains all resources of your aks cluster. 
 
 # Static Provisioning for azure file in Linux (support from v1.5.0)
-kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file volume, only static provisioning is supported which means user creates an azure file before using azure file mount feature.
+kubernetes v1.5, v1.6 does not support azure file dynamic provisioning, only static provisioning is supported which means user must create an azure file before using azure file mount feature.
 
 ## Prerequisite
  - create an azure file share in Azure storage account in the same resource group with k8s cluster
