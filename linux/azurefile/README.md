@@ -52,8 +52,8 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file, only static provisioning is supported for azure file which means a storage account should be created before using azure file mount feature.
 
 ## 1. create a secret for azure file
-1) create an azure file share in Azure storage account in the same resource group with k8s cluster, get connection info of that azure file
-2) create a `azure-secrect.yaml` file that contains base64 encoded Azure Storage account name and key.
+ - create an azure file share in Azure storage account in the same resource group with k8s cluster, get connection info of that azure file
+ - create a `azure-secrect.yaml` file that contains base64 encoded Azure Storage account name and key.
 
 download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` values
 ```
@@ -64,7 +64,7 @@ vi azure-secrect.yaml
 In the secret file, base64-encode azurestorageaccountname and azurestorageaccountkey. 
 For the base64-encode, you could leverage this site: https://www.base64encode.net/
 
-3. create the secret for azure file
+ - create the secret for azure file
 ```
 kubectl create -f azure-secrect.yaml
 ```
