@@ -1,5 +1,6 @@
-# Set mountOptions in Dynamic Provisioning for azure file (supported from v1.7.0)
-## Below is an example setting mountOptions in Dynamic Provisioning
+# Set azure file mountOptions
+> Note: azure file mountOptions feature is available from v1.8.5
+## Set mountOptions in Dynamic Provisioning
 #### download `storageclass-azurefile-mountoptions.yaml` file and modify `mountOptions` values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile-mountoptions.yaml
@@ -7,35 +8,35 @@ vi storageclass-azurefile-mountoptions.yaml.yaml
 kubectl create -f storageclass-azurefile-mountoptions.yaml.yaml
 ```
 
-# Set mountOptions in Static Provisioning for azure file (supported from v1.5.0)
-kubernetes v1.5, v1.6 does not support azure file dynamic provisioning, only static provisioning is supported which means user must create an azure file before using azure file mount feature.
+# Set mountOptions in Static Provisioning
+> static provisioning means user must create an azure file before using azure file mount feature.
 
 ## Prerequisite
  - create an azure file share in Azure storage account in the same resource group with k8s cluster
  - get `azurestorageaccountname`, `azurestorageaccountkey` and `shareName` of that azure file
  
-## 1. create a secret for azure file
+## create a secret for azure file
  - Use `kubectl create secret` to create `azure-secret`
 ```
 kubectl create secret generic azure-secret --from-literal azurestorageaccountname=NAME --from-literal azurestorageaccountkey="KEY" --type=Opaque
 ```
 
-## 3. create a azure file persistent volume(pv)
+## create an azure file persistent volume(pv)
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv-azurefile-mountoptions.yaml```
 
-## 4. create a azure file persistent volume claim(pvc)
+## create an azure file persistent volume claim(pvc)
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile-static.yaml```
 
-#### watch the status of pv until its `Status` changed from `Pending` to `Bound`
+ - watch the status of pv until its `Status` changed from `Pending` to `Bound`
 ```watch kubectl describe pvc pvc-azurefile```
 
-## 5. create a pod with azure file pvc
+## create a pod with azure file pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml```
 
-#### watch the status of pod until its Status changed from `Pending` to `Running`
+ - watch the status of pod until its Status changed from `Pending` to `Running`
 ```watch kubectl describe po nginx-azurefile```
 
-## 6. enter the pod container to do validation
+## enter the pod container to do validation
 ```kubectl exec -it nginx-azurefile -- bash```
 
 ```
