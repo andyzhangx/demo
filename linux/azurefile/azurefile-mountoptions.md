@@ -1,4 +1,4 @@
-# Set mountOptions in Dynamic Provisioning for azure file (support from v1.7.0)
+# Set mountOptions in Dynamic Provisioning for azure file (supported from v1.7.0)
 ## Below is an example setting mountOptions in Dynamic Provisioning
 #### download `storageclass-azurefile-mountoptions.yaml` file and modify `mountOptions` values
 ```
@@ -7,19 +7,17 @@ vi storageclass-azurefile-mountoptions.yaml.yaml
 kubectl create -f storageclass-azurefile-mountoptions.yaml.yaml
 ```
 
-# Set mountOptions in Static Provisioning for azure file (support from v1.5.0)
-kubernetes v1.5, v1.6 does not support dynamic provisioning for azure file, only static provisioning is supported for azure file which means a storage account should be created before using azure file mount feature.
+# Set mountOptions in Static Provisioning for azure file (supported from v1.5.0)
+kubernetes v1.5, v1.6 does not support azure file dynamic provisioning, only static provisioning is supported which means user must create an azure file before using azure file mount feature.
 
+## Prerequisite
+ - create an azure file share in Azure storage account in the same resource group with k8s cluster
+ - get `azurestorageaccountname`, `azurestorageaccountkey` and `shareName` of that azure file
+ 
 ## 1. create a secret for azure file
-Create an azure file share in the Azure storage account, get the connection info of that azure file and then create a k8s secret that contains base64 encoded Azure Storage account name and key. 
-In the secret file, base64-encode Azure Storage account name and pair it with name azurestorageaccountname, and base64-encode Azure Storage access key and pair it with name azurestorageaccountkey. 
-For how to base64-encode, you could leverage this site: https://www.base64encode.net/
-
-#### 2. download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` values
+ - Use `kubectl create secret` to create `azure-secret`
 ```
-wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/azure-secrect.yaml
-vi azure-secrect.yaml
-kubectl create -f azure-secrect.yaml
+kubectl create secret generic azure-secret --from-literal azurestorageaccountname=NAME --from-literal azurestorageaccountkey="KEY" --type=Opaque
 ```
 
 ## 3. create a azure file persistent volume(pv)
