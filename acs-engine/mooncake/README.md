@@ -1,15 +1,18 @@
 # Deploy kubernetes cluster on mooncake
+> Note: with acs-engine v0.14.0 or above, soveriegn cloud is supported directly, it's not necessary to modify `azuredeploy.parameters.json` template after generation any more, acs-engine will generate soveriegn cloud templates according to `location` field in cluster defination file, see [example](https://github.com/andyzhangx/demo/blob/master/acs-engine/mooncake/kubernetes-1.7.9.json#L3)
+
 ### download acs-engine binary
 ```
-wget https://mirror.kaiyuanshe.org/kubernetes/acs-engine/v0.9.1/acs-engine-v0.9.1-linux-amd64.tar.gz
-tar -xvzf acs-engine-v0.9.1-linux-amd64.tar.gz
+wget https://mirror.kaiyuanshe.org/kubernetes/acs-engine/v0.14.0/acs-engine-v0.14.0-linux-amd64.tar.gz
+tar -xvzf acs-engine-v0.14.0-linux-amd64.tar.gz
 ```
 
-### download acs-engine input file and edit
+### download acs-engine cluster defination file and edit
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.7.9.json
 vi kubernetes-1.7.9.json
 ```
+> specify `location` as `chinaeast` or `chinanorth` in cluster defination file
 
 ### generate ARM templates by acs-engine
 ```
@@ -28,6 +31,6 @@ az group deployment create \
 ```
 
 #### Links
-acs-engine input file example: https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.7.9.json
+[acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.7.9.json)
 
 For detailed steps, you could refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/README.md
