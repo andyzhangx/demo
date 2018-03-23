@@ -62,15 +62,15 @@ kubectl create secret generic azure-secret --from-literal azurestorageaccountnam
 ```
  
 #### Option#2: create a `azure-secrect.yaml` file that contains base64 encoded Azure Storage account name and key
-download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` values
+ - base64-encode azurestorageaccountname and azurestorageaccountkey. You could leverage this [site](https://www.base64encode.net/)
+
+ - download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` base64-encoded values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/azure-secrect.yaml
 vi azure-secrect.yaml
 ```
 
-In the secret file, base64-encode azurestorageaccountname and azurestorageaccountkey. For the base64-encode, you could leverage this site: https://www.base64encode.net/
-
- - create the secret for azure file
+ - create `azure-secrect` for azure file
 ```
 kubectl create -f azure-secrect.yaml
 ```
