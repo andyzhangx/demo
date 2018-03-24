@@ -4,8 +4,8 @@
 #### download `storageclass-azurefile-mountoptions.yaml` file and modify `mountOptions` values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azurefile-mountoptions.yaml
-vi storageclass-azurefile-mountoptions.yaml.yaml
-kubectl create -f storageclass-azurefile-mountoptions.yaml.yaml
+vi storageclass-azurefile-mountoptions.yaml
+kubectl create -f storageclass-azurefile-mountoptions.yaml
 ```
 
 # Set mountOptions in Static Provisioning
