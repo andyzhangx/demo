@@ -1,3 +1,5 @@
+# Attention: this page is not maintained any more, dysk FlexVolume driver and doc has been moved to [kubernetes-drivers](https://github.com/andyzhangx/kubernetes-drivers/tree/master/flexvolume/dysk).
+
 # Kubernetes volume driver for Dysk
 ## 1. create a secret which stores dysk account name and password
 ```
