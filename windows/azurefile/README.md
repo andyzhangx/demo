@@ -1,8 +1,8 @@
-# Dynamic Provisioning for azure file on Windows Server version 1709 (support from v1.7.2)
+# Azure file Dynamic Provisioning on Windows Server
 #### Note:
-1. Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more features than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
+ - Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more features than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
 
-2. Azure file mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1). And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
+ - Azure file mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1). And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
 ```
 microsoft/aspnet:4.7.1-windowsservercore-1709
 microsoft/windowsservercore:1709
@@ -60,21 +60,27 @@ persistentvolume-controller    Warning    ProvisioningFailed Failed to provision
 
 2. To specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster, if you are using AKS, the specified storage account should be in `shadow resource group`(naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`) which contains all resources of your aks cluster. 
 
-# Static Provisioning for azure file on Windows Server version 1709(support from v1.7.x)
+# Azure file Static Provisioning on Windows Server
+## Prerequisite
+ - create an azure file share in Azure storage account in the same resource group with k8s cluster
+ - get `azurestorageaccountname`, `azurestorageaccountkey` and `shareName` of that azure file
+ 
 ## 1. create a secret for azure file
-1) create an azure file share in Azure storage account in the same resource group with k8s cluster, get connection info of that azure file
-2) create a `azure-secrect.yaml` file that contains base64 encoded Azure Storage account name and key.
+#### Option#1: Use `kubectl create secret` to create `azure-secret`
+```
+kubectl create secret generic azure-secret --from-literal azurestorageaccountname=NAME --from-literal azurestorageaccountkey="KEY" --type=Opaque
+```
+ 
+#### Option#2: create a `azure-secrect.yaml` file that contains base64 encoded Azure Storage account name and key
+ - base64-encode azurestorageaccountname and azurestorageaccountkey. You could leverage this [site](https://www.base64encode.net/)
 
-download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` values
+ - download `azure-secrect.yaml` file and modify `azurestorageaccountname`, `azurestorageaccountkey` base64-encoded values
 ```
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/azure-secrect.yaml
 vi azure-secrect.yaml
 ```
 
-In the secret file, base64-encode azurestorageaccountname and azurestorageaccountkey. 
-For the base64-encode, you could leverage this site: https://www.base64encode.net/
-
-3. create the secret for azure file
+ - create `azure-secrect` for azure file
 ```
 kubectl create -f azure-secrect.yaml
 ```
