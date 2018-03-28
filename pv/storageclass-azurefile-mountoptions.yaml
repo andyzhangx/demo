@@ -9,6 +9,7 @@ mountOptions:
   - file_mode=0777
   - uid=1000
   - gid=1000
+  - mfsymlinks
 parameters:
   skuName: Standard_LRS
 
