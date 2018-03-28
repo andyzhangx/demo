@@ -4,6 +4,8 @@ metadata:
   name: csi-dysk
 provisioner: csi-dysk
 parameters:
+  csiProvisionerSecretName: dyskcreds
+  csiProvisionerSecretNamespace: default
 
 ---
 
@@ -34,7 +36,9 @@ rules:
   - apiGroups: ["storage.k8s.io"]
     resources: ["volumeattachments"]
     verbs: ["get", "list", "watch", "update"]
-
+  - apiGroups: ['']
+    resources: ['secrets']
+    verbs:     ['get','list']
 ---
 
 kind: ClusterRoleBinding
