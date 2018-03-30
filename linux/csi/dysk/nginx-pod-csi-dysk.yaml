@@ -1,0 +1,19 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-csi-dysk
+spec:
+  containers:
+  - image: nginx
+    name: nginx-csi-dysk
+    command:
+    - "/bin/sh"
+    - "-c"
+    - while true; do echo $(date) >> /mnt/disk/outfile; sleep 1; done
+    volumeMounts:
+    - name: disk01
+      mountPath: "/mnt/disk"
+  volumes:
+  - name: disk01
+    persistentVolumeClaim:
+      claimName: pvc-csi-dysk
