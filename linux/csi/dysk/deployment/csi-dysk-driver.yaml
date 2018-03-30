@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csi-dysk
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: csi-dysk
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "update"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch", "update"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: csi-dysk
+subjects:
+  - kind: ServiceAccount
+    name: csi-dysk
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: csi-dysk
+  apiGroup: rbac.authorization.k8s.io          
+
+---
+# This YAML file contains driver-registrar & csi driver nodeplugin API objects,
+# which are necessary to run csi nodeplugin for dysk.
+
+kind: DaemonSet
+apiVersion: apps/v1beta2
+metadata:
+  name: csi-dysk
+spec:
+  selector:
+    matchLabels:
+      app: csi-dysk
+  template:
+    metadata:
+      labels:
+        app: csi-dysk
+    spec:
+      serviceAccount: csi-dysk
+      hostNetwork: true
+      containers:
+        - name: driver-registrar
+          image: quay.io/k8scsi/driver-registrar:v0.2.0
+          args:
+            - "--v=5"
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /var/lib/kubelet/plugins/csi-dysk/csi.sock
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/kubelet/plugins/csi-dysk
+        - name: dysk-driver
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+            allowPrivilegeEscalation: true
+          imagePullPolicy: Always
+          image: andyzhangx/csi-dysk:1.0.0
+          args:
+            - "--nodeid=$(NODE_ID)"
+            - "--endpoint=$(CSI_ENDPOINT)"
+            - "--v=5"
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: CSI_ENDPOINT
+              value: unix://var/lib/kubelet/plugins/csi-dysk/csi.sock
+          volumeMounts:
+            - name: plugin-dir
+              mountPath: /var/lib/kubelet/plugins/csi-dysk
+            - name: mountpoint-dir
+              mountPath: /var/lib/kubelet/pods
+              mountPropagation: "Bidirectional"
+            - mountPath: /dev
+              name: host-dev
+      volumes:
+        - name: plugin-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/csi-dysk
+            type: DirectoryOrCreate
+        - name: mountpoint-dir
+          hostPath:
+            path: /var/lib/kubelet/pods
+            type: Directory
+        - name: socket-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/csi-dysk
+            type: DirectoryOrCreate
+        - name: host-dev
+          hostPath:
+            path: /dev
+
