@@ -3,13 +3,13 @@
 # Kubernetes volume driver for Dysk
 ## 1. create a secret which stores dysk account name and password
 ```
-kubectl create secret generic dyskcreds --from-literal accountname=USERNAME --from-literal accountkey="PASSWORD" --type="dysk/dysk"
+kubectl create secret generic dyskcreds --from-literal accountname=USERNAME --from-literal accountkey="PASSWORD" --type="azure/dysk"
 ```
 
 ## 2. install flex volume driver on every linux agent node
 ```
-sudo mkdir -p /etc/kubernetes/volumeplugins/dysk~dysk
-cd /etc/kubernetes/volumeplugins/dysk~dysk
+sudo mkdir -p /etc/kubernetes/volumeplugins/azure~dysk
+cd /etc/kubernetes/volumeplugins/azure~dysk
 sudo wget -O dysk https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/flexvolume/dysk/dysk
 sudo chmod a+x dysk
 
