@@ -1,0 +1,19 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-local
+spec:
+  containers:
+  - image: nginx
+    name: nginx-local
+    command:
+    - "/bin/sh"
+    - "-c"
+    - while true; do echo $(date) >> /data/outfile; sleep 1; done
+    volumeMounts:
+    - name: data-volume
+      mountPath: "/data"
+  volumes:
+  - name: data-volume
+    persistentVolumeClaim:
+      claimName: pvc-local
