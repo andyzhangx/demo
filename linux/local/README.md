@@ -19,8 +19,6 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux
 ```watch kubectl describe po nginx-local```
 
 ## 4. enter the pod container to do validation
-kubectl exec -it nginx-local -- bash
-
 ```
 $ kubectl exec -it nginx-local bash
 root@nginx-local:/# df -h
