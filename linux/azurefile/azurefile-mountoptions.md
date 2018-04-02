@@ -15,28 +15,28 @@ kubectl create -f storageclass-azurefile-mountoptions.yaml
  - create an azure file share in Azure storage account in the same resource group with k8s cluster
  - get `azurestorageaccountname`, `azurestorageaccountkey` and `shareName` of that azure file
  
-## create a secret for azure file
+#### 1. create a secret for azure file
  - Use `kubectl create secret` to create `azure-secret`
 ```
 kubectl create secret generic azure-secret --from-literal azurestorageaccountname=NAME --from-literal azurestorageaccountkey="KEY" --type=Opaque
 ```
 
-## create an azure file persistent volume(pv)
+#### 2. create an azure file persistent volume(pv)
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv-azurefile-mountoptions.yaml```
 
-## create an azure file persistent volume claim(pvc)
+#### 3. create an azure file persistent volume claim(pvc)
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile-static.yaml```
 
  - watch the status of pv until its `Status` changed from `Pending` to `Bound`
 ```watch kubectl describe pvc pvc-azurefile```
 
-## create a pod with azure file pvc
+#### 4. create a pod with azure file pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml```
 
  - watch the status of pod until its Status changed from `Pending` to `Running`
 ```watch kubectl describe po nginx-azurefile```
 
-## enter the pod container to do validation
+#### 5. enter the pod container to do validation
 ```kubectl exec -it nginx-azurefile -- bash```
 
 ```
