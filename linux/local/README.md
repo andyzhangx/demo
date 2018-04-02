@@ -16,7 +16,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux
 ```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
-watch kubectl describe po nginx-local
+```watch kubectl describe po nginx-local```
 
 ## 4. enter the pod container to do validation
 kubectl exec -it nginx-local -- bash
