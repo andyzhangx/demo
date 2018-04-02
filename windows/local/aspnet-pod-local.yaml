@@ -1,18 +1,16 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: nginx-local
+  name: aspnet-local
 spec:
   containers:
-  - image: nginx
-    name: nginx-local
-    command:
-    - "/bin/sh"
-    - "-c"
-    - while true; do echo $(date) >> /data/outfile; sleep 1; done
+  - image: microsoft/aspnet:4.7.1-windowsservercore-1709
+    name: aspnet-local
     volumeMounts:
     - name: data-volume
       mountPath: /data
+  nodeSelector:
+    beta.kubernetes.io/os: windows
   volumes:
   - name: data-volume
     persistentVolumeClaim:
