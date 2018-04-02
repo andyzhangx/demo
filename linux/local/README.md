@@ -1,4 +1,15 @@
-## 1. create a pod with local mount
+## 1. create a local Persistent Volume (PV)
+ - download `pv-local.yaml` and modify `spec.local.path`, `kubernetes.io/hostname` fields
+```
+wget https://raw.githubusercontent.com/andyzhangx/demo/master/linux/local/pv-local.yaml
+kubectl create -f pv-local.yaml
+```
+## 2. create a local Persistent Volume Clain (PVC) tied to above PV
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/local/pvc-local.yaml
+```
+
+## 3. create a pod with local mount
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/local/nginx-pod-local.yaml
 ```
@@ -6,7 +17,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux
 #### watch the status of pod until its Status changed from `Pending` to `Running`
 watch kubectl describe po nginx-local
 
-## 2. enter the pod container to do validation
+## 4. enter the pod container to do validation
 kubectl exec -it nginx-local -- bash
 
 ```
@@ -22,3 +33,6 @@ shm              64M     0   64M   0% /dev/shm
 tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 tmpfs           3.4G     0  3.4G   0% /sys/firmware
 ```
+
+#### Links
+ - [Local Volume](https://kubernetes.io/docs/concepts/storage/volumes/#local)
