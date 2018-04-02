@@ -2,6 +2,7 @@
  - download `pv-local.yaml` and modify `spec.local.path`, `kubernetes.io/hostname` fields
 ```
 wget https://raw.githubusercontent.com/andyzhangx/demo/master/linux/local/pv-local.yaml
+vi pv-local.yaml
 kubectl create -f pv-local.yaml
 ```
 ## 2. create a local Persistent Volume Clain (PVC) tied to above PV
