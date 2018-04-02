@@ -8,7 +8,7 @@ vi storageclass-azurefile-mountoptions.yaml
 kubectl create -f storageclass-azurefile-mountoptions.yaml
 ```
 
-# Set mountOptions in Static Provisioning
+## Set mountOptions in Static Provisioning
 > static provisioning means user must create an azure file before using azure file mount feature.
 
 ## Prerequisite
