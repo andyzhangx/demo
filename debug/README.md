@@ -6,12 +6,26 @@ edit yaml files under `/etc/kubernetes/manifests/`, change `--v=2` value and the
 
  - for kubelet on Linux agent:
 
-edit yaml file under `/etc/systemd/system/kubelet.service`, change `--v=2` value and then run `sudo systemctl restart kubelet`
+edit yaml file under `/etc/systemd/system/kubelet.service`, change `--v=2` value and then run 
+```
+sudo vi /etc/systemd/system/kubelet.service
+#edit 
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+```
 
  - for kubelet on Windows agent:
  
-edit `c:\k\kubeletstart.ps1`, check the parameter(`--v=2`) in `c:\k\kubelet.exe` command
-restart `Kubelet` service
+edit `c:\k\kubeletstart.ps1`, check the parameter(`--v=2`) in `c:\k\kubelet.exe` command, and then restart `kubelet` service
+```
+notepad c:\k\kubeletstart.ps1
+#edit
+stop-service kubeproxy
+stop-service kubelet
+start-service kubeproxy
+start-service kubelet
+```
+
 > Note:
  `--v=2` means only output log level <=2 messages, the bigger log level the more logging.
 
