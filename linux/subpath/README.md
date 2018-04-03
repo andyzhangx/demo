@@ -25,7 +25,9 @@ drwx------ 2 root root    4096 Nov 20 08:12 events
 ...
 ```
 
-### Note
+#### Known issues
+ - [hostPath volume with subPath volume mount does not work with containerized kubelets](https://github.com/kubernetes/kubernetes/issues/61456): found in v1.10.0
+ 
  - [CVE-2017-1002101 - subpath volume mount handling allows arbitrary file access in host filesystem](https://github.com/kubernetes/kubernetes/issues/60813)
 
 **Attack case on Linux node**
