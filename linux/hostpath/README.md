@@ -20,3 +20,6 @@ tmpfs           3.4G     0  3.4G   0% /sys/fs/cgroup
 shm              64M     0   64M   0% /dev/shm
 tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
+
+#### Known issues
+ - [Containerized kubelet won't start pods with host path volumes that contains type field](https://github.com/kubernetes/kubernetes/issues/61801): found in v1.10.0
