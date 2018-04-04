@@ -5,7 +5,7 @@ wget https://raw.githubusercontent.com/andyzhangx/demo/master/linux/local/pv-loc
 vi pv-local.yaml
 kubectl create -f pv-local.yaml
 ```
-## 2. create a local Persistent Volume Clain (PVC) tied to above PV
+## 2. create a local Persistent Volume Claim (PVC) tied to above PV
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/local/pvc-local.yaml
 ```
