@@ -43,7 +43,7 @@ az vm update -g <group> -n <name>
 | v1.6 | no fix since v1.6 does not accept any cherry-pick |
 | v1.7 | 1.7.14 |
 | v1.8 | 1.8.9 |
-| v1.9 | in cherry-pick |
+| v1.9 | 1.9.5 |
 | v1.10 | 1.10.0 |
 
 ### 2. disk unavailable after attach/detach a data disk on a node
