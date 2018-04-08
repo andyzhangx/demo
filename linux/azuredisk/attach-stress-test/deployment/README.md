@@ -1,4 +1,6 @@
 ## Azure disk attach/detach stress test with Deployment
+#### Prerequisite
+ - [create an azure disk storage class if hdd does not exist](https://github.com/andyzhangx/demo/tree/master/linux/azuredisk#1-create-an-azure-disk-storage-class-if-hdd-does-not-exist)
 
 ### 1. Let k8s schedule all pods on one node by `kubectl cordon NODE-NAME`
 
