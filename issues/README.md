@@ -95,9 +95,9 @@ parameters:
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.6 | no such issue as `cachingmode` is already `None` by default |
-| v1.7 | in cherry-pick |
-| v1.8 | in cherry-pick |
-| v1.9 | in cherry-pick |
+| v1.7 | 1.7.14 |
+| v1.8 | 1.8.11 |
+| v1.9 | 1.9.4 |
 | v1.10 | fixed in v1.10.0 |
 
 ### 3. Azure disk support on Sovereign Cloud
