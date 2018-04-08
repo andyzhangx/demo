@@ -1,27 +1,27 @@
 ## Azure disk attach/detach stress test with Deployment
 
-### Let k8s schedule all pods on one node by using `kubectl cordon NODE-NAME`
+### 1. Let k8s schedule all pods on one node by `kubectl cordon NODE-NAME`
 
-### Set up a few Deployments with azure disk mount on a node#1
+### 2. Set up a few Deployments with azure disk mount on a node#1
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/deployment/deployment-azuredisk1.yaml
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/deployment/deployment-azuredisk2.yaml
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/deployment/deployment-azuredisk3.yaml
 ```
 
-### Let k8s schedule all pods on node#2
+### 3. Let k8s schedule all pods on node#2
 ```
 kubectl cordon node#2
 kubectl drain node#1 --ignore-daemonsets --delete-local-data
 ```
 
-### Watch the pod scheduling process
+### 4. Watch the pod scheduling process
 ```
 watch kubectl get po
 ```
 
 #### Note
-In my testing one node with three pods that has azure disk mount, it took around 9 min for scheduling all three pods from node#1 to node#2
+In my testing, I scheduled three pods with azure disk mount on one node , it took around 9 min for scheduling all three pods from node#1 to node#2
 ```
 Events:
   Type     Reason                 Age               From                               Message
