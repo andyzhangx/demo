@@ -183,10 +183,10 @@ azure file plugin on Windows does not work after node restart, this is due to `N
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.7 |  |
-| v1.8 |  |
-| v1.9 |  |
-| v1.10 | code review in v1.10.0 |
+| v1.7 | not support in upstream |
+| v1.8 | 1.8.10 |
+| v1.9 | 1.9.7 |
+| v1.10 | 1.10.0 |
 
 ### 7. file permission could not be changed using azure file, e.g. postgresql
 **error logs** when running postgresql on azure file plugin:
