@@ -2,6 +2,7 @@
 
 ```
 cd ~/go/src/github.com/kubernetes-csi/drivers
+dep ensure -vendor-only
 make hostpath
 docker build --no-cache -t andyzhangx/csi-hostpath:1.0.0 -f ./app/hostpathplugin/Dockerfile .
 #docker login
