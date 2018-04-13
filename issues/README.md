@@ -131,6 +131,8 @@ Events:
 ```
 
 **Mitigation**:
+
+If azure disk PVC mount successfully in the end, there is no action, while if it could not be mounted for more than 20min, following actions could be taken:
  - check whether `volumesInUse` list has unmounted azure disks, run:
 ```
 kubectl get no NODE-NAME -o yaml > node.log
