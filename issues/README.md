@@ -114,6 +114,30 @@ Time cost for Azure Disk PVC mount on a standard node size(e.g. Standard_D2_V2) 
 | v1.10 | 1.10.0 |
 
  > Note: for some smaller VM size which has only 1 CPU core, time cost would be much bigger(e.g. > 10min) since container is hard to get CPU slot.
+ 
+### 5. Azure disk PVC `Multi-Attach error`, makes disk mount very slow or mount failure forever
+**Issue details**:
+When schedule a pod with azure disk volume from one node to another, total time cost of detach & attach is around 1 min from v1.9.2, while in v1.9.x, there is an [UnmountDevice failure issue in containerized kubelet](https://github.com/kubernetes/kubernetes/issues/62282) which makes disk mount very slow or mount failure forever, this issue only exists in v1.9.x due to PR [Refactor nsenter](https://github.com/kubernetes/kubernetes/pull/51771), v1.10.0 won't have this issue since `devicePath` is updated in [v1.10 code](https://github.com/kubernetes/kubernetes/blob/release-1.10/pkg/volume/util/operationexecutor/operation_generator.go#L1130-L1131)
+
+**error logs**:
+```
+Events:
+  Type     Reason                 Age   From                               Message
+  ----     ------                 ----  ----                               -------
+  Normal   Scheduled              3m    default-scheduler                  Successfully assigned deployment-azuredisk1-6cd8bc7945-kbkvz to k8s-agentpool-88970029-0
+  Warning  FailedAttachVolume     3m    attachdetach-controller            Multi-Attach error for volume "pvc-6f2d0788-3b0b-11e8-a378-000d3afe2762" Volume is already exclusively attached to one node and can't be attached to another
+  Normal   SuccessfulMountVolume  3m    kubelet, k8s-agentpool-88970029-0  MountVolume.SetUp succeeded for volume "default-token-qt7h6"
+  Warning  FailedMount            1m    kubelet, k8s-agentpool-88970029-0  Unable to mount volumes for pod "deployment-azuredisk1-6cd8bc7945-kbkvz_default(5346c040-3e4c-11e8-a378-000d3afe2762)": timeout expired waiting for volumes to attach/mount for pod "default"/"deployment-azuredisk1-6cd8bc7945-kbkvz". list of unattached/unmounted volumes=[azuredisk]
+```
+
+**Fix**
+ - PR [fix nsenter GetFileType issue in containerized kubelet](https://github.com/kubernetes/kubernetes/pull/62467) would fix this issue
+ 
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.8 | no such issue |
+| v1.9 | [fix nsenter GetFileType issue in containerized kubelet](https://github.com/kubernetes/kubernetes/pull/62467): code in review |
+| v1.10 | no such issue |
 
 ## azure file plugin known issues
 ### 1. azure file file/dir mode setting issue
