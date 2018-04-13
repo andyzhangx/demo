@@ -120,6 +120,7 @@ Time cost for Azure Disk PVC mount on a standard node size(e.g. Standard_D2_V2) 
 When schedule a pod with azure disk volume from one node to another, total time cost of detach & attach is around 1 min from v1.9.2, while in v1.9.x, there is an [UnmountDevice failure issue in containerized kubelet](https://github.com/kubernetes/kubernetes/issues/62282) which makes disk mount very slow or mount failure forever, this issue only exists in v1.9.x due to PR [Refactor nsenter](https://github.com/kubernetes/kubernetes/pull/51771), v1.10.0 won't have this issue since `devicePath` is updated in [v1.10 code](https://github.com/kubernetes/kubernetes/blob/release-1.10/pkg/volume/util/operationexecutor/operation_generator.go#L1130-L1131)
 
 **error logs**:
+ - `kubectl describe po POD-NAME`
 ```
 Events:
   Type     Reason                 Age   From                               Message
@@ -128,6 +129,10 @@ Events:
   Warning  FailedAttachVolume     3m    attachdetach-controller            Multi-Attach error for volume "pvc-6f2d0788-3b0b-11e8-a378-000d3afe2762" Volume is already exclusively attached to one node and can't be attached to another
   Normal   SuccessfulMountVolume  3m    kubelet, k8s-agentpool-88970029-0  MountVolume.SetUp succeeded for volume "default-token-qt7h6"
   Warning  FailedMount            1m    kubelet, k8s-agentpool-88970029-0  Unable to mount volumes for pod "deployment-azuredisk1-6cd8bc7945-kbkvz_default(5346c040-3e4c-11e8-a378-000d3afe2762)": timeout expired waiting for volumes to attach/mount for pod "default"/"deployment-azuredisk1-6cd8bc7945-kbkvz". list of unattached/unmounted volumes=[azuredisk]
+```
+ - kubelet logs from the new node
+```
+E0412 20:08:10.920284    7602 nestedpendingoperations.go:263] Operation for "\"kubernetes.io/azure-disk//subscriptions/xxx/resourceGroups/MC_xxx_eastus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-11035a31-3e8d-11e8-82ec-0a58ac1f04cf\"" failed. No retries permitted until 2018-04-12 20:08:12.920234762 +0000 UTC m=+1467.278612421 (durationBeforeRetry 2s). Error: "Volume has not been added to the list of VolumesInUse in the node's volume status for volume \"pvc-11035a31-3e8d-11e8-82ec-0a58ac1f04cf\" (UniqueName: \"kubernetes.io/azure-disk//subscriptions/xxx/resourceGroups/MC_xxx_eastus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-11035a31-3e8d-11e8-82ec-0a58ac1f04cf\") pod \"symbiont-node-consul-0\" (UID: \"11043b12-3e8d-11e8-82ec-0a58ac1f04cf\") "
 ```
 
 **Mitigation**:
