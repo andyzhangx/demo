@@ -151,7 +151,7 @@ all volumes in `volumesInUse` should be also in `volumesAttached`, otherwise the
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.8 | no such issue |
-| v1.9 | [fix nsenter GetFileType issue in containerized kubelet](https://github.com/kubernetes/kubernetes/pull/62467): code in review |
+| v1.9 | [fix nsenter GetFileType issue in containerized kubelet](https://github.com/kubernetes/kubernetes/pull/62467): in cherry-pick |
 | v1.10 | no such issue |
 
 ## azure file plugin known issues
