@@ -130,6 +130,14 @@ Events:
   Warning  FailedMount            1m    kubelet, k8s-agentpool-88970029-0  Unable to mount volumes for pod "deployment-azuredisk1-6cd8bc7945-kbkvz_default(5346c040-3e4c-11e8-a378-000d3afe2762)": timeout expired waiting for volumes to attach/mount for pod "default"/"deployment-azuredisk1-6cd8bc7945-kbkvz". list of unattached/unmounted volumes=[azuredisk]
 ```
 
+**Mitigation**:
+ - check whether `volumesInUse` list has unmounted azure disks, run:
+```
+kubectl get no NODE-NAME -o yaml > node.log
+```
+all volumes in `volumesInUse` should be also in `volumesAttached`, otherwise there would be issue
+ - restart kubelet on the original node would solve this issue: `sudo kubectl kubelet restart` 
+
 **Fix**
  - PR [fix nsenter GetFileType issue in containerized kubelet](https://github.com/kubernetes/kubernetes/pull/62467) would fix this issue
  
