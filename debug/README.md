@@ -6,7 +6,7 @@ edit yaml files under `/etc/kubernetes/manifests/`, change `--v=2` value and the
 
  - for kubelet on Linux agent:
 
-edit yaml file under `/etc/systemd/system/kubelet.service`, change `--v=2` value and then run 
+edit yaml file under `/etc/systemd/system/kubelet.service`, change `--v=2` value(e.g. change to `--v=12`) and then run 
 ```
 sudo vi /etc/systemd/system/kubelet.service
 #edit 
