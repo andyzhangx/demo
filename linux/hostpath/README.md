@@ -22,9 +22,8 @@ tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 
 #### Known issues
- - [Containerized kubelet won't start pods with host path volumes that contains type field](https://github.com/kubernetes/kubernetes/issues/61801): found in v1.10.0
- 
-**error logs**
+ - [Containerized kubelet won't start pods with host path volumes that contains type field](https://github.com/kubernetes/kubernetes/issues/61801) 
+**error logs**:
 ```
 Events:
   Type     Reason                 Age               From                   Message
@@ -33,3 +32,12 @@ Events:
   Warning  FailedMount            57s (x7 over 1m)  kubelet, 20941k8s9010  MountVolume.SetUp failed for volume "mountpoint-dir" : hostPath type check failed: /var/lib/kubelet/pods is not a directory
   Warning  FailedMount            24s (x8 over 1m)  kubelet, 20941k8s9010  MountVolume.SetUp failed for volume "plugin-dir" : hostPath type check failed: /var/lib/kubelet/plugins/csi-dysk is not a directory
 ```
+
+**Fix**
+ - PR [fix nsenter GetFileType issue in containerized kubelet](https://github.com/kubernetes/kubernetes/pull/62467) fixed this issue
+ 
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.8 | no such issue |
+| v1.9 | 1.9.7 |
+| v1.10 | in cherry-pick |
