@@ -144,10 +144,31 @@ all volumes in `volumesInUse` should be also in `volumesAttached`, otherwise the
  - restart kubelet on the original node would solve this issue: `sudo kubectl kubelet restart` 
 
 **Fix**
- - PR [fix nsenter GetFileType issue in containerized kubelet](https://github.com/kubernetes/kubernetes/pull/62467) would fix this issue
+ - PR [fix nsenter GetFileType issue in containerized kubelet](https://github.com/kubernetes/kubernetes/pull/62467) fixed this issue
  
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.8 | no such issue |
 | v1.9 | v1.9.7 |
 | v1.10 | no such issue |
+
+
+### 6. WaitForAttach failed for azure disk: parsing "/dev/disk/azure/scsi1/lun1": invalid syntax
+**Issue details**:
+MountVolume.WaitForAttach may fail in the azure disk remount
+
+**error logs**:
+in v1.10.0, MountVolume.WaitForAttach will fail in the azure disk remount, error logs would be like following:
+```
+MountVolume.WaitForAttach failed for volume "pvc-f1562ecb-3e5f-11e8-ab6b-000d3af9f967" : azureDisk - Wait for attach expect device path as a lun number, instead got: /dev/disk/azure/scsi1/lun1 (strconv.Atoi: parsing "/dev/disk/azure/scsi1/lun1": invalid syntax)
+  Warning  FailedMount             1m (x10 over 21m)   kubelet, k8s-agentpool-66825246-0  Unable to mount volumes for pod  
+```
+
+**Fix**
+ - PR [fix WaitForAttach failure issue for azure disk](https://github.com/kubernetes/kubernetes/pull/62612) fixed this issue
+ 
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.8 | no such issue |
+| v1.9 | no such issue |
+| v1.10 | in code reivew |
