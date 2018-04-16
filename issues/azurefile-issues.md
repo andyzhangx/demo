@@ -95,10 +95,3 @@ Use subPath together with azure disk plugin
 
 **Related issues**
 [Persistent Volume Claim permissions](https://github.com/Azure/AKS/issues/225)
-
-## azure network known issues
-### 1. network interface failed
-**Workaround**:
-```
-az network nic update -g RG-NAME -n NIC-NAME
-```

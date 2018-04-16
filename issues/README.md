@@ -1,7 +1,15 @@
 # known k8s on azure issues and fixes
 
 ## [azure disk plugin known issues](./azuredisk-issues.md)
+
 ## [azure file plugin known issues](./azurefile-issues.md)
+
+## azure network known issues
+### 1. network interface failed
+**Workaround**:
+```
+az network nic update -g RG-NAME -n NIC-NAME
+```
 
 ## Other issues
 ### 1. `GET/VirtualMachine` has too many ARM api calls
