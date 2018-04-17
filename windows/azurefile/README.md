@@ -23,6 +23,7 @@ wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-az
 vi storageclass-azurefile-account.yaml
 kubectl create -f storageclass-azurefile-account.yaml
 ```
+ > Note: make sure the specified storage account is in the same resource group as your k8s cluster
 
 ## 2. create a pvc for azure file first
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile.yaml```
