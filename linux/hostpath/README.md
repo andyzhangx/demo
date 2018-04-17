@@ -1,6 +1,11 @@
 ## 1. create a pod with hostpath mount
+ - `type: Directory`
+````
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/hostpath/nginx-hostpath-dir.yaml
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/hostpath/nginx-hostpath.yaml
+ - `type: File`
+````
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/hostpath/nginx-hostpath-file.yaml
 ```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
@@ -9,6 +14,7 @@ watch kubectl describe po nginx-hostpath
 ## 2. enter the pod container to do validation
 kubectl exec -it nginx-hostpath -- bash
 
+ - `type: Directory`
 ```
 root@nginx-hostpath:/mnt/hostpath# df -h
 Filesystem      Size  Used Avail Use% Mounted on
@@ -19,6 +25,21 @@ tmpfs           3.4G     0  3.4G   0% /sys/fs/cgroup
 /dev/sdb1        99G   60M   94G   1% /mnt/hostpath
 shm              64M     0   64M   0% /dev/shm
 tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
+```
+ - `type: File`
+```
+root@nginx-hostpath-file:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          30G  6.2G   23G  22% /
+tmpfs           3.4G     0  3.4G   0% /dev
+tmpfs           3.4G     0  3.4G   0% /sys/fs/cgroup
+/dev/sda1        30G  6.2G   23G  22% /etc/hosts
+/dev/sdb1        99G   60M   94G   1% /mnt/hello.log
+shm              64M     0   64M   0% /dev/shm
+tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs           3.4G     0  3.4G   0% /sys/firmware
+root@nginx-hostpath-file:/# cat /mnt/hello.log
+abc
 ```
 
 #### Known issues

@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-hostpath
+spec:
+  containers:
+  - image: nginx
+    name: nginx-hostpath
+    volumeMounts:
+    - name: test-volume
+      mountPath: /mnt/hello.log
+  volumes:
+  - name: test-volume
+    hostPath:
+      path: /mnt/hello.log
+
