@@ -9,9 +9,10 @@ spec:
     name: nginx-hostpath
     volumeMounts:
     - name: test-volume
-      mountPath: /mnt/hello.log
+      mountPath: /var/log/waagent.log
   volumes:
   - name: test-volume
     hostPath:
-      path: /mnt/hello.log
+      path: /var/log/waagent.log
+      type: File
 
