@@ -11,8 +11,10 @@ Cannot attach data disk 'cdb-dynamic-pvc-92972088-11b9-11e8-888f-000d3a018174' t
 
 **Related issues**
  - [Azure Disk Detach are not working with multiple disk detach on the same Node](https://github.com/kubernetes/kubernetes/issues/60101)
+ - [Azure disk fails to attach and mount, causing rescheduled pod to stall following node disruption](https://github.com/kubernetes/kubernetes/issues/46421) 
  - [Since Intel CPU Azure update, new Azure Disks are not mounting, very critical... ](https://github.com/Azure/acs-engine/issues/2002)
  - [Busy azure-disk regularly fail to mount causing K8S Pod deployments to halt](https://github.com/Azure/ACS/issues/12)
+
 
 **Mitigation**:
  - option#1: Update every agent node that has attached or detached the disk in problem
@@ -133,6 +135,10 @@ Events:
 E0412 20:08:10.920284    7602 nestedpendingoperations.go:263] Operation for "\"kubernetes.io/azure-disk//subscriptions/xxx/resourceGroups/MC_xxx_eastus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-11035a31-3e8d-11e8-82ec-0a58ac1f04cf\"" failed. No retries permitted until 2018-04-12 20:08:12.920234762 +0000 UTC m=+1467.278612421 (durationBeforeRetry 2s). Error: "Volume has not been added to the list of VolumesInUse in the node's volume status for volume \"pvc-11035a31-3e8d-11e8-82ec-0a58ac1f04cf\" (UniqueName: \"kubernetes.io/azure-disk//subscriptions/xxx/resourceGroups/MC_xxx_eastus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-11035a31-3e8d-11e8-82ec-0a58ac1f04cf\") pod \"symbiont-node-consul-0\" (UID: \"11043b12-3e8d-11e8-82ec-0a58ac1f04cf\") "
 ```
 
+**Related issues**
+ - [UnmountDevice would fail in containerized kubelet](https://github.com/kubernetes/kubernetes/issues/62282)
+ - [upgrade k8s process is broke](https://github.com/Azure/acs-engine/issues/2022)
+ 
 **Mitigation**:
 
 If azure disk PVC mount successfully in the end, there is no action, while if it could not be mounted for more than 20min, following actions could be taken:
@@ -164,6 +170,9 @@ MountVolume.WaitForAttach failed for volume "pvc-f1562ecb-3e5f-11e8-ab6b-000d3af
   Warning  FailedMount             1m (x10 over 21m)   kubelet, k8s-agentpool-66825246-0  Unable to mount volumes for pod  
 ```
 
+**Related issues**
+ - [WaitForAttach failed for azure disk: parsing "/dev/disk/azure/scsi1/lun1": invalid syntax](https://github.com/kubernetes/kubernetes/issues/62540)
+
 **Fix**
  - PR [fix WaitForAttach failure issue for azure disk](https://github.com/kubernetes/kubernetes/pull/62612) fixed this issue
  
@@ -171,4 +180,4 @@ MountVolume.WaitForAttach failed for volume "pvc-f1562ecb-3e5f-11e8-ab6b-000d3af
 | ---- | ---- |
 | v1.8 | no such issue |
 | v1.9 | no such issue |
-| v1.10 | in code reivew |
+| v1.10 | in cherry-pick, could be fixed in 1.10.2 |
