@@ -1,10 +1,10 @@
 ## 1. create a pod with hostpath mount
  - `type: Directory`
-````
+```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/hostpath/nginx-hostpath-dir.yaml
 ```
  - `type: File`
-````
+```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/hostpath/nginx-hostpath-file.yaml
 ```
 
