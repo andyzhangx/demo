@@ -28,18 +28,17 @@ tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
  - `type: File`
 ```
-root@nginx-hostpath-file:/# df -h
+root@nginx-hostpath:/# df -h
 Filesystem      Size  Used Avail Use% Mounted on
-overlay          30G  6.2G   23G  22% /
+overlay         291G  7.1G  284G   3% /
 tmpfs           3.4G     0  3.4G   0% /dev
 tmpfs           3.4G     0  3.4G   0% /sys/fs/cgroup
-/dev/sda1        30G  6.2G   23G  22% /etc/hosts
-/dev/sdb1        99G   60M   94G   1% /mnt/hello.log
+/dev/sda1       291G  7.1G  284G   3% /etc/hosts
 shm              64M     0   64M   0% /dev/shm
 tmpfs           3.4G   12K  3.4G   1% /run/secrets/kubernetes.io/serviceaccount
 tmpfs           3.4G     0  3.4G   0% /sys/firmware
-root@nginx-hostpath-file:/# cat /mnt/hello.log
-abc
+root@nginx-hostpath:/# ls -lt /var/log/waagent.log
+-rw-r--r-- 1 root root 41724 Apr 17 04:11 /var/log/waagent.log
 ```
 
 #### Known issues
