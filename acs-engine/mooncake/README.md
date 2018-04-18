@@ -30,6 +30,10 @@ az group deployment create \
     --parameters "@./_output/andy-k8s179/azuredeploy.parameters.json"
 ```
 
+#### Known issues
+ - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
+ - [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
+
 #### Links
 [acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.7.9.json)
 
