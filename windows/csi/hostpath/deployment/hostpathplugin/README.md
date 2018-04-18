@@ -3,7 +3,7 @@
 ```
 cd ~/go/src/github.com/kubernetes-csi/drivers
 CGO_ENABLED=0 GOOS=windows go build -a -ldflags '-extldflags "-static"' -o _output/hostpathplugin.exe ./app/hostpathplugin
-#copy Dockerfile and hostpathplugin.exe to one folder
+#copy Dockerfile and hostpathplugin.exe to one folder on Windows
 docker build --no-cache -t andyzhangx/hostpathplugin-windows:1.0.0 -f ./Dockerfile .
 #docker login
 docker push andyzhangx/hostpathplugin-windows:1.0.0
