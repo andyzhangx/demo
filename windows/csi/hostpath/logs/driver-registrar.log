@@ -1,0 +1,31 @@
+I0418 12:20:01.675321       1 main.go:75] Attempting to open a gRPC connection with: %!q(*string=0xc4202ac120)
+I0418 12:20:01.675375       1 connection.go:68] Connecting to /var/lib/kubelet/plugins/csi-hostpath/csi.sock
+I0418 12:20:01.675653       1 connection.go:95] Still trying, connection is CONNECTING
+I0418 12:20:01.675831       1 connection.go:95] Still trying, connection is TRANSIENT_FAILURE
+I0418 12:20:02.675917       1 connection.go:95] Still trying, connection is CONNECTING
+I0418 12:20:02.676098       1 connection.go:95] Still trying, connection is TRANSIENT_FAILURE
+I0418 12:20:03.717973       1 connection.go:95] Still trying, connection is CONNECTING
+I0418 12:20:03.718379       1 connection.go:95] Still trying, connection is TRANSIENT_FAILURE
+I0418 12:20:04.894279       1 connection.go:95] Still trying, connection is TRANSIENT_FAILURE
+I0418 12:20:05.960299       1 connection.go:92] Connected
+I0418 12:20:05.960320       1 main.go:83] Calling CSI driver to discover driver name.
+I0418 12:20:05.960332       1 connection.go:136] GRPC call: /csi.v0.Identity/GetPluginInfo
+I0418 12:20:05.960441       1 connection.go:137] GRPC request: 
+I0418 12:20:05.961898       1 connection.go:139] GRPC response: name:"csi-hostpath" vendor_version:"0.2.0" 
+I0418 12:20:05.961929       1 connection.go:140] GRPC error: <nil>
+I0418 12:20:05.961957       1 main.go:91] CSI driver name: "csi-hostpath"
+I0418 12:20:05.961971       1 main.go:94] Calling CSI driver to discover node ID.
+I0418 12:20:05.961982       1 connection.go:136] GRPC call: /csi.v0.Node/NodeGetId
+I0418 12:20:05.961992       1 connection.go:137] GRPC request: 
+I0418 12:20:05.962611       1 connection.go:139] GRPC response: node_id:"k8s-master-15282161-0" 
+I0418 12:20:05.962671       1 connection.go:140] GRPC error: <nil>
+I0418 12:20:05.962692       1 main.go:102] CSI driver node ID: "k8s-master-15282161-0"
+I0418 12:20:05.962748       1 main.go:106] Loading kubeconfig.
+I0418 12:20:05.964212       1 main.go:119] Attempt to update node annotation if needed
+I0418 12:20:05.991831       1 main.go:174] previousAnnotationValue=""
+I0418 12:22:06.016943       1 main.go:174] previousAnnotationValue="{\"csi-hostpath\":\"k8s-master-15282161-0\"}"
+I0418 12:22:06.017124       1 main.go:193] The key value {"csi-hostpath": "k8s-master-15282161-0"} alredy eixst in node "csi.volume.kubernetes.io/nodeid" annotation, no need to update: {"csi-hostpath":"k8s-master-15282161-0"}
+I0418 12:24:06.024686       1 main.go:174] previousAnnotationValue="{\"csi-hostpath\":\"k8s-master-15282161-0\"}"
+I0418 12:24:06.024729       1 main.go:193] The key value {"csi-hostpath": "k8s-master-15282161-0"} alredy eixst in node "csi.volume.kubernetes.io/nodeid" annotation, no need to update: {"csi-hostpath":"k8s-master-15282161-0"}
+I0418 12:26:06.031397       1 main.go:174] previousAnnotationValue="{\"csi-hostpath\":\"k8s-master-15282161-0\"}"
+I0418 12:26:06.031431       1 main.go:193] The key value {"csi-hostpath": "k8s-master-15282161-0"} alredy eixst in node "csi.volume.kubernetes.io/nodeid" annotation, no need to update: {"csi-hostpath":"k8s-master-15282161-0"}

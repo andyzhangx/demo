@@ -252,6 +252,11 @@ spec:
       labels:
         app: csi-hostpath-linux
     spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
       serviceAccount: csi-hostpath
       hostNetwork: true
       nodeSelector:

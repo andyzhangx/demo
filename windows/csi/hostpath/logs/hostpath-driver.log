@@ -1,0 +1,27 @@
+I0418 12:20:05.518303       1 hostpath.go:89] Driver: csi-hostpath 
+I0418 12:20:05.518383       1 driver.go:80] Enabling controller service capability: CREATE_DELETE_VOLUME
+I0418 12:20:05.518390       1 driver.go:92] Enabling volume access mode: SINGLE_NODE_WRITER
+I0418 12:20:05.518523       1 server.go:108] Listening for connections on address: &net.UnixAddr{Name:"/var/lib/kubelet/plugins/csi-hostpath/csi.sock", Net:"unix"}
+I0418 12:20:05.961287       1 utils.go:96] GRPC call: /csi.v0.Identity/GetPluginInfo
+I0418 12:20:05.961339       1 utils.go:97] GRPC request: 
+I0418 12:20:05.961362       1 identityserver-default.go:32] Using default GetPluginInnfo
+I0418 12:20:05.961367       1 utils.go:102] GRPC response: name:"csi-hostpath" vendor_version:"0.2.0" 
+I0418 12:20:05.962296       1 utils.go:96] GRPC call: /csi.v0.Node/NodeGetId
+I0418 12:20:05.962316       1 utils.go:97] GRPC request: 
+I0418 12:20:05.962327       1 nodeserver-default.go:40] Using default NodeGetId
+I0418 12:20:05.962338       1 utils.go:102] GRPC response: node_id:"k8s-master-15282161-0" 
+I0418 12:21:56.465046       1 utils.go:96] GRPC call: /csi.v0.Identity/GetPluginInfo
+I0418 12:21:56.465090       1 utils.go:97] GRPC request: 
+I0418 12:21:56.465104       1 identityserver-default.go:32] Using default GetPluginInnfo
+I0418 12:21:56.465116       1 utils.go:102] GRPC response: name:"csi-hostpath" vendor_version:"0.2.0" 
+I0418 12:21:56.465963       1 utils.go:96] GRPC call: /csi.v0.Identity/Probe
+I0418 12:21:56.466145       1 utils.go:97] GRPC request: 
+I0418 12:21:56.466223       1 utils.go:102] GRPC response: 
+I0418 12:21:56.466874       1 utils.go:96] GRPC call: /csi.v0.Identity/GetPluginCapabilities
+I0418 12:21:56.466895       1 utils.go:97] GRPC request: 
+I0418 12:21:56.466912       1 identityserver-default.go:53] Using default capabilities
+I0418 12:21:56.466924       1 utils.go:102] GRPC response: capabilities:<service:<type:CONTROLLER_SERVICE > > 
+I0418 12:21:56.467690       1 utils.go:96] GRPC call: /csi.v0.Controller/ControllerGetCapabilities
+I0418 12:21:56.467705       1 utils.go:97] GRPC request: 
+I0418 12:21:56.467716       1 controllerserver-default.go:82] Using default ControllerGetCapabilities
+I0418 12:21:56.467727       1 utils.go:102] GRPC response: capabilities:<rpc:<type:CREATE_DELETE_VOLUME > > 

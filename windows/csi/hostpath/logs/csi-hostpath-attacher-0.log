@@ -1,0 +1,52 @@
+I0418 12:21:56.463327       1 connection.go:88] Connecting to /var/lib/kubelet/plugins/csi-hostpath/csi.sock
+I0418 12:21:56.463722       1 connection.go:115] Still trying, connection is CONNECTING
+I0418 12:21:56.464359       1 connection.go:112] Connected
+I0418 12:21:56.464371       1 connection.go:235] GRPC call: /csi.v0.Identity/GetPluginInfo
+I0418 12:21:56.464376       1 connection.go:236] GRPC request: 
+I0418 12:21:56.465502       1 connection.go:238] GRPC response: name:"csi-hostpath" vendor_version:"0.2.0" 
+I0418 12:21:56.465577       1 connection.go:239] GRPC error: <nil>
+I0418 12:21:56.465612       1 main.go:98] CSI driver name: "csi-hostpath"
+I0418 12:21:56.465664       1 connection.go:235] GRPC call: /csi.v0.Identity/Probe
+I0418 12:21:56.465709       1 connection.go:236] GRPC request: 
+I0418 12:21:56.466433       1 connection.go:238] GRPC response: 
+I0418 12:21:56.466505       1 connection.go:239] GRPC error: <nil>
+I0418 12:21:56.466551       1 main.go:170] Probe succeeded
+I0418 12:21:56.466574       1 connection.go:235] GRPC call: /csi.v0.Identity/GetPluginCapabilities
+I0418 12:21:56.466624       1 connection.go:236] GRPC request: 
+I0418 12:21:56.467253       1 connection.go:238] GRPC response: capabilities:<service:<type:CONTROLLER_SERVICE > > 
+I0418 12:21:56.467372       1 connection.go:239] GRPC error: <nil>
+I0418 12:21:56.467394       1 connection.go:235] GRPC call: /csi.v0.Controller/ControllerGetCapabilities
+I0418 12:21:56.467414       1 connection.go:236] GRPC request: 
+I0418 12:21:56.467976       1 connection.go:238] GRPC response: capabilities:<rpc:<type:CREATE_DELETE_VOLUME > > 
+I0418 12:21:56.468052       1 connection.go:239] GRPC error: <nil>
+I0418 12:21:56.468075       1 main.go:129] CSI driver does not support ControllerPublishUnpublish, using trivial handler
+I0418 12:21:56.468378       1 controller.go:110] Starting CSI attacher
+I0418 12:21:56.468668       1 reflector.go:202] Starting reflector *v1beta1.VolumeAttachment (10s) from github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87
+I0418 12:21:56.468699       1 reflector.go:240] Listing and watching *v1beta1.VolumeAttachment from github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87
+I0418 12:21:56.468882       1 reflector.go:202] Starting reflector *v1.PersistentVolume (10s) from github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87
+I0418 12:21:56.468950       1 reflector.go:240] Listing and watching *v1.PersistentVolume from github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87
+I0418 12:21:56.568606       1 shared_informer.go:123] caches populated
+I0418 12:22:06.499072       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:06.503072       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:16.499632       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:16.503678       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:26.500142       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:26.504253       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:36.500400       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:36.504460       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:46.500592       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:46.504629       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:56.500968       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:22:56.504854       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:06.501192       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:06.505091       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:16.501481       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:16.505365       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:26.501783       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:26.505674       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:36.502122       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:36.506080       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:46.502343       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:46.506359       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:56.502554       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
+I0418 12:23:56.506922       1 reflector.go:286] github.com/kubernetes-csi/external-attacher/vendor/k8s.io/client-go/informers/factory.go:87: forcing resync
