@@ -1,0 +1,288 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hostpath
+  
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csi-hostpath-provisioner
+  namespace: hostpath
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: hostpath:external-provisioner-runner
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: csi-hostpath-provisioner-role
+subjects:
+  - kind: ServiceAccount
+    name: csi-hostpath-provisioner
+    namespace: hostpath
+roleRef:
+  kind: ClusterRole
+  name: hostpath:external-provisioner-runner
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: csi-hostpath-provisioner
+  namespace: hostpath
+  labels:
+    app: csi-hostpath-provisioner
+spec:
+  selector:
+    app: csi-hostpath-provisioner
+  ports:
+    - name: dummy
+      port: 12345
+
+---
+kind: StatefulSet
+apiVersion: apps/v1beta1
+metadata:
+  name: csi-hostpath-provisioner
+  namespace: hostpath
+spec:
+  serviceName: "csi-hostpath-provisioner"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: csi-hostpath-provisioner
+    spec:
+      serviceAccount: csi-hostpath-provisioner
+      nodeSelector:
+        beta.kubernetes.io/os: linux	  	  
+      containers:
+        - name: csi-hostpath-provisioner
+          image: andyzhangx/csi-provisioner:0.2.0
+          args:
+            - "--provisioner=csi-hostpath"
+            - "--csi-address=$(ADDRESS)"
+            - "--v=5"
+          env:
+            - name: ADDRESS
+              value: /var/lib/kubelet/plugins/csi-hostpath/csi.sock
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/kubelet/plugins/csi-hostpath
+      volumes:
+        - name: socket-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/csi-hostpath
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csi-hostpath-attacher
+  namespace: hostpath
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: hostpath:external-attacher-runner
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch", "update"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: csi-hostpath-attacher-role
+subjects:
+  - kind: ServiceAccount
+    name: csi-hostpath-attacher
+    namespace: hostpath
+roleRef:
+  kind: ClusterRole
+  name: hostpath:external-attacher-runner
+  apiGroup: rbac.authorization.k8s.io
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: csi-hostpath-attacher
+  namespace: hostpath
+  labels:
+    app: csi-hostpath-attacher
+spec:
+  selector:
+    app: csi-hostpath-attacher
+  ports:
+    - name: dummy
+      port: 12345
+
+---
+kind: StatefulSet
+apiVersion: apps/v1beta1
+metadata:
+  name: csi-hostpath-attacher
+  namespace: hostpath
+spec:
+  serviceName: "csi-hostpath-attacher"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: csi-hostpath-attacher
+    spec:
+      serviceAccount: csi-hostpath-attacher
+      nodeSelector:
+        beta.kubernetes.io/os: linux	  
+      containers:
+        - name: csi-hostpath-attacher
+          image: quay.io/k8scsi/csi-attacher:v0.2.0
+          args:
+            - "--v=5"
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /var/lib/kubelet/plugins/csi-hostpath/csi.sock
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/kubelet/plugins/csi-hostpath
+      volumes:
+        - name: socket-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/csi-hostpath
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csi-hostpath
+  namespace: hostpath
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: csi-hostpath
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "update"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch", "update"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: csi-hostpath
+subjects:
+  - kind: ServiceAccount
+    name: csi-hostpath
+    namespace: hostpath
+roleRef:
+  kind: ClusterRole
+  name: csi-hostpath
+  apiGroup: rbac.authorization.k8s.io          
+
+---
+# This YAML file contains driver-registrar & csi driver nodeplugin API objects,
+# which are necessary to run csi nodeplugin for hostpath.
+
+kind: DaemonSet
+apiVersion: apps/v1beta2
+metadata:
+  name: csi-hostpath
+  namespace: hostpath
+spec:
+  selector:
+    matchLabels:
+      app: csi-hostpath
+  template:
+    metadata:
+      labels:
+        app: csi-hostpath
+    spec:
+      serviceAccount: csi-hostpath
+      hostNetwork: true
+      nodeSelector:
+        beta.kubernetes.io/os: windows	  
+      containers:
+        - name: driver-registrar
+          image: andyzhangx/driver-registrar-windows:1.0.0
+          args:
+            - "--v=5"
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: tcp://127.0.0.1:10000
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+        - name: hostpath-driver
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+            allowPrivilegeEscalation: true
+          imagePullPolicy: Always
+          image: andyzhangx/hostpathplugin-windows:1.0.0
+          args:
+            - "--nodeid=$(NODE_ID)"
+            - "--endpoint=$(CSI_ENDPOINT)"
+            - "--v=5"
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: CSI_ENDPOINT
+              value: tcp://127.0.0.1:10000
+          volumeMounts:
+            - name: mountpoint-dir
+              mountPath: /var/lib/kubelet/pods
+              mountPropagation: "Bidirectional"
+      volumes:
+        - name: mountpoint-dir
+          hostPath:
+            path: /var/lib/kubelet/pods
