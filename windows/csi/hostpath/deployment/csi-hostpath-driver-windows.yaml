@@ -75,9 +75,14 @@ spec:
       labels:
         app: csi-hostpath-provisioner
     spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
       serviceAccount: csi-hostpath-provisioner
       nodeSelector:
-        beta.kubernetes.io/os: linux	  	  
+        beta.kubernetes.io/os: linux
       containers:
         - name: csi-hostpath-provisioner
           image: andyzhangx/csi-provisioner:0.2.0
@@ -165,9 +170,14 @@ spec:
       labels:
         app: csi-hostpath-attacher
     spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
       serviceAccount: csi-hostpath-attacher
       nodeSelector:
-        beta.kubernetes.io/os: linux	  
+        beta.kubernetes.io/os: linux
       containers:
         - name: csi-hostpath-attacher
           image: quay.io/k8scsi/csi-attacher:v0.2.0
@@ -231,21 +241,87 @@ roleRef:
 kind: DaemonSet
 apiVersion: apps/v1beta2
 metadata:
-  name: csi-hostpath
+  name: csi-hostpath-linux
   namespace: hostpath
 spec:
   selector:
     matchLabels:
-      app: csi-hostpath
+      app: csi-hostpath-linux
   template:
     metadata:
       labels:
-        app: csi-hostpath
+        app: csi-hostpath-linux
     spec:
       serviceAccount: csi-hostpath
       hostNetwork: true
       nodeSelector:
-        beta.kubernetes.io/os: windows	  
+        beta.kubernetes.io/os: linux
+      containers:
+        - name: driver-registrar
+          image: quay.io/k8scsi/driver-registrar:v0.2.0
+          args:
+            - "--v=5"
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /var/lib/kubelet/plugins/csi-hostpath/csi.sock
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/kubelet/plugins/csi-hostpath
+        - name: hostpath-driver
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+            allowPrivilegeEscalation: true
+          imagePullPolicy: Always
+          image: andyzhangx/csi-hostpath:0.2.0
+          args:
+            - "--nodeid=$(NODE_ID)"
+            - "--endpoint=$(CSI_ENDPOINT)"
+            - "--v=5"
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: CSI_ENDPOINT
+              value: unix://var/lib/kubelet/plugins/csi-hostpath/csi.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/kubelet/plugins/csi-hostpath
+            - name: mountpoint-dir
+              mountPath: /var/lib/kubelet/pods
+              mountPropagation: "Bidirectional"
+      volumes:
+        - name: mountpoint-dir
+          hostPath:
+            path: /var/lib/kubelet/pods
+        - name: socket-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/csi-hostpath
+---
+kind: DaemonSet
+apiVersion: apps/v1beta2
+metadata:
+  name: csi-hostpath-windows
+  namespace: hostpath
+spec:
+  selector:
+    matchLabels:
+      app: csi-hostpath-windows
+  template:
+    metadata:
+      labels:
+        app: csi-hostpath-windows
+    spec:
+      serviceAccount: csi-hostpath
+      nodeSelector:
+        beta.kubernetes.io/os: windows
       containers:
         - name: driver-registrar
           image: andyzhangx/driver-registrar-windows:1.0.0
