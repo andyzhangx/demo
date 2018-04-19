@@ -5,6 +5,7 @@ metadata:
 spec:
   securityContext:
     runAsUser: 0
+    fsGroup: 0
   containers:
   - image: gcr.io/google-samples/node-hello:1.0
     name: demo-azurefile-securitycontext
