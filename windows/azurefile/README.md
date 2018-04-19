@@ -110,7 +110,8 @@ C:\mnt\azure>dir
 ```
 
 ### known issues of Azure file on Windows feature
-1. [Allow windows mount path on windows](https://github.com/kubernetes/kubernetes/pull/51240) is available from v1.7.x, v1.8.3 or above, as a workaround, you could use linux style `mountPath`, e.g. `/mnt/`, this path will be converted into `c:/mnt/`
+ - [Allow windows mount path on windows](https://github.com/kubernetes/kubernetes/pull/51240) is available from v1.7.x, v1.8.3 or above, as a workaround, you could use linux style `mountPath`, e.g. `/mnt/`, this path will be converted into `c:/mnt/`
+ - [other azure file plugin known issues](https://github.com/andyzhangx/demo/blob/master/issues/azurefile-issues.md)
 
 #### Links
 [Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
