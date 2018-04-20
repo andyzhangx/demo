@@ -11,7 +11,7 @@ docker push andyzhangx/hostpathplugin-windows:1.0.0
 
 ## 2. Test hostpathplugin-windows image
 ```
-docker run -it --name hostpathplugin andyzhangx/hostpathplugin-windows:1.0.0 --nodeid=abc --endpoint=tcp://127.0.0.1:10000 cmd
+docker run -it --name hostpathplugin andyzhangx/hostpathplugin-windows:1.0.0 --nodeid=abc --endpoint=tcp://127.0.0.1:10000 --v=5 cmd
 docker stop hostpathplugin && docker rm hostpathplugin
 ```
 
