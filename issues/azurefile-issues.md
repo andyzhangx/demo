@@ -44,20 +44,44 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-e
 
 ### 4. azure file dynamic provision failed due to cluster name length issue
 **Issue details**:
-
-There is a [bug](https://github.com/kubernetes/kubernetes/pull/48326) of azure file dynamic provision in [v1.7.0, v1.7.10] (fixed in v1.7.11, v1.8.0): cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc:
+k8s cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc, this bug exists in [v1.7.0, v1.7.10]:
 ```
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
+**Fix**
+ - PR [Fix share name generation in azure file provisioner](https://github.com/kubernetes/kubernetes/pull/48326)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.7 | 1.7.11 |
+| v1.8 | 1.8.0 |
+| v1.9 | 1.9.0 |
 
 ### 5. azure file dynamic provision failed due to no storage account in current resource group
 **Issue details**:
+When create an azure file PVC, there will be error if there is no storage account in current resource group, error info would be like following:
+```
+Events:
+  Type     Reason              Age               From                         Message
+  ----     ------              ----              ----                         -------
+  Warning  ProvisioningFailed  10s (x5 over 1m)  persistentvolume-controller  Failed to provision volume with StorageClass "azurefile-premium": failed to find a matching storage account
+```
 
 **Related issues**
-
+ - [failed to create azure file pvc if there is no storage account in current resource group](https://github.com/kubernetes/kubernetes/issues/56556)
+ 
 **Workaround**:
+specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster. In AKS, the specified storage account should be in shadow resource group(naming as MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}) which contains all resources of your aks cluster.
 
 **Fix**
+ - PR [fix the create azure file pvc failure if there is no storage account in current resource group](https://github.com/kubernetes/kubernetes/pull/56557)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.7 | 1.7.14 |
+| v1.8 | 1.8.9 |
+| v1.9 | 1.9.4 |
+| v1.10 | 1.10.0 |
 
 ### 6. azure file plugin on Windows does not work after node restart
 **Issue details**:
@@ -125,5 +149,5 @@ sudo umount /var/lib/kubelet/pods/cc5c86cd-422a-11e8-91d7-000d3a03ee84/volumes/k
 | v1.10 | 1.10.0 |
 
 **Related issues**
-[UnmountVolume.TearDown fails for AzureFile volume, locks up node](https://github.com/kubernetes/kubernetes/issues/62824)
-[Kubelet failure to umount glusterfs mount points](https://github.com/kubernetes/kubernetes/issues/41141)
+ - [UnmountVolume.TearDown fails for AzureFile volume, locks up node](https://github.com/kubernetes/kubernetes/issues/62824)
+ - [Kubelet failure to umount glusterfs mount points](https://github.com/kubernetes/kubernetes/issues/41141)
