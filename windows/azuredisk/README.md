@@ -62,6 +62,8 @@ D:\test>dir
  - [Allow windows mount path on windows](https://github.com/kubernetes/kubernetes/pull/51240) is available from v1.7.x, v1.8.3 or above.
 
  - Only drive letter(e.g. `D:`) as `mountPath` works for azure disk on Windows feature due to [volume mapping would fail when hostPath is a symbolic link to a drive and containerPath is a dir path on Windows](https://github.com/moby/moby/issues/35436)
+ 
+ - [other azure disk plugin known issues](https://github.com/andyzhangx/demo/blob/master/issues/azuredisk-issues.md)
 
 #### Links
 [Azure Disk Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-disk)

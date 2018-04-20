@@ -158,7 +158,6 @@ all volumes in `volumesInUse` should be also in `volumesAttached`, otherwise the
 | v1.9 | v1.9.7 |
 | v1.10 | no such issue |
 
-
 ### 6. WaitForAttach failed for azure disk: parsing "/dev/disk/azure/scsi1/lun1": invalid syntax
 **Issue details**:
 MountVolume.WaitForAttach may fail in the azure disk remount
@@ -181,3 +180,14 @@ MountVolume.WaitForAttach failed for volume "pvc-f1562ecb-3e5f-11e8-ab6b-000d3af
 | v1.8 | no such issue |
 | v1.9 | no such issue |
 | v1.10 | in cherry-pick, could be fixed in 1.10.2 |
+
+### 7. `uid` and `gid` setting in azure disk
+**Issue details**:
+Unlike azure file mountOptions, you will get following failure if set `mountOptions` like `uid=999,gid=999` in azure disk mount:
+```
+azureDisk - mountDevice:FormatAndMount failed with exit status 32 
+```
+That's because azureDisk use ext4 file system by default, mountOptions like [uid=x,gid=x] could not be set in mount time.
+
+**Solution**:
+Set uid in `runAsUser` and gid in `fsGroup` [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
