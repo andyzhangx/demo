@@ -95,3 +95,35 @@ Use subPath together with azure disk plugin
 
 **Related issues**
 [Persistent Volume Claim permissions](https://github.com/Azure/AKS/issues/225)
+
+### 8. Could not delete pod with AzureFile volume if storage account key changed
+**Issue details**:
+ - kubelet fails to umount azurefile volume when there is azure file connection, below is an easy repro:
+   - create a pod with azure file mount
+   - regenerate the account key of the storage account
+   - delete the pod, and the pod will never be deleted due to `UnmountVolume.TearDown` error
+
+**error logs**
+```
+nestedpendingoperations.go:263] Operation for "\"kubernetes.io/azure-file/cc5c86cd-422a-11e8-91d7-000d3a03ee84-myvolume\" (\"cc5c86cd-422a-11e8-91d7-000d3a03ee84\")" failed. No retries permitted until 2018-04-17 10:35:40.240272223 +0000 UTC m=+1185722.391925424 (durationBeforeRetry 500ms). Error: "UnmountVolume.TearDown failed for volume \"myvolume\" (UniqueName: \"kubernetes.io/azure-file/cc5c86cd-422a-11e8-91d7-000d3a03ee84-myvolume\") pod \"cc5c86cd-422a-11e8-91d7-000d3a03ee84\" (UID: \"cc5c86cd-422a-11e8-91d7-000d3a03ee84\") : Error checking if path exists: stat /var/lib/kubelet/pods/cc5c86cd-422a-11e8-91d7-000d3a03ee84/volumes/kubernetes.io~azure-file/myvolume: resource temporarily unavailable
+...
+kubelet_volumes.go:128] Orphaned pod "380b02f3-422b-11e8-91d7-000d3a03ee84" found, but volume paths are still present on disk
+```
+**Workaround**:
+manually umount the azure file mount path on the agent node and then the pod will be deleted right after that
+```
+sudo umount /var/lib/kubelet/pods/cc5c86cd-422a-11e8-91d7-000d3a03ee84/volumes/kubernetes.io~azure-file/myvolume
+```
+**Fix**
+ - PR [Fix bug:Kubelet failure to umount mount points](https://github.com/kubernetes/kubernetes/pull/52324)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.7 | no fix(no cherry-pick fix is allowed) |
+| v1.8 | 1.8.8 |
+| v1.9 | 1.9.7 |
+| v1.10 | 1.10.0 |
+
+**Related issues**
+[UnmountVolume.TearDown fails for AzureFile volume, locks up node](https://github.com/kubernetes/kubernetes/issues/62824)
+[Kubelet failure to umount glusterfs mount points](https://github.com/kubernetes/kubernetes/issues/41141)
