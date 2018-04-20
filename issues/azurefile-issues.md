@@ -71,7 +71,7 @@ Events:
  - [failed to create azure file pvc if there is no storage account in current resource group](https://github.com/kubernetes/kubernetes/issues/56556)
  
 **Workaround**:
-specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster. In AKS, the specified storage account should be in shadow resource group(naming as MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}) which contains all resources of your aks cluster.
+specify a storage account in azure file dynamic provision, you should make sure the specified storage account is in the same resource group as your k8s cluster. In AKS, the specified storage account should be in `shadow resource group`(naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`) which contains all resources of your aks cluster. 
 
 **Fix**
  - PR [fix the create azure file pvc failure if there is no storage account in current resource group](https://github.com/kubernetes/kubernetes/pull/56557)
