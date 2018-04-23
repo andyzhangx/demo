@@ -11,7 +11,7 @@ docker push andyzhangx/driver-registrar-windows:1.0.0
 
 ## 2. Test driver-registrar-windows image
 ```
-docker run -it --name driver-registrar andyzhangx/driver-registrar-windows:1.0.0 cmd
+docker run -it --name driver-registrar andyzhangx/driver-registrar-windows:1.0.0 --csi-address=tcp://127.0.0.1:10000 --v=5 cmd
 docker stop driver-registrar && docker rm driver-registrar
 ```
 ### Links
