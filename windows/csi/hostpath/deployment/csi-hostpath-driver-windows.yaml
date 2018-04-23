@@ -335,7 +335,7 @@ spec:
             - "--csi-address=$(ADDRESS)"
           env:
             - name: ADDRESS
-              value: tcp://127.0.0.1:10000
+              value: localhost:10000
             - name: KUBE_NODE_NAME
               valueFrom:
                 fieldRef:
@@ -358,7 +358,7 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
-              value: tcp://127.0.0.1:10000
+              value: tcp://localhost:10000
           volumeMounts:
             - name: mountpoint-dir
               mountPath: /var/lib/kubelet/pods
