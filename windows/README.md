@@ -27,10 +27,11 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 | azure disk | Yes | [azuredisk](./azuredisk) | Support from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
 | azure file | Yes | [azurefile](./azurefile) | Support from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
 | cephfs | No |  | No official support for cephfs support on windows, could use NFS instead |
+| csi | No | [csi](./csi) | CSI on Windows does not work due to [Symlink for ca.crt & token files are broken on windows containers](https://github.com/kubernetes/kubernetes/issues/52419), details could be found in [Enable CSI hostpath example on windows](https://github.com/kubernetes-csi/drivers/issues/79) |
 | downwardAPI | No |  | Same issue with secret, due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419) |
 | emptyDir | Yes | [emptydir](./emptydir) | tmpfs is not supported on Windows Server |
 | fc (fibre channel) |  |  |  |
-| flexvolume | Yes | [flexvolume](./flexvolume) | working on this [feature](https://github.com/kubernetes/kubernetes/issues/56875) [PR#56921](https://github.com/kubernetes/kubernetes/pull/56921) (code merged, support from v1.9.1) |
+| flexvolume | Yes | [flexvolume](./flexvolume) | available from v1.8.6, v1.9.1 |
 | flocker |  |  |  |
 | gitRepo | No | [gitrepo](./gitrepo) | git is not built-in on Windows host now: [Enable gitRepo Volume on Windows](https://github.com/kubernetes/kubernetes/issues/57546) |
 | glusterfs | No |  | Windows doesn't have a native GlusterFS client, could use NFS instead |
