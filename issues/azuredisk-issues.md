@@ -191,3 +191,14 @@ That's because azureDisk use ext4 file system by default, mountOptions like [uid
 
 **Solution**:
 Set uid in `runAsUser` and gid in `fsGroup` [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+
+### 8. `Addition of a blob based disk to VM with managed disks is not supported`
+**Issue details**:
+Following error may occur if attach a blob based(unmanaged) disk to VM with managed disks:
+```
+  Warning  FailedMount            42s (x2 over 1m)  attachdetach                    AttachVolume.Attach failed for volume "pvc-f17e5e77-474e-11e8-a2ea-000d3a10df6d" : Attach volume "holo-k8s-dev-dynamic-pvc-f17e5e77-474e-11e8-a2ea-000d3a10df6d" to instance "k8s-master-92699158-0" failed with compute.VirtualMachinesClient#CreateOrUpdate: Failure responding to request: StatusCode=409 -- Original Error: autorest/azure: Service returned an error. Status=409 Code="OperationNotAllowed" Message="Addition of a blob based disk to VM with managed disks is not supported."
+```
+This issue is by design as in Azure, there are two kinds of disks, blob based(unmanaged) disk and managed disk, an Azure VM could not attach both of these two kinds of disks.
+
+**Solution**:
+Use `default` azure disk storage class in acs-engine, as `default` will always be identical to the agent pool, that is, if VM is managed, it will be managed azure disk class, if unmanaged, then it's unmanaged disk class.
