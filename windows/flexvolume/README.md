@@ -1,4 +1,13 @@
-## 1. install flex volume driver on every Windows node
+## FlexVolume driver on Windows is availabe from following k8s versions:
+ - PR: [enable flexvolume on Windows node](https://github.com/kubernetes/kubernetes/pull/56921)
+
+| k8s version | availabe version |
+| ---- | ---- |
+| v1.7 | 1.7.13 |
+| v1.8 | 1.8.6 |
+| v1.9 | 1.9.1 |
+
+## 1. install FlexVolume driver on every Windows node
 make a plugin directory, e.g. `C:\k\volumeplugins\test~example.cmd` and put driver file https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/flexvolume/example.cmd under `C:\k\volumeplugins\test~example.cmd`
 ```
 start powershell
@@ -19,7 +28,7 @@ edit file `c:\k\kubeletstart.ps1`, append following config
 --volume-plugin-dir=c:\k\volumeplugins
 ```
 
-## 3. create a pod with flexvolume mount on Windows
+## 3. create a pod with FlexVolume mount on Windows
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/flexvolume/aspnet-flex-example.yaml
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
@@ -64,7 +73,7 @@ C:\data>dir
 ```
 
 ### Known issues
-1. You may get following error in the kubelet log when trying to use a flexvolume driver written by yourself:
+ - You may get following error in the kubelet log when trying to use a flexvolume driver written by yourself:
 ```
 Volume has not been added to the list of VolumesInUse
 ```
@@ -74,7 +83,7 @@ echo {"status": "Success", "capabilities": {"attach": false}}
 ```
 Which means your [FlexVolume driver does not need Master-initiated Attach/Detach](https://docs.openshift.org/latest/install_config/persistent_storage/persistent_storage_flex_volume.html#flex-volume-drivers-without-master-initiated-attach-detach)
 
-2. The main difficulty is that how to pass json parameters which contains `",`, see below example
+ - The main difficulty is that how to pass json parameters which contains `",`, see below example
 ```
 C:\tmp\test~example.cmd>.\example.cmd mount c:\var\lib\kubelet\pods\c4fd9ca4-df10-11e7-b71a-000d3a02c330\volumes\test~example2.cmd\flextest   {"kubernetes.io/fsType":"","kubernetes.io/pod.name":"aspnet-flex-example2","kubernetes.io/pod.namespace":"default","kubernetes.io/pod.uid":"c4fd9ca4-df10-11e7-b71a-000d3a02c330","kubernetes.io/pvOrVolumeName":"flextest","kubernetes.io/readwrite":"rw","kubernetes.io/serviceAccount.name":"default"}
 ```
