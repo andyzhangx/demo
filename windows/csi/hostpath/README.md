@@ -14,7 +14,7 @@ NAME                         READY     STATUS             RESTARTS   AGE       I
 csi-hostpath-attacher-0      1/1       Running            0          5d        10.240.0.10    k8s-master-15282161-0
 csi-hostpath-linux-ftzhr     2/2       Running            0          5d        10.255.255.5   k8s-master-15282161-0
 csi-hostpath-provisioner-0   1/1       Running            0          5d        10.240.0.19    k8s-master-15282161-0
-csi-hostpath-windows-lpzqb   1/2       Running   	        0          20h       10.240.0.84    15282k8s9010
+csi-hostpath-windows-lpzqb   1/2       Running            0          20h       10.240.0.84    15282k8s9010
 ```
 
 ## Basic Usage
