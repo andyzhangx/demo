@@ -1,8 +1,15 @@
 # azure file plugin known issues
-### 1. azure file file/dir mode setting issue
+### 1. azure file mountOptions setting
+#### file/dir mode setting:
 **Issue details**:
 
-`fileMode`, `dirMode` value would be different in different versions, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5). For version v1.8.0-v1.8.4, since [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) is not available, as a workaround, specify a [securityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for the container with: `runAsUser: 0`, here is an [example](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/demo-azurefile-securitycontext.yaml)
+ - `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5). 
+   - For version v1.8.0-v1.8.4, since [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) is not available, as a workaround, [securityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) could be specified for the pod, [detailed pod example](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/demo-azurefile-securitycontext.yaml)
+```
+  securityContext:
+    runAsUser: XXX
+    fsGroup: XXX
+```
 
 | version | `fileMode`, `dirMode` value |
 | ---- | ---- |
@@ -11,6 +18,21 @@
 | v1.8.6 or above | 0755 |
 | v1.9.0 | 0700 |
 | v1.9.1 or above | 0755 |
+| v1.10.0| 0755 |
+
+#### other useful `mountOptions` setting:
+ - `mfsymlinks`:
+make azure file(cifs) mount supports symbolic link
+ - `nobrl`:
+Do not send byte range lock requests to the server. This is necessary for certain applications that break with cifs style mandatory byte range locks (and most cifs servers do not yet support requesting advisory byte range locks). Error message could be like following:
+```
+Error: SQLITE_BUSY: database is locked
+```
+ 
+**Related issues**
+  - [azureFile volume mode too strict for container with non root user](https://github.com/kubernetes/kubernetes/issues/54610)
+  - [Unable to connect to SQL-lite db mounted on AzureFile/AzureDisks [SQLITE_BUSY: database is locked]](https://github.com/kubernetes/kubernetes/issues/59755)
+  - [Allow nobrl parameter like docker to use sqlite over network drive](https://github.com/kubernetes/kubernetes/issues/61767)
 
 ### 2. permission issue of azure file dynamic provision in acs-engine
 **Issue details**:
