@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-local
+  name: pv-local-raw
 spec:
   capacity:
     storage: 100Gi
-  volumeMode: Filesystem
+  volumeMode: Block
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
-    path: /mnt/
+    path: /dev/sdc
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -19,4 +19,4 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - k8s-linuxpool1-20941235-0
+          - k8s-agentpool-66825246-0

@@ -1,0 +1,16 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-local-raw
+spec:
+  containers:
+  - image: nginx
+    name: nginx-local
+    volumeDevices:
+    - name: data-volume
+      devicePath: /dev/diskx
+  volumes:
+  - name: data-volume
+    persistentVolumeClaim:
+      claimName: pvc-local-raw
+      readOnly: false
