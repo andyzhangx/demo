@@ -1,18 +1,21 @@
+### Prerequisite
+[Raw Block Volumes is included as an alpha feature for v1.9](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#raw-block-volume-support), `--feature-gates=BlockVolume=true` should be configured in `kubelet`, `kube-scheduler`, `kube-apiserver`, `kube-controller-manager` service
+
 ## 1. create a local Persistent Volume (PV)
  - download `pv-local-raw.yaml` and modify `spec.local.path`, `kubernetes.io/hostname` fields
 ```
-wget https://raw.githubusercontent.com/andyzhangx/demo/master/linux/local/pv-local-raw.yaml
+wget https://raw.githubusercontent.com/andyzhangx/demo/master/linux/raw/local/pv-local-raw.yaml
 vi pv-local-raw.yaml
 kubectl create -f pv-local-raw.yaml
 ```
 ## 2. create a local Persistent Volume Clain (PVC) tied to above PV
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/local/pvc-local-raw.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/raw/local/pvc-local-raw.yaml
 ```
 
 ## 3. create a pod with local mount
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/local/nginx-pod-local-raw.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/raw/local/nginx-pod-local-raw.yaml
 ```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
