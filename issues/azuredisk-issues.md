@@ -221,3 +221,14 @@ Failed to provision volume with StorageClass "default": azureDisk - account ds6c
 | v1.8 | in cherry-pick |
 | v1.9 | in cherry-pick |
 | v1.10 | no such issue |
+
+**Work around**:
+this bug only exists in blob based VM in v1.8.x, v1.9.x, so if specify `ManagedDisks` when creating k8s cluster in acs-engine(AKS is using managed disk by default), it won't have this issue:
+```
+    "agentPoolProfiles": [
+      {
+        ...
+        "storageProfile" : "ManagedDisks",
+        ...
+      }
+```
