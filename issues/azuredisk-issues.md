@@ -236,4 +236,25 @@ this bug only exists in blob based VM in v1.8.x, v1.9.x, so if specify `ManagedD
 ### 10. data loss if using existing azure disk with partitions in disk mount
 **Issue details**:
 
-When use an existing azure disk(also called [static provisioning](https://github.com/andyzhangx/demo/tree/master/linux/azuredisk#static-provisioning-for-azure-disk)) in pod, if that disk has partitions, the disk will be formatted in the pod mounting.
+When use an existing azure disk(also called [static provisioning](https://github.com/andyzhangx/demo/tree/master/linux/azuredisk#static-provisioning-for-azure-disk)) in pod, if that disk has partitions, the disk will be formatted in the pod mounting process, actually k8s volume don't support mount disk with partitions, disk mount would fail finally. While for mounting existing **azure** disk that has partitions, data will be lost since it will format that disk first. 
+
+**Related issues**
+ - [data loss if using existing azure disk with partitions in disk mount](https://github.com/kubernetes/kubernetes/issues/63235)
+
+**Fix**
+ - PR [fix data loss issue if using existing azure disk with partitions in disk mount](https://github.com/kubernetes/kubernetes/pull/63270) will azure provider return error when mounting existing azure disk that has partitions
+ 
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.8 | in cherry-pick |
+| v1.9 | in cherry-pick |
+| v1.10 | in review |
+
+**Work around**:
+Don't use existing azure disk that has partitions, e.g. following disk in LUN 0 that has one partition:
+```
+azureuser@aks-nodepool1-28371372-0:/$ ls -l /dev/disk/azure/scsi1/
+total 0
+lrwxrwxrwx 1 root root 12 Apr 27 08:04 lun0 -> ../../../sdc
+lrwxrwxrwx 1 root root 13 Apr 27 08:04 lun0-part1 -> ../../../sdc1
+```
