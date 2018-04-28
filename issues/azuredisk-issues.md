@@ -242,7 +242,7 @@ When use an existing azure disk(also called [static provisioning](https://github
  - [data loss if using existing azure disk with partitions in disk mount](https://github.com/kubernetes/kubernetes/issues/63235)
 
 **Fix**
- - PR [fix data loss issue if using existing azure disk with partitions in disk mount](https://github.com/kubernetes/kubernetes/pull/63270) will azure provider return error when mounting existing azure disk that has partitions
+ - PR [fix data loss issue if using existing azure disk with partitions in disk mount](https://github.com/kubernetes/kubernetes/pull/63270) will let azure provider return error when mounting existing azure disk that has partitions
  
 | k8s version | fixed version |
 | ---- | ---- |
