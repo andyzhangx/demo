@@ -29,6 +29,13 @@ spec:
       containers:
       - name: nginx-server
         image: andyzhangx/nginx-server:1.0.0
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "/mnt/gitclone.sh"
         ports:
         - containerPort: 80
         resources:

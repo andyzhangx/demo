@@ -10,7 +10,7 @@ An kubernetes cluster with a azure file storage class(name as `azurefile`) shoul
 
 # Deploy nginx-server application on a kubernetes cluster
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/demo/nginx-server/nginx-server.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/demo/nginx-server/nginx-server-azurefile.yaml
 ```
 
 A Kubernetes service is created which exposes the application to the internet. This process can take a few minutes.
