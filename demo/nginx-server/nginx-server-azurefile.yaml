@@ -1,0 +1,56 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-azurefile
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: azurefile
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-server
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: nginx-server
+    spec:
+      containers:
+      - name: nginx-server
+        image: andyzhangx/nginx-server:1.0.0
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        volumeMounts:
+        - name: azurefile
+          mountPath: /mnt/azurefile		  
+      volumes:
+      - name: azurefile
+        persistentVolumeClaim:
+          claimName: pvc-azurefile			  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-server
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: nginx-server
