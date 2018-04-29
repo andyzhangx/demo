@@ -30,6 +30,8 @@ Once the `EXTERNAL-IP` address has changed from `pending` to an IP address, use 
 nginx-server   10.0.34.242   52.179.23.131   80:30676/TCP   2m
 ```
 
+To see the application, browse to the external IP address.
+
 # Manually scale pods
 ```
 kubectl scale --replicas=5 deployment/nginx-server
@@ -42,6 +44,12 @@ kubectl get hpa
 ```
 
 # [Update an application](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-app-update)
+
+### clean up
+```
+kubectl delete service nginx-server
+kubectl delete deployment nginx-server
+```
 
 ### Links
 
