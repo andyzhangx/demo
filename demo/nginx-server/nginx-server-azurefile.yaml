@@ -38,7 +38,9 @@ spec:
             cpu: 500m
         volumeMounts:
         - name: azurefile
-          mountPath: /mnt/azurefile		  
+          mountPath: /mnt/azurefile
+        command:
+        - /mnt/gitclone.sh
       volumes:
       - name: azurefile
         persistentVolumeClaim:
