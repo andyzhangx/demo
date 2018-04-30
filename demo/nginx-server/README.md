@@ -15,6 +15,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/demo/
  - check deployment status
 ```
 watch kubectl get deployment -o wide
+kubectl get po -o wide
 ```
 
 
