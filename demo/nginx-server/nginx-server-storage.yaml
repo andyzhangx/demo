@@ -60,8 +60,6 @@ spec:
           mountPath: /mnt/azuredisk		
         - name: azurefile
           mountPath: /mnt/azurefile
-        command:
-        - /mnt/gitclone.sh
       volumes:
       - name: azurefile
         persistentVolumeClaim:
