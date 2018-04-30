@@ -25,7 +25,7 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: nginx-storage-demo
+  name: nginx-server-storage
 spec:
   replicas: 1
   strategy:
@@ -36,10 +36,10 @@ spec:
   template:
     metadata:
       labels:
-        app: nginx-storage-demo
+        app: nginx-server-storage
     spec:
       containers:
-      - name: nginx-storage-demo
+      - name: nginx-server-storage
         image: andyzhangx/nginx-server:1.0.0
         lifecycle:
           postStart:
@@ -73,10 +73,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-storage-demo
+  name: nginx-server-storage
 spec:
   type: LoadBalancer
   ports:
   - port: 80
   selector:
-    app: nginx-storage-demo
+    app: nginx-server-storage
