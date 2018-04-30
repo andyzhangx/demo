@@ -12,19 +12,24 @@ An kubernetes cluster with a azure file storage class(name as `azurefile`) shoul
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/demo/nginx-server/nginx-server-azurefile.yaml
 ```
+ - check deployment status
+```
+watch kubectl get deployment -o wide
+```
+
 
 A Kubernetes service is created which exposes the application to the internet. This process can take a few minutes.
-To monitor progress, use the `kubectl get service` command with the `--watch` argument.
+ - To monitor progress, use the `kubectl get service` command with the `--watch` argument.
 ```
 kubectl get service nginx-server --watch
 ```
-Initially the `EXTERNAL-IP` for the `nginx-server` service appears as pending.
+ - Initially the `EXTERNAL-IP` for the `nginx-server` service appears as pending.
 
 ```
 nginx-server   10.0.34.242   <pending>     80:30676/TCP   7s
 ```
 
-Once the `EXTERNAL-IP` address has changed from `pending` to an IP address, use CTRL-C to stop the kubectl watch process.
+ - Once the `EXTERNAL-IP` address has changed from `pending` to an IP address, use CTRL-C to stop the kubectl watch process.
 
 ```
 nginx-server   10.0.34.242   52.179.23.131   80:30676/TCP   2m
