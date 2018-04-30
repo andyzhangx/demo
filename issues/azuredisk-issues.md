@@ -75,6 +75,7 @@ azureuser@k8s-agentpool2-40588258-0:~$ tree /dev/disk/azure
  - [Disk error when pods are mounting a certain amount of volumes on a node](https://github.com/Azure/AKS/issues/201)
  - [unable to use azure disk in StatefulSet since /dev/sd* changed after detach/attach disk](https://github.com/Azure/acs-engine/issues/1918)
  - [Input/output error when accessing PV](https://github.com/Azure/AKS/issues/297)
+ - [PersistantVolumeClaims changing to Read-only file system suddenly](https://github.com/Azure/ACS/issues/113)
 
 **Workaround**:
  - add `cachingmode: None` in azure disk storage class(default is `ReadWrite`), e.g.
