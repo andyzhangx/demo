@@ -1,0 +1,82 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-azuredisk
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: default
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-azurefile
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: azurefile
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-storage-demo
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: nginx-storage-demo
+    spec:
+      containers:
+      - name: nginx-storage-demo
+        image: andyzhangx/nginx-server:1.0.0
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "/mnt/gitclone.sh"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        volumeMounts:
+        - name: azuredisk
+          mountPath: /mnt/azuredisk		
+        - name: azurefile
+          mountPath: /mnt/azurefile
+        command:
+        - /mnt/gitclone.sh
+      volumes:
+      - name: azurefile
+        persistentVolumeClaim:
+          claimName: pvc-azurefile
+      - name: azuredisk
+        persistentVolumeClaim:
+          claimName: pvc-azuredisk		  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-storage-demo
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: nginx-storage-demo
