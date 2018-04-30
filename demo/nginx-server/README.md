@@ -24,18 +24,17 @@ A Kubernetes service is created which exposes the application to the internet. T
 kubectl get service nginx-server --watch
 ```
  - Initially the `EXTERNAL-IP` for the `nginx-server` service appears as pending.
-
 ```
 nginx-server   10.0.34.242   <pending>     80:30676/TCP   7s
 ```
 
  - Once the `EXTERNAL-IP` address has changed from `pending` to an IP address, use CTRL-C to stop the kubectl watch process.
-
 ```
 nginx-server   10.0.34.242   52.179.23.131   80:30676/TCP   2m
 ```
 
-To see the application, browse to the external IP address.
+ - To see the application, browse to the external IP address, e.g. `http://52.151.27.123/`
+
 
 # Manually scale pods
 ```
