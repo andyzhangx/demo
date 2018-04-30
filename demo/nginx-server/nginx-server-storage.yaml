@@ -47,7 +47,7 @@ spec:
               command:
                 - "/bin/sh"
                 - "-c"
-                - "/mnt/gitclone.sh"
+                - "/mnt/genfiles.sh"
         ports:
         - containerPort: 80
         resources:
