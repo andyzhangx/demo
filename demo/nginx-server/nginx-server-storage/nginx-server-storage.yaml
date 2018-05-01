@@ -41,6 +41,7 @@ spec:
       containers:
       - name: nginx-server-storage
         image: andyzhangx/nginx-server:1.0.0
+        imagePullPolicy: Always
         lifecycle:
           postStart:
             exec:
@@ -60,13 +61,18 @@ spec:
           mountPath: /mnt/azuredisk		
         - name: azurefile
           mountPath: /mnt/azurefile
+        - name: hostpath
+          mountPath: /mnt/hostpath          
       volumes:
       - name: azurefile
         persistentVolumeClaim:
           claimName: pvc-azurefile
       - name: azuredisk
         persistentVolumeClaim:
-          claimName: pvc-azuredisk		  
+          claimName: pvc-azuredisk
+      - name: hostpath
+        hostPath:
+          path: /mnt          
 ---
 apiVersion: v1
 kind: Service
