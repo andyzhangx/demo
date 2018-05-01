@@ -15,7 +15,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/demo/
  - check deployment status
 ```
 watch kubectl get deployment -o wide
-kubectl get po -o wide
+watch kubectl get po -o wide
 ```
 
 
@@ -54,6 +54,8 @@ kubectl get hpa
 ```
 kubectl delete service nginx-server
 kubectl delete deployment nginx-server
+kubectl delete pvc pvc-azuredisk
+kubectl delete pvc pvc-azurefile
 ```
 
 ### Links
