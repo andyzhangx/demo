@@ -61,7 +61,7 @@ spec:
           mountPath: /mnt/azuredisk		
         - name: azurefile
           mountPath: /mnt/azurefile
-        - name: hostpath-volume
+        - name: hostpath
           mountPath: /mnt/hostpath          
       volumes:
       - name: azurefile
@@ -70,7 +70,7 @@ spec:
       - name: azuredisk
         persistentVolumeClaim:
           claimName: pvc-azuredisk
-      - name: hostpath-volume
+      - name: hostpath
         hostPath:
           path: /mnt          
 ---
