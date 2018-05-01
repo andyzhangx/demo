@@ -41,6 +41,7 @@ spec:
       containers:
       - name: nginx-server-storage
         image: andyzhangx/nginx-server:1.0.0
+        imagePullPolicy: Always
         lifecycle:
           postStart:
             exec:
