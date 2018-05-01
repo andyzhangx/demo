@@ -61,13 +61,18 @@ spec:
           mountPath: /mnt/azuredisk		
         - name: azurefile
           mountPath: /mnt/azurefile
+        - name: hostpath-volume
+          mountPath: /mnt/hostpath          
       volumes:
       - name: azurefile
         persistentVolumeClaim:
           claimName: pvc-azurefile
       - name: azuredisk
         persistentVolumeClaim:
-          claimName: pvc-azuredisk		  
+          claimName: pvc-azuredisk
+      - name: hostpath-volume
+        hostPath:
+          path: /mnt          
 ---
 apiVersion: v1
 kind: Service
