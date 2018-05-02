@@ -164,10 +164,16 @@ all volumes in `volumesInUse` should be also in `volumesAttached`, otherwise the
 MountVolume.WaitForAttach may fail in the azure disk remount
 
 **error logs**:
-in v1.10.0, MountVolume.WaitForAttach will fail in the azure disk remount, error logs would be like following:
+in v1.10.0, `MountVolume.WaitForAttach` will fail in the azure disk remount, error logs would be like following:
+ - incorrect `DevicePath` format on Linux
 ```
 MountVolume.WaitForAttach failed for volume "pvc-f1562ecb-3e5f-11e8-ab6b-000d3af9f967" : azureDisk - Wait for attach expect device path as a lun number, instead got: /dev/disk/azure/scsi1/lun1 (strconv.Atoi: parsing "/dev/disk/azure/scsi1/lun1": invalid syntax)
   Warning  FailedMount             1m (x10 over 21m)   kubelet, k8s-agentpool-66825246-0  Unable to mount volumes for pod  
+```
+ - wrong `DevicePath`(LUN) number on Windows
+```
+  Warning  FailedMount             1m    kubelet, 15282k8s9010    MountVolume.WaitForAttach failed for volume "disk01" : azureDisk - WaitForAttach failed within timeout node (15282k8s9010) diskId:(andy-mghyb
+1102-dynamic-pvc-6c526c51-4a18-11e8-ab5c-000d3af7b38e) lun:(4)
 ```
 
 **Related issues**
