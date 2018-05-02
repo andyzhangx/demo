@@ -7,6 +7,7 @@ This demo would set up a simple nginx-server, the data is stored in an azure fil
 
 # Prerequisite
 An kubernetes cluster with a azure file storage class(name as `azurefile`) should be set up before running deployment scripts.
+ - [AKS cluster step-by-step setup](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
 
 # Deploy nginx-server application on a kubernetes cluster
 ```
