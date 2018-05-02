@@ -36,20 +36,20 @@ nginx-server   10.0.34.242   52.179.23.131   80:30676/TCP   2m
 
  - To see the application, browse to the external IP address, e.g. `http://52.151.27.123/`
 
-# [Set up Cluster Autoscaler on Azure](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/azure)
+## [Set up Cluster Autoscaler on Azure](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/azure)
 
-# Manually scale pods
+## Manually scale pods
 ```
 kubectl scale --replicas=9 deployment/nginx-server
 ```
 
-# [Autoscale pods](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-scale#autoscale-pods)
+## [Autoscale pods](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-scale#autoscale-pods)
 ```
 kubectl autoscale deployment nginx-server --cpu-percent=50 --min=3 --max=10
 kubectl get hpa
 ```
 
-# [Update an application](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-app-update)
+## [Update an application](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-app-update)
 
 ### clean up
 ```
