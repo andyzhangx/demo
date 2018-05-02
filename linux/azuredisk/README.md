@@ -50,6 +50,7 @@ shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
 # Static Provisioning for azure disk
+ > Note: static provisioning does not support disk that has partition, there could be [data loss if using existing azure disk with partitions in disk mount](https://github.com/andyzhangx/demo/blob/master/issues/azuredisk-issues.md#10-data-loss-if-using-existing-azure-disk-with-partitions-in-disk-mount)
 #### 1. create an azure disk manually in the same resource group and modify `nginx-pod-azuredisk.yaml`
  - managed disk
 ```
