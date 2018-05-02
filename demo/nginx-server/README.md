@@ -19,7 +19,6 @@ watch kubectl get deployment -o wide
 watch kubectl get po -o wide
 ```
 
-
 A Kubernetes service is created which exposes the application to the internet. This process can take a few minutes.
  - To monitor progress, use the `kubectl get service` command with the `--watch` argument.
 ```
@@ -37,10 +36,11 @@ nginx-server   10.0.34.242   52.179.23.131   80:30676/TCP   2m
 
  - To see the application, browse to the external IP address, e.g. `http://52.151.27.123/`
 
+# [Set up Cluster Autoscaler on Azure](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/azure)
 
 # Manually scale pods
 ```
-kubectl scale --replicas=5 deployment/nginx-server
+kubectl scale --replicas=9 deployment/nginx-server
 ```
 
 # [Autoscale pods](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-scale#autoscale-pods)
