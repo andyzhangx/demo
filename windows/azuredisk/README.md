@@ -37,7 +37,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/st
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml```
 
 # Static Provisioning for azure disk
-#### 1. create an azure disk manually in the same resource group and modify `nginx-pod-azuredisk.yaml`
+#### 1. create an azure disk manually in the same resource group and modify `aspnet-pod-azuredisk.yaml`
  - managed disk
 ```
 wget -O aspnet-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk-static-blobdisk.yaml
