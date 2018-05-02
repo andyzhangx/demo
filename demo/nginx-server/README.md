@@ -3,7 +3,7 @@
  - supported agent OS: Linux 
 
 # About
-This demo would set up a simple nginx-server, the data is stored in an azure file.
+This demo would set up a simple nginx-server, current demo repository will be `git clone` into an `azurefile` folder which is stored in an azure file in the application set up.
 
 # Prerequisite
 An kubernetes cluster with a azure file storage class(name as `azurefile`) should be set up before running deployment scripts.
