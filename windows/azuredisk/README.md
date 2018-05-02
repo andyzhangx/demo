@@ -36,11 +36,33 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/st
 ## 3. create a pod with azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml```
 
-#### watch the status of pod until its `Status` changed from `Pending` to `Running`
-```watch kubectl describe po aspnet-azuredisk```
+# Static Provisioning for azure disk
+#### 1. create an azure disk manually in the same resource group and modify `nginx-pod-azuredisk.yaml`
+ - managed disk
+```
+wget -O aspnet-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk-static-blobdisk.yaml
+vi aspnet-pod-azuredisk-static-blobdisk.yaml
+```
 
-## 4. enter the pod container to do validation
-```kubectl exec -it aspnet-azuredisk -- cmd```
+ - blob based(unmanaged) disk 
+```
+wget -O aspnet-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk-static-mgrdisk.yaml
+vi aspnet-pod-azuredisk-static-mgrdisk.yaml
+```
+
+#### 2. create a pod with an azure disk mount
+```kubectl create -f aspnet-pod-azuredisk.yaml```
+
+# Check pod status
+ - watch the status of pod until its `Status` changed from `Pending` to `Running`
+```
+watch kubectl describe po aspnet-azuredisk
+```
+
+ - enter the pod container to do validation
+```
+kubectl exec -it aspnet-azuredisk -- cmd
+```
 
 ```
 C:\>d:
