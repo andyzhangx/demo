@@ -42,13 +42,6 @@ spec:
       - name: nginx-server-storage
         image: andyzhangx/nginx-server:1.0.0
         imagePullPolicy: Always
-        lifecycle:
-          postStart:
-            exec:
-              command:
-                - "/bin/sh"
-                - "-c"
-                - "/mnt/genfiles.sh"
         ports:
         - containerPort: 80
         resources:
