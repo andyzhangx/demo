@@ -237,7 +237,7 @@ this bug only exists in blob based VM in v1.8.x, v1.9.x, so if specify `ManagedD
 ### 10. data loss if using existing azure disk with partitions in disk mount
 **Issue details**:
 
-When use an existing azure disk(also called [static provisioning](https://github.com/andyzhangx/demo/tree/master/linux/azuredisk#static-provisioning-for-azure-disk)) in pod, if that disk has partitions, the disk will be formatted in the pod mounting process, actually k8s volume don't support mount disk with partitions, disk mount would fail finally. While for mounting existing **azure** disk that has partitions, data will be lost since it will format that disk first. 
+When use an existing azure disk(also called [static provisioning](https://github.com/andyzhangx/demo/tree/master/linux/azuredisk#static-provisioning-for-azure-disk)) in pod, if that disk has partitions, the disk will be formatted in the pod mounting process, actually k8s volume don't support mount disk with partitions, disk mount would fail finally. While for mounting existing **azure** disk that has partitions, data will be lost since it will format that disk first. This issue happens only on **Linux**.
 
 **Related issues**
  - [data loss if using existing azure disk with partitions in disk mount](https://github.com/kubernetes/kubernetes/issues/63235)
