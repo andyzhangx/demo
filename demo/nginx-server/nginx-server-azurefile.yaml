@@ -47,8 +47,6 @@ spec:
         volumeMounts:
         - name: azurefile
           mountPath: /mnt/azurefile
-        command:
-        - /mnt/gitclone.sh
       volumes:
       - name: azurefile
         persistentVolumeClaim:
