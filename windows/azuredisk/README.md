@@ -53,7 +53,7 @@ vi aspnet-pod-azuredisk-static-mgrdisk.yaml
 #### 2. create a pod with an azure disk mount
 ```kubectl create -f aspnet-pod-azuredisk.yaml```
 
-# Check pod status
+## Check pod status
  - watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```
 watch kubectl describe po aspnet-azuredisk
