@@ -6,7 +6,9 @@
 This demo would set up a simple nginx-server, the data is stored in different storage drivers: azure disk, azure file, hostpath(local disk).
 
 # Prerequisite
-An kubernetes cluster with a azure file storage class(name as `azurefile`) should be set up before running deployment scripts.
+ - An kubernetes cluster with a azure file storage class(name as `azurefile`) should be set up before running deployment scripts.
+ - [Install blobfuse driver on a kubernetes cluster](https://github.com/andyzhangx/kubernetes-drivers/tree/master/flexvolume/blobfuse#install-blobfuse-driver-on-a-kubernetes-cluster)
+ - [create a secret which stores azure storage account name and key for blobfuse driver](https://github.com/andyzhangx/kubernetes-drivers/tree/master/flexvolume/blobfuse#1-create-a-secret-which-stores-azure-storage-account-name-and-key)
 
 # Deploy nginx-server application on a kubernetes cluster
 ```
@@ -17,7 +19,6 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/demo/
 watch kubectl get deployment -o wide
 watch kubectl get po -o wide
 ```
-
 
 A Kubernetes service is created which exposes the application to the internet. This process can take a few minutes.
  - To monitor progress, use the `kubectl get service` command with the `--watch` argument.
