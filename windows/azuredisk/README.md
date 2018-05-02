@@ -12,7 +12,7 @@ microsoft/windowsservercore:1709
 microsoft/iis:windowsservercore-1709
 ```
 
-## 1. create an azure disk storage class if `hdd` does not exist
+### 1. create an azure disk storage class if `hdd` does not exist
  - k8s agent pool is based on managed disk VM
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml
@@ -27,17 +27,17 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/st
  - managed disk mount feature is only supported from v1.7.2
  - AKS cluster use managed disk by default, there are already `managed-standard`, `managed-premium` built-in azure disk storage classes.
 
-## 2. create an azure disk pvc
+### 2. create an azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
 
 #### make sure pvc is created successfully
 ```watch kubectl describe pvc pvc-azuredisk```
 
-## 3. create a pod with azure disk pvc
+### 3. create a pod with azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk.yaml```
 
-# Static Provisioning for azure disk
-#### 1. create an azure disk manually in the same resource group and modify `aspnet-pod-azuredisk.yaml`
+## Static Provisioning for azure disk
+### 1. create an azure disk manually in the same resource group and modify `aspnet-pod-azuredisk.yaml`
  - managed disk
 ```
 wget -O aspnet-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/aspnet-pod-azuredisk-static-blobdisk.yaml
@@ -50,7 +50,7 @@ wget -O aspnet-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/D
 vi aspnet-pod-azuredisk-static-mgrdisk.yaml
 ```
 
-#### 2. create a pod with an azure disk mount
+### 2. create a pod with an azure disk mount
 ```kubectl create -f aspnet-pod-azuredisk.yaml```
 
 ## Check pod status
