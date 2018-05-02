@@ -1,4 +1,4 @@
-# A simple nginx-server demo
+# A nginx-server demo with multiple storage drivers
  - supported Kubernetes version: available from v1.7
  - supported agent OS: Linux 
 
@@ -12,7 +12,7 @@ This demo would set up a simple nginx-server, the data is stored in different st
 
 # Deploy nginx-server application on a kubernetes cluster
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/demo/nginx-server/nginx-server-storage/nginx-server-storage.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/demo/nginx-server/nginx-server-storage/nginx-server-storage-blobfuse.yaml
 ```
  - check deployment status
 ```
