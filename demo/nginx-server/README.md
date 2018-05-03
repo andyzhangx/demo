@@ -40,6 +40,15 @@ nginx-server   10.0.34.242   52.179.23.131   80:30676/TCP   2m
  - To see the application, browse to the external IP address, e.g. `http://52.151.27.123/`
 
 ## [Set up Cluster Autoscaler on Azure](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/azure)
+ - Use `az vmss list -o table` to get vmss name
+```
+# az vmss list -o table
+Name                         ResourceGroup      Location    Zones      Capacity  UpgradePolicy
+---------------------------  -----------------  ----------  -------  ----------  ---------------
+k8s-agentpool-40389373-vmss  ANDY-VMSS1102      westus2                       1  Manual
+k8s-agentpool-39789145-vmss  ANDY-VMSS110APHA1  westus2                       1  Manual
+
+```
 
 ## Manually scale pods
 ```
