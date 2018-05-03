@@ -5,7 +5,7 @@
 # About
 This demo would set up an nginx server, including following features:
  - azure file plugin
- - load balancer, Azure public IP
+ - load balancer
  - cluster autoscaler
 
 # Prerequisite
