@@ -58,7 +58,6 @@ kubectl get hpa
 ```
 kubectl delete service nginx-server
 kubectl delete deployment nginx-server
-kubectl delete pvc pvc-azuredisk
 kubectl delete pvc pvc-azurefile
 ```
 
