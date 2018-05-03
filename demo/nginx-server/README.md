@@ -1,9 +1,12 @@
-# A simple nginx-server demo
+# nginx-server demo
  - supported Kubernetes version: available from v1.7
  - supported agent OS: Linux 
 
 # About
-This demo would set up a simple nginx-server, current demo repository will be `git clone` into an `azurefile` folder which is stored in an azure file in the application set up.
+This demo would set up an nginx server, including following features:
+ - azure file plugin
+ - load balancer
+ - cluster autoscaler
 
 # Prerequisite
 An kubernetes cluster with a azure file storage class(name as `azurefile`) should be set up before running deployment scripts.
