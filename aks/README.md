@@ -54,6 +54,8 @@ Workaround is as following:
 Create a `Standard_LRS` storage account in a `shadow resource group` which contains all resources of your aks cluster, naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`, e.g. if you create an aks cluster `andy-aks182` in resouce group `aks` in westus2 region, then `shadow resource group` would be `MC_aks_andy-aks182_westus2`, wait for a few seconds, azure file PVC will be created successfully.
 
 #### Links
-[Azure Container Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/)
+ - [Azure Container Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/)
 
-[Deploy an Azure Container Service (AKS) cluster](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
+ - [Deploy an Azure Container Service (AKS) cluster](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
+
+ - [Frequently asked questions about Azure Container Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/faq#are-security-updates-applied-to-aks-agent-nodes)
