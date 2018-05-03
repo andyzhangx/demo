@@ -4,9 +4,9 @@
 
 # About
 This demo would set up an nginx server, including following features:
- - azure file plugin
- - load balancer
- - cluster autoscaler
+ - Storage: azure file plugin
+ - Network: load balancer
+ - Autoscaler: VMSS & cluster autoscaler support
 
 # Prerequisite
 An kubernetes cluster with a azure file storage class(name as `azurefile`) should be set up before running deployment scripts.
