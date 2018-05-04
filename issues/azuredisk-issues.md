@@ -1,4 +1,12 @@
 # azure disk plugin known issues
+### Recommended stable version for azure disk
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.7 | 1.7.14 |
+| v1.8 | 1.8.11 |
+| v1.9 | 1.9.7 |
+| v1.10 | 1.10.2 |
+
 ### 1. disk attach error
 **Issue details**:
 
