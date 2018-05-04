@@ -82,6 +82,20 @@ make clean
 make
 ```
 
+##### Q: build error: `cannot touch '_output/bin/deepcopy-gen': No such file or directory`
+```
+make clean
+mkdir -p ~/go/src/k8s.io/kubernetes/_output/local/bin/linux/amd64
+cd ~/go/src/k8s.io/kubernetes
+
+go build -o _output/bin/conversion-gen ./vendor/k8s.io/code-generator/cmd/conversion-gen
+go build -o _output/bin/deepcopy-gen ./vendor/k8s.io/code-generator/cmd/deepcopy-gen
+go build -o _output/bin/defaulter-gen ./vendor/k8s.io/code-generator/cmd/defaulter-gen
+go build -o _output/bin/go-bindata ./vendor/github.com/jteeuwen/go-bindata/go-bindata
+go build -o _output/bin/openapi-gen ./vendor/k8s.io/code-generator/cmd/openapi-gen
+make
+```
+
 ## General development practices
 #### precheck before submit any code
 ```
