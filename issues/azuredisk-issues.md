@@ -164,7 +164,7 @@ all volumes in `volumesInUse` should be also in `volumesAttached`, otherwise the
 MountVolume.WaitForAttach may fail in the azure disk remount
 
 **error logs**:
-in v1.10.0, `MountVolume.WaitForAttach` will fail in the azure disk remount, error logs would be like following:
+in v1.10.0 & v1.10.1, `MountVolume.WaitForAttach` will fail in the azure disk remount, error logs would be like following:
  - incorrect `DevicePath` format on Linux
 ```
 MountVolume.WaitForAttach failed for volume "pvc-f1562ecb-3e5f-11e8-ab6b-000d3af9f967" : azureDisk - Wait for attach expect device path as a lun number, instead got: /dev/disk/azure/scsi1/lun1 (strconv.Atoi: parsing "/dev/disk/azure/scsi1/lun1": invalid syntax)
