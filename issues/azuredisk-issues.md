@@ -1,6 +1,6 @@
 # azure disk plugin known issues
 ### Recommended stable version for azure disk
-| k8s version | fixed version |
+| k8s version | stable version |
 | ---- | ---- |
 | v1.7 | 1.7.14 |
 | v1.8 | 1.8.11 |
