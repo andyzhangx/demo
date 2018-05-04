@@ -212,7 +212,7 @@ Use `default` azure disk storage class in acs-engine, as `default` will always b
 
 ### 9. dynamic azure disk PVC try to access wrong storage account (of other resource group)
 **Issue details**:
-In a k8s cluster with blob based VMs, create dynamic azure disk PVC may fail, error logs is like following:
+In a k8s cluster with **blob based** VMs(won't happen in AKS since AKS only use managed disk), create dynamic azure disk PVC may fail, error logs is like following:
 ```
 Failed to provision volume with StorageClass "default": azureDisk - account ds6c822a4d484211eXXXXXX does not exist while trying to create/ensure default container
 ```
@@ -225,7 +225,7 @@ Failed to provision volume with StorageClass "default": azureDisk - account ds6c
  
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.8 | in cherry-pick |
+| v1.8 | 1.8.13 |
 | v1.9 | in cherry-pick |
 | v1.10 | no such issue |
 
