@@ -167,8 +167,8 @@ all volumes in `volumesInUse` should be also in `volumesAttached`, otherwise the
 | v1.9 | v1.9.7 |
 | v1.10 | no such issue |
 
-After fix in v1.9.7, it took about 1 minute for scheduling one azure disk mount from one node to another, details: 
-https://github.com/kubernetes/kubernetes/issues/62282#issuecomment-380794459
+After fix in v1.9.7, it took about 1 minute for scheduling one azure disk mount from one node to another, you could find [details](https://github.com/kubernetes/kubernetes/issues/62282#issuecomment-380794459) here.
+
 Since azure disk attach/detach operation on a VM cannot be parrel, scheduling 3 azure disk mounts from one node to another would cost about 3 minutes.
 
 ### 6. WaitForAttach failed for azure disk: parsing "/dev/disk/azure/scsi1/lun1": invalid syntax
