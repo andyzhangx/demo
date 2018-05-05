@@ -1,5 +1,8 @@
 # Set azure file mountOptions
-> Note: azure file mountOptions feature is available from v1.8.5
+> Note: 
+ - azure file mountOptions feature is available from v1.8.5
+ - For dynamic provision, `mountOption`s should be set in storage class, while for static provision(use existing file share), `mountOptions` should be set in PersistentVolume
+ 
 ## Set mountOptions in Dynamic Provisioning
 #### download `storageclass-azurefile-mountoptions.yaml` file and modify `mountOptions` values
 ```
