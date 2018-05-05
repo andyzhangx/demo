@@ -120,6 +120,11 @@ root@nginx-azurefile:/# mount | grep cifs
 | v1.9.1 or above | 0755 |
 
  - [other azure file plugin known issues](https://github.com/andyzhangx/demo/blob/master/issues/azurefile-issues.md)
+ 
+#### default mountOptions of azure file on Linux
+```
+//ACCOUNT-NAME.file.core.windows.net/sharename on /var/lib/kubelet/pods/dd141c4f-501c-11e8-8c6d-0a58ac1f078e/volumes/kubernetes.io~azure-file/azure type cifs (rw,relatime,vers=3.0,cache=strict,username=ACCOUNT-NAME,domain=,uid=0,noforceuid,gid=0,noforcegid,addr=52.239.152.8,file_mode=0755,dir_mode=0755,persistenthandles,nounix,serverino,mapposix,rsize=1048576,wsize=1048576,echo_interval=60,actimeo=1)
+```
 
 #### Links
 [Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
