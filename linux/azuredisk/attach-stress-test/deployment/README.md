@@ -23,7 +23,8 @@ watch kubectl get po
 ```
 
 #### Note
-In my testing, I scheduled three pods with azure disk mount on one node , it took around 3 min for scheduling all three pods from node#1 to node#2 (it took about 1 min for an azure disk to schedule from one node to another)
+In my testing, I scheduled three pods with azure disk mount on one node , it took around 3 min for scheduling all three pods from node#1 to node#2 (After fix in v1.9.7, it took about 1 min for scheduling azure disk mount from one node to another, details: 
+https://github.com/kubernetes/kubernetes/issues/62282#issuecomment-380794459)
 ```
 Events:
   Type     Reason                 Age   From                               Message
