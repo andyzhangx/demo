@@ -1,5 +1,9 @@
 ### Prerequisite
-[Raw Block Volumes is included as an alpha feature for v1.9](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#raw-block-volume-support), `--feature-gates=BlockVolume=true` should be configured in `kubelet`, `kube-scheduler`, `kube-apiserver`, `kube-controller-manager` service
+[Raw Block Volumes is included as an alpha feature for v1.9](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#raw-block-volume-support), `--feature-gates=BlockVolume=true` (split different `feature-gates` by `,`) should be configured in following kubernetes service:
+ - `kube-apiserver`: `/etc/kubernetes/manifests/kube-apiserver.yaml`
+ - `kube-controller-manager`: `/etc/kubernetes/manifests/kube-controller-manager.yaml`
+ - `kube-scheduler`: `/etc/kubernetes/manifests/kube-scheduler.yaml`
+ - `kubelet`: `/etc/default/kubelet`
 
 ## 1. create a local Persistent Volume (PV)
  - download `pv-local-raw.yaml` and modify `spec.local.path`, `kubernetes.io/hostname` fields
