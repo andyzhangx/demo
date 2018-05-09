@@ -19,7 +19,7 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux
 
 ## 3. create a pod with local mount
 ```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/raw/local/nginx-pod-local-raw.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/raw/local/nginx-pod-local-raw.yaml
 ```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
