@@ -76,6 +76,11 @@ docker logs $id > $id.log 2>&1
 vi $id.log
 ```
 
+ - Note: from acs-engine [v0.16.0](https://github.com/Azure/acs-engine/releases/tag/v0.16.0), `kubelet` is not running in container, use following command to get `kubelet` logs:
+```
+journalctl -u kubelet -l > kubelet.log
+```
+
 ### Q: How to get k8s kubelet logs on Windows agent?
 Prerequisite:
 [assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use RDP to connect to that agent. (only for debugging purpose)
