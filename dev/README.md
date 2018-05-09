@@ -96,6 +96,14 @@ go build -o _output/bin/openapi-gen ./vendor/k8s.io/code-generator/cmd/openapi-g
 make
 ```
 
+##### Build your own `hyperkube` image
+copy `hyperkube` binary to `~/go/src/k8s.io/kubernetes/cluster/images/hyperkube` directory
+```
+export BASEIMAGE=k8s.gcr.io/debian-hyperkube-base-amd64:0.10
+docker build --no-cache -t andyzhangx/hyperkube:v1.10.2-azuredisk-block .
+docker push andyzhangx/hyperkube:v1.10.2-azuredisk-block
+```
+
 ## General development practices
 #### precheck before submit any code
 ```
