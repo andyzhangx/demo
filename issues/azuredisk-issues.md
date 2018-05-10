@@ -190,6 +190,7 @@ MountVolume.WaitForAttach failed for volume "pvc-f1562ecb-3e5f-11e8-ab6b-000d3af
 
 **Related issues**
  - [WaitForAttach failed for azure disk: parsing "/dev/disk/azure/scsi1/lun1": invalid syntax](https://github.com/kubernetes/kubernetes/issues/62540)
+ - [Pod unable to attach PV after being deleted (Wait for attach expect device path as a lun number, instead got: /dev/disk/azure/scsi1/lun0 (strconv.Atoi: parsing "/dev/disk/azure/scsi1/lun0": invalid syntax)](https://github.com/Azure/acs-engine/issues/2906)
 
 **Fix**
  - PR [fix WaitForAttach failure issue for azure disk](https://github.com/kubernetes/kubernetes/pull/62612) fixed this issue
