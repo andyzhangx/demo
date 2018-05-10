@@ -106,7 +106,11 @@ Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD c:\k\kubelet.er
 ### Q: How to change k8s hyperkube image?
 `sudo vi /etc/default/kubelet`
 change `KUBELET_IMAGE` value, default value is `gcrio.azureedge.net/google_containers/hyperkube-amd64:1.x.x`
-and then run `sudo service docker restart`
+and then run:
+```
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+```
 
 ### Q: Pod could not be scheduled to a windows node
 1. make sure node is marked as `windows` label, run below command to check
