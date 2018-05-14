@@ -41,6 +41,7 @@ Error: SQLITE_BUSY: database is locked
   - [azureFile volume mode too strict for container with non root user](https://github.com/kubernetes/kubernetes/issues/54610)
   - [Unable to connect to SQL-lite db mounted on AzureFile/AzureDisks [SQLITE_BUSY: database is locked]](https://github.com/kubernetes/kubernetes/issues/59755)
   - [Allow nobrl parameter like docker to use sqlite over network drive](https://github.com/kubernetes/kubernetes/issues/61767)
+  - [Error to deploy mongo with azure file storage](https://github.com/kubernetes/kubernetes/issues/58308)
 
 ### 2. permission issue of azure file dynamic provision in acs-engine
 **Issue details**:
