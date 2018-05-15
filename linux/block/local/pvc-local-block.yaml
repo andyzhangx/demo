@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: pvc-local-raw
+  name: pvc-local-block
 spec:
   accessModes:
   - ReadWriteOnce
@@ -9,5 +9,5 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  volumeName: pv-local-raw
+  volumeName: pv-local-block
   storageClassName: local-storage

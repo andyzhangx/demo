@@ -1,7 +1,7 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: nginx-local-raw
+  name: nginx-local-block
 spec:
   containers:
   - image: nginx
@@ -12,5 +12,5 @@ spec:
   volumes:
   - name: data-volume
     persistentVolumeClaim:
-      claimName: pvc-local-raw
+      claimName: pvc-local-block
       readOnly: false
