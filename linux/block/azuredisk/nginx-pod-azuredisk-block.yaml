@@ -1,0 +1,15 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx-azuredisk-block
+spec:
+  containers:
+  - image: nginx
+    name: nginx-azuredisk
+    volumeDevices:
+    - name: disk01
+      devicePath: /dev/diskx
+  volumes:
+  - name: disk01
+    persistentVolumeClaim:
+      claimName: pvc-azuredisk-block
