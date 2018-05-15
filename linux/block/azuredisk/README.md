@@ -17,6 +17,9 @@ kubectl create -f pv-azuredisk-block.yaml
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/block/azuredisk/pvc-azuredisk-block.yaml
 ```
 
+ - watch the status of PVC until its Status changed from `Pending` to `Bound`
+```watch kubectl describe pvc pvc-azuredisk-block```
+
 ## 3. create a pod with azuredisk mount
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/block/azuredisk/nginx-pod-azuredisk-block.yaml

@@ -17,6 +17,9 @@ kubectl create -f pv-local-block.yaml
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/block/local/pvc-local-block.yaml
 ```
 
+ - watch the status of PVC until its Status changed from `Pending` to `Bound`
+```watch kubectl describe pvc pvc-local-block```
+
 ## 3. create a pod with local mount
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/block/local/nginx-pod-local-block.yaml
