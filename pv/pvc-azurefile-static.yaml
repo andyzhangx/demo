@@ -10,3 +10,4 @@ spec:
     requests:
       storage: 5Gi
   storageClassName: ""
+  volumeName: pv-azurefile  
