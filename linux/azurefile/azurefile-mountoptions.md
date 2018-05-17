@@ -1,6 +1,5 @@
 # Set azure file mountOptions
-> Note: 
- - azure file mountOptions feature is available from v1.8.5
+ - azure file mountOptions feature is available from v1.8.5, for lower k8s version, could use `volume.beta.kubernetes.io/mount-options` instead, which is only supported in PersistentVolume.
  - For dynamic provision, `mountOption`s should be set in storage class, while for static provision(use existing file share), `mountOptions` should be set in PersistentVolume
  
 ## Set mountOptions in Dynamic Provisioning
@@ -25,7 +24,16 @@ kubectl create secret generic azure-secret --from-literal azurestorageaccountnam
 ```
 
 #### 2. create an azure file persistent volume(pv)
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv-azurefile-mountoptions.yaml```
+ - for k8s version >= v1.8.5
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv-azurefile-mountoptions.yaml
+```
+ - for k8s version < v1.8.5 (including 1.7.x)
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv-azurefile-mountoptions-1.7.yaml
+```
+> Note: `vers`,`dir_mode`,`file_mode` could not be specified in `pv-azurefile-mountoptions-1.7.yaml` since there is already default values as in [vers=3.0,dir_mode=0777,file_mode=0777](https://github.com/kubernetes/kubernetes/blob/release-1.7/pkg/volume/azure_file/azure_file.go#L215)
+
 
 #### 3. create an azure file persistent volume claim(pvc)
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile-static.yaml```
