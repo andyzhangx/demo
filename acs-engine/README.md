@@ -45,6 +45,7 @@ sudo systemctl restart kubelet
  - [Put /var/lib/docker under /mnt?](https://github.com/Azure/acs-engine/issues/1307)
  - [Document Usage of Ephemeral Disks](https://github.com/Azure/acs-engine/issues/543)
  - [Add customized config: use /mnt (the ephemeral/temp drive) for pod volumes](https://github.com/Azure/acs-engine/issues/2099)
+ - [k8s Windows 1.8.13 git cherry-pick conflicts](https://github.com/Azure/acs-engine/issues/2974)
 
 #### Links
 [Create a Service Principal](https://github.com/Azure/acs-engine/blob/master/docs/serviceprincipal.md#creating-a-service-principal)
