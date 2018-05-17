@@ -76,6 +76,8 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-e
 ### 4. azure file dynamic provision failed due to cluster name length issue
 **Issue details**:
 k8s cluster name length must be less than 16 characters, otherwise following error will be received when creating dynamic privisioning azure file pvc, this bug exists in [v1.7.0, v1.7.10]:
+ > Note: check `cluster-name` by running `grep cluster-name /etc/kubernetes/manifests/kube-controller-manager.yaml` on master node
+
 ```
 persistentvolume-controller    Warning    ProvisioningFailed Failed to provision volume with StorageClass "azurefile": failed to find a matching storage account
 ```
