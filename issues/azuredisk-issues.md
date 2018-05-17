@@ -123,7 +123,8 @@ parameters:
 
 ### 4. Time cost for Azure Disk PVC mount
 Time cost for Azure Disk PVC mount on a standard node size(e.g. Standard_D2_V2) is around 1 minute
-
+ > Note: for some smaller VM size which has only 1 CPU core, time cost would be much bigger(e.g. > 10min) since container is hard to get CPU slot.
+ 
 **Related issues**
  - ['timeout expired waiting for volumes to attach/mount for pod when cluster' when node-vm-size is Standard_B1s](https://github.com/Azure/AKS/issues/166)
 
@@ -135,8 +136,6 @@ Time cost for Azure Disk PVC mount on a standard node size(e.g. Standard_D2_V2) 
 | v1.8 | no fix |
 | v1.9 | 1.9.2 |
 | v1.10 | 1.10.0 |
-
- > Note: for some smaller VM size which has only 1 CPU core, time cost would be much bigger(e.g. > 10min) since container is hard to get CPU slot.
  
 ### 5. Azure disk PVC `Multi-Attach error`, makes disk mount very slow or mount failure forever
 **Issue details**:
