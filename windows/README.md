@@ -24,11 +24,11 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 
 | Volume | Support on Windows | Example | Notes |
 | ---- | ---- | ---- | ---- |
-| azure disk | Yes | [azuredisk](./azuredisk) | Support from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
-| azure file | Yes | [azurefile](./azurefile) | Support from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
+| azure disk | Yes | [azuredisk](./azuredisk) | Available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
+| azure file | Yes | [azurefile](./azurefile) | Available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1) |
 | cephfs | No |  | No official support for cephfs support on windows, could use NFS instead |
 | csi | on progress | [csi](./csi) | details could be found in [Enable CSI hostpath example on windows](https://github.com/kubernetes-csi/drivers/issues/79) |
-| downwardAPI | No |  | Same issue with secret, due to a [windows docker bug](https://github.com/kubernetes/kubernetes/issues/52419) |
+| downwardAPI | Yes | [downwardapi](./downwardapi) |  |
 | emptyDir | Yes | [emptydir](./emptydir) | tmpfs is not supported on Windows Server |
 | fc (fibre channel) |  |  |  |
 | flexvolume | Yes | [flexvolume](./flexvolume) | available from v1.8.6, v1.9.1 |
@@ -37,7 +37,7 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 | glusterfs | No |  | Windows doesn't have a native GlusterFS client, could use NFS instead |
 | hostpath | Yes | [hostpath](./hostpath) |  |
 | iscsi | No |  | Windows container does not support iSCSI symbolic link: [Enable iSCSI volume on Windows](https://github.com/kubernetes/kubernetes/issues/57548) |
-| local | Yes | [local](./local) | support from 1.10.3 |
+| local | Yes | [local](./local) | Available from 1.10.3 |
 | nfs | No | | Pending: there is no NFSv4 client support on Windows now, see: [add NFS volume support for windows](https://github.com/kubernetes/kubernetes/issues/56188)  |
 | PortworxVolume |  |  |  |
 | projected |  |  |  |
