@@ -39,13 +39,17 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile-static.yaml```
 
  - watch the status of pv until its `Status` changed from `Pending` to `Bound`
-```watch kubectl describe pvc pvc-azurefile```
+```
+watch kubectl describe pvc pvc-azurefile
+```
 
 #### 4. create a pod with azure file pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml```
 
  - watch the status of pod until its Status changed from `Pending` to `Running`
-```watch kubectl describe po nginx-azurefile```
+```
+watch kubectl describe po nginx-azurefile
+```
 
 #### 5. enter the pod container to do validation
 ```kubectl exec -it nginx-azurefile -- bash```
