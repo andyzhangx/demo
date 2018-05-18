@@ -5,7 +5,7 @@ metadata:
   name: windowsservercore
 spec:
   containers:
-  - image: microsoft/windowsservercore:1709
+  - image: microsoft/windowsservercore:1803
     imagePullPolicy: IfNotPresent
     name: windowsservercore
     command:
