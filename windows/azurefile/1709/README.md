@@ -21,7 +21,7 @@ kubectl create -f storageclass-azurefile-account.yaml
 ```watch kubectl describe pvc pvc-azurefile```
 
 ## 3. create a pod with azure file pvc
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/rs3/aspnet-pod-azurefile.yaml```
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/1709/aspnet-pod-azurefile.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```watch kubectl describe po aspnet-azurefile```
@@ -56,7 +56,7 @@ kubectl create -f azure-secrect.yaml
 ```
 
 ## 3. create a pod with azure file
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/rs3/aspnet-pod-azurefile.yaml```
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azurefile/1709/aspnet-pod-azurefile.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```watch kubectl describe po aspnet-azurefile```

@@ -15,7 +15,7 @@ Note: v1.8.0 - v1.8.2 does not support azure disk mount on windows
 ```watch kubectl describe pvc pvc-azuredisk```
 
 ## 3. create a pod with azure disk pvc
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/rs3/aspnet-pod-azuredisk.yaml```
+```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/azuredisk/1709/aspnet-pod-azuredisk.yaml```
 
 #### watch the status of pod until its `Status` changed from `Pending` to `Running`
 ```watch kubectl describe po aspnet-azuredisk```
