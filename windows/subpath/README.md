@@ -85,7 +85,7 @@ Init Containers:
 Containers:
   all-your-base-are-belong-to-us:
     Container ID:
-    Image:              microsoft/aspnet:4.7.1-windowsservercore-1709
+    Image:              microsoft/aspnet:4.7.2-windowsservercore-1803
     Image ID:
     Port:               <none>
     State:              Waiting
@@ -122,8 +122,8 @@ Events:
   2m            2m              1       kubelet, 38156k8s9010   spec.initContainers{prep-symlink}               Normal          Pulled                  Successfully pulled image "microsoft/windowsservercore:1709"
   2m            2m              1       kubelet, 38156k8s9010   spec.initContainers{prep-symlink}               Normal          Created                 Created container
   1m            1m              1       kubelet, 38156k8s9010   spec.initContainers{prep-symlink}               Normal          Started                 Started container
-  1m            9s              2       kubelet, 38156k8s9010   spec.containers{all-your-base-are-belong-to-us} Normal          Pulling                 pulling image "microsoft/aspnet:4.7.1-windowsservercore-1709"
-  10s           8s              2       kubelet, 38156k8s9010   spec.containers{all-your-base-are-belong-to-us} Normal          Pulled                  Successfully pulled image "microsoft/aspnet:4.7.1-windowsservercore-1709"
+  1m            9s              2       kubelet, 38156k8s9010   spec.containers{all-your-base-are-belong-to-us} Normal          Pulling                 pulling image "microsoft/aspnet:4.7.2-windowsservercore-1803"
+  10s           8s              2       kubelet, 38156k8s9010   spec.containers{all-your-base-are-belong-to-us} Normal          Pulled                  Successfully pulled image "microsoft/aspnet:4.7.2-windowsservercore-1803"
   10s           8s              2       kubelet, 38156k8s9010   spec.containers{all-your-base-are-belong-to-us} Warning         Failed                  Error: failed to prepare subPath for volumeMount "docker-socket" of container "all-your-base-are-belong-to-us"
 ```
 ```

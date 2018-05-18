@@ -4,7 +4,7 @@ metadata:
   name: aspnet-local
 spec:
   containers:
-  - image: microsoft/aspnet:4.7.1-windowsservercore-1709
+  - image: microsoft/aspnet:4.7.2-windowsservercore-1803
     name: aspnet-local
     volumeMounts:
     - name: data-volume

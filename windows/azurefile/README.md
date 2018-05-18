@@ -4,7 +4,7 @@
 
  - Azure file mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1). And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
 ```
-microsoft/aspnet:4.7.1-windowsservercore-1709
+microsoft/aspnet:4.7.2-windowsservercore-1803
 microsoft/windowsservercore:1709
 microsoft/iis:windowsservercore-1709
 ```

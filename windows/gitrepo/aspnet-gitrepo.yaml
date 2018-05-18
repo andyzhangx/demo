@@ -5,7 +5,7 @@ metadata:
   name: aspnet-gitrepo
 spec:
   containers:
-  - image: microsoft/aspnet:4.7.1-windowsservercore-1709
+  - image: microsoft/aspnet:4.7.2-windowsservercore-1803
     name: aspnet-gitrepo
     volumeMounts:
     - mountPath: /mnt/gitrepo

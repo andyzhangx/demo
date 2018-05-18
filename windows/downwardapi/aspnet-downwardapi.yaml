@@ -12,7 +12,7 @@ metadata:
 spec:
   containers:
     - name: aspnet-downwardapi
-      image: microsoft/aspnet:4.7.1-windowsservercore-1709
+      image: microsoft/aspnet:4.7.2-windowsservercore-1803
       volumeMounts:
         - name: podinfo
           mountPath: /mnt/azure

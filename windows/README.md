@@ -57,7 +57,7 @@ Find more details about [Supported Windows versions](https://github.com/Azure/ac
 ##### Note
 1. **breaking change** for Windows container running on `Windows Server version 1709`, only image tag with `1709` keyword could run on `Windows Server version 1709`, e.g.
 ```
-microsoft/aspnet:4.7.1-windowsservercore-1709
+microsoft/aspnet:4.7.2-windowsservercore-1803
 microsoft/windowsservercore:1709
 microsoft/iis:windowsservercore-1709
 ```
