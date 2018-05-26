@@ -29,6 +29,9 @@ az group deployment create \
     --template-file="./_output/andy-k8s179/azuredeploy.json" \
     --parameters "@./_output/andy-k8s179/azuredeploy.parameters.json"
 ```
+#### Tips
+ - [docker registry proxy cache](http://mirror.kaiyuanshe.cn/help/docker-registry-proxy-cache.html): `crproxy.trafficmanager.net:5000`
+ - [GCR Proxy Cache](http://mirror.kaiyuanshe.cn/help/gcr-proxy-cache.html): `crproxy.trafficmanager.net:6000`
 
 #### Known issues
  - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
