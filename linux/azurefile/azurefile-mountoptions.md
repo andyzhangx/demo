@@ -1,6 +1,6 @@
 # Set azure file mountOptions
  - azure file mountOptions feature is available from v1.8.5, for lower k8s version, could use `volume.beta.kubernetes.io/mount-options` instead, which is only supported in PersistentVolume.
- - For dynamic provision, `mountOption`s should be set in storage class, while for static provision(use existing file share), `mountOptions` should be set in PersistentVolume
+ - For dynamic provision, `mountOptions` should be set in storage class, while for static provision(use existing file share), `mountOptions` should be set in PersistentVolume
  
 ## Set mountOptions in Dynamic Provisioning
 #### download `storageclass-azurefile-mountoptions.yaml` file and modify `mountOptions` values
