@@ -24,7 +24,7 @@ kubectl drain node#1 --ignore-daemonsets --delete-local-data
 
 ### 4. Watch the pod scheduling process
 ```
-watch kubectl get po
+watch kubectl get po -o wide
 ```
 
 #### clean up
