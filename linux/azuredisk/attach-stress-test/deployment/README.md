@@ -24,7 +24,7 @@ kubectl drain node#1 --ignore-daemonsets --delete-local-data
 
 ### 4. Watch the pod scheduling process
 ```
-watch kubectl get po
+watch kubectl get po -o wide
 ```
 
 #### Note
@@ -43,4 +43,25 @@ Events:
   Normal   Pulled                 44s   kubelet, k8s-agentpool-88970029-0  Successfully pulled image "nginx"
   Normal   Created                44s   kubelet, k8s-agentpool-88970029-0  Created container
   Normal   Started                42s   kubelet, k8s-agentpool-88970029-0  Started container
+```
+
+#### clean up
+```
+kubectl delete deployment deployment-azuredisk1
+kubectl delete deployment deployment-azuredisk2
+kubectl delete deployment deployment-azuredisk3
+kubectl delete deployment deployment-azuredisk4
+kubectl delete deployment deployment-azuredisk5
+kubectl delete deployment deployment-azuredisk6
+kubectl delete deployment deployment-azuredisk7
+kubectl delete deployment deployment-azuredisk8
+
+kubectl delete pvc pvc-azuredisk1
+kubectl delete pvc pvc-azuredisk2
+kubectl delete pvc pvc-azuredisk3
+kubectl delete pvc pvc-azuredisk4
+kubectl delete pvc pvc-azuredisk5
+kubectl delete pvc pvc-azuredisk6
+kubectl delete pvc pvc-azuredisk7
+kubectl delete pvc pvc-azuredisk8
 ```
