@@ -1,4 +1,4 @@
-# Attention: this page is not maintained any more, cifs FlexVolume driver and doc has been moved to [kubernetes-drivers](https://github.com/andyzhangx/kubernetes-drivers/tree/master/flexvolume/cifs).
+# Attention: this page is NOT maintained any more, cifs FlexVolume driver and doc has been moved to [kubernetes-drivers](https://github.com/andyzhangx/kubernetes-drivers/tree/master/flexvolume/cifs).
 
 ## 1. create a secret which stores cifs account name and password
 ```
