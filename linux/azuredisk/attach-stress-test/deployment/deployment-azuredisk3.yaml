@@ -7,7 +7,7 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 3Gi
   storageClassName: hdd
 ---
 apiVersion: extensions/v1beta1
