@@ -9,6 +9,11 @@
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/statefulset/statefulset-azuredisk1.yaml
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/statefulset/statefulset-azuredisk2.yaml
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/statefulset/statefulset-azuredisk3.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/statefulset/statefulset-azuredisk4.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/statefulset/statefulset-azuredisk5.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/statefulset/statefulset-azuredisk6.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/statefulset/statefulset-azuredisk7.yaml
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/statefulset/statefulset-azuredisk8.yaml
 ```
 
 ### 3. Let k8s schedule all pods on node#2
