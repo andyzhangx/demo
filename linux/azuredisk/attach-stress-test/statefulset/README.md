@@ -37,6 +37,15 @@ kubectl delete sts statefulset-azuredisk5
 kubectl delete sts statefulset-azuredisk6
 kubectl delete sts statefulset-azuredisk7
 kubectl delete sts statefulset-azuredisk8
+
+kubectl delete pvc persistent-storage-statefulset-azuredisk1-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk2-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk3-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk4-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk5-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk6-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk7-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk8-0
 ```
 
 #### expected behavior on agent node
