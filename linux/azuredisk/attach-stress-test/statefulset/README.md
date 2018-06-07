@@ -27,6 +27,18 @@ kubectl drain node#1 --ignore-daemonsets --delete-local-data
 watch kubectl get po
 ```
 
+#### clean up
+```
+kubectl delete sts statefulset-azuredisk1
+kubectl delete sts statefulset-azuredisk2
+kubectl delete sts statefulset-azuredisk3
+kubectl delete sts statefulset-azuredisk4
+kubectl delete sts statefulset-azuredisk5
+kubectl delete sts statefulset-azuredisk6
+kubectl delete sts statefulset-azuredisk7
+kubectl delete sts statefulset-azuredisk8
+```
+
 #### expected behavior on agent node
 ```
 azureuser@aks-nodepool1-26705064-2:~$ sudo tree /dev/disk/azure
