@@ -37,7 +37,7 @@ overlay          30G  3.6G   26G  13% /
 tmpfs           6.9G     0  6.9G   0% /dev
 tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 /dev/sda1        30G  3.6G   26G  13% /etc/hosts
-/dev/sdc        4.8G   12M  4.6G   1% /mnt/blobfile
+/dev/sdc        4.8G   12M  4.6G   1% /mnt/azurefile
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
@@ -94,11 +94,11 @@ overlay          30G  3.6G   26G  13% /
 tmpfs           6.9G     0  6.9G   0% /dev
 tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 /dev/sda1        30G  3.6G   26G  13% /etc/hosts
-/dev/sdc        4.8G   12M  4.6G   1% /mnt/blobfile
+/dev/sdc        4.8G   12M  4.6G   1% /mnt/azurefile
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 root@nginx-azurefile:/# mount | grep cifs
-//pvc3329812692002.file.core.windows.net/andy-mgwin1710-dynamic-pvc-7b5346be-d577-11e7-bc95-000d3a041274 on /mnt/blobfile type cifs (rw,relatime,vers=3.0,cache=strict,username=pvc3329812692002,domain=,uid=0,noforceuid,gid=0,noforcegid,addr=52.239.184.8,file_mode=0777,dir_mode=0777,persistenthandles,nounix,serverino,mapposix,rsize=1048576,wsize=1048576,echo_interval=60,actimeo=1)
+//pvc3329812692002.file.core.windows.net/andy-mgwin1710-dynamic-pvc-7b5346be-d577-11e7-bc95-000d3a041274 on /mnt/azurefile type cifs (rw,relatime,vers=3.0,cache=strict,username=pvc3329812692002,domain=,uid=0,noforceuid,gid=0,noforcegid,addr=52.239.184.8,file_mode=0777,dir_mode=0777,persistenthandles,nounix,serverino,mapposix,rsize=1048576,wsize=1048576,echo_interval=60,actimeo=1)
 ```
 
 ### Other known issues of Azure file feature

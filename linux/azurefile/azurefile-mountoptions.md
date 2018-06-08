@@ -51,6 +51,11 @@ watch kubectl describe pvc pvc-azurefile
 watch kubectl describe po nginx-azurefile
 ```
 
+#### Or Use A combined configuration of step#2 to #4:
+```
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/pod-azurefile-mountoptions-example.yaml
+```
+
 #### 5. enter the pod container to do validation
 ```kubectl exec -it nginx-azurefile -- bash```
 
@@ -60,12 +65,12 @@ Filesystem                                 Size  Used Avail Use% Mounted on
 overlay                                     30G  4.1G   26G  14% /
 tmpfs                                      6.9G     0  6.9G   0% /dev
 tmpfs                                      6.9G     0  6.9G   0% /sys/fs/cgroup
-//andytestx.file.core.windows.net/k8stest  5.0G   64K  5.0G   1% /mnt/blobfile
+//andytestx.file.core.windows.net/k8stest  5.0G   64K  5.0G   1% /mnt/azurefile
 /dev/sda1                                   30G  4.1G   26G  14% /etc/hosts
 shm                                         64M     0   64M   0% /dev/shm
 tmpfs                                      6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 
-root@nginx-azurefile:/mnt/blobfile# ls -lt
+root@nginx-azurefile:/mnt/azurefile# ls -lt
 total 1
 -rwx-w-r-- 1 1000 1000 1015 Nov 27 06:09 outfile
 drwx-wx--x 2 1000 1000    0 Nov 27 06:09 a

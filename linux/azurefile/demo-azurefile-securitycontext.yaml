@@ -12,11 +12,11 @@ spec:
     command:
     - "/bin/sh"
     - "-c"
-    - while true; do echo $(date) >> /mnt/blobfile/outfile; sleep 1; done
+    - while true; do echo $(date) >> /mnt/azurefile/outfile; sleep 1; done
     volumeMounts:
-    - name: blobfile01
-      mountPath: "/mnt/blobfile"
+    - name: azurefile01
+      mountPath: "/mnt/azurefile"
   volumes:
-  - name: blobfile01
+  - name: azurefile01
     persistentVolumeClaim:
       claimName: pvc-azurefile
