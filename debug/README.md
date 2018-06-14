@@ -62,9 +62,9 @@ vi $id.log
 Prerequisite:
 [assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use ssh client to connect to that agent. (only for debugging purpose)
 
-> Note: from acs-engine [v0.16.0](https://github.com/Azure/acs-engine/releases/tag/v0.16.0) and AKS, `kubelet` is not containerized. [Check whether kubelet is containerized or running as daemon](https://github.com/andyzhangx/demo/blob/master/debug/README.md#q-check-whether-kubelet-is-containerized-or-running-as-daemon)
+> Note: from acs-engine [v0.16.0](https://github.com/Azure/acs-engine/releases/tag/v0.16.0) and AKS, `kubelet` is not containerized. [Check whether kubelet is containerized or running as native daemon](https://github.com/andyzhangx/demo/blob/master/debug/README.md#q-check-whether-kubelet-is-containerized-or-running-as-native-daemon)
 
- - for kubelet running as a daemon
+ - for kubelet running as a native daemon
 ```
 journalctl -u kubelet -l > kubelet.log
 ```
@@ -140,12 +140,12 @@ And then follow this [guide](https://kubernetes.io/docs/tasks/administer-cluster
 ### Q: How to delete the pod by force?
 ```kubectl delete pod PODNAME --grace-period=0 --force```
 
-#### Q: Check whether `kubelet` is containerized or running as daemon
- - Run following command on node, if there is no output, then `kubelet` is running as daemon, otherwise it's a containerized kubelet
+#### Q: Check whether `kubelet` is containerized or running as native daemon
+ - Run following command on node, if there is no output, then `kubelet` is running as native daemon, otherwise it's a containerized kubelet
 ```
 docker ps | grep kubel
 ```
- - You may also check `kubelet.service` file, if `kubelet` binary is under `ExecStart=/usr/local/bin/kubelet` then `kubelet` is running as daemon
+ - You may also check `kubelet.service` file, if `kubelet` binary is under `ExecStart=/usr/local/bin/kubelet` then `kubelet` is running as native daemon
 ```
 sudo vi /etc/systemd/system/kubelet.service
 ```
