@@ -140,7 +140,7 @@ And then follow this [guide](https://kubernetes.io/docs/tasks/administer-cluster
 ### Q: How to delete the pod by force?
 ```kubectl delete pod PODNAME --grace-period=0 --force```
 
-#### Q: Validate whether `kubelet` is containerized or running as daemon
+#### Q: Check whether `kubelet` is containerized or running as daemon
  - Run following command on node, if there is no output, then `kubelet` is running as daemon, otherwise it's a containerized kubelet
 ```
 docker ps | grep kubel
