@@ -223,7 +223,19 @@ azureDisk - mountDevice:FormatAndMount failed with exit status 32
 That's because azureDisk use ext4 file system by default, mountOptions like [uid=x,gid=x] could not be set in mount time.
 
 **Solution**:
-Set uid in `runAsUser` and gid in `fsGroup` [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+Set uid in `runAsUser` and gid in `fsGroup` for pod: [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+
+e.g. Following setting will set pod run as root, make it accessiable to any file:
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: security-context-demo
+spec:
+  securityContext:
+    runAsUser: 0
+    fsGroup: 0
+```
 
 ### 8. `Addition of a blob based disk to VM with managed disks is not supported`
 **Issue details**:
