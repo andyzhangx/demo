@@ -62,7 +62,7 @@ vi $id.log
 Prerequisite:
 [assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use ssh client to connect to that agent. (only for debugging purpose)
 
-> Note: from acs-engine [v0.16.0](https://github.com/Azure/acs-engine/releases/tag/v0.16.0) and AKS, `kubelet` is not containerized
+> Note: from acs-engine [v0.16.0](https://github.com/Azure/acs-engine/releases/tag/v0.16.0) and AKS, `kubelet` is not containerized. [Check whether kubelet is containerized or running as daemon](https://github.com/andyzhangx/demo/blob/master/debug/README.md#q-check-whether-kubelet-is-containerized-or-running-as-daemon)
 
  - for kubelet running as a daemon
 ```
