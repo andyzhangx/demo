@@ -61,6 +61,15 @@ vi $id.log
 ### Q: How to get k8s kubelet logs on linux agent?
 Prerequisite:
 [assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use ssh client to connect to that agent. (only for debugging purpose)
+
+> Note: from acs-engine [v0.16.0](https://github.com/Azure/acs-engine/releases/tag/v0.16.0) and AKS, `kubelet` is not containerized
+
+ - for kubelet running as a daemon
+```
+journalctl -u kubelet -l > kubelet.log
+```
+
+ - for containerized kubelet
 1. get the "CONTAINER ID" of "/hyperkube kubelet"
 ```
 docker ps -a | grep "hyperkube kubele" | awk -F ' ' '{print $1}'
@@ -76,10 +85,7 @@ docker logs $id > $id.log 2>&1
 vi $id.log
 ```
 
- - Note: from acs-engine [v0.16.0](https://github.com/Azure/acs-engine/releases/tag/v0.16.0), `kubelet` is not running in container, use following command to get `kubelet` logs:
-```
-journalctl -u kubelet -l > kubelet.log
-```
+
 
 ### Q: How to get k8s kubelet logs on Windows agent?
 Prerequisite:
@@ -133,6 +139,16 @@ And then follow this [guide](https://kubernetes.io/docs/tasks/administer-cluster
 
 ### Q: How to delete the pod by force?
 ```kubectl delete pod PODNAME --grace-period=0 --force```
+
+#### Q: Validate whether `kubelet` is containerized or running as daemon
+ - Run following command on node, if there is no output, then `kubelet` is running as daemon, otherwise it's a containerized kubelet
+```
+docker ps | grep kubel
+```
+ - You may also check `kubelet.service` file, if `kubelet` binary is under `ExecStart=/usr/local/bin/kubelet` then `kubelet` is running as daemon
+```
+sudo vi /etc/systemd/system/kubelet.service
+```
 
 ### Assign a Public IP to a VM in Azure portal
 Click under network\network interface\ip config\enable public IP address
