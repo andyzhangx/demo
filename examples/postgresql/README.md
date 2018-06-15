@@ -12,7 +12,7 @@ In stead, you could use azure disk, I have tried it works well. And pls note tha
 ```
 nitdb: directory "/var/lib/postgresql/data" exists but is not emptyIt contains a lost+found directory, perhaps due to it being a mount point
 ```
-Instead, use `subPath` will work, it will create a new directory in the new azure disk.
+That's because disk format will create `DATALOSS_WARNING_README.txt` under that dir. Instead, use `subPath` will work, it will create a new directory in the new azure disk.
 
 So here is the two key places that make this config work
  - use azure disk instead of azure file
