@@ -264,7 +264,7 @@ Failed to provision volume with StorageClass "default": azureDisk - account ds6c
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.8 | 1.8.13 |
-| v1.9 | in cherry-pick |
+| v1.9 | 1.9.9 |
 | v1.10 | no such issue |
 
 **Work around**:
@@ -293,7 +293,8 @@ When use an existing azure disk(also called [static provisioning](https://github
 | ---- | ---- |
 | v1.8 | in cherry-pick |
 | v1.9 | in cherry-pick |
-| v1.10 | in review |
+| v1.10 | in cherry-pick |
+| v1.11 | 1.11.0 |
 
 **Work around**:
 Don't use existing azure disk that has partitions, e.g. following disk in LUN 0 that has one partition:
