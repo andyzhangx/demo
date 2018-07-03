@@ -315,7 +315,7 @@ Message:         disk.DisksClient#Delete: Failure responding to request: StatusC
 ```
 
 **Fix**:
-it’s a common k8s issue, other cloud provider would also has this issue. There is a [PVC protection](https://kubernetes.io/docs/tasks/administer-cluster/pvc-protection/) feature to prevent this, it's alpha in v1.9, and beta(enabled by default) in v1.10
+This is a common k8s issue, other cloud provider would also has this issue. There is a [PVC protection](https://kubernetes.io/docs/tasks/administer-cluster/pvc-protection/) feature to prevent this, it's alpha in v1.9, and beta(enabled by default) in v1.10
 
 **Work around**:
 delete pod first and then delete azure disk pvc after a few minutes
