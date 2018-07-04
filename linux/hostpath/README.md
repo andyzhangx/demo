@@ -61,3 +61,6 @@ Events:
 | v1.8 | no such issue |
 | v1.9 | 1.9.7 |
 | v1.10 | 1.10.2 |
+
+**Workaround**
+ - Remove `type` field in `hostPath`
