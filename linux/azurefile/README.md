@@ -137,3 +137,5 @@ root@nginx-azurefile:/# mount | grep cifs
 
 [Using Azure Files with Kubernetes](https://docs.microsoft.com/en-us/azure/aks/azure-files)
 
+[Toubleshoot CIFS share mount errors](Toubleshooting CIFS share mount errors
+https://superuser.com/questions/430163/cifs-share-mount-errors)
