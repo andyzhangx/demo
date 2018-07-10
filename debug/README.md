@@ -66,7 +66,7 @@ Prerequisite:
 
  - for kubelet running as a native daemon
 ```
-journalctl -u kubelet -l > kubelet.log
+sudo journalctl -u kubelet -l > kubelet.log
 ```
 
  - for containerized kubelet
