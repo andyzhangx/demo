@@ -5,6 +5,7 @@ one solution is restart kubelet in the original node and also the node with azur
 ```
 
 - PV & PVC accessModes
+
 accessModes do not enforce access right, but rather act as labels to match a PV to a PVC.
 One PV could only be bound to one PVC, and one PVC (after bound to a PV) could be used by multiple pods
 
