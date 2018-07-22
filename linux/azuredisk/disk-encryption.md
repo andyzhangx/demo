@@ -1,5 +1,5 @@
 # How to enable disk encryption on AKS
- > Note: before following steps, if your agent VM is going to mount an azure disk, please insert a udev rule first on the target VM: related issue details: [Failed to mount Azure Disk as a PV when ADE is enabled](https://github.com/kubernetes/kubernetes/issues/66443)
+ > Note: before following steps, if your agent VM is going to mount an azure disk, please insert a udev rule first on the target VM, related issue details: [Failed to mount Azure Disk as a PV when ADE is enabled](https://github.com/kubernetes/kubernetes/issues/66443)
  - Follow below steps when AKS cluster is newly created
 ```
 RESOURCE_GROUP_NAME=<resource_group_of_created_VM> #for AKS, format is like MC_{RESOUCE-GROUP-NAME}{CLUSTER-NAME}{REGION}
