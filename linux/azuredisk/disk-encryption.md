@@ -18,9 +18,9 @@ SP_PASSWORD=
 az keyvault create -n ADE_VAULT_NAME -g $RESOURCE_GROUP_NAME --enabled-for-disk-encryption True
 az keyvault set-policy --name $ADE_VAULT_NAME --spn $APP_ID --key-permissions wrapKey  --secret-permissions set
 az keyvault key create --vault-name $ADE_VAULT_NAME --name aks-ade-node1-key --protection software
-az vm encryption enable -g $RESOURCE_GROUP_NAME -n $VM_NAME --aad-client-id $APP_ID --aad-client-secret $SP_PASSWORD --disk-encryption-keyvault $ADE_VAULT_NAME --key-encryption-key aks-ade-node1-key --volume-type ALL
+az vm encryption enable -g $RESOURCE_GROUP_NAME -n $VM_NAME --aad-client-id $APP_ID --aad-client-secret $SP_PASSWORD --disk-encryption-keyvault $ADE_VAULT_NAME --key-encryption-key aks-ade-node1-key --volume-type DATA
 ```
 Note: 
- - `volume-type` set as `ALL` means the newly added azure disk will also be encrypted by default (Allowed values: `ALL`, `DATA`, `OS`)
+ - Allowed values for `volume-type`: `ALL`, `DATA`, `OS`
  - More details steps could be found from [Azure Disk Encryption for Windows and Linux IaaS VMs](https://docs.microsoft.com/en-us/azure/security/azure-security-disk-encryption)
  - VM restart may be required in the Azure Disk Encryption process, please make sure there is not workload on the target VM before encryption
