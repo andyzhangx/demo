@@ -93,6 +93,8 @@ go build -o _output/bin/deepcopy-gen ./vendor/k8s.io/code-generator/cmd/deepcopy
 go build -o _output/bin/defaulter-gen ./vendor/k8s.io/code-generator/cmd/defaulter-gen
 go build -o _output/bin/go-bindata ./vendor/github.com/jteeuwen/go-bindata/go-bindata
 go build -o _output/bin/openapi-gen ./vendor/k8s.io/code-generator/cmd/openapi-gen
+
+cp api/api-rules/violation_exceptions.list _output/violations.report
 make
 ```
 
