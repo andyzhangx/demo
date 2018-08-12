@@ -9,8 +9,8 @@
 | v1.7 | no fix |
 | v1.8 | no fix |
 | v1.9 | in cherry-pick |
-| v1.10 | in cherry-pick |
-| v1.11 | in cherry-pick |
+| v1.10 | 1.10.7 |
+| v1.11 | 1.11.2 |
 | v1.12 | 1.12.0 |
 
 **Related issues**
