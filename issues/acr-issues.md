@@ -1,9 +1,9 @@
 # ACR(Azure Container Registry) related issues
 
-## pull image error after granting sp access to azure acr
+## pull image error after granting sp access to Azure Container Registry
 **Fix**
  - PR [fix acr could not be listed in sp issue](https://github.com/kubernetes/kubernetes/pull/66429)
-> Note that this PR would also enable feature: pull image from a cross subscription ACR
+> Note that this PR would also enable feature: pull image failed from a cross-subscription Azure Container Registry
 
 | k8s version | fixed version |
 | ---- | ---- |
