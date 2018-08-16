@@ -322,6 +322,7 @@ delete pod first and then delete azure disk pvc after a few minutes
 
 ### 12. create azure disk PVC failed due to account creation failure
  > pls note this issue only happens on **unmanaged** k8s cluster
+
 **Issue details**: User may get `Account property kind is invalid for the request` error when trying to create a new **unmanaged** azure disk PVC, error would be like following:
 ```
 azureuser@k8s-master-17140924-0:/tmp$ kubectl describe pvc
