@@ -319,3 +319,43 @@ This is a common k8s issue, other cloud provider would also has this issue. Ther
 
 **Work around**:
 delete pod first and then delete azure disk pvc after a few minutes
+
+### 12. create azure disk PVC failed due to account creation failure
+ > pls note this issue only happens on **unmanaged** k8s cluster
+**Issue details**: User may get `Account property kind is invalid for the request` error when trying to create a new **unmanaged** azure disk PVC, error would be like following:
+```
+azureuser@k8s-master-17140924-0:/tmp$ kubectl describe pvc
+Name:          pvc-azuredisk
+Namespace:     default
+StorageClass:  hdd
+Status:        Bound
+...
+Events:
+  Type     Reason                 Age                From                         Message
+  ----     ------                 ----               ----                         -------
+  Warning  ProvisioningFailed     31m                persistentvolume-controller  Failed to provision volume with StorageClass "hdd": Create Storage Account: ds10e15ed89c5811e8a0a70, error: storage.AccountsClient#Create: Failure sending request: StatusCode=400 -- Original Error: Code="AccountPropertyIsInvalid" Message="Account property kind is invalid for the request."
+```
+
+**Fix**
+ - PR [fix azure disk create failure due to sdk upgrade](https://github.com/kubernetes/kubernetes/pull/67236) fixed this issue
+ 
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.9 | no such issue |
+| v1.10 | no such issue |
+| v1.11 | in cherry-pick |
+| v1.12 | no such issue |
+
+**Work around**:
+ - create a storage account and specify that account in azure disk storage class, e.g.
+ ```
+ kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  name: ssd
+provisioner: kubernetes.io/azure-disk
+parameters:
+  skuname: Premium_LRS
+  storageAccount: customerstorageaccount
+  kind: Dedicated
+ ```
