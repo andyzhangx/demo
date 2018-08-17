@@ -222,6 +222,9 @@ azureDisk - mountDevice:FormatAndMount failed with exit status 32
 ```
 That's because azureDisk use ext4 file system by default, mountOptions like [uid=x,gid=x] could not be set in mount time.
 
+**Related issues**
+ - [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014)
+
 **Solution**:
 Set uid in `runAsUser` and gid in `fsGroup` for pod: [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 
@@ -236,6 +239,7 @@ spec:
     runAsUser: 0
     fsGroup: 0
 ```
+ > Note: Since gid & uid is mounted as 0(root) by default, if set as non-root(e.g. 1000), k8s will use chown/chmod to change all dir/files under that disk, this is a time consuming job, whch would make mount device very slow, in this issue: [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014#issuecomment-413546283), it costs about 10 min for chown/chmod operation complete.
 
 ### 8. `Addition of a blob based disk to VM with managed disks is not supported`
 **Issue details**:
