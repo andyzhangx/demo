@@ -5,4 +5,4 @@ metadata:
   name: azurefile
 provisioner: kubernetes.io/azure-file
 parameters:
-  storageAccount: EXISTING_AZURE_FILE_ACCOUNT
+  storageAccount: EXISTING_STORAGE_ACCOUNT
