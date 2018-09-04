@@ -296,7 +296,7 @@ When use an existing azure disk(also called [static provisioning](https://github
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.8 | 1.8.15 |
-| v1.9 | in cherry-pick |
+| v1.9 | 1.9.11 |
 | v1.10 | 1.10.5 |
 | v1.11 | 1.11.0 |
 
@@ -348,7 +348,7 @@ Events:
 | ---- | ---- |
 | v1.9 | no such issue |
 | v1.10 | no such issue |
-| v1.11 | in cherry-pick |
+| v1.11 | 1.11.3 |
 | v1.12 | no such issue |
 
 **Work around**:
