@@ -239,7 +239,7 @@ spec:
     runAsUser: 0
     fsGroup: 0
 ```
- > Note: Since gid & uid is mounted as 0(root) by default, if set as non-root(e.g. 1000), k8s will use chown/chmod to change all dir/files under that disk, this is a time consuming job, whch would make mount device very slow, in this issue: [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014#issuecomment-413546283), it costs about 10 min for chown/chmod operation complete.
+ > Note: Since gid & uid is mounted as 0(root) by default, if set as non-root(e.g. 1000), k8s will use chown/chmod to change all dir/files under that disk, this is a time consuming job, which would make mount device very slow, in this issue: [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014#issuecomment-413546283), it costs about 10 min for chown/chmod operation complete.
 
 ### 8. `Addition of a blob based disk to VM with managed disks is not supported`
 **Issue details**:
@@ -325,7 +325,7 @@ This is a common k8s issue, other cloud provider would also has this issue. Ther
 delete pod first and then delete azure disk pvc after a few minutes
 
 ### 12. create azure disk PVC failed due to account creation failure
- > pls note this issue only happens on **unmanaged** k8s cluster
+ > please note this issue only happens on **unmanaged** k8s cluster
 
 **Issue details**: User may get `Account property kind is invalid for the request` error when trying to create a new **unmanaged** azure disk PVC, error would be like following:
 ```
@@ -354,7 +354,7 @@ Events:
 **Work around**:
  - create a storage account and specify that account in azure disk storage class, e.g.
  ```
- kind: StorageClass
+kind: StorageClass
 apiVersion: storage.k8s.io/v1beta1
 metadata:
   name: ssd
