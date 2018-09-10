@@ -45,8 +45,14 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 #### Known issues
  - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
  - [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
+ 
+#### Related issues
+ - [Unable to create Load balancer service in Azure Government](https://github.com/Azure/acs-engine/issues/3754)
+ - [Generate Templates with `acs-engine` with location `chinaeast2` failed](https://github.com/Azure/acs-engine/issues/3812)
 
 #### Links
 [acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
 
 For detailed steps, refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/
+
+[Kubernetes on Azure Government](https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-k8)
