@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
       - name: nginx-server
-        image: crproxy.trafficmanager.net:5000/andyzhangx/nginx-server:1.0.0
+        image: dockerhub.akscn.io/andyzhangx/nginx-server:1.0.0
         imagePullPolicy: Always
         lifecycle:
           postStart:
