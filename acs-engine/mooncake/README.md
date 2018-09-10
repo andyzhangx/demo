@@ -1,14 +1,14 @@
 # Deploy kubernetes cluster on mooncake
 > Note: with acs-engine v0.14.0 or above, soveriegn cloud is supported directly, it's not necessary to modify `azuredeploy.parameters.json` template after generation any more, acs-engine will generate soveriegn cloud templates according to `location` field in cluster defination file, see [example](https://github.com/andyzhangx/demo/blob/master/acs-engine/mooncake/kubernetes-1.7.9.json#L3)
 
-### download acs-engine binary
+### 1. download acs-engine binary
 ```
 acs_version=v0.21.2
 wget https://mirror.azure.cn/kubernetes/acs-engine/$acs_version/acs-engine-$acs_version-linux-amd64.tar.gz
 tar -xvzf acs-engine-$acs_version-linux-amd64.tar.gz
 ```
 
-### download acs-engine cluster defination file and edit fields, e.g. `location`, `orchestratorVersion`, `dnsPrefix`, `linuxProfile`, `servicePrincipalProfile` etc.
+### 2. download acs-engine cluster defination file and edit fields, e.g. `location`, `orchestratorVersion`, `dnsPrefix`, `linuxProfile`, `servicePrincipalProfile` etc.
 ```
 k8s_version=1.10.7
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-$k8s_version.json
@@ -16,14 +16,14 @@ vi kubernetes-$k8s_version.json
 ```
 > specify `location` as (`chinaeast`, `chinanorth`, `chinaeast2`, `chinanorth2`) in cluster defination file
 
-### generate ARM templates by acs-engine
+### 3. generate ARM templates by acs-engine
 ```
 ./acs-engine generate kubernetes-$k8s_version.json
 RESOURCE_GROUP_NAME=andy-k8s1107
 az group create -l chinaeast -n $RESOURCE_GROUP_NAME
 ```
 
-### create kubernetes cluster by ARM templates
+### 4. create kubernetes cluster by ARM templates
 ```
 dnsPrefix=andy-k8s1107
 az group deployment create \
@@ -32,6 +32,12 @@ az group deployment create \
     --template-file="./_output/$dnsPrefix/azuredeploy.json" \
     --parameters "@./_output/$dnsPrefix/azuredeploy.parameters.json"
 ```
+
+### 5. After k8s cluster creation successfully, by running following command, you will get master node VM name:
+```
+az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
+```
+
 #### Tips
  - [docker registry proxy cache](http://mirror.kaiyuanshe.cn/help/docker-registry-proxy-cache.html): `dockerhub.akscn.io`
  - [GCR Proxy Cache](http://mirror.kaiyuanshe.cn/help/gcr-proxy-cache.html): `gcr.akscn.io`
@@ -41,6 +47,6 @@ az group deployment create \
  - [Azure file on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/48460) is supported from v1.7.11, v1.8.0
 
 #### Links
-[acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.7.9.json)
+[acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
 
 For detailed steps, you could refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/README.md
