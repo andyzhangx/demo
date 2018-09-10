@@ -3,31 +3,34 @@
 
 ### download acs-engine binary
 ```
-wget https://mirror.kaiyuanshe.org/kubernetes/acs-engine/v0.14.0/acs-engine-v0.14.0-linux-amd64.tar.gz
-tar -xvzf acs-engine-v0.14.0-linux-amd64.tar.gz
+acs_version=v0.21.2
+wget https://mirror.azure.cn/kubernetes/acs-engine/$acs_version/acs-engine-$acs_version-linux-amd64.tar.gz
+tar -xvzf acs-engine-$acs_version-linux-amd64.tar.gz
 ```
 
-### download acs-engine cluster defination file and edit
+### download acs-engine cluster defination file and edit fields, e.g. `location`, `orchestratorVersion`, `dnsPrefix`, `linuxProfile`, `servicePrincipalProfile` etc.
 ```
-wget https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.7.9.json
-vi kubernetes-1.7.9.json
+k8s_version=1.10.7
+wget https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-$k8s_version.json
+vi kubernetes-$k8s_version.json
 ```
-> specify `location` as `chinaeast` or `chinanorth` in cluster defination file
+> specify `location` as (`chinaeast`, `chinanorth`, `chinaeast2`, `chinanorth2`) in cluster defination file
 
 ### generate ARM templates by acs-engine
 ```
-./acs-engine generate kubernetes-1.7.9.json
-RESOURCE_GROUP_NAME=andy-k8s179
+./acs-engine generate kubernetes-$k8s_version.json
+RESOURCE_GROUP_NAME=andy-k8s1107
 az group create -l chinaeast -n $RESOURCE_GROUP_NAME
 ```
 
 ### create kubernetes cluster by ARM templates
 ```
+dnsPrefix=andy-k8s1107
 az group deployment create \
-    --name="andy-k8s179" \
+    --name="$dnsPrefix" \
     --resource-group=$RESOURCE_GROUP_NAME \
-    --template-file="./_output/andy-k8s179/azuredeploy.json" \
-    --parameters "@./_output/andy-k8s179/azuredeploy.parameters.json"
+    --template-file="./_output/$dnsPrefix/azuredeploy.json" \
+    --parameters "@./_output/$dnsPrefix/azuredeploy.parameters.json"
 ```
 #### Tips
  - [docker registry proxy cache](http://mirror.kaiyuanshe.cn/help/docker-registry-proxy-cache.html): `dockerhub.akscn.io`
