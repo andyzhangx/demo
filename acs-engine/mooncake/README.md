@@ -1,5 +1,5 @@
 # Deploy kubernetes cluster on mooncake
-> Note: with acs-engine v0.14.0 or above, soveriegn cloud is supported directly, it's not necessary to modify `azuredeploy.parameters.json` template after generation any more, acs-engine will generate soveriegn cloud templates according to `location` field in cluster defination file, see [example](https://github.com/andyzhangx/demo/blob/master/acs-engine/mooncake/kubernetes-1.7.9.json#L3)
+> Note: with acs-engine v0.14.0 or above, soveriegn cloud is supported directly, it's not necessary to modify `azuredeploy.parameters.json` template after generation any more, acs-engine will generate soveriegn cloud templates according to `location` field in cluster defination file, see [example](https://github.com/andyzhangx/demo/blob/master/acs-engine/mooncake/kubernetes-1.10.7.json#L3)
 
 ### 1. download acs-engine binary
 ```
@@ -33,14 +33,14 @@ az group deployment create \
     --parameters "@./_output/$dnsPrefix/azuredeploy.parameters.json"
 ```
 
-### 5. After k8s cluster creation successfully, by running following command, you will get master node VM name:
+### 5. After k8s cluster creation successfully, get master node VM name by running following command:
 ```
 az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 ```
 
 #### Tips
- - [docker registry proxy cache](http://mirror.kaiyuanshe.cn/help/docker-registry-proxy-cache.html): `dockerhub.akscn.io`
- - [GCR Proxy Cache](http://mirror.kaiyuanshe.cn/help/gcr-proxy-cache.html): `gcr.akscn.io`
+ - [docker registry proxy cache](http://mirror.azure.cn/help/docker-registry-proxy-cache.html): `dockerhub.akscn.io`
+ - [GCR Proxy Cache](http://mirror.azure.cn/help/gcr-proxy-cache.html): `gcr.akscn.io`
 
 #### Known issues
  - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
@@ -49,4 +49,4 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 #### Links
 [acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
 
-For detailed steps, you could refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/README.md
+For detailed steps, refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/
