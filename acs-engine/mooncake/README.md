@@ -49,6 +49,7 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 #### Related issues
  - [Unable to create Load balancer service in Azure Government](https://github.com/Azure/acs-engine/issues/3754)
  - [Generate Templates with `acs-engine` with location `chinaeast2` failed](https://github.com/Azure/acs-engine/issues/3812)
+ - [Cannot deploy generated ARM template to AzureChinaCloud](https://github.com/Azure/acs-engine/issues/3024) 
 
 #### Links
 [acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
