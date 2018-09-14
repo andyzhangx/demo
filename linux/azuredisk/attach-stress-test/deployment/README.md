@@ -28,7 +28,7 @@ watch kubectl get po -o wide
 ```
 
 #### Note
-In my testing, I scheduled three pods with azure disk mount on one node , it took around 3 min for scheduling all three pods from node#1 to node#2 (After fix in v1.9.7, it took about 1 min for scheduling azure disk mount from one node to another, details: 
+ - In my testing#1(on region westus2), I scheduled 3 pods with azure disk mount on one node, it took around 3 min for scheduling all three pods from node#1 to node#2 (After fix in v1.9.7, it took about 1 min for scheduling azure disk mount from one node to another, details: 
 https://github.com/kubernetes/kubernetes/issues/62282#issuecomment-380794459)
 ```
 Events:
@@ -43,6 +43,48 @@ Events:
   Normal   Pulled                 44s   kubelet, k8s-agentpool-88970029-0  Successfully pulled image "nginx"
   Normal   Created                44s   kubelet, k8s-agentpool-88970029-0  Created container
   Normal   Started                42s   kubelet, k8s-agentpool-88970029-0  Started container
+```
+
+ - In my testing#2(on region eastus), I rescheduled 4 pods with azure disk mount on one node to another, it costs about 4 min
+```
+Events:
+  Type     Reason                  Age   From                               Message
+  ----     ------                  ----  ----                               -------
+  Normal   Scheduled               4m    default-scheduler                  Successfully assigned default/deployment-azuredisk3-68959c48c4-rc88k to k8s-agentpool-34076307-1
+  Warning  FailedAttachVolume      4m    attachdetach-controller            Multi-Attach error for volume "pvc-9e5b732a-b7f3-11e8-a9e9-000d3a107fa7" Volume is already used by pod(s) deployment-azuredisk3-68959c48c4-7jlt8
+  Warning  FailedMount             2m    kubelet, k8s-agentpool-34076307-1  Unable to mount volumes for pod "deployment-azuredisk3-68959c48c4-rc88k_default(0ac0a5d3-b7f4-11e8-a9e9-000d3a107fa7)": timeout expired waiting for volumes to attach or mount for pod "default"/"deployment-azuredisk3-68959c48c4-rc88k". list of unmounted volumes=[azuredisk]. list of unattached volumes=[azuredisk default-token-hdhnv]
+  Normal   SuccessfulAttachVolume  1m    attachdetach-controller            AttachVolume.Attach succeeded for volume "pvc-9e5b732a-b7f3-11e8-a9e9-000d3a107fa7"
+  Normal   Pulling                 3s    kubelet, k8s-agentpool-34076307-1  pulling image "nginx"
+  Normal   Pulled                  3s    kubelet, k8s-agentpool-34076307-1  Successfully pulled image "nginx"
+  Normal   Created                 2s    kubelet, k8s-agentpool-34076307-1  Created container
+  Normal   Started                 2s    kubelet, k8s-agentpool-34076307-1  Started container
+```
+
+ - In my testing#3(on region eastus), I rescheduled 8 pods with azure disk mount on one node to another, it costs about 6 min
+```
+Every 2.0s: kubectl get po -o wide                                                                                                                                                     Fri Sep 14 08:11:21 2018
+
+NAME                                     READY     STATUS    RESTARTS   AGE       IP            NODE                       NOMINATED NODE
+deployment-azuredisk1-bccc7c5d8-k4q5j    1/1       Running   0          6m        10.240.0.16   k8s-agentpool-34076307-0   <none>
+deployment-azuredisk2-697d798b57-tjr4m   1/1       Running   0          6m        10.240.0.22   k8s-agentpool-34076307-0   <none>
+deployment-azuredisk3-68959c48c4-kr6ps   1/1       Running   0          6m        10.240.0.31   k8s-agentpool-34076307-0   <none>
+deployment-azuredisk4-76d57d9f99-5l4xr   1/1       Running   0          6m        10.240.0.24   k8s-agentpool-34076307-0   <none>
+deployment-azuredisk5-99b94f68-zqwjm     1/1       Running   0          6m        10.240.0.9    k8s-agentpool-34076307-0   <none>
+deployment-azuredisk6-6db6b647d9-n8j7c   1/1       Running   0          6m        10.240.0.12   k8s-agentpool-34076307-0   <none>
+deployment-azuredisk7-79cc8668fd-ltpnr   1/1       Running   0          6m        10.240.0.5    k8s-agentpool-34076307-0   <none>
+deployment-azuredisk8-7fd8df68b7-rjfks   1/1       Running   0          6m        10.240.0.21   k8s-agentpool-34076307-0   <none>
+
+Events:
+  Type     Reason                  Age              From                               Message
+  ----     ------                  ----             ----                               -------
+  Normal   Scheduled               6m               default-scheduler                  Successfully assigned default/deployment-azuredisk5-99b94f68-zqwjm to k8s-agentpool-34076307-0
+  Warning  FailedAttachVolume      6m               attachdetach-controller            Multi-Attach error for volume "pvc-9f0abf3a-b7f3-11e8-a9e9-000d3a107fa7" Volume is already used by pod(s) deployment-azuredisk5-99b94f68-6r5zr
+  Warning  FailedMount             2m (x2 over 4m)  kubelet, k8s-agentpool-34076307-0  Unable to mount volumes for pod "deployment-azuredisk5-99b94f68-zqwjm_default(cee2c648-b7f4-11e8-a9e9-000d3a107fa7)": timeout expired waiting for volumes to attach or mount for pod "default"/"deployment-azuredisk5-99b94f68-zqwjm". list of unmounted volumes=[azuredisk]. list of unattached volumes=[azuredisk default-token-hdhnv]
+  Normal   SuccessfulAttachVolume  1m               attachdetach-controller            AttachVolume.Attach succeeded for volume "pvc-9f0abf3a-b7f3-11e8-a9e9-000d3a107fa7"
+  Normal   Pulling                 15s              kubelet, k8s-agentpool-34076307-0  pulling image "nginx"
+  Normal   Pulled                  14s              kubelet, k8s-agentpool-34076307-0  Successfully pulled image "nginx"
+  Normal   Created                 14s              kubelet, k8s-agentpool-34076307-0  Created container
+  Normal   Started                 14s              kubelet, k8s-agentpool-34076307-0  Started container
 ```
 
 #### clean up
