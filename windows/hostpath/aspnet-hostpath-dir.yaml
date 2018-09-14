@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: aspnet-hostpath
+spec:
+  containers:
+  - image: microsoft/aspnet
+    name: aspnet-hostpath
+    volumeMounts:
+    - name: test-volume
+      mountPath: 'D:'
+  nodeSelector:
+    beta.kubernetes.io/os: windows
+  volumes:
+  - name: test-volume
+    hostPath:
+      path: 'C:\'
+      type: Directory
+
