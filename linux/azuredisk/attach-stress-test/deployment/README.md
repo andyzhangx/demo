@@ -28,7 +28,7 @@ watch kubectl get po -o wide
 ```
 
 #### Note
- - In my testing#1(on region westus2), I scheduled 3 pods with azure disk mount on one node, it took around 3 min for scheduling all three pods from node#1 to node#2 (After fix in v1.9.7, it took about 1 min for scheduling azure disk mount from one node to another, details: 
+ - In my testing#1(on region westus2), I scheduled 3 pods with azure disk mount on one node, it took around **3 min** for scheduling all three pods from node#1 to node#2 (After fix in v1.9.7, it took about 1 min for scheduling azure disk mount from one node to another, details: 
 https://github.com/kubernetes/kubernetes/issues/62282#issuecomment-380794459)
 ```
 Events:
@@ -45,7 +45,7 @@ Events:
   Normal   Started                42s   kubelet, k8s-agentpool-88970029-0  Started container
 ```
 
- - In my testing#2(on region eastus), I rescheduled 4 pods with azure disk mount on one node to another, it costs about 4 min
+ - In my testing#2(on region eastus), I rescheduled 4 pods with azure disk mount on one node to another, it costs about **4 min**
 ```
 Events:
   Type     Reason                  Age   From                               Message
@@ -60,7 +60,7 @@ Events:
   Normal   Started                 2s    kubelet, k8s-agentpool-34076307-1  Started container
 ```
 
- - In my testing#3(on region eastus), I rescheduled 8 pods with azure disk mount on one node to another, it costs about 6 min
+ - In my testing#3(on region eastus), I rescheduled 8 pods with azure disk mount on one node to another, it costs about **6 min**
 ```
 Every 2.0s: kubectl get po -o wide                                                                                                                                                     Fri Sep 14 08:11:21 2018
 
