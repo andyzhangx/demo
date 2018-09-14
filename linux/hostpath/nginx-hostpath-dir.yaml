@@ -14,4 +14,5 @@ spec:
   - name: test-volume
     hostPath:
       path: /mnt
+      type: Directory
 
