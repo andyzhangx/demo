@@ -43,6 +43,7 @@ root@nginx-hostpath:/# ls -lt /var/log/waagent.log
 
 #### Known issues
  - [Containerized kubelet won't start pods with host path volumes that contains type field](https://github.com/kubernetes/kubernetes/issues/61801) 
+ 
 **error logs**:
 ```
 Events:
