@@ -22,6 +22,7 @@
  - [kubelet needs restart after granting sp access to azure acr](https://github.com/kubernetes/kubernetes/issues/65225)
  - [Kubelet requires restart after granting AKS SP access to ACR resource](https://github.com/Azure/AKS/issues/442)
  - [Unable to pull images from ACR: Error response from daemon](https://github.com/Azure/acs-engine/issues/3654)
+ - [pull image from a cross-subscription azure container registry does not work by MSI](https://github.com/kubernetes/kubernetes/issues/67892)
 
 ### Tips
 #### How to check whether current service principal could access ACR?
