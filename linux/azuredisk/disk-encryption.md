@@ -25,6 +25,6 @@ Note:
  - More details steps could be found from [Azure Disk Encryption for Windows and Linux IaaS VMs](https://docs.microsoft.com/en-us/azure/security/azure-security-disk-encryption)
  - VM restart may be required in the Azure Disk Encryption process, please make sure there is not workload on the target VM before encryption
 
-**** Related issues
+#### Related issues
  - [Failed to mount Azure Disk as a PV when ADE is enabled](https://github.com/kubernetes/kubernetes/issues/66443)
  - [AKS VM Disk Encryption](https://github.com/Azure/AKS/issues/629)
