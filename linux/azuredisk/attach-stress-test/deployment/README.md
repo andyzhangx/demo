@@ -45,7 +45,7 @@ Events:
   Normal   Started                42s   kubelet, k8s-agentpool-88970029-0  Started container
 ```
 
- - In my testing#2(on region eastus), I rescheduled 4 pods with azure disk mount on one node to another, it costs about **4 min**
+ - In my testing#2(on region eastus with k8s v1.11.2), I rescheduled 4 pods with azure disk mount on one node to another, it costs about **4 min**
 ```
 Events:
   Type     Reason                  Age   From                               Message
@@ -60,7 +60,7 @@ Events:
   Normal   Started                 2s    kubelet, k8s-agentpool-34076307-1  Started container
 ```
 
- - In my testing#3(on region eastus), I rescheduled 8 pods with azure disk mount on one node to another, it costs about **6 min**
+ - In my testing#3(on region eastus with k8s v1.11.2), I rescheduled 8 pods with azure disk mount on one node to another, it costs about **6 min**
 ```
 Every 2.0s: kubectl get po -o wide                                                                                                                                                     Fri Sep 14 08:11:21 2018
 
