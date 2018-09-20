@@ -302,7 +302,7 @@ spec:
     fsGroup: 0
 ```
 
-> Note: Since gid & uid is mounted as 0(root) by default, if set as non-root(e.g. 1000), k8s will use chownto change all dir/files under that disk, this is a time consuming job, which would make mount device very slow, in this issue: [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014#issuecomment-413546283), it costs about 10 min for chown operation complete.
+> Note: Since gid & uid is mounted as 0(root) by default, if set as non-root(e.g. 1000), k8s will use chown to change all dir/files under that disk, this is a time consuming job, which would make mount device very slow, in this issue: [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014#issuecomment-413546283), it costs about 10 min for chown operation complete.
 
 ## 8. `Addition of a blob based disk to VM with managed disks is not supported`
 
