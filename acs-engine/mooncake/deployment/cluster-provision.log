@@ -1,0 +1,2002 @@
+++ date
+++ hostname
++ echo Fri Sep 21 02:27:01 UTC 2018,k8s-master-35353223-0, startscript
++ source /opt/azure/containers/provision_source.sh
+++ ERR_SYSTEMCTL_ENABLE_FAIL=3
+++ ERR_SYSTEMCTL_START_FAIL=4
+++ ERR_CLOUD_INIT_TIMEOUT=5
+++ ERR_FILE_WATCH_TIMEOUT=6
+++ ERR_HOLD_WALINUXAGENT=7
+++ ERR_RELEASE_HOLD_WALINUXAGENT=8
+++ ERR_APT_INSTALL_TIMEOUT=9
+++ ERR_ETCD_DATA_DIR_NOT_FOUND=10
+++ ERR_ETCD_RUNNING_TIMEOUT=11
+++ ERR_ETCD_DOWNLOAD_TIMEOUT=12
+++ ERR_ETCD_VOL_MOUNT_FAIL=13
+++ ERR_ETCD_START_TIMEOUT=14
+++ ERR_ETCD_CONFIG_FAIL=15
+++ ERR_DOCKER_INSTALL_TIMEOUT=20
+++ ERR_DOCKER_DOWNLOAD_TIMEOUT=21
+++ ERR_DOCKER_KEY_DOWNLOAD_TIMEOUT=22
+++ ERR_DOCKER_APT_KEY_TIMEOUT=23
+++ ERR_K8S_RUNNING_TIMEOUT=30
+++ ERR_K8S_DOWNLOAD_TIMEOUT=31
+++ ERR_KUBECTL_NOT_FOUND=32
+++ ERR_IMG_DOWNLOAD_TIMEOUT=33
+++ ERR_CNI_DOWNLOAD_TIMEOUT=41
+++ ERR_MS_PROD_DEB_DOWNLOAD_TIMEOUT=42
+++ ERR_MS_PROD_DEB_PKG_ADD_FAIL=43
+++ ERR_MODPROBE_FAIL=49
+++ ERR_OUTBOUND_CONN_FAIL=50
+++ ERR_KATA_KEY_DOWNLOAD_TIMEOUT=60
+++ ERR_KATA_APT_KEY_TIMEOUT=61
+++ ERR_KATA_INSTALL_TIMEOUT=62
+++ ERR_CONTAINERD_DOWNLOAD_TIMEOUT=70
+++ ERR_CUSTOM_SEARCH_DOMAINS_FAIL=80
+++ ERR_APT_DAILY_TIMEOUT=98
+++ ERR_APT_UPDATE_TIMEOUT=99
++++ awk '{print toupper($0)}'
++++ tr -d 'ID="'
++++ grep '^ID='
++++ cat /etc/lsb-release /etc/os-release
+++ OS=UBUNTU
+++ UBUNTU_OS_NAME=UBUNTU
+++ RHEL_OS_NAME=RHEL
+++ COREOS_OS_NAME=COREOS
+++ KUBECTL=/usr/local/bin/kubectl
+++ DOCKER=/usr/bin/docker
++ source /opt/azure/containers/provision_installs.sh
+++ CC_SERVICE_IN_TMP=/opt/azure/containers/cc-proxy.service.in
+++ CC_SOCKET_IN_TMP=/opt/azure/containers/cc-proxy.socket.in
+++ CNI_CONFIG_DIR=/etc/cni/net.d
+++ CNI_BIN_DIR=/opt/cni/bin
+++ AZURE_CNI_TGZ_TMP=/tmp/azure_cni.tgz
+++ CONTAINERNETWORKING_CNI_TGZ_TMP=/tmp/containernetworking_cni.tgz
++ source /opt/azure/containers/provision_configs.sh
++ CUSTOM_SEARCH_DOMAIN_SCRIPT=/opt/azure/containers/setup-custom-search-domains.sh
++ set +x
++ [[ UBUNTU == COREOS ]]
++ '[' -f /var/run/reboot-required ']'
++ REBOOTREQUIRED=false
++ '[' -f /var/log/azure/golden-image-install.complete ']'
++ FULL_INSTALL_REQUIRED=true
++ testOutboundConnection
++ retrycmd_if_failure 20 1 3 nc -v www.google.com 443
++ retries=20
++ wait_sleep=1
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 1 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 2 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 3 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 4 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 5 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 6 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 7 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 8 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 9 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 10 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 11 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 12 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 13 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 14 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 15 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 16 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 17 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 18 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 19 -eq 20 ']'
++ sleep 1
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.google.com 443
++ '[' 124 -eq 0 ']'
++ '[' 20 -eq 20 ']'
++ echo Executed '"nc' -v www.google.com '443"' 20 times
+Executed "nc -v www.google.com 443" 20 times
++ return 1
++ retrycmd_if_failure 20 1 3 nc -v www.1688.com 443
++ retries=20
++ wait_sleep=1
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ timeout 3 nc -v www.1688.com 443
+Connection to www.1688.com 443 port [tcp/https] succeeded!
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"nc' -v www.1688.com '443"' 1 times
+Executed "nc -v www.1688.com 443" 1 times
++ waitForCloudInit
++ wait_for_file 900 1 /var/log/azure/cloud-init.complete
++ retries=900
++ wait_sleep=1
++ filepath=/var/log/azure/cloud-init.complete
+++ seq 1 900
++ for i in '$(seq 1 $retries)'
++ '[' -f /var/log/azure/cloud-init.complete ']'
++ break
++ holdWALinuxAgent
++ [[ UBUNTU == UBUNTU ]]
++ retrycmd_if_failure 20 5 30 apt-mark hold walinuxagent
++ retries=20
++ wait_sleep=5
++ timeout=30
++ shift
++ shift
++ shift
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ timeout 30 apt-mark hold walinuxagent
+walinuxagent set on hold.
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"apt-mark' hold 'walinuxagent"' 1 times
+Executed "apt-mark hold walinuxagent" 1 times
++ true
++ [[ ! -z true ]]
++ installEtcd
++ retrycmd_get_tarball 60 10 /tmp/etcd-v3.2.23-linux-amd64.tar.gz https://acs-mirror.azureedge.net/github-coreos/etcd-v3.2.23-linux-amd64.tar.gz
++ tar_retries=60
++ wait_sleep=10
++ tarball=/tmp/etcd-v3.2.23-linux-amd64.tar.gz
++ url=https://acs-mirror.azureedge.net/github-coreos/etcd-v3.2.23-linux-amd64.tar.gz
++ echo '60 retries'
+60 retries
+++ seq 1 60
++ for i in '$(seq 1 $tar_retries)'
++ tar -tzf /tmp/etcd-v3.2.23-linux-amd64.tar.gz
+tar (child): /tmp/etcd-v3.2.23-linux-amd64.tar.gz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
++ '[' 2 -eq 0 ']'
++ '[' 1 -eq 60 ']'
++ timeout 60 curl -fsSL https://acs-mirror.azureedge.net/github-coreos/etcd-v3.2.23-linux-amd64.tar.gz -o /tmp/etcd-v3.2.23-linux-amd64.tar.gz
++ sleep 10
++ for i in '$(seq 1 $tar_retries)'
++ tar -tzf /tmp/etcd-v3.2.23-linux-amd64.tar.gz
+etcd-v3.2.23-linux-amd64/
+etcd-v3.2.23-linux-amd64/etcd
+etcd-v3.2.23-linux-amd64/etcdctl
+etcd-v3.2.23-linux-amd64/README.md
+etcd-v3.2.23-linux-amd64/READMEv2-etcdctl.md
+etcd-v3.2.23-linux-amd64/README-etcdctl.md
+etcd-v3.2.23-linux-amd64/Documentation/
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/interacting_v3.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/limit.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/grpc_naming.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/api_reference_v3.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/swagger/
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/swagger/rpc.swagger.json
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/swagger/v3election.swagger.json
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/swagger/v3lock.swagger.json
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/local_cluster.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/api_concurrency_reference_v3.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/api_grpc_gateway.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/experimental_apis.md
+etcd-v3.2.23-linux-amd64/Documentation/docs.md
+etcd-v3.2.23-linux-amd64/Documentation/rfc/
+etcd-v3.2.23-linux-amd64/Documentation/rfc/v3api.md
+etcd-v3.2.23-linux-amd64/Documentation/branch_management.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-internal/
+etcd-v3.2.23-linux-amd64/Documentation/dev-internal/release.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-internal/logging.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-internal/discovery_protocol.md
+etcd-v3.2.23-linux-amd64/Documentation/README.md
+etcd-v3.2.23-linux-amd64/Documentation/tuning.md
+etcd-v3.2.23-linux-amd64/Documentation/faq.md
+etcd-v3.2.23-linux-amd64/Documentation/integrations.md
+etcd-v3.2.23-linux-amd64/Documentation/dl_build.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/
+etcd-v3.2.23-linux-amd64/Documentation/v2/authentication.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/auth_api.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/internal-protocol-versioning.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/glossary.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/upgrade_2_1.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/rfc/
+etcd-v3.2.23-linux-amd64/Documentation/v2/rfc/v3api.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/etcd_alert.rules
+etcd-v3.2.23-linux-amd64/Documentation/v2/api_v3.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/configuration.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/api.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/04_to_2_snapshot_migration.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/branch_management.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/proxy.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/runtime-reconf-design.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/README.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/dev/
+etcd-v3.2.23-linux-amd64/Documentation/v2/dev/release.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/security.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/tuning.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/runtime-configuration.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/faq.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/upgrade_2_3.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/implementation-faq.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-3-demo-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-2-2-0-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/README.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-2-2-0-rc-memory-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-3-watch-memory-benchmark.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-storage-memory-benchmark.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-2-2-0-rc-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-2-1-0-alpha-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/upgrade_2_2.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/docker_guide.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/members_api.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/admin_guide.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/backward_compatibility.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/metrics.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/production-users.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/libraries-and-tools.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/discovery_protocol.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/errorcode.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/other_apis.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/clustering.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/reporting_bugs.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/platforms/
+etcd-v3.2.23-linux-amd64/Documentation/v2/platforms/freebsd.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_1.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_0.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_4.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_3.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_2.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrading-etcd.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-3-demo-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-2-2-0-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/README.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-2-2-0-rc-memory-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-3-watch-memory-benchmark.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-storage-memory-benchmark.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-2-2-0-rc-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-2-1-0-alpha-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/
+etcd-v3.2.23-linux-amd64/Documentation/learning/glossary.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/api.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/data_model.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/auth_design.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/why.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/api_guarantees.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/authentication.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/etcd3_alert.rules
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/versioning.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/recovery.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/maintenance.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/hardware.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/configuration.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/runtime-reconf-design.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/performance.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/grafana.json
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/failures.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/security.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/etcd-sample-grafana.png
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/runtime-configuration.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/monitoring.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/gateway.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/grpc_proxy.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/supported-platform.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/v2-migration.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/container.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/clustering.md
+etcd-v3.2.23-linux-amd64/Documentation/demo.md
+etcd-v3.2.23-linux-amd64/Documentation/metrics.md
+etcd-v3.2.23-linux-amd64/Documentation/production-users.md
+etcd-v3.2.23-linux-amd64/Documentation/reporting_bugs.md
+etcd-v3.2.23-linux-amd64/Documentation/platforms/
+etcd-v3.2.23-linux-amd64/Documentation/platforms/aws.md
+etcd-v3.2.23-linux-amd64/Documentation/platforms/container-linux-systemd.md
+etcd-v3.2.23-linux-amd64/Documentation/platforms/freebsd.md
++ '[' 0 -eq 0 ']'
++ break
++ tar -xzvf /tmp/etcd-v3.2.23-linux-amd64.tar.gz -C /usr/bin/ --strip-components=1
+etcd-v3.2.23-linux-amd64/etcd
+etcd-v3.2.23-linux-amd64/etcdctl
+etcd-v3.2.23-linux-amd64/README.md
+etcd-v3.2.23-linux-amd64/READMEv2-etcdctl.md
+etcd-v3.2.23-linux-amd64/README-etcdctl.md
+etcd-v3.2.23-linux-amd64/Documentation/
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/interacting_v3.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/limit.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/grpc_naming.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/api_reference_v3.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/swagger/
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/swagger/rpc.swagger.json
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/swagger/v3election.swagger.json
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/apispec/swagger/v3lock.swagger.json
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/local_cluster.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/api_concurrency_reference_v3.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/api_grpc_gateway.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-guide/experimental_apis.md
+etcd-v3.2.23-linux-amd64/Documentation/docs.md
+etcd-v3.2.23-linux-amd64/Documentation/rfc/
+etcd-v3.2.23-linux-amd64/Documentation/rfc/v3api.md
+etcd-v3.2.23-linux-amd64/Documentation/branch_management.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-internal/
+etcd-v3.2.23-linux-amd64/Documentation/dev-internal/release.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-internal/logging.md
+etcd-v3.2.23-linux-amd64/Documentation/dev-internal/discovery_protocol.md
+etcd-v3.2.23-linux-amd64/Documentation/README.md
+etcd-v3.2.23-linux-amd64/Documentation/tuning.md
+etcd-v3.2.23-linux-amd64/Documentation/faq.md
+etcd-v3.2.23-linux-amd64/Documentation/integrations.md
+etcd-v3.2.23-linux-amd64/Documentation/dl_build.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/
+etcd-v3.2.23-linux-amd64/Documentation/v2/authentication.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/auth_api.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/internal-protocol-versioning.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/glossary.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/upgrade_2_1.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/rfc/
+etcd-v3.2.23-linux-amd64/Documentation/v2/rfc/v3api.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/etcd_alert.rules
+etcd-v3.2.23-linux-amd64/Documentation/v2/api_v3.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/configuration.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/api.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/04_to_2_snapshot_migration.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/branch_management.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/proxy.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/runtime-reconf-design.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/README.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/dev/
+etcd-v3.2.23-linux-amd64/Documentation/v2/dev/release.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/security.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/tuning.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/runtime-configuration.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/faq.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/upgrade_2_3.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/implementation-faq.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-3-demo-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-2-2-0-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/README.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-2-2-0-rc-memory-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-3-watch-memory-benchmark.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-storage-memory-benchmark.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-2-2-0-rc-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/benchmarks/etcd-2-1-0-alpha-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/upgrade_2_2.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/docker_guide.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/members_api.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/admin_guide.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/backward_compatibility.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/metrics.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/production-users.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/libraries-and-tools.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/discovery_protocol.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/errorcode.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/other_apis.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/clustering.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/reporting_bugs.md
+etcd-v3.2.23-linux-amd64/Documentation/v2/platforms/
+etcd-v3.2.23-linux-amd64/Documentation/v2/platforms/freebsd.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_1.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_0.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_4.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_3.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrade_3_2.md
+etcd-v3.2.23-linux-amd64/Documentation/upgrades/upgrading-etcd.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-3-demo-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-2-2-0-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/README.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-2-2-0-rc-memory-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-3-watch-memory-benchmark.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-storage-memory-benchmark.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-2-2-0-rc-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/benchmarks/etcd-2-1-0-alpha-benchmarks.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/
+etcd-v3.2.23-linux-amd64/Documentation/learning/glossary.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/api.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/data_model.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/auth_design.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/why.md
+etcd-v3.2.23-linux-amd64/Documentation/learning/api_guarantees.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/authentication.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/etcd3_alert.rules
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/versioning.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/recovery.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/maintenance.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/hardware.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/configuration.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/runtime-reconf-design.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/performance.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/grafana.json
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/failures.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/security.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/etcd-sample-grafana.png
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/runtime-configuration.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/monitoring.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/gateway.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/grpc_proxy.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/supported-platform.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/v2-migration.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/container.md
+etcd-v3.2.23-linux-amd64/Documentation/op-guide/clustering.md
+etcd-v3.2.23-linux-amd64/Documentation/demo.md
+etcd-v3.2.23-linux-amd64/Documentation/metrics.md
+etcd-v3.2.23-linux-amd64/Documentation/production-users.md
+etcd-v3.2.23-linux-amd64/Documentation/reporting_bugs.md
+etcd-v3.2.23-linux-amd64/Documentation/platforms/
+etcd-v3.2.23-linux-amd64/Documentation/platforms/aws.md
+etcd-v3.2.23-linux-amd64/Documentation/platforms/container-linux-systemd.md
+etcd-v3.2.23-linux-amd64/Documentation/platforms/freebsd.md
++ installDeps
++ retrycmd_if_failure_no_stats 20 1 5 curl -fsSL https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
++ retries=20
++ wait_sleep=1
++ timeout=5
++ shift
++ shift
++ shift
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ timeout 5 curl -fsSL https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
++ '[' 0 -eq 0 ']'
++ break
++ retrycmd_if_failure 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb
++ retries=60
++ wait_sleep=5
++ timeout=10
++ shift
++ shift
++ shift
+++ seq 1 60
++ for i in '$(seq 1 $retries)'
++ timeout 10 dpkg -i /tmp/packages-microsoft-prod.deb
+Selecting previously unselected package packages-microsoft-prod.
+(Reading database ... 55084 files and directories currently installed.)
+Preparing to unpack .../packages-microsoft-prod.deb ...
+Unpacking packages-microsoft-prod (1.0-3) ...
+Setting up packages-microsoft-prod (1.0-3) ...
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"dpkg' -i '/tmp/packages-microsoft-prod.deb"' 1 times
+Executed "dpkg -i /tmp/packages-microsoft-prod.deb" 1 times
++ apt_get_update
++ retries=10
++ apt_update_output=/tmp/apt-get-update.out
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 30 dpkg --configure -a
++ timeout 30 apt-get -f -y install
+Reading package lists...
+Building dependency tree...
+Reading state information...
+0 upgraded, 0 newly installed, 0 to remove and 14 not upgraded.
++ tee /tmp/apt-get-update.out
++ timeout 120 apt-get update
++ grep -E '^([WE]:.*)|([eE]rr.*)$'
++ '[' 1 -ne 0 ']'
++ cat /tmp/apt-get-update.out
+Get:1 https://packages.microsoft.com/ubuntu/16.04/prod xenial InRelease [2846 B]
+Get:2 https://packages.microsoft.com/ubuntu/16.04/prod xenial/main amd64 Packages [52.1 kB]
+Get:3 http://security.ubuntu.com/ubuntu xenial-security InRelease [107 kB]
+Hit:4 http://azure.archive.ubuntu.com/ubuntu xenial InRelease
+Hit:5 http://azure.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Hit:6 http://azure.archive.ubuntu.com/ubuntu xenial-backports InRelease
+Fetched 162 kB in 1s (120 kB/s)
+Reading package lists...
++ break
++ echo Executed apt-get update 1 times
+Executed apt-get update 1 times
++ apt_get_install 20 30 300 apt-transport-https ca-certificates iptables iproute2 ebtables socat util-linux mount ethtool init-system-helpers nfs-common ceph-common conntrack glusterfs-client ipset jq cgroup-lite git pigz xz-utils blobfuse fuse cifs-utils
++ retries=20
++ wait_sleep=30
++ timeout=300
++ shift
++ shift
++ shift
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ timeout 30 dpkg --configure -a
++ timeout 300 apt-get install --no-install-recommends -y apt-transport-https ca-certificates iptables iproute2 ebtables socat util-linux mount ethtool init-system-helpers nfs-common ceph-common conntrack glusterfs-client ipset jq cgroup-lite git pigz xz-utils blobfuse fuse cifs-utils
+Reading package lists...
+Building dependency tree...
+Reading state information...
+ethtool is already the newest version (1:4.5-1).
+iptables is already the newest version (1.6.0-2ubuntu3).
+xz-utils is already the newest version (5.1.1alpha+20120614-2ubuntu2).
+apt-transport-https is already the newest version (1.2.27).
+ca-certificates is already the newest version (20170717~16.04.1).
+cifs-utils is already the newest version (2:6.4-1ubuntu1.1).
+fuse is already the newest version (2.9.4-1ubuntu3.1).
+git is already the newest version (1:2.7.4-0ubuntu1.4).
+init-system-helpers is already the newest version (1.29ubuntu4).
+iproute2 is already the newest version (4.3.0-1ubuntu3.16.04.3).
+mount is already the newest version (2.27.1-6ubuntu3.6).
+util-linux is already the newest version (2.27.1-6ubuntu3.6).
+jq is already the newest version (1.5+dfsg-1ubuntu0.1).
+The following additional packages will be installed:
+  glusterfs-common libacl1-dev libaio1 libattr1-dev libbabeltrace-ctf1
+  libbabeltrace1 libboost-iostreams1.58.0 libboost-program-options1.58.0
+  libboost-random1.58.0 libboost-regex1.58.0 libboost-system1.58.0
+  libboost-thread1.58.0 libc-dev-bin libc6-dev libcephfs1 libcurl3
+  libfcgi0ldbl libibverbs1 libipset3 libnfsidmap2 libnih-dbus1 libnspr4
+  libnss3 libnss3-nssdb librados2 libradosstriper1 librbd1 librdmacm1 librgw2
+  libtirpc1 liburcu4 linux-libc-dev mountall python-cephfs python-chardet
+  python-pkg-resources python-rados python-rbd python-requests python-six
+  python-urllib3 rpcbind
+Suggested packages:
+  ceph ceph-mds glibc-doc manpages-dev watchdog python-setuptools
+  python-ndg-httpsclient python-openssl python-pyasn1 python-ntlm
+Recommended packages:
+  manpages-dev python-ndg-httpsclient python-openssl python-pyasn1
+The following NEW packages will be installed:
+  blobfuse ceph-common cgroup-lite conntrack ebtables glusterfs-client
+  glusterfs-common ipset libacl1-dev libaio1 libattr1-dev libbabeltrace-ctf1
+  libbabeltrace1 libboost-iostreams1.58.0 libboost-program-options1.58.0
+  libboost-random1.58.0 libboost-regex1.58.0 libboost-system1.58.0
+  libboost-thread1.58.0 libc-dev-bin libc6-dev libcephfs1 libcurl3
+  libfcgi0ldbl libibverbs1 libipset3 libnfsidmap2 libnih-dbus1 libnspr4
+  libnss3 libnss3-nssdb librados2 libradosstriper1 librbd1 librdmacm1 librgw2
+  libtirpc1 liburcu4 linux-libc-dev mountall nfs-common pigz python-cephfs
+  python-chardet python-pkg-resources python-rados python-rbd python-requests
+  python-six python-urllib3 rpcbind socat
+0 upgraded, 52 newly installed, 0 to remove and 14 not upgraded.
+Need to get 32.2 MB/32.6 MB of archives.
+After this operation, 138 MB of additional disk space will be used.
+Get:1 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libnfsidmap2 amd64 0.25-5 [32.2 kB]
+Get:2 https://packages.microsoft.com/ubuntu/16.04/prod xenial/main amd64 blobfuse amd64 1.0.2 [4673 kB]
+Get:3 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libnih-dbus1 amd64 1.0.3-4.3ubuntu1 [14.1 kB]
+Get:4 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 mountall amd64 2.54ubuntu1 [56.8 kB]
+Get:5 http://azure.archive.ubuntu.com/ubuntu xenial/universe amd64 pigz amd64 2.3.1-2 [61.1 kB]
+Get:6 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libcurl3 amd64 7.47.0-1ubuntu2.9 [186 kB]
+Get:7 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libboost-iostreams1.58.0 amd64 1.58.0+dfsg-5ubuntu3.1 [29.0 kB]
+Get:8 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libboost-system1.58.0 amd64 1.58.0+dfsg-5ubuntu3.1 [9146 B]
+Get:9 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libboost-random1.58.0 amd64 1.58.0+dfsg-5ubuntu3.1 [11.7 kB]
+Get:10 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libboost-thread1.58.0 amd64 1.58.0+dfsg-5ubuntu3.1 [47.0 kB]
+Get:11 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libnspr4 amd64 2:4.13.1-0ubuntu0.16.04.1 [112 kB]
+Get:12 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libnss3-nssdb all 2:3.28.4-0ubuntu0.16.04.3 [10.6 kB]
+Get:13 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libnss3 amd64 2:3.28.4-0ubuntu0.16.04.3 [1148 kB]
+Get:14 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 librados2 amd64 10.2.10-0ubuntu0.16.04.1 [1646 kB]
+Get:15 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 librbd1 amd64 10.2.10-0ubuntu0.16.04.1 [2193 kB]
+Get:16 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libcephfs1 amd64 10.2.10-0ubuntu0.16.04.1 [1846 kB]
+Get:17 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 python-cephfs amd64 10.2.10-0ubuntu0.16.04.1 [235 kB]
+Get:18 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 python-rados amd64 10.2.10-0ubuntu0.16.04.1 [648 kB]
+Get:19 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 python-rbd amd64 10.2.10-0ubuntu0.16.04.1 [320 kB]
+Get:20 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libbabeltrace1 amd64 1.3.2-1 [34.7 kB]
+Get:21 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libbabeltrace-ctf1 amd64 1.3.2-1 [88.3 kB]
+Get:22 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libboost-program-options1.58.0 amd64 1.58.0+dfsg-5ubuntu3.1 [138 kB]
+Get:23 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libboost-regex1.58.0 amd64 1.58.0+dfsg-5ubuntu3.1 [261 kB]
+Get:24 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libradosstriper1 amd64 10.2.10-0ubuntu0.16.04.1 [1878 kB]
+Get:25 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libfcgi0ldbl amd64 2.4.0-8.3 [161 kB]
+Get:26 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 librgw2 amd64 10.2.10-0ubuntu0.16.04.1 [2912 kB]
+Get:27 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 ceph-common amd64 10.2.10-0ubuntu0.16.04.1 [6723 kB]
+Get:28 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 conntrack amd64 1:1.4.3-3 [27.3 kB]
+Get:29 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 ebtables amd64 2.0.10.4-3.4ubuntu2.16.04.2 [79.9 kB]
+Get:30 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libaio1 amd64 0.3.110-2 [6356 B]
+Get:31 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libibverbs1 amd64 1.1.8-1.1ubuntu2 [25.0 kB]
+Get:32 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 librdmacm1 amd64 1.0.21-1 [49.1 kB]
+Get:33 http://azure.archive.ubuntu.com/ubuntu xenial/universe amd64 liburcu4 amd64 0.9.1-3 [47.3 kB]
+Get:34 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libc-dev-bin amd64 2.23-0ubuntu10 [68.7 kB]
+Get:35 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 linux-libc-dev amd64 4.4.0-135.161 [868 kB]
+Get:36 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libc6-dev amd64 2.23-0ubuntu10 [2079 kB]
+Get:37 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libattr1-dev amd64 1:2.4.47-2 [30.2 kB]
+Get:38 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libacl1-dev amd64 2.2.52-3 [73.6 kB]
+Get:39 http://azure.archive.ubuntu.com/ubuntu xenial/universe amd64 glusterfs-common amd64 3.7.6-1ubuntu1 [2682 kB]
+Get:40 http://azure.archive.ubuntu.com/ubuntu xenial/universe amd64 glusterfs-client amd64 3.7.6-1ubuntu1 [24.3 kB]
+Get:41 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 libtirpc1 amd64 0.2.5-1ubuntu0.1 [75.4 kB]
+Get:42 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 rpcbind amd64 0.2.3-0.2 [40.3 kB]
+Get:43 http://azure.archive.ubuntu.com/ubuntu xenial-updates/main amd64 nfs-common amd64 1:1.2.8-9ubuntu12.1 [184 kB]
+Get:44 http://azure.archive.ubuntu.com/ubuntu xenial/universe amd64 cgroup-lite all 1.11 [4192 B]
+Get:45 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libipset3 amd64 6.29-1 [43.6 kB]
+Get:46 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 ipset amd64 6.29-1 [33.3 kB]
+Get:47 http://azure.archive.ubuntu.com/ubuntu xenial/universe amd64 socat amd64 1.7.3.1-1 [321 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+dpkg-preconfigure: unable to re-open stdin: 
+Fetched 32.2 MB in 6s (5191 kB/s)
+Selecting previously unselected package libnfsidmap2:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 55089 files and directories currently installed.)
+Preparing to unpack .../libnfsidmap2_0.25-5_amd64.deb ...
+Unpacking libnfsidmap2:amd64 (0.25-5) ...
+Selecting previously unselected package libnih-dbus1:amd64.
+Preparing to unpack .../libnih-dbus1_1.0.3-4.3ubuntu1_amd64.deb ...
+Unpacking libnih-dbus1:amd64 (1.0.3-4.3ubuntu1) ...
+Selecting previously unselected package mountall.
+Preparing to unpack .../mountall_2.54ubuntu1_amd64.deb ...
+Unpacking mountall (2.54ubuntu1) ...
+Selecting previously unselected package pigz.
+Preparing to unpack .../pigz_2.3.1-2_amd64.deb ...
+Unpacking pigz (2.3.1-2) ...
+Selecting previously unselected package libcurl3:amd64.
+Preparing to unpack .../libcurl3_7.47.0-1ubuntu2.9_amd64.deb ...
+Unpacking libcurl3:amd64 (7.47.0-1ubuntu2.9) ...
+Selecting previously unselected package blobfuse.
+Preparing to unpack .../blobfuse_1.0.2_amd64.deb ...
+Unpacking blobfuse (1.0.2) ...
+Selecting previously unselected package libboost-iostreams1.58.0:amd64.
+Preparing to unpack .../libboost-iostreams1.58.0_1.58.0+dfsg-5ubuntu3.1_amd64.deb ...
+Unpacking libboost-iostreams1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Selecting previously unselected package libboost-system1.58.0:amd64.
+Preparing to unpack .../libboost-system1.58.0_1.58.0+dfsg-5ubuntu3.1_amd64.deb ...
+Unpacking libboost-system1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Selecting previously unselected package libboost-random1.58.0:amd64.
+Preparing to unpack .../libboost-random1.58.0_1.58.0+dfsg-5ubuntu3.1_amd64.deb ...
+Unpacking libboost-random1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Selecting previously unselected package libboost-thread1.58.0:amd64.
+Preparing to unpack .../libboost-thread1.58.0_1.58.0+dfsg-5ubuntu3.1_amd64.deb ...
+Unpacking libboost-thread1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Selecting previously unselected package libnspr4:amd64.
+Preparing to unpack .../libnspr4_2%3a4.13.1-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking libnspr4:amd64 (2:4.13.1-0ubuntu0.16.04.1) ...
+Selecting previously unselected package libnss3-nssdb.
+Preparing to unpack .../libnss3-nssdb_2%3a3.28.4-0ubuntu0.16.04.3_all.deb ...
+Unpacking libnss3-nssdb (2:3.28.4-0ubuntu0.16.04.3) ...
+Selecting previously unselected package libnss3:amd64.
+Preparing to unpack .../libnss3_2%3a3.28.4-0ubuntu0.16.04.3_amd64.deb ...
+Unpacking libnss3:amd64 (2:3.28.4-0ubuntu0.16.04.3) ...
+Selecting previously unselected package librados2.
+Preparing to unpack .../librados2_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking librados2 (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package librbd1.
+Preparing to unpack .../librbd1_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking librbd1 (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package libcephfs1.
+Preparing to unpack .../libcephfs1_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking libcephfs1 (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package python-cephfs.
+Preparing to unpack .../python-cephfs_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking python-cephfs (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package python-rados.
+Preparing to unpack .../python-rados_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking python-rados (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package python-rbd.
+Preparing to unpack .../python-rbd_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking python-rbd (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package python-six.
+Preparing to unpack .../python-six_1.10.0-3_all.deb ...
+Unpacking python-six (1.10.0-3) ...
+Selecting previously unselected package python-urllib3.
+Preparing to unpack .../python-urllib3_1.13.1-2ubuntu0.16.04.2_all.deb ...
+Unpacking python-urllib3 (1.13.1-2ubuntu0.16.04.2) ...
+Selecting previously unselected package python-pkg-resources.
+Preparing to unpack .../python-pkg-resources_20.7.0-1_all.deb ...
+Unpacking python-pkg-resources (20.7.0-1) ...
+Selecting previously unselected package python-chardet.
+Preparing to unpack .../python-chardet_2.3.0-2_all.deb ...
+Unpacking python-chardet (2.3.0-2) ...
+Selecting previously unselected package python-requests.
+Preparing to unpack .../python-requests_2.9.1-3_all.deb ...
+Unpacking python-requests (2.9.1-3) ...
+Selecting previously unselected package libbabeltrace1:amd64.
+Preparing to unpack .../libbabeltrace1_1.3.2-1_amd64.deb ...
+Unpacking libbabeltrace1:amd64 (1.3.2-1) ...
+Selecting previously unselected package libbabeltrace-ctf1:amd64.
+Preparing to unpack .../libbabeltrace-ctf1_1.3.2-1_amd64.deb ...
+Unpacking libbabeltrace-ctf1:amd64 (1.3.2-1) ...
+Selecting previously unselected package libboost-program-options1.58.0:amd64.
+Preparing to unpack .../libboost-program-options1.58.0_1.58.0+dfsg-5ubuntu3.1_amd64.deb ...
+Unpacking libboost-program-options1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Selecting previously unselected package libboost-regex1.58.0:amd64.
+Preparing to unpack .../libboost-regex1.58.0_1.58.0+dfsg-5ubuntu3.1_amd64.deb ...
+Unpacking libboost-regex1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Selecting previously unselected package libradosstriper1.
+Preparing to unpack .../libradosstriper1_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking libradosstriper1 (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package libfcgi0ldbl.
+Preparing to unpack .../libfcgi0ldbl_2.4.0-8.3_amd64.deb ...
+Unpacking libfcgi0ldbl (2.4.0-8.3) ...
+Selecting previously unselected package librgw2.
+Preparing to unpack .../librgw2_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking librgw2 (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package ceph-common.
+Preparing to unpack .../ceph-common_10.2.10-0ubuntu0.16.04.1_amd64.deb ...
+Unpacking ceph-common (10.2.10-0ubuntu0.16.04.1) ...
+Selecting previously unselected package conntrack.
+Preparing to unpack .../conntrack_1%3a1.4.3-3_amd64.deb ...
+Unpacking conntrack (1:1.4.3-3) ...
+Selecting previously unselected package ebtables.
+Preparing to unpack .../ebtables_2.0.10.4-3.4ubuntu2.16.04.2_amd64.deb ...
+Unpacking ebtables (2.0.10.4-3.4ubuntu2.16.04.2) ...
+Selecting previously unselected package libaio1:amd64.
+Preparing to unpack .../libaio1_0.3.110-2_amd64.deb ...
+Unpacking libaio1:amd64 (0.3.110-2) ...
+Selecting previously unselected package libibverbs1.
+Preparing to unpack .../libibverbs1_1.1.8-1.1ubuntu2_amd64.deb ...
+Unpacking libibverbs1 (1.1.8-1.1ubuntu2) ...
+Selecting previously unselected package librdmacm1.
+Preparing to unpack .../librdmacm1_1.0.21-1_amd64.deb ...
+Unpacking librdmacm1 (1.0.21-1) ...
+Selecting previously unselected package liburcu4:amd64.
+Preparing to unpack .../liburcu4_0.9.1-3_amd64.deb ...
+Unpacking liburcu4:amd64 (0.9.1-3) ...
+Selecting previously unselected package libc-dev-bin.
+Preparing to unpack .../libc-dev-bin_2.23-0ubuntu10_amd64.deb ...
+Unpacking libc-dev-bin (2.23-0ubuntu10) ...
+Selecting previously unselected package linux-libc-dev:amd64.
+Preparing to unpack .../linux-libc-dev_4.4.0-135.161_amd64.deb ...
+Unpacking linux-libc-dev:amd64 (4.4.0-135.161) ...
+Selecting previously unselected package libc6-dev:amd64.
+Preparing to unpack .../libc6-dev_2.23-0ubuntu10_amd64.deb ...
+Unpacking libc6-dev:amd64 (2.23-0ubuntu10) ...
+Selecting previously unselected package libattr1-dev:amd64.
+Preparing to unpack .../libattr1-dev_1%3a2.4.47-2_amd64.deb ...
+Unpacking libattr1-dev:amd64 (1:2.4.47-2) ...
+Selecting previously unselected package libacl1-dev.
+Preparing to unpack .../libacl1-dev_2.2.52-3_amd64.deb ...
+Unpacking libacl1-dev (2.2.52-3) ...
+Selecting previously unselected package glusterfs-common.
+Preparing to unpack .../glusterfs-common_3.7.6-1ubuntu1_amd64.deb ...
+Unpacking glusterfs-common (3.7.6-1ubuntu1) ...
+Selecting previously unselected package glusterfs-client.
+Preparing to unpack .../glusterfs-client_3.7.6-1ubuntu1_amd64.deb ...
+Unpacking glusterfs-client (3.7.6-1ubuntu1) ...
+Selecting previously unselected package libtirpc1:amd64.
+Preparing to unpack .../libtirpc1_0.2.5-1ubuntu0.1_amd64.deb ...
+Unpacking libtirpc1:amd64 (0.2.5-1ubuntu0.1) ...
+Selecting previously unselected package rpcbind.
+Preparing to unpack .../rpcbind_0.2.3-0.2_amd64.deb ...
+Unpacking rpcbind (0.2.3-0.2) ...
+Selecting previously unselected package nfs-common.
+Preparing to unpack .../nfs-common_1%3a1.2.8-9ubuntu12.1_amd64.deb ...
+Unpacking nfs-common (1:1.2.8-9ubuntu12.1) ...
+Selecting previously unselected package cgroup-lite.
+Preparing to unpack .../cgroup-lite_1.11_all.deb ...
+Unpacking cgroup-lite (1.11) ...
+Selecting previously unselected package libipset3:amd64.
+Preparing to unpack .../libipset3_6.29-1_amd64.deb ...
+Unpacking libipset3:amd64 (6.29-1) ...
+Selecting previously unselected package ipset.
+Preparing to unpack .../ipset_6.29-1_amd64.deb ...
+Unpacking ipset (6.29-1) ...
+Selecting previously unselected package socat.
+Preparing to unpack .../socat_1.7.3.1-1_amd64.deb ...
+Unpacking socat (1.7.3.1-1) ...
+Processing triggers for man-db (2.7.5-1) ...
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for dbus (1.10.6-1ubuntu3.3) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+Processing triggers for systemd (229-4ubuntu21.4) ...
+Setting up libnfsidmap2:amd64 (0.25-5) ...
+Setting up libnih-dbus1:amd64 (1.0.3-4.3ubuntu1) ...
+Setting up mountall (2.54ubuntu1) ...
+Setting up pigz (2.3.1-2) ...
+Setting up libcurl3:amd64 (7.47.0-1ubuntu2.9) ...
+Setting up blobfuse (1.0.2) ...
+Setting up libboost-iostreams1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Setting up libboost-system1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Setting up libboost-random1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Setting up libboost-thread1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Setting up libnspr4:amd64 (2:4.13.1-0ubuntu0.16.04.1) ...
+Setting up python-six (1.10.0-3) ...
+Setting up python-urllib3 (1.13.1-2ubuntu0.16.04.2) ...
+Setting up python-pkg-resources (20.7.0-1) ...
+Setting up python-chardet (2.3.0-2) ...
+Setting up python-requests (2.9.1-3) ...
+Setting up libbabeltrace1:amd64 (1.3.2-1) ...
+Setting up libbabeltrace-ctf1:amd64 (1.3.2-1) ...
+Setting up libboost-program-options1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Setting up libboost-regex1.58.0:amd64 (1.58.0+dfsg-5ubuntu3.1) ...
+Setting up libfcgi0ldbl (2.4.0-8.3) ...
+Setting up conntrack (1:1.4.3-3) ...
+Setting up ebtables (2.0.10.4-3.4ubuntu2.16.04.2) ...
+update-rc.d: warning: start and stop actions are no longer supported; falling back to defaults
+Setting up libaio1:amd64 (0.3.110-2) ...
+Setting up libibverbs1 (1.1.8-1.1ubuntu2) ...
+Setting up librdmacm1 (1.0.21-1) ...
+Setting up liburcu4:amd64 (0.9.1-3) ...
+Setting up libc-dev-bin (2.23-0ubuntu10) ...
+Setting up linux-libc-dev:amd64 (4.4.0-135.161) ...
+Setting up libc6-dev:amd64 (2.23-0ubuntu10) ...
+Setting up libattr1-dev:amd64 (1:2.4.47-2) ...
+Setting up libacl1-dev (2.2.52-3) ...
+Setting up glusterfs-common (3.7.6-1ubuntu1) ...
+Setting up glusterfs-client (3.7.6-1ubuntu1) ...
+Setting up libtirpc1:amd64 (0.2.5-1ubuntu0.1) ...
+Setting up rpcbind (0.2.3-0.2) ...
+Setting up nfs-common (1:1.2.8-9ubuntu12.1) ...
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+
+Creating config file /etc/idmapd.conf with new version
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+
+Creating config file /etc/default/nfs-common with new version
+Adding system user `statd' (UID 113) ...
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+Adding new user `statd' (UID 113) with group `nogroup' ...
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+Not creating home directory `/var/lib/nfs'.
+nfs-utils.service is a disabled or a static unit, not starting it.
+Setting up cgroup-lite (1.11) ...
+Setting up libipset3:amd64 (6.29-1) ...
+Setting up ipset (6.29-1) ...
+Setting up socat (1.7.3.1-1) ...
+Setting up libnss3-nssdb (2:3.28.4-0ubuntu0.16.04.3) ...
+Setting up libnss3:amd64 (2:3.28.4-0ubuntu0.16.04.3) ...
+Setting up librados2 (10.2.10-0ubuntu0.16.04.1) ...
+Setting up librbd1 (10.2.10-0ubuntu0.16.04.1) ...
+Setting up libcephfs1 (10.2.10-0ubuntu0.16.04.1) ...
+Setting up python-cephfs (10.2.10-0ubuntu0.16.04.1) ...
+Setting up python-rados (10.2.10-0ubuntu0.16.04.1) ...
+Setting up python-rbd (10.2.10-0ubuntu0.16.04.1) ...
+Setting up libradosstriper1 (10.2.10-0ubuntu0.16.04.1) ...
+Setting up librgw2 (10.2.10-0ubuntu0.16.04.1) ...
+Setting up ceph-common (10.2.10-0ubuntu0.16.04.1) ...
+[/usr/lib/tmpfiles.d/var.conf:14] Duplicate line for path "/var/log", ignoring.
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for dbus (1.10.6-1ubuntu3.3) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+Processing triggers for systemd (229-4ubuntu21.4) ...
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed apt-get install --no-install-recommends -y '"apt-transport-https' ca-certificates iptables iproute2 ebtables socat util-linux mount ethtool init-system-helpers nfs-common ceph-common conntrack glusterfs-client ipset jq cgroup-lite git pigz xz-utils blobfuse fuse 'cifs-utils"' 1 times
+Executed apt-get install --no-install-recommends -y "apt-transport-https ca-certificates iptables iproute2 ebtables socat util-linux mount ethtool init-system-helpers nfs-common ceph-common conntrack glusterfs-client ipset jq cgroup-lite git pigz xz-utils blobfuse fuse cifs-utils" 1 times
++ installContainerRuntime
++ [[ docker == \d\o\c\k\e\r ]]
++ installDocker
++ retrycmd_if_failure_no_stats 20 1 5 curl -fsSL https://aptdocker.azureedge.net/gpg
++ retries=20
++ wait_sleep=1
++ timeout=5
++ shift
++ shift
++ shift
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ timeout 5 curl -fsSL https://aptdocker.azureedge.net/gpg
++ '[' 0 -eq 0 ']'
++ break
++ retrycmd_if_failure 10 5 10 apt-key add /tmp/aptdocker.gpg
++ retries=10
++ wait_sleep=5
++ timeout=10
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 10 apt-key add /tmp/aptdocker.gpg
+OK
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"apt-key' add '/tmp/aptdocker.gpg"' 1 times
+Executed "apt-key add /tmp/aptdocker.gpg" 1 times
++ sudo tee /etc/apt/sources.list.d/docker.list
++ echo 'deb https://mirror.azure.cn/docker-engine/apt/repo/ ubuntu-xenial main'
+deb https://mirror.azure.cn/docker-engine/apt/repo/ ubuntu-xenial main
++ printf 'Package: docker-engine\nPin: version 1.13.*\nPin-Priority: 550\n'
++ apt_get_update
++ retries=10
++ apt_update_output=/tmp/apt-get-update.out
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 30 dpkg --configure -a
++ timeout 30 apt-get -f -y install
+Reading package lists...
+Building dependency tree...
+Reading state information...
+0 upgraded, 0 newly installed, 0 to remove and 14 not upgraded.
++ timeout 120 apt-get update
++ grep -E '^([WE]:.*)|([eE]rr.*)$'
++ tee /tmp/apt-get-update.out
++ '[' 1 -ne 0 ']'
++ cat /tmp/apt-get-update.out
+Hit:1 http://azure.archive.ubuntu.com/ubuntu xenial InRelease
+Hit:2 https://packages.microsoft.com/ubuntu/16.04/prod xenial InRelease
+Get:3 https://mirror.azure.cn/docker-engine/apt/repo ubuntu-xenial InRelease [48.7 kB]
+Hit:4 http://azure.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Get:5 https://mirror.azure.cn/docker-engine/apt/repo ubuntu-xenial/main amd64 Packages [4177 B]
+Hit:6 http://azure.archive.ubuntu.com/ubuntu xenial-backports InRelease
+Get:7 http://security.ubuntu.com/ubuntu xenial-security InRelease [107 kB]
+Fetched 160 kB in 2s (62.6 kB/s)
+Reading package lists...
++ break
++ echo Executed apt-get update 1 times
+Executed apt-get update 1 times
++ apt_get_install 20 30 120 docker-engine
++ retries=20
++ wait_sleep=30
++ timeout=120
++ shift
++ shift
++ shift
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ timeout 30 dpkg --configure -a
++ timeout 120 apt-get install --no-install-recommends -y docker-engine
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libltdl7
+Recommended packages:
+  aufs-tools
+The following NEW packages will be installed:
+  docker-engine libltdl7
+0 upgraded, 2 newly installed, 0 to remove and 14 not upgraded.
+Need to get 19.3 MB of archives.
+After this operation, 89.0 MB of additional disk space will be used.
+Get:1 https://mirror.azure.cn/docker-engine/apt/repo ubuntu-xenial/main amd64 docker-engine amd64 1.13.1-0~ubuntu-xenial [19.3 MB]
+Get:2 http://azure.archive.ubuntu.com/ubuntu xenial/main amd64 libltdl7 amd64 2.4.6-0.1 [38.3 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+dpkg-preconfigure: unable to re-open stdin: 
+Fetched 19.3 MB in 0s (38.2 MB/s)
+Selecting previously unselected package libltdl7:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 57556 files and directories currently installed.)
+Preparing to unpack .../libltdl7_2.4.6-0.1_amd64.deb ...
+Unpacking libltdl7:amd64 (2.4.6-0.1) ...
+Selecting previously unselected package docker-engine.
+Preparing to unpack .../docker-engine_1.13.1-0~ubuntu-xenial_amd64.deb ...
+Unpacking docker-engine (1.13.1-0~ubuntu-xenial) ...
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for man-db (2.7.5-1) ...
+Processing triggers for systemd (229-4ubuntu21.4) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+Setting up libltdl7:amd64 (2.4.6-0.1) ...
+Setting up docker-engine (1.13.1-0~ubuntu-xenial) ...
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(group) request, exiting
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for systemd (229-4ubuntu21.4) ...
+Processing triggers for ureadahead (0.100.0-19) ...
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed apt-get install --no-install-recommends -y '"docker-engine"' 1 times
+Executed apt-get install --no-install-recommends -y "docker-engine" 1 times
++ touch /var/log/azure/docker-install.complete
++ installNetworkPlugin
++ [[ azure = \a\z\u\r\e ]]
++ installAzureCNI
++ mkdir -p /etc/cni/net.d
++ chown -R root:root /etc/cni/net.d
++ chmod 755 /etc/cni/net.d
++ mkdir -p /opt/cni/bin
++ retrycmd_get_tarball 60 5 /tmp/azure_cni.tgz https://acs-mirror.azureedge.net/cni/azure-vnet-cni-linux-amd64-v1.0.10.tgz
++ tar_retries=60
++ wait_sleep=5
++ tarball=/tmp/azure_cni.tgz
++ url=https://acs-mirror.azureedge.net/cni/azure-vnet-cni-linux-amd64-v1.0.10.tgz
++ echo '60 retries'
+60 retries
+++ seq 1 60
++ for i in '$(seq 1 $tar_retries)'
++ tar -tzf /tmp/azure_cni.tgz
+tar (child): /tmp/azure_cni.tgz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
++ '[' 2 -eq 0 ']'
++ '[' 1 -eq 60 ']'
++ timeout 60 curl -fsSL https://acs-mirror.azureedge.net/cni/azure-vnet-cni-linux-amd64-v1.0.10.tgz -o /tmp/azure_cni.tgz
++ sleep 5
++ for i in '$(seq 1 $tar_retries)'
++ tar -tzf /tmp/azure_cni.tgz
+azure-vnet
+azure-vnet-ipam
+10-azure.conflist
++ '[' 0 -eq 0 ']'
++ break
++ tar -xzf /tmp/azure_cni.tgz -C /opt/cni/bin
++ installCNI
++ mkdir -p /opt/cni/bin
++ retrycmd_get_tarball 60 5 /tmp/containernetworking_cni.tgz https://acs-mirror.azureedge.net/cni/cni-plugins-amd64-v0.7.1.tgz
++ tar_retries=60
++ wait_sleep=5
++ tarball=/tmp/containernetworking_cni.tgz
++ url=https://acs-mirror.azureedge.net/cni/cni-plugins-amd64-v0.7.1.tgz
++ echo '60 retries'
+60 retries
+++ seq 1 60
++ for i in '$(seq 1 $tar_retries)'
++ tar -tzf /tmp/containernetworking_cni.tgz
+tar (child): /tmp/containernetworking_cni.tgz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
++ '[' 2 -eq 0 ']'
++ '[' 1 -eq 60 ']'
++ timeout 60 curl -fsSL https://acs-mirror.azureedge.net/cni/cni-plugins-amd64-v0.7.1.tgz -o /tmp/containernetworking_cni.tgz
++ sleep 5
++ for i in '$(seq 1 $tar_retries)'
++ tar -tzf /tmp/containernetworking_cni.tgz
+./
+./flannel
+./ptp
+./host-local
+./portmap
+./tuning
+./vlan
+./host-device
+./sample
+./dhcp
+./ipvlan
+./macvlan
+./loopback
+./bridge
++ '[' 0 -eq 0 ']'
++ break
++ tar -xzf /tmp/containernetworking_cni.tgz -C /opt/cni/bin
++ chown -R root:root /opt/cni/bin
++ chmod -R 755 /opt/cni/bin
++ installContainerd
++ CRI_CONTAINERD_VERSION=1.1.0
++ CONTAINERD_DOWNLOAD_URL=https://mirror.azure.cn/kubernetes/containerd/cri-containerd-1.1.0.linux-amd64.tar.gz
++ CONTAINERD_TGZ_TMP=/tmp/containerd.tar.gz
++ retrycmd_get_tarball 60 5 /tmp/containerd.tar.gz https://mirror.azure.cn/kubernetes/containerd/cri-containerd-1.1.0.linux-amd64.tar.gz
++ tar_retries=60
++ wait_sleep=5
++ tarball=/tmp/containerd.tar.gz
++ url=https://mirror.azure.cn/kubernetes/containerd/cri-containerd-1.1.0.linux-amd64.tar.gz
++ echo '60 retries'
+60 retries
+++ seq 1 60
++ for i in '$(seq 1 $tar_retries)'
++ tar -tzf /tmp/containerd.tar.gz
+tar (child): /tmp/containerd.tar.gz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
++ '[' 2 -eq 0 ']'
++ '[' 1 -eq 60 ']'
++ timeout 60 curl -fsSL https://mirror.azure.cn/kubernetes/containerd/cri-containerd-1.1.0.linux-amd64.tar.gz -o /tmp/containerd.tar.gz
++ sleep 5
++ for i in '$(seq 1 $tar_retries)'
++ tar -tzf /tmp/containerd.tar.gz
+./
+./opt/
+./opt/containerd/
+./opt/containerd/cluster/
+./opt/containerd/cluster/version
+./opt/containerd/cluster/gce/
+./opt/containerd/cluster/gce/cloud-init/
+./opt/containerd/cluster/gce/cloud-init/master.yaml
+./opt/containerd/cluster/gce/cloud-init/node.yaml
+./opt/containerd/cluster/gce/env
+./opt/containerd/cluster/gce/configure.sh
+./opt/containerd/cluster/gce/cni.template
+./opt/containerd/cluster/health-monitor.sh
+./usr/
+./usr/local/
+./usr/local/bin/
+./usr/local/bin/containerd-stress
+./usr/local/bin/crictl
+./usr/local/bin/ctr
+./usr/local/bin/critest
+./usr/local/bin/containerd
+./usr/local/bin/containerd-shim
+./usr/local/bin/containerd-release
+./usr/local/sbin/
+./usr/local/sbin/runc
+./etc/
+./etc/systemd/
+./etc/systemd/system/
+./etc/systemd/system/containerd.service
+./etc/crictl.yaml
++ '[' 0 -eq 0 ']'
++ break
++ tar -xzf /tmp/containerd.tar.gz -C /
++ rm -f /tmp/containerd.tar.gz
++ sed -i '/\[Service\]/a ExecStartPost=\/sbin\/iptables -P FORWARD ACCEPT' /etc/systemd/system/containerd.service
++ echo 'Successfully installed cri-containerd...'
+Successfully installed cri-containerd...
++ extractHyperkube
++ [[ ! -f /usr/local/bin/kubelet-1.11.2 ]]
++ installImg
++ img_filepath=/usr/local/bin/img
++ retrycmd_get_executable 20 5 /usr/local/bin/img https://acs-mirror.azureedge.net/img/img-linux-amd64-v0.4.6 ls
++ retries=20
++ wait_sleep=5
++ filepath=/usr/local/bin/img
++ url=https://acs-mirror.azureedge.net/img/img-linux-amd64-v0.4.6
++ validation_args=ls
++ echo '20 retries'
+20 retries
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ /usr/local/bin/img ls
+/opt/azure/containers/provision_source.sh: line 89: /usr/local/bin/img: No such file or directory
++ '[' 127 -eq 0 ']'
++ '[' 1 -eq 20 ']'
++ timeout 30 curl -fsSL https://acs-mirror.azureedge.net/img/img-linux-amd64-v0.4.6 -o /usr/local/bin/img
++ chmod +x /usr/local/bin/img
++ sleep 5
++ for i in '$(seq 1 $retries)'
++ /usr/local/bin/img ls
+NAME	SIZE	CREATED AT	UPDATED AT	DIGEST
++ '[' 0 -eq 0 ']'
++ break
++ pullHyperkube
++ retrycmd_if_failure 75 1 60 img pull gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2
++ retries=75
++ wait_sleep=1
++ timeout=60
++ shift
++ shift
++ shift
+++ seq 1 75
++ for i in '$(seq 1 $retries)'
++ timeout 60 img pull gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2
+Pulling gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2...
+Pulled: sha256:71484f149582c08fb366c28704b663c2d66d9dd8e0a2a4c3e3e081a57536a6e3
+Size: 181MiB
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"img' pull 'gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2"' 1 times
+Executed "img pull gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2" 1 times
++ img unpack -o /home/rootfs-1.11.2 gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2
+Successfully unpacked rootfs for gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2 to: /home/rootfs-1.11.2
+++ find /home/rootfs-1.11.2 -name hyperkube
++ path=/home/rootfs-1.11.2/hyperkube
++ [[ UBUNTU == COREOS ]]
++ cp /home/rootfs-1.11.2/hyperkube /usr/local/bin/kubelet-1.11.2
++ cp /home/rootfs-1.11.2/hyperkube /usr/local/bin/kubectl-1.11.2
++ rm -rf /tmp/hyperkube.tar /tmp/img
++ mv /usr/local/bin/kubelet-1.11.2 /usr/local/bin/kubelet
++ mv /usr/local/bin/kubectl-1.11.2 /usr/local/bin/kubectl
++ chmod a+x /usr/local/bin/kubelet /usr/local/bin/kubectl
++ rm -rf '/usr/local/bin/kubelet-*' '/usr/local/bin/kubectl-*'
++ ensureRPC
++ systemctlEnableAndStart rpcbind
++ systemctl_restart 100 5 30 rpcbind
++ retries=100
++ wait_sleep=5
++ timeout=30
++ svcname=rpcbind
+++ seq 1 100
++ for i in '$(seq 1 $retries)'
++ timeout 30 systemctl daemon-reload
++ timeout 30 systemctl restart rpcbind
++ '[' 0 -eq 0 ']'
++ break
++ RESTART_STATUS=0
++ systemctl status rpcbind --no-pager -l
++ '[' 0 -ne 0 ']'
++ retrycmd_if_failure 10 5 3 systemctl enable rpcbind
++ retries=10
++ wait_sleep=5
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 3 systemctl enable rpcbind
+Synchronizing state of rpcbind.service with SysV init with /lib/systemd/systemd-sysv-install...
+Executing /lib/systemd/systemd-sysv-install enable rpcbind
++ '[' 124 -eq 0 ']'
++ '[' 1 -eq 10 ']'
++ sleep 5
++ for i in '$(seq 1 $retries)'
++ timeout 3 systemctl enable rpcbind
+Synchronizing state of rpcbind.service with SysV init with /lib/systemd/systemd-sysv-install...
+Executing /lib/systemd/systemd-sysv-install enable rpcbind
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"systemctl' enable 'rpcbind"' 2 times
+Executed "systemctl enable rpcbind" 2 times
++ '[' 0 -ne 0 ']'
++ systemctlEnableAndStart rpc-statd
++ systemctl_restart 100 5 30 rpc-statd
++ retries=100
++ wait_sleep=5
++ timeout=30
++ svcname=rpc-statd
+++ seq 1 100
++ for i in '$(seq 1 $retries)'
++ timeout 30 systemctl daemon-reload
++ timeout 30 systemctl restart rpc-statd
++ '[' 0 -eq 0 ']'
++ break
++ RESTART_STATUS=0
++ systemctl status rpc-statd --no-pager -l
++ '[' 0 -ne 0 ']'
++ retrycmd_if_failure 10 5 3 systemctl enable rpc-statd
++ retries=10
++ wait_sleep=5
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 3 systemctl enable rpc-statd
+Created symlink from /etc/systemd/system/nfs-server.service.wants/rpc-statd.service to /lib/systemd/system/rpc-statd.service.
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"systemctl' enable 'rpc-statd"' 1 times
+Executed "systemctl enable rpc-statd" 1 times
++ '[' 0 -ne 0 ']'
++ [[ ! -z true ]]
++ configureEtcd
++ useradd -U etcd
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+++ head -c 32 /dev/urandom
+++ base64
++ usermod -p XXKoEGU22SccRMO+bVqu+Z+ktYTuDpzEng63VFiaNM4= etcd
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
++ passwd -u etcd
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+passwd: password expiry information changed.
++ id etcd
+uid=1001(etcd) gid=1001(etcd) groups=1001(etcd)
++ APISERVER_PRIVATE_KEY_PATH=/etc/kubernetes/certs/apiserver.key
++ touch /etc/kubernetes/certs/apiserver.key
++ chmod 0600 /etc/kubernetes/certs/apiserver.key
++ chown root:root /etc/kubernetes/certs/apiserver.key
++ CA_PRIVATE_KEY_PATH=/etc/kubernetes/certs/ca.key
++ touch /etc/kubernetes/certs/ca.key
++ chmod 0600 /etc/kubernetes/certs/ca.key
++ chown root:root /etc/kubernetes/certs/ca.key
++ ETCD_SERVER_PRIVATE_KEY_PATH=/etc/kubernetes/certs/etcdserver.key
++ touch /etc/kubernetes/certs/etcdserver.key
++ chmod 0600 /etc/kubernetes/certs/etcdserver.key
++ chown etcd:etcd /etc/kubernetes/certs/etcdserver.key
++ ETCD_CLIENT_PRIVATE_KEY_PATH=/etc/kubernetes/certs/etcdclient.key
++ touch /etc/kubernetes/certs/etcdclient.key
++ chmod 0600 /etc/kubernetes/certs/etcdclient.key
++ chown root:root /etc/kubernetes/certs/etcdclient.key
++ ETCD_PEER_PRIVATE_KEY_PATH=/etc/kubernetes/certs/etcdpeer0.key
++ touch /etc/kubernetes/certs/etcdpeer0.key
++ chmod 0600 /etc/kubernetes/certs/etcdpeer0.key
++ chown etcd:etcd /etc/kubernetes/certs/etcdpeer0.key
++ ETCD_SERVER_CERTIFICATE_PATH=/etc/kubernetes/certs/etcdserver.crt
++ touch /etc/kubernetes/certs/etcdserver.crt
++ chmod 0644 /etc/kubernetes/certs/etcdserver.crt
++ chown root:root /etc/kubernetes/certs/etcdserver.crt
++ ETCD_CLIENT_CERTIFICATE_PATH=/etc/kubernetes/certs/etcdclient.crt
++ touch /etc/kubernetes/certs/etcdclient.crt
++ chmod 0644 /etc/kubernetes/certs/etcdclient.crt
++ chown root:root /etc/kubernetes/certs/etcdclient.crt
++ ETCD_PEER_CERTIFICATE_PATH=/etc/kubernetes/certs/etcdpeer0.crt
++ touch /etc/kubernetes/certs/etcdpeer0.crt
++ chmod 0644 /etc/kubernetes/certs/etcdpeer0.crt
++ chown root:root /etc/kubernetes/certs/etcdpeer0.crt
++ set +x
++ /opt/azure/containers/setup-etcd.sh
++ RET=0
++ '[' 0 -ne 0 ']'
++ /opt/azure/containers/mountetcd.sh
++ DISK=/dev/sdc
++ PARTITION=/dev/sdc1
++ MOUNTPOINT=/var/lib/etcddisk
++ udevadm settle
++ mkdir -p /var/lib/etcddisk
++ mount
++ grep /var/lib/etcddisk
++ '[' 1 -eq 0 ']'
++ grep /dev/sdc1 /etc/fstab
++ '[' 1 -ne 0 ']'
++ echo '/dev/sdc1       /var/lib/etcddisk       auto    defaults,nofail       0       2'
++ ls /dev/sdc1
+ls: cannot access '/dev/sdc1': No such file or directory
++ '[' 2 -ne 0 ']'
++ /sbin/sgdisk --new 1 /dev/sdc
+Creating new GPT entries.
+The operation has completed successfully.
++ /sbin/mkfs.ext4 /dev/sdc1 -L etcd_disk -F -E lazy_itable_init=1,lazy_journal_init=1
+mke2fs 1.42.13 (17-May-2015)
+Creating filesystem with 67108603 4k blocks and 16777216 inodes
+Filesystem UUID: 029d867d-3d8d-4119-a956-4c95eb2ef779
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+	4096000, 7962624, 11239424, 20480000, 23887872
+
+Allocating group tables:    0/2048         done                            
+Writing inode tables:    0/2048         done                            
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information:    0/2048         done
+
++ mount /var/lib/etcddisk
++ /bin/chown -R etcd:etcd /var/lib/etcddisk
++ systemctlEnableAndStart etcd
++ systemctl_restart 100 5 30 etcd
++ retries=100
++ wait_sleep=5
++ timeout=30
++ svcname=etcd
+++ seq 1 100
++ for i in '$(seq 1 $retries)'
++ timeout 30 systemctl daemon-reload
++ timeout 30 systemctl restart etcd
++ '[' 0 -eq 0 ']'
++ break
++ RESTART_STATUS=0
++ systemctl status etcd --no-pager -l
++ '[' 0 -ne 0 ']'
++ retrycmd_if_failure 10 5 3 systemctl enable etcd
++ retries=10
++ wait_sleep=5
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 3 systemctl enable etcd
+Created symlink from /etc/systemd/system/multi-user.target.wants/etcd.service to /etc/systemd/system/etcd.service.
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"systemctl' enable 'etcd"' 1 times
+Executed "systemctl enable etcd" 1 times
++ '[' 0 -ne 0 ']'
+++ seq 1 600
++ for i in '$(seq 1 600)'
+++ cut -d: -f 1
+++ grep -E k8s-master-35353223-0
+++ sudo etcdctl member list
++ MEMBER=b3a6773c0e93604
++ '[' b3a6773c0e93604 '!=' '' ']'
++ break
++ retrycmd_if_failure 10 1 5 sudo etcdctl member update b3a6773c0e93604 https://10.255.255.5:2380
++ retries=10
++ wait_sleep=1
++ timeout=5
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 5 sudo etcdctl member update b3a6773c0e93604 https://10.255.255.5:2380
+Updated member with ID b3a6773c0e93604 in cluster
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"sudo' etcdctl member update b3a6773c0e93604 'https://10.255.255.5:2380"' 1 times
+Executed "sudo etcdctl member update b3a6773c0e93604 https://10.255.255.5:2380" 1 times
++ '[' -f /opt/azure/containers/setup-custom-search-domains.sh ']'
++ [[ docker == \d\o\c\k\e\r ]]
++ ensureDocker
++ echo 'ExecStartPost=/sbin/iptables -P FORWARD ACCEPT'
++ usermod -aG docker azureuser
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
+sent invalidate(passwd) request, exiting
+sent invalidate(group) request, exiting
++ wait_for_file 600 1 /usr/bin/docker
++ retries=600
++ wait_sleep=1
++ filepath=/usr/bin/docker
+++ seq 1 600
++ for i in '$(seq 1 $retries)'
++ '[' -f /usr/bin/docker ']'
++ break
++ systemctlEnableAndStart docker
++ systemctl_restart 100 5 30 docker
++ retries=100
++ wait_sleep=5
++ timeout=30
++ svcname=docker
+++ seq 1 100
++ for i in '$(seq 1 $retries)'
++ timeout 30 systemctl daemon-reload
++ timeout 30 systemctl restart docker
++ '[' 0 -eq 0 ']'
++ break
++ RESTART_STATUS=0
++ systemctl status docker --no-pager -l
++ '[' 0 -ne 0 ']'
++ retrycmd_if_failure 10 5 3 systemctl enable docker
++ retries=10
++ wait_sleep=5
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 3 systemctl enable docker
+Synchronizing state of docker.service with SysV init with /lib/systemd/systemd-sysv-install...
+Executing /lib/systemd/systemd-sysv-install enable docker
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"systemctl' enable 'docker"' 1 times
+Executed "systemctl enable docker" 1 times
++ '[' 0 -ne 0 ']'
++ retrycmd_if_failure 6 1 10 docker pull busybox
++ retries=6
++ wait_sleep=1
++ timeout=10
++ shift
++ shift
++ shift
+++ seq 1 6
++ for i in '$(seq 1 $retries)'
++ timeout 10 docker pull busybox
+Using default tag: latest
+latest: Pulling from library/busybox
+8c5a7da1afbc: Pulling fs layer
+8c5a7da1afbc: Download complete
+8c5a7da1afbc: Pull complete
+Digest: sha256:cb63aa0641a885f54de20f61d152187419e8f6b159ed11a251a09d115fdff9bd
+Status: Downloaded newer image for busybox:latest
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"docker' pull 'busybox"' 1 times
+Executed "docker pull busybox" 1 times
++ systemctlEnableAndStart docker-health-probe
++ systemctl_restart 100 5 30 docker-health-probe
++ retries=100
++ wait_sleep=5
++ timeout=30
++ svcname=docker-health-probe
+++ seq 1 100
++ for i in '$(seq 1 $retries)'
++ timeout 30 systemctl daemon-reload
++ timeout 30 systemctl restart docker-health-probe
++ '[' 0 -eq 0 ']'
++ break
++ RESTART_STATUS=0
++ systemctl status docker-health-probe --no-pager -l
++ '[' 0 -ne 0 ']'
++ retrycmd_if_failure 10 5 3 systemctl enable docker-health-probe
++ retries=10
++ wait_sleep=5
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 3 systemctl enable docker-health-probe
+Created symlink from /etc/systemd/system/multi-user.target.wants/docker-health-probe.service to /etc/systemd/system/docker-health-probe.service.
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"systemctl' enable 'docker-health-probe"' 1 times
+Executed "systemctl enable docker-health-probe" 1 times
++ '[' 0 -ne 0 ']'
++ configureK8s
++ KUBELET_PRIVATE_KEY_PATH=/etc/kubernetes/certs/client.key
++ touch /etc/kubernetes/certs/client.key
++ chmod 0600 /etc/kubernetes/certs/client.key
++ chown root:root /etc/kubernetes/certs/client.key
++ APISERVER_PUBLIC_KEY_PATH=/etc/kubernetes/certs/apiserver.crt
++ touch /etc/kubernetes/certs/apiserver.crt
++ chmod 0644 /etc/kubernetes/certs/apiserver.crt
++ chown root:root /etc/kubernetes/certs/apiserver.crt
++ AZURE_JSON_PATH=/etc/kubernetes/azure.json
++ touch /etc/kubernetes/azure.json
++ chmod 0600 /etc/kubernetes/azure.json
++ chown root:root /etc/kubernetes/azure.json
++ set +x
++ generateAggregatedAPICerts
++ wait_for_file 1 1 /etc/kubernetes/generate-proxy-certs.sh
++ retries=1
++ wait_sleep=1
++ filepath=/etc/kubernetes/generate-proxy-certs.sh
+++ seq 1 1
++ for i in '$(seq 1 $retries)'
++ '[' -f /etc/kubernetes/generate-proxy-certs.sh ']'
++ break
++ /etc/kubernetes/generate-proxy-certs.sh
+Generating RSA private key, 2048 bit long modulus
+...........+++
+.......................................+++
+e is 65537 (0x10001)
+Generating RSA private key, 2048 bit long modulus
+.....................................+++
+............................................+++
+e is 65537 (0x10001)
+Signature ok
+subject=/CN=aggregator/O=system:masters
+Getting CA Private Key
+member b3a6773c0e93604 is healthy: got healthy result from https://10.255.255.5:2379
+cluster is healthy
+Executed "etcdctl cluster-health" 1 times
+ -----BEGIN CERTIFICATE-----
+rS4Vs38wDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAR0A1YMLgPsyg
+Q+rUWQF65YWDuHWtPKeyyMnY35B6I2ZNtCFUqwmZuip90qbYogxsf+gqom5JF2dR
+uXAfNo9xrb5grJ0//3EWRNzvjd+bBpxOGfg4XlGVPqV2Qxd2lJvqKHaYI58FgxZO
+Gm0rNwpwhUwB5Ihz5+HXPQ7QilayKJ2RlFdIqQmwOWNsCDKMwhQhAabikOXWFPxx
+H3t8yANWcsX7jB/UovIiUx9CQbByvFyd5+IwRcL2UcdbC79cGCcYol0mYfyji/CO
+ch0k8mvPoPZk+jULzvUVztgALxQM0zpVnN+Ty6piF6jYISuzAxcTTlzOVMwMrXlw
+d9rI6nKx1A==
+-----END CERTIFICATE-----
+ -----BEGIN RSA PRIVATE KEY-----
+bMbYIrwHmscW0XKAB/ch5UbXtA/JXHuoGjYojyrVaCoNNiR0d4ISAjQkPXctcczg
+x88iWrECgYEA98CM5AuymuQm4oBxRCJChb3/WZ3w7UGkL1UMEcEhbvdSLcsSqevZ
+kGlygDgQom2H0qnd53DqBeIswkpybS91MzipGFyT2Pdfq0TXzIhly27N/yuOOTkk
+wyENRsoGl1XLU9osycRwzpHKchuuxVz7wy3pRRC5wnvpMDeQ5NebwakCgYEAxkuW
+jnoFnDyPjgk/6dcYIM/yiX0AHYmY59V7/KnJkvEtkzUfix7atdaHI7C6jagaktg6
+CVPhwyGRYJPspwtsnr1I2ulVN1F6GnL4Qi7+d/t4CqwTwaiptvsTB+f5muJfelff
+xSIh3NNpMRp7/5lu2YT7gS2WMVOuPQBbGPG3bVsCgYEAsWlO+tZtlYEfXz7+3P1z
+iXYe7rutFRjWS5apR+V23ZF5ZZVvzgI4D7OS7MI5Fzc79dzyLJOs4X2u84qAGjPL
+x1whqnJQ5SNvfKOVrL9Xta+pD7rO46dJ7fkzGqf8xE4JhghL3kgvR50azU+JfYcy
+OfgcfPqXKu+0cnS360eCH9ECgYEAjY90we32h1zsltefmw6FGRea6/Ai3vNWB1tu
+kieb0Zz/jjHEfQrf1CR8gUwvQeWaYu6eL/6EE0upfyrbLT2Io6I5mp4sybsO0kb1
+WDo4S+tn/SZvTDdeQVTodyJyHNIymyKUiyUcy4rZc8aWcxhT/FFlQwkKSdiVcNMK
+NbqJ2jUCgYEApBe2iuOuP07YSrgjOJNPWp0u81tbenng2Q2S/ZdYx1ph+oIwkf0W
+XcMs5fe+8XdErhEB0KAQbyAib5JhcXHTOkSUbDzi3Pr5lUqvO78Uz6Jvr0/9pOSm
+9gE+lLhMjGeGYhcDoMyFKtx7WHrKMhUiFTCIsmud1o/Bz76dophlrmQ=
+-----END RSA PRIVATE KEY-----
+ -----BEGIN CERTIFICATE-----
+Ma1XJDNSs+hD2obB8crB/apSkk48tSu/ypQ5OROO3wI48OPrwnz/g24/UULcgUqz
+8P5HZnfIcMETpUE8RMEbjjwZaGeVvRRMIjh3OIYlWaJ+Amec8Am5nfEnjm4uovCI
+G9PMfa7r7FRL6X2hB46KvKPPqWJExAllPDFhqNs2lSDtaLmP5qe/H/yEA5qUGvuc
+GModC4TeuAqzD1fjKd/HgpicZUU4VmpO05oWXDV8EXmAEAT7WqmYvfAWr6CK28U1
+276bQ7i2ZGloHljT0/wrVbeXILeI0WmkvebnU0r1
+-----END CERTIFICATE-----
++ configureCNI
++ retrycmd_if_failure 30 6 10 modprobe br_netfilter
++ retries=30
++ wait_sleep=6
++ timeout=10
++ shift
++ shift
++ shift
+++ seq 1 30
++ for i in '$(seq 1 $retries)'
++ timeout 10 modprobe br_netfilter
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"modprobe' 'br_netfilter"' 1 times
+Executed "modprobe br_netfilter" 1 times
++ echo -n br_netfilter
++ [[ azure = \a\z\u\r\e ]]
++ mv /opt/cni/bin/10-azure.conflist /etc/cni/net.d/
++ chmod 600 /etc/cni/net.d/10-azure.conflist
++ /sbin/ebtables -t nat --list
+Bridge table: nat
+
+Bridge chain: PREROUTING, entries: 0, policy: ACCEPT
+
+Bridge chain: OUTPUT, entries: 0, policy: ACCEPT
+
+Bridge chain: POSTROUTING, entries: 0, policy: ACCEPT
++ [[ ! -z true ]]
++ configAddons
++ [[ False = True ]]
++ [[ False = True ]]
++ ensureContainerd
++ [[ docker == \c\l\e\a\r\-\c\o\n\t\a\i\n\e\r\s ]]
++ [[ docker == \k\a\t\a\-\c\o\n\t\a\i\n\e\r\s ]]
++ [[ docker == \c\o\n\t\a\i\n\e\r\d ]]
++ [[ ! -z true ]]
++ [[ '' != '' ]]
++ ensureKubelet
++ systemctlEnableAndStart kubelet
++ systemctl_restart 100 5 30 kubelet
++ retries=100
++ wait_sleep=5
++ timeout=30
++ svcname=kubelet
+++ seq 1 100
++ for i in '$(seq 1 $retries)'
++ timeout 30 systemctl daemon-reload
++ timeout 30 systemctl restart kubelet
++ '[' 0 -eq 0 ']'
++ break
++ RESTART_STATUS=0
++ systemctl status kubelet --no-pager -l
+Warning: kubelet.service changed on disk. Run 'systemctl daemon-reload' to reload units.
++ '[' 0 -ne 0 ']'
++ retrycmd_if_failure 10 5 3 systemctl enable kubelet
++ retries=10
++ wait_sleep=5
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 3 systemctl enable kubelet
+Created symlink from /etc/systemd/system/multi-user.target.wants/kubelet.service to /etc/systemd/system/kubelet.service.
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"systemctl' enable 'kubelet"' 1 times
+Executed "systemctl enable kubelet" 1 times
++ '[' 0 -ne 0 ']'
++ ensureJournal
++ echo Storage=persistent
++ echo SystemMaxUse=1G
++ echo RuntimeMaxUse=1G
++ echo ForwardToSyslog=no
++ systemctlEnableAndStart systemd-journald
++ systemctl_restart 100 5 30 systemd-journald
++ retries=100
++ wait_sleep=5
++ timeout=30
++ svcname=systemd-journald
+++ seq 1 100
++ for i in '$(seq 1 $retries)'
++ timeout 30 systemctl daemon-reload
++ timeout 30 systemctl restart systemd-journald
++ '[' 0 -eq 0 ']'
++ break
++ RESTART_STATUS=0
++ systemctl status systemd-journald --no-pager -l
++ '[' 0 -ne 0 ']'
++ retrycmd_if_failure 10 5 3 systemctl enable systemd-journald
++ retries=10
++ wait_sleep=5
++ timeout=3
++ shift
++ shift
++ shift
+++ seq 1 10
++ for i in '$(seq 1 $retries)'
++ timeout 3 systemctl enable systemd-journald
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"systemctl' enable 'systemd-journald"' 1 times
+Executed "systemctl enable systemd-journald" 1 times
++ '[' 0 -ne 0 ']'
++ [[ ! -z true ]]
++ writeKubeConfig
++ KUBECONFIGDIR=/home/azureuser/.kube
++ KUBECONFIGFILE=/home/azureuser/.kube/config
++ mkdir -p /home/azureuser/.kube
++ touch /home/azureuser/.kube/config
++ chown azureuser:azureuser /home/azureuser/.kube
++ chown azureuser:azureuser /home/azureuser/.kube/config
++ chmod 700 /home/azureuser/.kube
++ chmod 600 /home/azureuser/.kube/config
++ set +x
++ ensureEtcd
++ retrycmd_if_failure 120 5 10 curl --cacert /etc/kubernetes/certs/ca.crt --cert /etc/kubernetes/certs/etcdclient.crt --key /etc/kubernetes/certs/etcdclient.key https://10.255.255.5:2379/v2/machines
++ retries=120
++ wait_sleep=5
++ timeout=10
++ shift
++ shift
++ shift
+++ seq 1 120
++ for i in '$(seq 1 $retries)'
++ timeout 10 curl --cacert /etc/kubernetes/certs/ca.crt --cert /etc/kubernetes/certs/etcdclient.crt --key /etc/kubernetes/certs/etcdclient.key https://10.255.255.5:2379/v2/machines
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    25  100    25    0     0    230      0 --:--:-- --:--:-- --:--:--   231
+https://10.255.255.5:2379+ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"curl' --cacert /etc/kubernetes/certs/ca.crt --cert /etc/kubernetes/certs/etcdclient.crt --key /etc/kubernetes/certs/etcdclient.key 'https://10.255.255.5:2379/v2/machines"' 1 times
+Executed "curl --cacert /etc/kubernetes/certs/ca.crt --cert /etc/kubernetes/certs/etcdclient.crt --key /etc/kubernetes/certs/etcdclient.key https://10.255.255.5:2379/v2/machines" 1 times
++ ensureK8sControlPlane
++ false
++ wait_for_file 600 1 /usr/local/bin/kubectl
++ retries=600
++ wait_sleep=1
++ filepath=/usr/local/bin/kubectl
+++ seq 1 600
++ for i in '$(seq 1 $retries)'
++ '[' -f /usr/local/bin/kubectl ']'
++ break
++ retrycmd_if_failure 900 1 20 /usr/local/bin/kubectl cluster-info
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+[0;32mKubernetes master[0m is running at [0;33mhttp://localhost:8080[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+Executed "/usr/local/bin/kubectl cluster-info" 65 times
++ ensurePodSecurityPolicy
++ POD_SECURITY_POLICY_FILE=/etc/kubernetes/manifests/pod-security-policy.yaml
++ '[' -f /etc/kubernetes/manifests/pod-security-policy.yaml ']'
++ [[ 1.11.2 = 1.12.* ]]
++ [[ UBUNTU == UBUNTU ]]
++ echo 2dd1ce17-079e-403c-b352-a1921ee207ee
++ sed -i '13i\echo 2dd1ce17-079e-403c-b352-a1921ee207ee > /sys/bus/vmbus/drivers/hv_util/unbind\n' /etc/rc.local
++ retrycmd_if_failure 20 5 30 apt-mark unhold walinuxagent
++ retries=20
++ wait_sleep=5
++ timeout=30
++ shift
++ shift
++ shift
+++ seq 1 20
++ for i in '$(seq 1 $retries)'
++ timeout 30 apt-mark unhold walinuxagent
+Canceled hold on walinuxagent.
++ '[' 0 -eq 0 ']'
++ break
++ echo Executed '"apt-mark' unhold 'walinuxagent"' 1 times
+Executed "apt-mark unhold walinuxagent" 1 times
++ echo 'Custom script finished successfully'
+Custom script finished successfully
++ mkdir -p /opt/azure/containers
++ touch /opt/azure/containers/provision.complete
++ false
++ runAptDaily
++ /usr/lib/apt/apt.systemd.daily
++ ps auxfww
