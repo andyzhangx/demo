@@ -11,7 +11,7 @@ tar -xvzf acs-engine-$acs_version-linux-amd64.tar.gz
 ### 2. download acs-engine cluster defination file and edit fields, e.g. `location`, `orchestratorVersion`, `dnsPrefix`, `linuxProfile`, `servicePrincipalProfile` etc.
 ```
 k8s_version=1.10.7
-wget https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-$k8s_version.json
+wget -O kubernetes-$k8s_version.json https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json
 vi kubernetes-$k8s_version.json
 ```
 > specify `location` as (`chinaeast`, `chinanorth`, `chinaeast2`, `chinanorth2`) in cluster defination file
