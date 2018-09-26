@@ -39,8 +39,11 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 ```
 
 #### Tips
- - [docker registry proxy cache](http://mirror.azure.cn/help/docker-registry-proxy-cache.html): `dockerhub.akscn.io`
- - [GCR Proxy Cache](http://mirror.azure.cn/help/gcr-proxy-cache.html): `gcr.akscn.io`
+| global | china proxy|
+| ---- | ---- |
+| dockerhub (docker.io) | [dockerhub.akscn.io](http://mirror.azure.cn/help/docker-registry-proxy-cache.html) |
+| gcr.io | [gcr.akscn.io](http://mirror.azure.cn/help/gcr-proxy-cache.html) |
+| quay.io | quay.akscn.io |
 
 #### Known issues
  - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
