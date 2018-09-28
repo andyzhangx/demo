@@ -15,7 +15,7 @@ az ad sp create-for-rbac --role="Contributor"
 APP_ID=
 SP_PASSWORD=
 
-az keyvault create -n ADE_VAULT_NAME -g $RESOURCE_GROUP_NAME --enabled-for-disk-encryption True
+az keyvault create -n $ADE_VAULT_NAME -g $RESOURCE_GROUP_NAME --enabled-for-disk-encryption True
 az keyvault set-policy --name $ADE_VAULT_NAME --spn $APP_ID --key-permissions wrapKey  --secret-permissions set
 az keyvault key create --vault-name $ADE_VAULT_NAME --name aks-ade-node1-key --protection software
 az vm encryption enable -g $RESOURCE_GROUP_NAME -n $VM_NAME --aad-client-id $APP_ID --aad-client-secret $SP_PASSWORD --disk-encryption-keyvault $ADE_VAULT_NAME --key-encryption-key aks-ade-node1-key --volume-type DATA
@@ -27,4 +27,5 @@ Note:
 
 #### Related issues
  - [Failed to mount Azure Disk as a PV when ADE is enabled](https://github.com/kubernetes/kubernetes/issues/66443)
- - [AKS VM Disk Encryption](https://github.com/Azure/AKS/issues/629)
+ - [AKS VM Disk Encryption issue](https://github.com/Azure/AKS/issues/629)
+ - [VM Encryption does not support Ubuntu 16.04.0-LTS](https://github.com/Azure/azure-cli/issues/2507)
