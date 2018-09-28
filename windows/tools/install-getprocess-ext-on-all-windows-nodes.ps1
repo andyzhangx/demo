@@ -33,7 +33,9 @@ for ($i=0; $i -lt $groups.length; $i++) {
 			else {
 				echo "remove original cse-agent-0 on $vm_name, resource group: $rg_name"
 				Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rg_name -VMName $vm_name -Name cse-agent-0 -force
-				
+				echo "remove original cse-agent-1 on $vm_name, resource group: $rg_name"
+				Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rg_name -VMName $vm_name -Name cse-agent-1 -force
+							
 				echo "set get-process CustomScriptExtension on $vm_name, resource group: $rg_name, location: $location"
 				Set-AzureRmVMCustomScriptExtension -ResourceGroupName $rg_name `
 					-VMName $vm_name -Name "get-process" `
