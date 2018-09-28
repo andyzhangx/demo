@@ -31,11 +31,11 @@ for ($i=0; $i -lt $groups.length; $i++) {
 				echo "Dryrun on $vm_name, resource group: $rg_name"
 			}
 			else {
-				echo "remove original cse-agent-0 on $vm_name, resource group: $rg_name"
-				Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rg_name -VMName $vm_name -Name cse-agent-0 -force
-				echo "remove original cse-agent-1 on $vm_name, resource group: $rg_name"
-				Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rg_name -VMName $vm_name -Name cse-agent-1 -force
-							
+				for ($k=0; $k -lt 4; $k++) {
+					$extension_name = "cse-agent-$k"
+					echo "remove original $extension_name on $vm_name, resource group: $rg_name"
+					Remove-AzurermVMCustomScriptExtension -ResourceGroupName $rg_name -VMName $vm_name -Name $extension_name -force
+				}
 				echo "set get-process CustomScriptExtension on $vm_name, resource group: $rg_name, location: $location"
 				Set-AzureRmVMCustomScriptExtension -ResourceGroupName $rg_name `
 					-VMName $vm_name -Name "get-process" `
