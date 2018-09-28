@@ -36,12 +36,10 @@ for ($i=0; $i -lt $groups.length; $i++) {
 				
 				echo "set get-process CustomScriptExtension on $vm_name, resource group: $rg_name, location: $location"
 				Set-AzureRmVMCustomScriptExtension -ResourceGroupName $rg_name `
-					-VMName $vms[$j].Name -Name "get-process" `
+					-VMName $vm_name -Name "get-process" `
 					-FileUri "https://raw.githubusercontent.com/andyzhangx/demo/master/windows/tools/run-get-process.ps1" `
 					-Run "run-get-process.ps1" -Location $location		
 			}
-			
-
 		}
 	}	
 }
