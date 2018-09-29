@@ -114,7 +114,7 @@ hack/verify-golint.sh
 hack/verify-gofmt.sh
 ```
 
-## Azure disk & file mount process
+## Azure disk mount process
 #### Linux
 On master node:
 
@@ -125,7 +125,7 @@ On master node:
       3) return the LUN number
 ```
 
-On agent node:
+On agent node(before k8s v1.10.2):
 
 2. In `func (a *azureDiskAttacher) WaitForAttach(spec *volume.Spec, devicePath string, ...)`
 ```
@@ -159,6 +159,21 @@ The whole mounting chain would be like following:
 Other:
 ```
 /var/lib/kubelet/pods/26a3137c-d4e5-11e7-bc95-000d3a041274/plugins/kubernetes.io~empty-dir
+```
+
+Example logs:
+```
+Sep 27 10:21:49 reconciler.go:207] operationExecutor.VerifyControllerAttachedVolume started for volume "pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6"
+Sep 27 10:23:57 operation_generator.go:1168] Controller attach succeeded for volume "pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6"
+
+Sep 27 10:23:57 operationExecutor.MountVolume started for volume "pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6" 
+Sep 27 10:23:57 operation_generator.go:486] MountVolume.WaitForAttach entering for volume "pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6"
+Sep 27 10:25:05 azure_common_linux.go:194] azureDisk - Disk "/dev/disk/azure/scsi1/lun3" appears to be unformatted, attempting to format as type: "ext4" with options: [-E lazy_itable_init=0,lazy_journa
+Sep 27 10:25:08 azure_common_linux.go:199] azureDisk - Disk successfully formatted with 'mkfs.ext4 [-E lazy_itable_init=0,lazy_journal_init=0 -F /dev/disk/azure/scsi1/lun3]'
+Sep 27 10:25:08 operation_generator.go:495] MountVolume.WaitForAttach succeeded for volume "pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6" 
+Sep 27 10:25:08 operation_generator.go:514] MountVolume.MountDevice succeeded for volume "pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6"
+Sep 27 10:25:08 azure_mounter.go:166] azureDisk - successfully mounted disk kubernetes-dynamic-pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6 on /var/lib/kubelet/pods/12bb6f88-c23f-11e8-8d27-46799c22b7c6/vol
+Sep 27 10:25:08 operation_generator.go:557] MountVolume.SetUp succeeded for volume "pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6"
 ```
 
 ### Clean disk space on Windows
