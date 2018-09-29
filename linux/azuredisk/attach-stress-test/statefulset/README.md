@@ -106,3 +106,6 @@ hugetlbfs      hugetlbfs      0     0     0    - /dev/hugepages
 /dev/sdj       ext4        8.4G   19M  7.9G   1% /var/lib/kubelet/pods/116d39c1-6a25-11e8-ad70-0a58ac1f0c4a/volumes/kubernetes.io~azure-disk/pvc-116cb513-6a25-11e8-ad70-0a58ac1f0c4a
 /dev/sdj       ext4        8.4G   19M  7.9G   1% /var/lib/kubelet/pods/116d39c1-6a25-11e8-ad70-0a58ac1f0c4a/volumes/kubernetes.io~azure-disk/pvc-116cb513-6a25-11e8-ad70-0a58ac1f0c4a
 ```
+
+#### Note
+ - In my testing#1(on region westus2), I set up 4 pods with azure disk mount on one node, it took around **2 min** for PVC creation, pod creation, and disk mount.
