@@ -109,3 +109,19 @@ hugetlbfs      hugetlbfs      0     0     0    - /dev/hugepages
 
 #### Note
  - In my testing#1(on region westus2), I set up 4 pods with azure disk mount on one node, it took around **2 min** for PVC creation, pod creation, and disk mount.
+One pod logs would be like following:
+```
+Events:
+  Type     Reason                  Age              From                               Message
+  ----     ------                  ----             ----                               -------
+  Warning  FailedScheduling        3m (x6 over 3m)  default-scheduler                  pod has unbound PersistentVolumeClaims (repeated 2 times)
+  Normal   Scheduled               2m               default-scheduler                  Successfully assigned statefulset-azuredisk4-0 to aks-nodepool1-60852817-1
+  Normal   SuccessfulMountVolume   2m               kubelet, aks-nodepool1-60852817-1  MountVolume.SetUp succeeded for volume "default-token-zj6l2"
+  Normal   SuccessfulAttachVolume  1m               attachdetach-controller            AttachVolume.Attach succeeded for volume "pvc-2da52eec-c5e7-11e8-9029-82f25ed5ddf6"
+  Warning  FailedMount             49s              kubelet, aks-nodepool1-60852817-1  Unable to mount volumes for pod "statefulset-azuredisk4-0_default(2da7a99c-c5e7-11e8-9029-82f25ed5ddf6)": timeout expired waiting for volumes to attach or mount for pod "default"/"statefulset-azuredisk4-0". list of unmounted volumes=[persistent-storage]. list of unattached volumes=[persistent-storage default-token-zj6l2]
+  Normal   SuccessfulMountVolume   35s              kubelet, aks-nodepool1-60852817-1  MountVolume.SetUp succeeded for volume "pvc-2da52eec-c5e7-11e8-9029-82f25ed5ddf6"
+  Normal   Pulling                 35s              kubelet, aks-nodepool1-60852817-1  pulling image "nginx"
+  Normal   Pulled                  33s              kubelet, aks-nodepool1-60852817-1  Successfully pulled image "nginx"
+  Normal   Created                 33s              kubelet, aks-nodepool1-60852817-1  Created container
+  Normal   Started                 32s              kubelet, aks-nodepool1-60852817-1  Started container
+```
