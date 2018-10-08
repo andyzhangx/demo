@@ -1,4 +1,4 @@
-# Azure disk features and restrictions
+# Azure disk new features and restrictions
 ## Azure disk new features
 
 
