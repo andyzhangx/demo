@@ -35,6 +35,11 @@ spec:
 watch kubectl describe po nginx-private-reg
 ```
 
+ > Note: if you provided an incorrect password, the error would be like following:
+```
+  Warning  Failed     1s (x2 over 13s)  kubelet, k8s-agentpool-95620664-0  Failed to pull image "andyacr.azurecr.io/nginx-server:1.0.0": rpc error: code = Unknown desc = Error response from daemon: Get https://xxx.azurecr.io/v2/nginx-server/manifests/1.0.0: unauthorized: authentication required
+```
+
 Refer to following link for more details:
 [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry)
 
