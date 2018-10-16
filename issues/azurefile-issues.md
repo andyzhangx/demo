@@ -14,7 +14,7 @@
     - [6. azure file plugin on Windows does not work after node restart](#6-azure-file-plugin-on-windows-does-not-work-after-node-restart)
     - [7. file permission could not be changed using azure file, e.g. postgresql](#7-file-permission-could-not-be-changed-using-azure-file-eg-postgresql)
     - [8. Could not delete pod with AzureFile volume if storage account key changed](#8-could-not-delete-pod-with-azurefile-volume-if-storage-account-key-changed)
-    - [9. Long latency when handling lots of small files](#8-could-not-delete-pod-with-azurefile-volume-if-storage-account-key-changed)
+    - [9. Long latency when handling lots of small files](#9-long-latency-compared-to-disk-when-handling-lots-of-small-files)
     
 <!-- /TOC -->
 
