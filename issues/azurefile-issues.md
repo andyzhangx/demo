@@ -14,7 +14,8 @@
     - [6. azure file plugin on Windows does not work after node restart](#6-azure-file-plugin-on-windows-does-not-work-after-node-restart)
     - [7. file permission could not be changed using azure file, e.g. postgresql](#7-file-permission-could-not-be-changed-using-azure-file-eg-postgresql)
     - [8. Could not delete pod with AzureFile volume if storage account key changed](#8-could-not-delete-pod-with-azurefile-volume-if-storage-account-key-changed)
-
+    - [9. Long latency when handling lots of small files](#8-could-not-delete-pod-with-azurefile-volume-if-storage-account-key-changed)
+    
 <!-- /TOC -->
 
 ## Recommended stable version for azure file
@@ -236,3 +237,9 @@ sudo umount /var/lib/kubelet/pods/cc5c86cd-422a-11e8-91d7-000d3a03ee84/volumes/k
 
 - [UnmountVolume.TearDown fails for AzureFile volume, locks up node](https://github.com/kubernetes/kubernetes/issues/62824)
 - [Kubelet failure to umount glusterfs mount points](https://github.com/kubernetes/kubernetes/issues/41141)
+
+## 9. Long latency compared to disk when handling lots of small files
+
+**Related issues**
+ - [`azurefile` is very slow](https://github.com/Azure/AKS/issues/223)
+ - [Can't roll out Wordpress chart with PV on AzureFile](https://github.com/helm/charts/issues/5751)
