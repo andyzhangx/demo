@@ -2,7 +2,7 @@
 ### Q: How to change log level in k8s cluster
  - for api-server, scheduler, controller-manager:
 
-edit yaml files under `/etc/kubernetes/manifests/`, change `--v=2` value and then run `sudo service docker restart`
+edit yaml files under `/etc/kubernetes/manifests/`, change `--v=2`(e.g. change to --v=12) value and then run `sudo service docker restart`
 
  - for kubelet on Linux agent:
 
