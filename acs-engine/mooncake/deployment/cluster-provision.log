@@ -1212,7 +1212,7 @@ NAME	SIZE	CREATED AT	UPDATED AT	DIGEST
 + '[' 0 -eq 0 ']'
 + break
 + pullHyperkube
-+ retrycmd_if_failure 75 1 60 img pull gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2
++ retrycmd_if_failure 75 1 60 img pull gcr.azk8s.cn/google_containers/hyperkube-amd64:v1.11.2
 + retries=75
 + wait_sleep=1
 + timeout=60
@@ -1221,16 +1221,16 @@ NAME	SIZE	CREATED AT	UPDATED AT	DIGEST
 + shift
 ++ seq 1 75
 + for i in '$(seq 1 $retries)'
-+ timeout 60 img pull gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2
-Pulling gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2...
++ timeout 60 img pull gcr.azk8s.cn/google_containers/hyperkube-amd64:v1.11.2
+Pulling gcr.azk8s.cn/google_containers/hyperkube-amd64:v1.11.2...
 Pulled: sha256:71484f149582c08fb366c28704b663c2d66d9dd8e0a2a4c3e3e081a57536a6e3
 Size: 181MiB
 + '[' 0 -eq 0 ']'
 + break
-+ echo Executed '"img' pull 'gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2"' 1 times
-Executed "img pull gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2" 1 times
-+ img unpack -o /home/rootfs-1.11.2 gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2
-Successfully unpacked rootfs for gcr.akscn.io/google_containers/hyperkube-amd64:v1.11.2 to: /home/rootfs-1.11.2
++ echo Executed '"img' pull 'gcr.azk8s.cn/google_containers/hyperkube-amd64:v1.11.2"' 1 times
+Executed "img pull gcr.azk8s.cn/google_containers/hyperkube-amd64:v1.11.2" 1 times
++ img unpack -o /home/rootfs-1.11.2 gcr.azk8s.cn/google_containers/hyperkube-amd64:v1.11.2
+Successfully unpacked rootfs for gcr.azk8s.cn/google_containers/hyperkube-amd64:v1.11.2 to: /home/rootfs-1.11.2
 ++ find /home/rootfs-1.11.2 -name hyperkube
 + path=/home/rootfs-1.11.2/hyperkube
 + [[ UBUNTU == COREOS ]]

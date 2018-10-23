@@ -41,9 +41,9 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 #### Tips
 | global | china proxy|
 | ---- | ---- |
-| dockerhub (docker.io) | [dockerhub.akscn.io](http://mirror.azure.cn/help/docker-registry-proxy-cache.html) |
-| gcr.io | [gcr.akscn.io](http://mirror.azure.cn/help/gcr-proxy-cache.html) |
-| quay.io | quay.akscn.io |
+| dockerhub (docker.io) | [dockerhub.azk8s.cn](http://mirror.azure.cn/help/docker-registry-proxy-cache.html) |
+| gcr.io | [gcr.azk8s.cn](http://mirror.azure.cn/help/gcr-proxy-cache.html) |
+| quay.io | quay.azk8s.cn |
 
 #### Known issues
  - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
@@ -55,7 +55,7 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
  - [Cannot deploy generated ARM template to AzureChinaCloud](https://github.com/Azure/acs-engine/issues/3024) 
  
 #### Related PRs
- - [use dockerhub.akscn.io in mooncake](https://github.com/Azure/acs-engine/pull/3887)
+ - [use dockerhub.azk8s.cn in mooncake](https://github.com/Azure/acs-engine/pull/3887)
  - [container registry proxy change for azure china cloud](https://github.com/Azure/acs-engine/pull/3683)
  - [change docker-engine to docker-ce for mooncake](https://github.com/Azure/azure-docker-extension/pull/132)
 
