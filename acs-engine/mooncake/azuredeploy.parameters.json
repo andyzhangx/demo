@@ -102,10 +102,10 @@
       "value": "10.0.0.0/16"
     },
     "kubernetesAddonManagerSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/kube-addon-manager-amd64:v6.4-beta.2"
+      "value": "gcr.azk8s.cn/google_containers/kube-addon-manager-amd64:v6.4-beta.2"
     },
     "kubernetesAddonResizerSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/addon-resizer:1.7"
+      "value": "gcr.azk8s.cn/google_containers/addon-resizer:1.7"
     },
     "kubernetesCtrlMgrNodeMonitorGracePeriod": {
       "value": "40s"
@@ -117,7 +117,7 @@
       "value": "10s"
     },
     "kubernetesDNSMasqSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/k8s-dns-dnsmasq-nanny-amd64:1.14.5"
+      "value": "gcr.azk8s.cn/google_containers/k8s-dns-dnsmasq-nanny-amd64:1.14.5"
     },
     "kubernetesDashboardCPULimit": {
       "value": "300m"
@@ -132,19 +132,19 @@
       "value": "150Mi"
     },
     "kubernetesDashboardSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/kubernetes-dashboard-amd64:v1.6.3"
+      "value": "gcr.azk8s.cn/google_containers/kubernetes-dashboard-amd64:v1.6.3"
     },
     "kubernetesExecHealthzSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/exechealthz-amd64:1.2"
+      "value": "gcr.azk8s.cn/google_containers/exechealthz-amd64:1.2"
     },
     "kubernetesHeapsterSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/heapster-amd64:v1.4.2"
+      "value": "gcr.azk8s.cn/google_containers/heapster-amd64:v1.4.2"
     },
     "kubernetesHyperkubeSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/hyperkube-amd64:v1.7.9"
+      "value": "gcr.azk8s.cn/google_containers/hyperkube-amd64:v1.7.9"
     },
     "kubernetesKubeDNSSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/k8s-dns-kube-dns-amd64:1.14.5"
+      "value": "gcr.azk8s.cn/google_containers/k8s-dns-kube-dns-amd64:1.14.5"
     },
     "kubernetesNodeStatusUpdateFrequency": {
       "value": "10s"
@@ -153,7 +153,7 @@
       "value": "10.0.0.0/8"
     },
     "kubernetesPodInfraContainerSpec": {
-      "value": "crproxy.trafficmanager.net:6000/google_containers/pause-amd64:3.0"
+      "value": "gcr.azk8s.cn/google_containers/pause-amd64:3.0"
     },
     "kubernetesTillerCPULimit": {
       "value": "50m"
@@ -168,7 +168,7 @@
       "value": "150Mi"
     },
     "kubernetesTillerSpec": {
-      "value": "crproxy.trafficmanager.net:6000/kubernetes-helm/tiller:v2.6.2"
+      "value": "gcr.azk8s.cn/kubernetes-helm/tiller:v2.6.2"
     },
     "linuxAdminUsername": {
       "value": "azureuser"
