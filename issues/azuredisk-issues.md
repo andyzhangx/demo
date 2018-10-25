@@ -16,6 +16,7 @@
     - [10. data loss if using existing azure disk with partitions in disk mount](#10-data-loss-if-using-existing-azure-disk-with-partitions-in-disk-mount)
     - [11. Delete azure disk PVC which is already in use by a pod](#11-delete-azure-disk-pvc-which-is-already-in-use-by-a-pod)
     - [12. create azure disk PVC failed due to account creation failure](#12-create-azure-disk-pvc-failed-due-to-account-creation-failure)
+    - [13. cannot find Lun for disk](https://github.com/andyzhangx/demo/blob/master/issues/azuredisk-issues.md#13-cannot-find-lun-for-disk)
 
 <!-- /TOC -->
 
@@ -454,7 +455,7 @@ parameters:
   kind: Dedicated
  ```
 
-## 13. Cannot find Lun for disk
+## 13. cannot find Lun for disk
 
 **Issue details**:
 
