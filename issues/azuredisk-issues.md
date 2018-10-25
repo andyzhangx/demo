@@ -478,7 +478,7 @@ MountVolume.WaitForAttach failed for volume "pvc-12b458f4-c23f-11e8-8d27-46799c2
 | v1.10 | in cherry-pick |
 | v1.11 | in cherry-pick |
 | v1.12 | in cherry-pick |
-| v1.13 | 1.13.0 |
+| v1.13 | no such issue |
 
 **Work around**:
 
