@@ -453,3 +453,32 @@ parameters:
   storageAccount: customerstorageaccount
   kind: Dedicated
  ```
+
+## 13. Cannot find Lun for disk
+
+**Issue details**:
+
+Following error may occur if attach a disk to a node:
+```
+MountVolume.WaitForAttach failed for volume "pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6" : Cannot find Lun for disk kubernetes-dynamic-pvc-12b458f4-c23f-11e8-8d27-46799c22b7c6
+```
+
+**Related issues**
+
+- [GetAzureDiskLun sometimes costs 1 min which is too long time](https://github.com/kubernetes/kubernetes/issues/69262)
+
+**Fix**
+
+- PR [fix azure disk attachment error on Linux](https://github.com/kubernetes/kubernetes/pull/70002) will extract the LUN num from device path **only on Linux**
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.9 | no such issue |
+| v1.10 | in cherry-pick |
+| v1.11 | in cherry-pick |
+| v1.12 | in cherry-pick |
+| v1.13 | 1.13.0 |
+
+**Work around**:
+
+wait for a few more minutes should work
