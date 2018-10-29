@@ -3,6 +3,7 @@
  - Azure disk size grow
 
 available from `v1.11.0`, details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kubernetes/pull/64386)
+example: [azuredisk storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-sizegrow.yaml)
 
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
