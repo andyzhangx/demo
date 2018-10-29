@@ -54,12 +54,15 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 #### Related issues
  - [Unable to create Load balancer service in Azure Government](https://github.com/Azure/acs-engine/issues/3754)
  - [Generate Templates with `acs-engine` with location `chinaeast2` failed](https://github.com/Azure/acs-engine/issues/3812)
- - [Cannot deploy generated ARM template to AzureChinaCloud](https://github.com/Azure/acs-engine/issues/3024) 
+ - [Cannot deploy generated ARM template to AzureChinaCloud](https://github.com/Azure/acs-engine/issues/3024)
+ - [ip-masq-agent daemonset does not work in AzureChinaCloud](https://github.com/Azure/acs-engine/issues/4063)
+ - [Can we increase the timeout for docker pull](https://github.com/Azure/acs-engine/issues/4126) 
  
 #### Related PRs
  - [use dockerhub.azk8s.cn in mooncake](https://github.com/Azure/acs-engine/pull/3887)
  - [container registry proxy change for azure china cloud](https://github.com/Azure/acs-engine/pull/3683)
  - [change docker-engine to docker-ce for mooncake](https://github.com/Azure/azure-docker-extension/pull/132)
+ - [use china mirror in binary downloading on azure china](https://github.com/Azure/acs-engine/pull/4137)
 
 #### Links
 [acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
