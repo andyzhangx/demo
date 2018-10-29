@@ -15,7 +15,7 @@ az group create -n $RESOURCE_GROUP_NAME -l $LOCATION
 
 #### 2. Create an AKS cluster
 ```
-az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --agent-count 2 --generate-ssh-keys --kubernetes-version 1.8.1
+az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 2 --generate-ssh-keys --kubernetes-version 1.8.1
 ```
 
 #### 3. get aks cluster credentials
@@ -37,6 +37,13 @@ az aks scale -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --agent-count=2
 ```
 az aks delete -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME
 ```
+
+### Tips:
+#### Get all avaialbe k8s verions on AKS cluster
+```
+az aks get-versions -l $LOCATION -o table
+```
+
 
 #### known issues
  - Create azure file PVC error
