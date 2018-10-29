@@ -39,11 +39,13 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 ```
 
 #### Tips
-| global | china proxy|
+| global | registry proxy in Azure China|
 | ---- | ---- |
-| dockerhub (docker.io) | [dockerhub.azk8s.cn](http://mirror.azure.cn/help/docker-registry-proxy-cache.html) |
-| gcr.io | [gcr.azk8s.cn](http://mirror.azure.cn/help/gcr-proxy-cache.html) |
+| dockerhub (docker.io) | [dockerhub.azk8s.cn](http://mirror.azk8s.cn/help/docker-registry-proxy-cache.html) |
+| gcr.io | [gcr.azk8s.cn](http://mirror.azk8s.cn/help/gcr-proxy-cache.html) |
 | quay.io | quay.azk8s.cn |
+
+ - All kubenetes related binaries on github could be found under https://mirror.azk8s.cn/kubernetes
 
 #### Known issues
  - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
