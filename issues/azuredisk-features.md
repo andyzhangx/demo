@@ -1,6 +1,8 @@
 # Azure disk new features and restrictions
 ## Azure disk new features
+ - Azure disk size grow
 
+available from `v1.11.0`, details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kubernetes/pull/64386)
 
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
