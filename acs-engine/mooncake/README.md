@@ -47,7 +47,7 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 
  - Note: `akscn.io` domain name is depreciated, we are using `azk8s.cn` instead.
 
- - All kubenetes related binaries on github could be found under https://mirror.azk8s.cn/kubernetes
+ - All kubernetes related binaries on github could be found under https://mirror.azk8s.cn/kubernetes
 
 #### Known issues
  - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
