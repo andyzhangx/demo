@@ -12,7 +12,7 @@ example: [azuredisk storage class with size grow configuration](https://github.c
 
 available from `v1.12.0`
 
-details: [Enable dynamic azure disk volume limits](https://github.com/kubernetes/kubernetes/issues/66269)
+details: [Enable dynamic azure disk volume limits](https://github.com/kubernetes/kubernetes/pull/67772)
 
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
