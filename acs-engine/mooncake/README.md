@@ -38,15 +38,19 @@ az group deployment create \
 az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 ```
 
-#### Tips
+#### container registry proxy in Azure China
 | global | registry proxy in Azure China|
 | ---- | ---- |
 | dockerhub (docker.io) | [dockerhub.azk8s.cn](http://mirror.azk8s.cn/help/docker-registry-proxy-cache.html) |
 | gcr.io | [gcr.azk8s.cn](http://mirror.azk8s.cn/help/gcr-proxy-cache.html) |
 | quay.io | quay.azk8s.cn |
 
- - Note: `akscn.io` domain name is depreciated, we are using `azk8s.cn` instead.
-
+ - Note: 
+  > `k8s.gcr.io` would redirect to `gcr.io/google-containers`, following images are identical:
+```
+k8s.gcr.io/pause-amd64:3.1
+gcr.azk8s.cn/google_containers/pause-amd64:3.1
+```
  - All kubernetes related binaries on github could be found under https://mirror.azk8s.cn/kubernetes
 
 #### Known issues
@@ -65,6 +69,7 @@ az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
  - [container registry proxy change for azure china cloud](https://github.com/Azure/acs-engine/pull/3683)
  - [change docker-engine to docker-ce for mooncake](https://github.com/Azure/azure-docker-extension/pull/132)
  - [use china mirror in binary downloading on azure china](https://github.com/Azure/acs-engine/pull/4137)
+ - [use gcr.azk8s.cn for all add-on configs on Azure China](https://github.com/Azure/acs-engine/pull/4190)
 
 #### Links
 [acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
