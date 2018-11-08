@@ -19,7 +19,7 @@ details: [Enable dynamic azure disk volume limits](https://github.com/kubernetes
 new managed disk types `StandardSSD_LRS`, `UltraSSD_LRS` are available from `v1.13.0`
 
 all possible `skuname` values are `Standard_LRS`, `StandardSSD_LRS`, `Premium_LRS`, `UltraSSD_LRS`
-> Note: `UltraSSD_LRS` is still in Preview, it's only avaiable in certain region and supports Availablity Zone, while AKS does not support Availablity Zone yet, details about UltraSSD_LRS: [Ultra SSD (preview) Managed Disks for Azure Virtual Machine workloads](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/disks-ultra-ssd)
+> Note: `UltraSSD_LRS` is still in Preview, it's only avaiable in certain region and supports Availablity Zone only, while AKS does not support Availablity Zone yet, details about UltraSSD_LRS: [Ultra SSD (preview) Managed Disks for Azure Virtual Machine workloads](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/disks-ultra-ssd)
 
 details: [add azure UltraSSD, StandardSSD disk type support](https://github.com/kubernetes/kubernetes/pull/70477)
 
