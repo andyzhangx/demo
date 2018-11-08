@@ -14,6 +14,12 @@ available from `v1.12.0`
 
 details: [Enable dynamic azure disk volume limits](https://github.com/kubernetes/kubernetes/pull/67772)
 
+ - More disk type support
+
+new managed disk types `StandardSSD_LRS`, `UltraSSD_LRS` are available from `v1.13.0`, possible values of `skuname` are `Standard_LRS`, `StandardSSD_LRS`, `Premium_LRS`
+
+details: [add azure UltraSSD, StandardSSD disk type support](https://github.com/kubernetes/kubernetes/pull/70477)
+
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
 Error would be like following:
