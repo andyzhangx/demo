@@ -4,6 +4,6 @@ metadata:
   name: hdd
 provisioner: kubernetes.io/azure-disk
 parameters:
-  skuname: Standard_LRS
+  skuname: Standard_LRS  #available values: Standard_LRS, Premium_LRS, and StandardSSD_LRS, UltraSSD_LRS are supported from k8s v1.13.0
   kind: managed
   cachingmode: None
