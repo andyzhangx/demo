@@ -95,6 +95,7 @@ m:persistent-volume-binder" cannot create secrets in the namespace "default"
 ```sh
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/rbac/azure-cloud-provider-deployment.yaml
 ```
+- delete the original PVC and recreate PVC
 
 **Fix**
 
