@@ -126,16 +126,15 @@ root@nginx-azurefile:/# mount | grep cifs
 //ACCOUNT-NAME.file.core.windows.net/sharename on /var/lib/kubelet/pods/dd141c4f-501c-11e8-8c6d-0a58ac1f078e/volumes/kubernetes.io~azure-file/azure type cifs (rw,relatime,vers=3.0,cache=strict,username=ACCOUNT-NAME,domain=,uid=0,noforceuid,gid=0,noforcegid,addr=52.239.152.8,file_mode=0755,dir_mode=0755,persistenthandles,nounix,serverino,mapposix,rsize=1048576,wsize=1048576,echo_interval=60,actimeo=1)
 ```
 
+#### Troubleshooting azure file issues
+ - [Toubleshoot CIFS share mount errors](https://superuser.com/questions/430163/cifs-share-mount-errors)
+ - [Troubleshoot Azure Files problems in Linux](https://docs.microsoft.com/en-us/azure/storage/files/storage-troubleshoot-linux-file-connection-problems)
+ - [Troubleshooting tool for Azure Files mounting errors on Linux](https://gallery.technet.microsoft.com/Troubleshooting-tool-for-02184089)
+
 #### Links
-[Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
+ - [Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
+ - [Azure file introduction](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction)
+ - [Azure Files scale targets](https://docs.microsoft.com/en-us/azure/storage/common/storage-scalability-targets#azure-files-scale-targets)
+ - [Persistent volumes with Azure files - dynamic provisioning](https://docs.microsoft.com/en-us/azure/aks/azure-files-dynamic-pv)
+ - [Using Azure Files with Kubernetes](https://docs.microsoft.com/en-us/azure/aks/azure-files)
 
-[Azure file introduction](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction)
-
-[Azure Files scale targets](https://docs.microsoft.com/en-us/azure/storage/common/storage-scalability-targets#azure-files-scale-targets)
-
-[Persistent volumes with Azure files - dynamic provisioning](https://docs.microsoft.com/en-us/azure/aks/azure-files-dynamic-pv)
-
-[Using Azure Files with Kubernetes](https://docs.microsoft.com/en-us/azure/aks/azure-files)
-
-[Toubleshoot CIFS share mount errors](Toubleshooting CIFS share mount errors
-https://superuser.com/questions/430163/cifs-share-mount-errors)
