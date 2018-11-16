@@ -45,11 +45,12 @@
 | version | `fileMode`, `dirMode` value |
 | ---- | ---- |
 | v1.6.x, v1.7.x | 0777 |
-| v1.8.0-v1.8.5 | 0700 |
-| v1.8.6 or above | 0755 |
-| v1.9.0 | 0700 |
-| v1.9.1 or above | 0755 |
-| v1.10.0| 0755 |
+| v1.8.0 ~ v1.8.5, v1.9.0 | 0700 |
+| v1.8.6 or later, v1.9.1 ~ v1.10.9, v1.11.0 ~ v1.11.3, v1.12.0 ~ v.12.1 | 0755 |
+| v1.10.10 or later | 0777 |
+| v1.11.4 or later | 0777 |
+| v1.12.2 or later | 0777 |
+| v1.13.x | 0777 |
 
 ### other useful `mountOptions` setting:
 
