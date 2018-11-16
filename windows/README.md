@@ -1,5 +1,5 @@
 ## Current Status of Windows Server support for kubernetes on Azure
-> kubernetes on Windows is **under preview** status.
+> kubernetes on Windows is in **Beta** stage.
 
 ## k8s windows cluster could be created by two ways:
 ### 1. azure portal
@@ -84,6 +84,11 @@ open file _output/`dnsPrefix`/azuredeploy.json under acs-engine:
               "agentWindowsOffer": "WindowsServerSemiAnnual",
               "agentWindowsSku": "Datacenter-Core-1803-with-Containers-smalldisk"
 ```
+
+##### Known bugs
+ - [Symlink are broken on windows containers](https://github.com/kubernetes/kubernetes/issues/52419)
+
+Fixed in Windows Server 1809
 
 ##### Links
 [Using Windows Server Containers in Kubernetes](https://kubernetes.io/docs/getting-started-guides/windows/)
