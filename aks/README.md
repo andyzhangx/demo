@@ -33,7 +33,7 @@ kubectl get nodes
 az aks scale -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --agent-count=2
 ```
 
-#### 5. delete AKS cluster node
+#### 6. delete AKS cluster node
 ```
 az aks delete -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME
 ```
