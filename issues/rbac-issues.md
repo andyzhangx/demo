@@ -1,6 +1,7 @@
 # Kubernetes RBAC related issues
+This page lists all the issues when k8s RBAC is enabled
 
-#### 1. Access error when using kubernetes dashboard due to k8s RBAC enabled
+#### 1. Access error when using kubernetes dashboard
 Run
 ```
 kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
@@ -8,7 +9,7 @@ kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-adm
 details: https://docs.microsoft.com/en-us/azure/aks/kubernetes-dashboard#for-rbac-enabled-clusters
 
 
-#### 2. Azure file PVC creation due to RBAC failed
+#### 2. Azure file PVC creation failed
 Run
 ```
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/rbac/azure-cloud-provider-deployment.yaml
