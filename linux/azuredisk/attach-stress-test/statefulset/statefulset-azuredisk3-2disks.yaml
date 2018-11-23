@@ -22,6 +22,8 @@ spec:
           mountPath: /mnt/azuredisk
         - name: persistent-storage2
           mountPath: /mnt/azuredisk2
+  updateStrategy:
+    type: RollingUpdate
   volumeClaimTemplates:
   - metadata:
       name: persistent-storage
