@@ -483,3 +483,29 @@ MountVolume.WaitForAttach failed for volume "pvc-12b458f4-c23f-11e8-8d27-46799c2
 **Work around**:
 
 wait for a few more minutes should work
+
+## 14. azure disk attach/detach failed forever
+
+**Issue details**:
+
+if first attach/detach azure disk failed, attach/detach operation will fail forever issue 
+
+**Related issues**
+
+- [Azure Disks volume attach still times out on Kubernetes 1.10](https://github.com/kubernetes/kubernetes/issues/71344)
+
+**Fix**
+
+- PR [fix azure disk attach/detach failed forever issue](https://github.com/kubernetes/kubernetes/pull/71377)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.9 | no such issue |
+| v1.10 |  only 1.10.10 has this issue on VMSS node |
+| v1.11 | no such issue |
+| v1.12 | only 1.12.3 has this issue |
+| v1.13 | no such issue |
+
+**Work around**:
+
+if there is attach disk fail forever, restart controller manager would work; if there is disk not detached forever, detach that disk manually.
