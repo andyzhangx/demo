@@ -17,6 +17,7 @@
     - [11. Delete azure disk PVC which is already in use by a pod](#11-delete-azure-disk-pvc-which-is-already-in-use-by-a-pod)
     - [12. create azure disk PVC failed due to account creation failure](#12-create-azure-disk-pvc-failed-due-to-account-creation-failure)
     - [13. cannot find Lun for disk](https://github.com/andyzhangx/demo/blob/master/issues/azuredisk-issues.md#13-cannot-find-lun-for-disk)
+    - [14. azure disk attach/detach failed forever](https://github.com/andyzhangx/demo/blob/master/issues/azuredisk-issues.md#14-azure-disk-attachdetach-failed-forever)
 
 <!-- /TOC -->
 
