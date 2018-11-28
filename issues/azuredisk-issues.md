@@ -502,9 +502,9 @@ if first attach/detach azure disk failed, attach/detach operation will fail fore
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.9 | no such issue |
-| v1.10 |  only 1.10.10 has this issue on VMSS node |
+| v1.10 |  only `1.10.10`, `1.10.11` has this issue on VMSS node |
 | v1.11 | no such issue |
-| v1.12 | only 1.12.3 has this issue |
+| v1.12 | only `1.12.3` has this issue |
 | v1.13 | no such issue |
 
 **Work around**:
