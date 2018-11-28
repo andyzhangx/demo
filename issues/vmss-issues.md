@@ -9,3 +9,9 @@ az vmss show -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(numbe
 ```
 az vmss update-instances -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(number)>
 ```
+
+#### Tips
+ - detach a disk from a VMSS instance
+```
+az vmss disk detach -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(number)> --lun number
+```
