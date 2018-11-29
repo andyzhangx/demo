@@ -17,7 +17,7 @@
     - [11. Delete azure disk PVC which is already in use by a pod](#11-delete-azure-disk-pvc-which-is-already-in-use-by-a-pod)
     - [12. create azure disk PVC failed due to account creation failure](#12-create-azure-disk-pvc-failed-due-to-account-creation-failure)
     - [13. cannot find Lun for disk](https://github.com/andyzhangx/demo/blob/master/issues/azuredisk-issues.md#13-cannot-find-lun-for-disk)
-    - [14. azure disk attach/detach failed forever](https://github.com/andyzhangx/demo/blob/master/issues/azuredisk-issues.md#14-azure-disk-attachdetach-failed-forever)
+    - [14. azure disk attach/detach failure, mount issue, i/o error](https://github.com/andyzhangx/demo/blob/master/issues/azuredisk-issues.md#14-azure-disk-attachdetach-failure-mount-issue-io-error)
 
 <!-- /TOC -->
 
@@ -29,6 +29,7 @@
 | v1.8 | 1.8.13 or later |
 | v1.9 | 1.9.7 or later (1.9.6 on AKS) |
 | v1.10 | 1.10.2 or later |
+| v1.12 | 1.12.4 or later |
 
 ## 1. disk attach error
 
@@ -499,9 +500,10 @@ We found a critical disk attach/detach issue due to [dirty vm cache PR](https://
 
 - [Azure Disks volume attach still times out on Kubernetes 1.10](https://github.com/kubernetes/kubernetes/issues/71344)
 - [Azure Disks occasionally mounted in a way leading to I/O errors](https://github.com/kubernetes/kubernetes/issues/71453)
+
 **Fix**
 
-We refactored the disk attach/detach code logic a little, switch to use k8s attach-detach controller to do attach/detach disk retry and clean vm cache after every disk operation, this issue is proved to be fixed in our disk attach/detach stress test and also verified in customer env:
+We changed the azure disk attach/detach retry logic in k8s v1.13, switch to use k8s attach-detach controller to do attach/detach disk retry and clean vm cache after every disk operation, this issue is proved to be fixed in our disk attach/detach stress test and also verified in customer env:
 - PR [remove retry operation on attach/detach azure disk in azure cloud provider](https://github.com/kubernetes/kubernetes/pull/70568)
 - PR [fix azure disk attach/detach failed forever issue](https://github.com/kubernetes/kubernetes/pull/71377)
 - PR [fix detach azure disk issue due to dirty cache](https://github.com/kubernetes/kubernetes/pull/71495)
