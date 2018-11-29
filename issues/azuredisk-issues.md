@@ -485,28 +485,36 @@ MountVolume.WaitForAttach failed for volume "pvc-12b458f4-c23f-11e8-8d27-46799c2
 
 wait for a few more minutes should work
 
-## 14. azure disk attach/detach failed forever
+## 14. azure disk attach/detach failure, mount issue, i/o error
 
 **Issue details**:
 
-if first attach/detach azure disk failed, attach/detach operation will fail forever issue 
+We found a critical disk attach/detach issue due to [dirty vm cache PR](https://github.com/kubernetes/kubernetes/pull/58313) introduced from v1.9.2, it would lead to following disk issues:
+ - disk attach/detach failure for a long time
+ - disk I/O error
+
+> Note: above error may **only** happen when there are multiple disk attach/detach operations in parellel
 
 **Related issues**
 
 - [Azure Disks volume attach still times out on Kubernetes 1.10](https://github.com/kubernetes/kubernetes/issues/71344)
-
+- [Azure Disks occasionally mounted in a way leading to I/O errors](https://github.com/kubernetes/kubernetes/issues/71453)
 **Fix**
 
+We refactored the disk attach/detach code logic a little, switch to use k8s attach-detach controller to do attach/detach disk retry and clean vm cache after every disk operation, this issue is proved to be fixed in our disk attach/detach stress test and also verified in customer env:
+- PR [remove retry operation on attach/detach azure disk in azure cloud provider](https://github.com/kubernetes/kubernetes/pull/70568)
 - PR [fix azure disk attach/detach failed forever issue](https://github.com/kubernetes/kubernetes/pull/71377)
+- PR [fix detach azure disk issue due to dirty cache](https://github.com/kubernetes/kubernetes/pull/71495)
+
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.9 | no such issue |
-| v1.10 |  only `1.10.10`, `1.10.11` has this issue on VMSS node |
-| v1.11 | no such issue |
-| v1.12 | only `1.12.3` has this issue |
+| v1.9 | issue introduced in v1.9.2, no cherry-pick fix allowed|
+| v1.10 | in cherry-pick |
+| v1.11 | in cherry-pick |
+| v1.12 | 1.12.4 |
 | v1.13 | no such issue |
 
 **Work around**:
 
-if there is attach disk fail forever, restart controller manager would work; if there is disk not detached forever, detach that disk manually.
+if there is attach disk failure for long time, restart controller manager may work; if there is disk not detached for long time, detach that disk manually.
