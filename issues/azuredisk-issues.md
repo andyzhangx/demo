@@ -494,7 +494,8 @@ We found a disk attach/detach issue due to [dirty vm cache PR](https://github.co
  - disk attach/detach failure for a long time
  - disk I/O error
 
-> Note: above error may **only** happen when there are multiple disk attach/detach operations in parellel
+> Note: above error may **only** happen when there are multiple disk attach/detach operations in parellel and it’s not easy to repro since it happens on a little possibility.
+
 
 **Related issues**
 
