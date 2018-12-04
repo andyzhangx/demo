@@ -514,7 +514,7 @@ We changed the azure disk attach/detach retry logic in k8s v1.13, switch to use 
 | ---- | ---- |
 | v1.9 | issue introduced in v1.9.2, no cherry-pick fix allowed|
 | v1.10 | in cherry-pick |
-| v1.11 | in cherry-pick |
+| v1.11 | 1.11.6 |
 | v1.12 | 1.12.4 |
 | v1.13 | no such issue |
 
