@@ -37,7 +37,7 @@ overlay          30G  3.6G   26G  13% /
 tmpfs           6.9G     0  6.9G   0% /dev
 tmpfs           6.9G     0  6.9G   0% /sys/fs/cgroup
 /dev/sda1        30G  3.6G   26G  13% /etc/hosts
-/dev/sdc        4.8G   12M  4.6G   1% /mnt/azurefile
+//f5713de20cde511e8ba4900.file.core.windows.net/xxx       4.8G   12M  4.6G   1% /mnt/azurefile
 shm              64M     0   64M   0% /dev/shm
 tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```
