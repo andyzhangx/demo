@@ -16,6 +16,8 @@ details: [Enable dynamic azure disk volume limits](https://github.com/kubernetes
 
 Before v1.12.0, the maximum disk number of node is always set as 16 by default, so if it’s a little VM size that only supports 8 disk attachment, there would be error after attaching the 9th disk, while from v1.12.0, the 9th disk would not be scheduled to that node if it only accepts attaching 8 disks totally.
 
+details: [Node-specific Volume Limits](https://kubernetes.io/docs/concepts/storage/storage-limits/)
+
  - More disk type support
 
 new managed disk types [`StandardSSD_LRS`](https://aka.ms/StandardSSDBlog), `UltraSSD_LRS` are available from `v1.13.0`
