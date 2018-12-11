@@ -1,6 +1,6 @@
 # kubernetes developing practices
 ## kubernetes on Windows
-### build kubernetes on Windows
+### 1. build kubernetes on Windows
 run dos in admin mode
 ```
 cd C:\Go\src\k8s.io\kubernetes\vendor\k8s.io
@@ -74,7 +74,7 @@ start-service kubeproxy
 start-service kubelet
 ```
 
-### build kubernetes on Linux
+### 2. build kubernetes on Linux
 
 ##### Q: got an error "runtime: goroutine stack exceeds 1000000000-byte limit" running `make` command
 ```
@@ -99,12 +99,18 @@ make
 ```
 
 ##### Build your own `hyperkube` image
-copy `hyperkube` binary to `~/go/src/k8s.io/kubernetes/cluster/images/hyperkube` directory
+ - copy `hyperkube` binary to `~/go/src/k8s.io/kubernetes/cluster/images/hyperkube` directory
 ```
 export BASEIMAGE=k8s.gcr.io/debian-hyperkube-base-amd64:0.10
 docker build --no-cache -t andyzhangx/hyperkube:v1.10.2-azuredisk-block .
 docker push andyzhangx/hyperkube:v1.10.2-azuredisk-block
 ```
+ - Build Your Custom Kubelet Image
+```
+cd cluster/images/hyperkube/
+make VERSION=$YOURCOOLTAG ARCH=amd64
+```
+ > For details, refer to https://tureus.github.io/devops/2017/01/24/build-your-custom-kubelet-image.html
 
 ## General development practices
 #### precheck before submit any code
