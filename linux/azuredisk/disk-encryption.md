@@ -3,6 +3,7 @@
 ```
 ATTRS{device_id}=="?00000001-0001-*", ENV{fabric_name}="BEK", GOTO="azure_names"
 ```
+ > Notes: details could be found [here](https://github.com/kubernetes/kubernetes/issues/66443#issuecomment-406765240)
  
  - Follow below steps when AKS cluster is newly created
 ```
