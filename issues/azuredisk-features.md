@@ -8,6 +8,8 @@ details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kube
 
 example: [azuredisk storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-sizegrow.yaml)
 
+Tips: [Expand virtual hard disks on a Linux VM with the Azure CLI](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/expand-disks)
+
  - Enable dynamic azure disk volume limits
 
 available from `v1.12.0`
