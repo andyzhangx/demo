@@ -1,20 +1,22 @@
 # Azure disk new features and restrictions
 ## Azure disk new features
- - Azure disk size grow
+ - size grow
 
-available from `v1.11.0`
-
-details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kubernetes/pull/64386)
+available from `v1.11.0`, details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kubernetes/pull/64386)
 
 example: [azuredisk storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-sizegrow.yaml)
 
 Tips: [Expand virtual hard disks on a Linux VM with the Azure CLI](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/expand-disks)
 
+ - raw block device support
+
+available from `v1.11.0`
+
+details: [Add raw block device support for azure disk](https://github.com/kubernetes/kubernetes/pull/63841)
+
  - Enable dynamic azure disk volume limits
 
-available from `v1.12.0`
-
-details: [Enable dynamic azure disk volume limits](https://github.com/kubernetes/kubernetes/pull/67772)
+available from `v1.12.0`, details: [Enable dynamic azure disk volume limits](https://github.com/kubernetes/kubernetes/pull/67772)
 
 Before v1.12.0, the maximum disk number of node is always set as 16 by default, so if it’s a little VM size that only supports 8 disk attachment, there would be error after attaching the 9th disk, while from v1.12.0, the 9th disk would not be scheduled to that node if it only accepts attaching 8 disks totally.
 
