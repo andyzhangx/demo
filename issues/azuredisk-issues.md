@@ -491,6 +491,7 @@ wait for a few more minutes should work
 **Issue details**:
 
 We found a disk attach/detach issue due to [dirty vm cache PR](https://github.com/kubernetes/kubernetes/pull/58313) introduced from v1.9.2, it would lead to following disk issues:
+ - try to attach/detach a disk which does not exist
  - disk attach/detach failure for a long time
  - disk I/O error
 
