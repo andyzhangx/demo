@@ -520,5 +520,7 @@ We changed the azure disk attach/detach retry logic in k8s v1.13, switch to use 
 | v1.13 | no such issue |
 
 **Work around**:
+ - if k8s is trying to attach/detach a disk which does not exist, detach that disk manually
+ - if there is attach disk failure for long time, restart controller manager may work
+ - if there is disk not detached for long time, detach that disk manually
 
-if there is attach disk failure for long time, restart controller manager may work; if there is disk not detached for long time, detach that disk manually.
