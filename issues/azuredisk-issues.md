@@ -491,7 +491,6 @@ wait for a few more minutes should work
 **Issue details**:
 
 We found a disk attach/detach issue due to [dirty vm cache PR](https://github.com/kubernetes/kubernetes/pull/58313) introduced from v1.9.2, it would lead to following disk issues:
- - try to attach/detach a disk which does not exist
  - disk attach/detach failure for a long time
  - disk I/O error
 
@@ -520,7 +519,6 @@ We changed the azure disk attach/detach retry logic in k8s v1.13, switch to use 
 | v1.13 | no such issue |
 
 **Work around**:
- - if k8s is trying to attach/detach a disk which does not exist, detach that disk manually
  - if there is attach disk failure for long time, restart controller manager may work
  - if there is disk not detached for long time, detach that disk manually
 
