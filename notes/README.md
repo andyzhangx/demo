@@ -14,4 +14,5 @@ Redhat Openshift provides a good [example](https://people.redhat.com/aweiteka/do
 
 ### Links
  - [Common Kubernetes Ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports)
- - [Feature Gates](https://kubernetes.io/docs/reference/feature-gates/)
+ - [Feature Gates](https://github.com/kubernetes/kubernetes/blob/master/pkg/features/kube_features.go)
+ - [Debug Services](https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/)
