@@ -17,3 +17,8 @@ Log on to node `k8s-agentpool1-55859097-0`, run following command:
 curl http://localhost:4194/containers/
 ```
 
+#### Notes
+```
+The Kubelet also starts an internal HTTP server on port 10255 and exposes some endpoints (mostly for debugging, stats, and for one-off container operations such as kubectl logs or kubectl exec), such as /metrics, /metrics/cadvisor, /pods, /spec, and so on.
+```
+[Kubernetes Node Components: Service Proxy, Kubelet, and cAdvisor](https://medium.com/jorgeacetozi/kubernetes-node-components-service-proxy-kubelet-and-cadvisor-dcc6928ef58c)
