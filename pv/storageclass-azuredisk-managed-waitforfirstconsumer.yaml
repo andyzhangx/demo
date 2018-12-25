@@ -7,4 +7,4 @@ volumeBindingMode: WaitForFirstConsumer
 parameters:
   skuname: Standard_LRS
   kind: managed
-  cachingmode: None
+  cachingMode: ReadOnly

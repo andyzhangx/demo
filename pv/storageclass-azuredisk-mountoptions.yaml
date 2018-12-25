@@ -10,4 +10,4 @@ parameters:
   skuname: Standard_LRS
   kind: Shared
   fstype: ext3
-  cachingmode: None
+  cachingMode: ReadOnly

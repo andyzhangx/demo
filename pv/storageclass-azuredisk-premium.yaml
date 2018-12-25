@@ -6,4 +6,4 @@ provisioner: kubernetes.io/azure-disk
 parameters:
   skuname: Premium_LRS
   kind: managed
-  cachingmode: None
+  cachingMode: ReadOnly

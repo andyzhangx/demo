@@ -25,7 +25,7 @@ provisioner: kubernetes.io/azure-disk
 parameters:
   skuName: Standard_LRS
   kind: Managed
-  cachingmode: None
+  cachingMode: ReadOnly
 ```
 
  - use subPath (it will create a new directory in the newly attached azure disk)

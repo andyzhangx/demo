@@ -15,6 +15,6 @@ spec:
           kind: Managed
           diskName: {disk-id}
           diskURI: /subscriptions/{sub-id}/resourcegroups/{group-name}/providers/microsoft.compute/disks/{disk-id}
-          cachingMode: None
+          cachingMode: ReadOnly
           fsType: ext4
           readOnly: false
