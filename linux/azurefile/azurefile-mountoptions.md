@@ -75,3 +75,19 @@ total 1
 -rwx-w-r-- 1 1000 1000 1015 Nov 27 06:09 outfile
 drwx-wx--x 2 1000 1000    0 Nov 27 06:09 a
 ```
+
+ - `fileMode`, `dirMode` value would be different in different versions, in latest master branch, it's `0755` by default, to set a different value, follow this [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) (available from v1.8.5). 
+   - For version v1.8.0-v1.8.4, since [mount options support of azure file](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/azurefile-mountoptions.md) is not available, as a workaround, [securityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) could be specified for the pod, [detailed pod example](https://github.com/andyzhangx/Demo/blob/master/linux/azurefile/demo-azurefile-securitycontext.yaml)
+```
+  securityContext:
+    runAsUser: XXX
+    fsGroup: XXX
+```
+
+| version | `fileMode`, `dirMode` value |
+| ---- | ---- |
+| v1.6.x, v1.7.x | 0777 |
+| v1.8.0-v1.8.5 | 0700 |
+| v1.8.6 or above | 0755 |
+| v1.9.0 | 0700 |
+| v1.9.1 or above | 0755 |
