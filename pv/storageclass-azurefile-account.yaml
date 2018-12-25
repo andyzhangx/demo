@@ -6,3 +6,4 @@ metadata:
 provisioner: kubernetes.io/azure-file
 parameters:
   storageAccount: EXISTING_STORAGE_ACCOUNT
+  skuName: Standard_LRS  #available values: Standard_LRS, Standard_GRS, Standard_RAGRS, (and Premium_LRS are supported from k8s v1.13.0)
