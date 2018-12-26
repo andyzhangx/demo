@@ -38,7 +38,7 @@ az ad sp credential reset --name <aadClientId> --password <aadClientSecret> --ye
 
 Wait about two hours at most, the original SP token will expire, and then it will work if original SP already expires.
 
-#### Option#2: reset a new SP password and then replace the password in `/etc/kubernetes/azure.json`
+#### Option#2: create a new SP password and then replace the password in `/etc/kubernetes/azure.json`
  - check whether current Service Principal `aadClientId` has expired
 ```
 az ad sp credential list --id <aadClientId>
