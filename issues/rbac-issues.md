@@ -28,3 +28,27 @@ Run
 ```
 kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 ```
+
+#### Update Service Principal in aks-engine
+paste my practice about how to update service principal secret in an existing k8s cluster:
+```
+# update service principle (aadClientSecret)
+sudo vi /etc/kubernetes/azure.json
+
+# on master node
+docker restart $(docker ps  -q)
+
+# on Linux agent node
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+
+# on Windows agent node
+notepad c:\k\azure.json  #update aadClientSecret and save
+start powershell
+stop-service kubeproxy
+stop-service kubelet
+start-service kubeproxy
+start-service kubelet
+```
+
+To automate this, you may use custom extension to run these scripts in VM, refer to https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux
