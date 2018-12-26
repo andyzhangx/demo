@@ -30,7 +30,12 @@ kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-adm
 ```
 
 #### Update Service Principal in aks-engine
-paste my practice about how to update service principal secret in an existing k8s cluster:
+ - check whether current Service Principal `aadClientId` has expired
+```
+az ad sp credential list --id 085ac615-1dd4-4c50-ac64-7612ad5f43fe
+```
+
+ - paste my practice about how to update service principal secret in an existing k8s cluster:
 ```
 # update service principle (aadClientSecret)
 sudo vi /etc/kubernetes/azure.json
