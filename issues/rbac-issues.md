@@ -29,7 +29,7 @@ Run
 kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 ```
 
-### Update Service Principal in aks-engine
+### Update Service Principal in AKS & aks-engine
 #### Option#1: extend the original SP password for one more year
 Get `aadClientId` and `aadClientSecret` from `/etc/kubernetes/azure.json`
 ```
