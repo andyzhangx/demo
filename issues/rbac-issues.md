@@ -29,10 +29,17 @@ Run
 kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 ```
 
-#### Update Service Principal in aks-engine
+### Update Service Principal in aks-engine
+#### Option#1: extend the original SP password for one more year
+Get `aadClientId` and `aadClientSecret` from `/etc/kubernetes/azure.json`
+```
+az ad sp credential reset --name <aadClientId> --password <aadClientSecret> --years 1
+```
+
+#### Option#2: reset a new SP password and then replace the password in `/etc/kubernetes/azure.json`
  - check whether current Service Principal `aadClientId` has expired
 ```
-az ad sp credential list --id 085ac615-1dd4-4c50-ac64-7612ad5f43fe
+az ad sp credential list --id <aadClientId>
 ```
 
  - paste my practice about how to update service principal secret in an existing k8s cluster:
