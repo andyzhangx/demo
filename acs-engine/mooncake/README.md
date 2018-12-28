@@ -3,7 +3,7 @@
 
 ### 1. download acs-engine binary
 ```
-acs_version=v0.21.2
+acs_version=v0.26.3
 wget https://mirror.azure.cn/kubernetes/acs-engine/$acs_version/acs-engine-$acs_version-linux-amd64.tar.gz
 tar -xvzf acs-engine-$acs_version-linux-amd64.tar.gz
 ```
@@ -38,20 +38,7 @@ az group deployment create \
 az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
 ```
 
-#### container registry proxy in Azure China
-| global | registry proxy in Azure China|
-| ---- | ---- |
-| dockerhub (docker.io) | [dockerhub.azk8s.cn](http://mirror.azk8s.cn/help/docker-registry-proxy-cache.html) |
-| gcr.io | [gcr.azk8s.cn](http://mirror.azk8s.cn/help/gcr-proxy-cache.html) |
-| quay.io | quay.azk8s.cn |
-
- - Note: 
-  > `k8s.gcr.io` would redirect to `gcr.io/google-containers`, following images are identical:
-```
-k8s.gcr.io/pause-amd64:3.1
-gcr.azk8s.cn/google_containers/pause-amd64:3.1
-```
- - All kubernetes related binaries on github could be found under https://mirror.azk8s.cn/kubernetes
+#### [Container Registry Proxy in Azure China](https://github.com/Azure/container-service-for-azure-china/tree/master/aks#22-container-registry-proxy)
 
 #### Known issues
  - [Azure disk on Sovereign Cloud](https://github.com/kubernetes/kubernetes/pull/50673) is supported from v1.7.9, v1.8.3
@@ -72,8 +59,6 @@ gcr.azk8s.cn/google_containers/pause-amd64:3.1
  - [use gcr.azk8s.cn for all add-on configs on Azure China](https://github.com/Azure/acs-engine/pull/4190)
 
 #### Links
-[acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
-
-For detailed steps, refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/
-
-[Kubernetes on Azure Government](https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-k8)
+ - [acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
+ > For detailed steps, refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/
+ - [Kubernetes on Azure Government](https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-k8)
