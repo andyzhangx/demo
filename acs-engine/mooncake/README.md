@@ -1,6 +1,4 @@
-# Deploy kubernetes cluster on mooncake
-> Note: with acs-engine v0.14.0 or above, soveriegn cloud is supported directly, it's not necessary to modify `azuredeploy.parameters.json` template after generation any more, acs-engine will generate soveriegn cloud templates according to `location` field in cluster defination file, see [example](https://github.com/andyzhangx/demo/blob/master/acs-engine/mooncake/kubernetes-1.10.7.json#L3)
-
+# Deploy kubernetes cluster on Azure China
 ### 1. download acs-engine binary
 ```
 acs_version=v0.26.3
