@@ -25,7 +25,8 @@ vi kubernetes-$k8s_version.json
 ```
 # create a resource group first
 RESOURCE_GROUP_NAME=andy-k8s1107
-az group create -l chinaeast2 -n $RESOURCE_GROUP_NAME
+REGION=chinaeast2
+az group create -l $REGION -n $RESOURCE_GROUP_NAME
 
 # deploy ARM template
 dnsPrefix=andy-k8s1107
@@ -36,9 +37,9 @@ az group deployment create \
     --parameters "@./_output/$dnsPrefix/azuredeploy.parameters.json"
 ```
 
-### 5. After k8s cluster creation successfully, get master node VM name by running following command:
+### 5. After k8s cluster creation successfully, ssh to master node by:
 ```
-az vm list -g $RESOURCE_GROUP_NAME | grep master | grep computerName
+ssh azureuser@$dnsPrefix.$REGION.cloudapp.chinacloudapi.cn
 ```
 
 #### [Container Registry Proxy in Azure China](https://github.com/Azure/container-service-for-azure-china/tree/master/aks#22-container-registry-proxy)
