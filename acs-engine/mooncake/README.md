@@ -19,12 +19,15 @@ vi kubernetes-$k8s_version.json
 ### 3. generate ARM templates by acs-engine
 ```
 ./acs-engine generate kubernetes-$k8s_version.json
-RESOURCE_GROUP_NAME=andy-k8s1107
-az group create -l chinaeast -n $RESOURCE_GROUP_NAME
 ```
 
 ### 4. create kubernetes cluster by ARM templates
 ```
+# create a resource group first
+RESOURCE_GROUP_NAME=andy-k8s1107
+az group create -l chinaeast2 -n $RESOURCE_GROUP_NAME
+
+# deploy ARM template
 dnsPrefix=andy-k8s1107
 az group deployment create \
     --name="$dnsPrefix" \
