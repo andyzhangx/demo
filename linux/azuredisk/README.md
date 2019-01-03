@@ -57,11 +57,11 @@ wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/De
 vi nginx-pod-azuredisk.yaml
 ```
 
- - blob based(unmanaged) disk 
-```
-wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
-vi nginx-pod-azuredisk.yaml
-```
+ > - blob based(unmanaged) disk 
+ > ```
+ > wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
+ > vi nginx-pod-azuredisk.yaml
+ > ```
 
 #### 2. create a pod with an azure disk mount
 ```kubectl create -f nginx-pod-azuredisk.yaml```
