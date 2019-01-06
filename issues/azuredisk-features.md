@@ -6,6 +6,8 @@ available from `v1.11.0`, details: [Add azuredisk PV size grow feature](https://
 
 example: [azuredisk storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-sizegrow.yaml)
 
+related issues: [Resizing the persistent volume in Azure AKS doesn't reflect the change at pod level.](https://github.com/kubernetes/kubernetes/issues/68427)
+
 Tips: [Expand virtual hard disks on a Linux VM with the Azure CLI](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/expand-disks)
 
  - raw block device support
