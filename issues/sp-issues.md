@@ -1,6 +1,6 @@
 ### Update Service Principal in AKS & aks-engine
 #### Option#1: extend the original SP password for one more year
-Get `aadClientId` and `aadClientSecret` from `/etc/kubernetes/azure.json`
+Get `aadClientId` and `aadClientSecret` from `/etc/kubernetes/azure.json` on the node
 ```
 az ad sp credential reset --name <aadClientId> --password <aadClientSecret> --years 1
 ```
