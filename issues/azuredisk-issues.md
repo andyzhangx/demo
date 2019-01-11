@@ -293,7 +293,7 @@ That's because azureDisk use ext4 file system by default, mountOptions like [uid
 
 **Solution**:
 
-Set uid in `runAsUser` and gid in `fsGroup` for pod: [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+ - option#1: Set uid in `runAsUser` and gid in `fsGroup` for pod: [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 
 e.g. Following setting will set pod run as root, make it accessiable to any file:
 ```yaml
@@ -308,6 +308,17 @@ spec:
 ```
 
 > Note: Since gid & uid is mounted as 0(root) by default, if set as non-root(e.g. 1000), k8s will use chown to change all dir/files under that disk, this is a time consuming job, which would make mount device very slow, in this issue: [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014#issuecomment-413546283), it costs about 10 min for chown operation complete.
+
+ - option#2: use `chown` in `initContainers`
+```
+initContainers:
+- name: volume-mount
+  image: busybox
+  command: ["sh", "-c", "chown -R 100:100 /data"]
+  volumeMounts:
+  - name: <your data volume>
+    mountPath: /data
+```
 
 ## 8. `Addition of a blob based disk to VM with managed disks is not supported`
 
