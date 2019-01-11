@@ -90,7 +90,7 @@ az vm update -g <group> -n <name>
 | v1.10 | 1.10.0 |
 
 ## 2. disk unavailable after attach/detach a data disk on a node
-
+> 💡 NOTE: Azure platform has fixed the host cache issue, the suggested host cache setting of data disk is `ReadOnly` now, more details about [azure disk cache setting](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/premium-storage-performance#disk-caching)
 **Issue details**:
 
 From k8s v1.7, default host cache setting changed from `None` to `ReadWrite`, this change would lead to device name change after attach multiple disks on a node, finally lead to disk unavailable from pod. When access data disk inside a pod, will get following error:
