@@ -23,6 +23,7 @@ available from `v1.12.0`, details: [Enable dynamic azure disk volume limits](htt
 Before v1.12.0, the maximum disk number of node is always set as 16 by default, so if it’s a little VM size that only supports 8 disk attachment, there would be error after attaching the 9th disk, while from v1.12.0, the 9th disk would not be scheduled to that node if it only accepts attaching 8 disks totally.
 
 details: [Node-specific Volume Limits](https://kubernetes.io/docs/concepts/storage/storage-limits/)
+> To workaround this in k8s v1.11, try setting [KUBE_MAX_PD_VOLS](https://github.com/kubernetes/kubernetes/blob/591ef236e04a515f1b582cb8d8a4ea29aaee98a3/pkg/scheduler/algorithm/predicates/predicates.go#L106)(default for azure disk is 16) env variable and restart k8s scheduler.
 
  - More disk type support
 
