@@ -34,7 +34,7 @@ all possible `skuname` values are `Standard_LRS`, `StandardSSD_LRS`, `Premium_LR
 
 details: [add azure UltraSSD, StandardSSD disk type support](https://github.com/kubernetes/kubernetes/pull/70477)
 
- - External(cross) resource group support
+ - External resource group support
 
 Support external resource group for azure disk dynamic provisioning
 
