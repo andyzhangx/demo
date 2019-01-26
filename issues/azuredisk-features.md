@@ -34,6 +34,14 @@ all possible `skuname` values are `Standard_LRS`, `StandardSSD_LRS`, `Premium_LR
 
 details: [add azure UltraSSD, StandardSSD disk type support](https://github.com/kubernetes/kubernetes/pull/70477)
 
+ - External(cross) resource group support
+
+Support external resource group for azure disk dynamic provisioning
+
+example: https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-external-rg.yaml
+
+details: [fix azure disk creation issue when specifying external resource group](https://github.com/kubernetes/kubernetes/pull/65516)
+
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
 Error would be like following:
