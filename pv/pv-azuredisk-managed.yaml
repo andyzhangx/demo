@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-azuredisk
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  azureDisk:
+    diskName: {disk-id}
+    diskURI: /subscriptions/{sub-id}/resourcegroups/{group-name}/providers/microsoft.compute/disks/{disk-id}
+    kind: Managed
+    cachingMode: ReadOnly
+    fsType: ext4
+    readOnly: false    
