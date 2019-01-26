@@ -42,6 +42,14 @@ example: https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredis
 
 details: [fix azure disk creation issue when specifying external resource group](https://github.com/kubernetes/kubernetes/pull/65516)
 
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.7 | not supported |
+| v1.8 | 1.8.15 |
+| v1.9 | 1.9.11 |
+| v1.10 | 1.10.6 |
+| v1.11 | 1.11.0 |
+
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
 Error would be like following:
