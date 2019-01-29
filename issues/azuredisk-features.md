@@ -35,6 +35,7 @@ all possible `skuname` values are `Standard_LRS`, `StandardSSD_LRS`, `Premium_LR
 details: [add azure UltraSSD, StandardSSD disk type support](https://github.com/kubernetes/kubernetes/pull/70477)
 
  - External resource group support for azure disk PV dynamic provisioning
+> all resource groups should be in same subscription, we don’t support cross-subscription scenario
 
 example: https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-external-rg.yaml
 
