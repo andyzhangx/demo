@@ -11,7 +11,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   local:
-    path: /  # use c:\ after path translation
+    path: /  # use c:\ after path translation or `c:\dir`
   nodeAffinity:
     required:
       nodeSelectorTerms:
