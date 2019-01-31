@@ -11,6 +11,7 @@ mountOptions:
   - gid=1000
   - mfsymlinks
   - nobrl
+  - cache=none
 parameters:
   skuName: Standard_LRS
 
