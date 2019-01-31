@@ -506,6 +506,8 @@ wait for a few more minutes should work
 We found a disk attach/detach issue due to [dirty vm cache PR](https://github.com/kubernetes/kubernetes/pull/58313) introduced from v1.9.2, it would lead to following disk issues:
  - disk attach/detach failure for a long time
  - disk I/O error
+ - unexpected disk detachment from VM
+ - VM running into failed state due to attaching non-existing disk
 
 > Note: above error may **only** happen when there are multiple disk attach/detach operations in parellel and it’s not easy to repro since it happens on a little possibility.
 
