@@ -509,7 +509,7 @@ We found a disk attach/detach issue due to [dirty vm cache PR](https://github.co
  - unexpected disk detachment from VM
  - VM running into failed state due to attaching non-existing disk
 
-> Note: above error may **only** happen when there are multiple disk attach/detach operations in parellel and it’s not easy to repro since it happens on a little possibility.
+> Note: above error may **only** happen when there are multiple disk attach/detach operations in parellel and it's not easy to repro since it happens on a little possibility.
 
 
 **Related issues**
