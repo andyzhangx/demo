@@ -186,6 +186,7 @@ Original time cost for Azure Disk PVC mount on a standard node size(e.g. Standar
 | v1.10 | 1.10.0 |
 
 ## 5. Azure disk PVC `Multi-Attach error`, makes disk mount very slow or mount failure forever
+ > 💡 NOTE: AKS and current aks-engine won't have this issue since it's **not** using containerized kubelet
 
 **Issue details**:
 
