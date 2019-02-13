@@ -10,7 +10,9 @@ Wait about two hours at most, the original SP token will expire, and then `contr
 #### Option#2: create a new SP password and then replace the password in `/etc/kubernetes/azure.json`
  - check whether current Service Principal `aadClientId` has expired
 ```
-az ad sp credential list --id <aadClientId>
+aadClientId=$(az aks show --resource-group <RG_NAME> --name <CLUSTER_NAME> --query "servicePrincipalProfile.clientId" --output tsv)
+echo $aadClientId
+az ad sp credential list --id $aadClientId
 ```
 
  - paste my practice about how to update service principal secret in an existing k8s cluster:
