@@ -7,7 +7,10 @@ az ad sp credential reset --name <aadClientId> --password <aadClientSecret> --ye
 
 Wait about two hours at most, the original SP token will expire, and then `controller-manager`, `api-server`, `kubelet` will work.
 
-#### Option#2: create a new SP password and then replace the password in `/etc/kubernetes/azure.json`
+#### Option#2: Update or rotate the credentials for a service principal in Azure Kubernetes Service (AKS)
+Please refer to https://docs.microsoft.com/en-us/azure/aks/update-credentials
+
+#### [Deprecated] Option# Manual way: create a new SP password and then replace the password in `/etc/kubernetes/azure.json`
  - check whether current Service Principal `aadClientId` has expired
 ```
 aadClientId=$(az aks show --resource-group <RG_NAME> --name <CLUSTER_NAME> --query "servicePrincipalProfile.clientId" --output tsv)
