@@ -15,6 +15,7 @@
     - [7. file permission could not be changed using azure file, e.g. postgresql](#7-file-permission-could-not-be-changed-using-azure-file-eg-postgresql)
     - [8. Could not delete pod with AzureFile volume if storage account key changed](#8-could-not-delete-pod-with-azurefile-volume-if-storage-account-key-changed)
     - [9. Long latency when handling lots of small files](#9-long-latency-compared-to-disk-when-handling-lots-of-small-files)
+    - [10. `allow access from selected network` setting on storage account will break azure file dynamic provisioning](#10-allow-access-from-selected-network-setting-on-storage-account-will-break-azure-file-dynamic-provisioning)
     
 <!-- /TOC -->
 
