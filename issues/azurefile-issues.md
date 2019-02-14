@@ -245,3 +245,20 @@ sudo umount /var/lib/kubelet/pods/cc5c86cd-422a-11e8-91d7-000d3a03ee84/volumes/k
 **Related issues**
  - [`azurefile` is very slow](https://github.com/Azure/AKS/issues/223)
  - [Can't roll out Wordpress chart with PV on AzureFile](https://github.com/helm/charts/issues/5751)
+ 
+ 
+ ## 10. `allow access from selected network` setting on storage account will break azure file dynamic provisioning
+ When set `allow access from selected network` on storage account and will get following error when creating a file share by k8s:
+ ```
+ persistentvolume-controller (combined from similar events): Failed to provision volume with StorageClass "azurefile": failed to create share kubernetes-dynamic-pvc-xxx in account xxx: failed to create file share, err: storage: service returned error: StatusCode=403, ErrorCode=AuthorizationFailure, ErrorMessage=This request is not authorized to perform this operation.
+ ```
+
+That's because k8s `persistentvolume-controller` is on master node which is not in the selected network, and that's why it could not create file share on that storage account.
+
+**Workaround**:
+
+use azure file static provisioning instead
+ - create azure file share in advance, and then provide storage account and file share name in k8s, here is an [example](https://docs.microsoft.com/en-us/azure/aks/azure-files-volume)
+ 
+ **Related issues**
+  - [Azure Files PV AuthorizationFailure when using advanced networking ](https://github.com/Azure/AKS/issues/804)
