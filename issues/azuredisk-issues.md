@@ -27,7 +27,7 @@
 | ---- | ---- |
 | v1.7 | 1.7.14 or later |
 | v1.8 | 1.8.13 or later |
-| v1.9 | 1.9.7 or later (1.9.6 on AKS) |
+| v1.9 | 1.9.6 or later |
 | v1.10 | 1.10.12 or later |
 | v1.11 | 1.11.6 or later |
 | v1.12 | 1.12.4 or later |
@@ -538,3 +538,5 @@ We changed the azure disk attach/detach retry logic in k8s v1.13, switch to use 
  - if there is attach disk failure for long time, restart controller manager may work
  - if there is disk not detached for long time, detach that disk manually
 
+**Related issues**
+ - [Multi Attach Error](https://github.com/Azure/AKS/issues/477)
