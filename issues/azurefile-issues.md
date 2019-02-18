@@ -263,3 +263,33 @@ use azure file static provisioning instead
  
  **Related issues**
   - [Azure Files PV AuthorizationFailure when using advanced networking ](https://github.com/Azure/AKS/issues/804)
+
+## 11. azure file remount on Windows in same node would fail
+
+**Issue details**:
+
+If user delete a pod with azure file mount in deployment and it would probably schedule a pod on same node, azure file mount will fail since `New-SmbGlobalMapping` command would fail if file share is already mounted on the node.
+
+**error logs**
+
+Error logs would be like following:
+```
+E0118 08:15:52.041014    2112 nestedpendingoperations.go:267] Operation for "\"kubernetes.io/azure-file/42c0ea39-1af9-11e9-8941-000d3af95268-pvc-d7e1b5f9-1af3-11e9-8941-000d3af95268\" (\"42c0ea39-1af9-11e9-8941-000d3af95268\")" failed. No retries permitted until 2019-01-18 08:15:53.0410149 +0000 GMT m=+732.446642701 (durationBeforeRetry 1s). Error: "MountVolume.SetUp failed for volume \"pvc-d7e1b5f9-1af3-11e9-8941-000d3af95268\" (UniqueName: \"kubernetes.io/azure-file/42c0ea39-1af9-11e9-8941-000d3af95268-pvc-d7e1b5f9-1af3-11e9-8941-000d3af95268\") pod \"deployment-azurefile-697f98d559-6zrlf\" (UID: \"42c0ea39-1af9-11e9-8941-000d3af95268\") : azureMount: SmbGlobalMapping failed: exit status 1, only SMB mount is supported now, output: \"New-SmbGlobalMapping : Generic failure \\r\\nAt line:1 char:190\\r\\n+ ... ser, $PWord;New-SmbGlobalMapping -RemotePath $Env:smbremotepath -Cred ...\\r\\n+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\r\\n    + CategoryInfo          : NotSpecified: (MSFT_SmbGlobalMapping:ROOT/Microsoft/...mbGlobalMapping) [New-SmbGlobalMa \\r\\n   pping], CimException\\r\\n    + FullyQualifiedErrorId : HRESULT 0x80041001,New-SmbGlobalMapping\\r\\n \\r\\n\""
+```
+
+**Fix**
+
+- PR [fix smb remount issue on Windows](https://github.com/kubernetes/kubernetes/pull/73661)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.10 | in cherry-pick |
+| v1.11 | in cherry-pick |
+| v1.12 | in cherry-pick |
+| v1.13 | in cherry-pick |
+| v1.14 | 1.14.0 |
+
+**Related issues**
+
+- [azure file remount on Windows in same node would fail](https://github.com/kubernetes/kubernetes/issues/73087)
+- [Mounting volume to pods fails randomly](https://github.com/Azure/aks-engine/issues/327)
