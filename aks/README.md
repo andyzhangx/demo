@@ -15,7 +15,7 @@ az group create -n $RESOURCE_GROUP_NAME -l $LOCATION
 
 #### 2. Create an AKS cluster
 ```
-az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 2 --generate-ssh-keys --kubernetes-version 1.8.1
+az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 2 --generate-ssh-keys --disable-rbac --kubernetes-version 1.8.1
 ```
 
 #### 3. get aks cluster credentials
