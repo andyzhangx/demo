@@ -1,0 +1,60 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-azurefile1-1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: azurefile
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-azurefile1-2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: azurefile
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: deployment-azurefile1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx  
+  template:
+    metadata:
+      labels:
+        app: nginx
+      name: deployment-azurefile1
+    spec:
+      containers:
+      - name: deployment-azurefile1
+        image: nginx
+        command:
+        - "/bin/sh"
+        - "-c"
+        - while true; do echo $(date) >> /mnt/azurefile/outdisk; sleep 1; done		
+        volumeMounts:
+        - name: azurefile1
+          mountPath: "/mnt/azurefile1"
+        - name: azurefile2
+          mountPath: "/mnt/azurefile2"
+      volumes:
+      - name: azurefile1
+        persistentVolumeClaim:
+          claimName: pvc-azurefile1-1
+      - name: azurefile2
+        persistentVolumeClaim:
+          claimName: pvc-azurefile1-2
