@@ -3,6 +3,7 @@ apiVersion: storage.k8s.io/v1
 metadata:
   name: hdd
 provisioner: kubernetes.io/azure-disk
+reclaimPolicy: Retain
 parameters:
   skuname: Standard_LRS
   kind: Shared
