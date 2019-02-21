@@ -2,8 +2,8 @@
 There is some corner case in the before that k8s agent could not recognize the correct azure data disk.
 
  - Note: 
-Step#1, #2 are needed if there is disk attach/detach issue 
-Step#3 is needed if there is disk mount/read/write issue
+   - Step#1, #2 are needed if there is disk attach/detach issue 
+   - Step#3 is needed if there is disk mount/read/write issue
 
 ### 1. Get disk info by azure cli
 ```
