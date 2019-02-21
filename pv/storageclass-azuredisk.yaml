@@ -6,5 +6,5 @@ provisioner: kubernetes.io/azure-disk
 reclaimPolicy: Retain
 parameters:
   skuname: Standard_LRS
-  kind: Shared
+  kind: managed
   cachingMode: ReadOnly
