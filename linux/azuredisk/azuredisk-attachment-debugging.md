@@ -1,5 +1,5 @@
 ## Debug Azure disk attach/detach/mount/read/write issue
-There is some corner case in the before that k8s agent could not recognize the correct azure data disk.
+Below are the steps about how to debug azure disk issues on Kubernetes.
 
  - Note: 
    - Step#1, #2 are needed if there is disk attach/detach issue 
