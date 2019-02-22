@@ -45,7 +45,7 @@ kubectl logs `kubectl get po --all-namespaces | grep controller-manager | cut -d
  - Option#2:
 1. get the "CONTAINER ID" of "/hyperkube controlle"
 ```
-docker ps -a | grep "hyperkube contro" | awk -F ' ' '{print $1}'
+docker ps | grep "hyperkube contro" | awk -F ' ' '{print $1}'
 ```
 2. get controller manager logs
 ```
@@ -53,7 +53,7 @@ docker logs "CONTAINER ID" > "CONTAINER ID".log 2>&1 &
 ```
 Or use below command lines directly:
 ```
-id=`docker ps -a | grep "hyperkube contro" | awk -F ' ' '{print $1}'`
+id=`docker ps | grep "hyperkube contro" | awk -F ' ' '{print $1}'`
 docker logs $id > $id.log 2>&1
 vi $id.log
 ```
