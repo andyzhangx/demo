@@ -1,6 +1,7 @@
 # How to enable disk encryption on AKS
  - Prerequisite
-VM restart may be required in the Azure Disk Encryption process, please make sure there is not workload on the target VM before encryption, run `kubectl drain no <NODE-NAME>` to make sure there is not workload on that VM before encryption.
+ 
+VM restart may be required in the Azure Disk Encryption process, please make sure there is no workload on the target VM before encryption: run `kubectl drain no <NODE-NAME>` to make sure there is not workload on that VM before encryption.
 
  - Follow below steps when AKS cluster is newly created
 ```
