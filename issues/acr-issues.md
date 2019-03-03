@@ -42,7 +42,8 @@ Currently we cannot pull image from ACR repo which provides anonymous image pull
 - [cannot access Azure Container Registry public repo](https://github.com/kubernetes/kubernetes/issues/74714)
 
 **Fix**
-PR [fix Azure Container Registry anonymous repo image pull error](https://github.com/kubernetes/kubernetes/pull/74715) fixed this issue by allowing * .azurecr. * with two secrets: 1. service principal 2. empty username & password
+
+PR [fix Azure Container Registry anonymous repo image pull error](https://github.com/kubernetes/kubernetes/pull/74715) fixed this issue by allowing * .azurecr. * with two secrets: 1. service principal 2. empty username & password, and if first secret failed, it will fall back to use second secret
 
 
 | k8s version | fixed version |
