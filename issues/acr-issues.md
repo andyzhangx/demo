@@ -55,7 +55,21 @@ PR [fix Azure Container Registry anonymous repo image pull error](https://github
 | v1.14 | no such issue |
 
 **Work around**:
- - provide a sevice principal which could access public ACR repo in `imagePullSecrets`, refer to [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry)
+ - provide a secret with empty username/password, specify that secret in `spec.imagePullSecrets` according to [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry):
+```
+kubectl create secret generic emptysecret --from-literal=.dockerconfigjson='{"auths":{"marketplace.azurecr.io":{"Username":"","Password":"","Email":""}}}' --type=kubernetes.io/dockerconfigjson
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: apache
+spec:
+  containers:
+  - image: marketplace.azurecr.io/bitnami/apache:2.4.38
+    name: apache
+  imagePullSecrets:
+  - name: emptysecret
+```
  
 ### Tips
 #### How to check whether current service principal could access ACR?
