@@ -49,8 +49,8 @@ PR [fix Azure Container Registry anonymous repo image pull error](https://github
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.10 | no fix |
-| v1.11 | in cherry-pick |
-| v1.12 | in cherry-pick |
+| v1.11 | 1.11.9 |
+| v1.12 | 1.12.7 |
 | v1.13 | in cherry-pick |
 | v1.14 | no such issue |
 
