@@ -283,10 +283,10 @@ E0118 08:15:52.041014    2112 nestedpendingoperations.go:267] Operation for "\"k
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.10 | in cherry-pick |
-| v1.11 | in cherry-pick |
-| v1.12 | in cherry-pick |
-| v1.13 | in cherry-pick |
+| v1.10 | no fix |
+| v1.11 | 1.11.8 |
+| v1.12 | 1.12.6 |
+| v1.13 | 1.13.4 |
 | v1.14 | 1.14.0 |
 
 **Related issues**
