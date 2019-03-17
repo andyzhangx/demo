@@ -27,3 +27,19 @@ There could be ARM api throttling due to too many ARM api calls in a time period
 | ---- | ---- |
 | v1.9 | 1.9.2 |
 | v1.10 | 1.10.0 |
+
+### 2. `azure-cli` failed to create aks cluster
+failed with following error:
+```
+The password must contain at least 1 special character. paramName: PasswordCredentials, paramValue: , objectType: Microsoft.Online.DirectoryServices.Application
+```
+
+**Fix**
+
+[update SP secret to include special characters for aad](https://github.com/Azure/azure-cli/pull/8741)
+
+**Workaround**:
+```sh
+docker run -v ${HOME}:/root -it andyzhangx/azure-cli:2.0.60-aad
+```
+
