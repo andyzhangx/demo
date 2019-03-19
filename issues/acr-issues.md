@@ -51,7 +51,7 @@ PR [fix Azure Container Registry anonymous repo image pull error](https://github
 | v1.10 | no fix |
 | v1.11 | 1.11.9 |
 | v1.12 | 1.12.7 |
-| v1.13 | in cherry-pick |
+| v1.13 | 1.13.4 |
 | v1.14 | no such issue |
 
 **Work around**:
