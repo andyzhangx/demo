@@ -20,7 +20,7 @@ az aks get-credentials -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME
 kubectl get nodes
 ```
 
-> For global azure, `node-vm-size` could be `Standard_NC6` instead.
+> on global azure, `node-vm-size` could be `Standard_NC6` instead.
 
 
 
@@ -33,3 +33,5 @@ kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux
 ```sh
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/linux/gpu/pu-demo-mooncake.yaml
 ```
+
+For more detailed steps, refer to [Use GPUs for compute-intensive workloads on Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/gpu-cluster) 
