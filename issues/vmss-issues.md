@@ -15,3 +15,8 @@ az vmss update-instances -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-
 ```
 az vmss disk detach -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(number)> --lun number
 ```
+
+ - attach a disk to a VMSS instance
+```
+az vmss disk attach -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(number)> --lun number --disk <diskid>
+```
