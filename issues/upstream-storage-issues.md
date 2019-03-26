@@ -11,7 +11,7 @@ MountVolume.WaitForAttach failed for volume "pvc-66de4353-f3e0-11e8-ab47-ce9eda1
 ```
 
 **Related issues**
-
+- [MountVolume.WaitForAttach failed - strconv.Atoi: parsing "": invalid syntax](https://github.com/Azure/AKS/issues/761)
 - [Storage: devicePath is empty while WaitForAttach in StatefulSets](https://github.com/kubernetes/kubernetes/issues/67342)
 - [Second Pod Using Same PVC Fails WaitForAttach Flakily](https://github.com/kubernetes/kubernetes/issues/65246)
 
