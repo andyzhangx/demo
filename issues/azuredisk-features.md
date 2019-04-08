@@ -4,7 +4,9 @@
 
 available from `v1.11.0`, details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kubernetes/pull/64386)
 
-example: [azuredisk storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-sizegrow.yaml)
+example: 
+ - [azuredisk storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-sizegrow.yaml)
+ - [How to use azure disk size grow feature](https://github.com/andyzhangx/demo/blob/master/linux/azuredisk/azuredisk-sizegrow.md)
 
 related issues: [Resizing the persistent volume in Azure AKS doesn't reflect the change at pod level.](https://github.com/kubernetes/kubernetes/issues/68427)
 
