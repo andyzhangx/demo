@@ -1,17 +1,4 @@
 ## Dynamic Provisioning for Azure disk mount on Windows
- - Supported Windows Version: Windows Server version 1709 or above
- - Supported kubernetes version: [Azure/kubernetes v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), upstream v1.9.0
- 
-#### Note:
- - Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more features than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
-
- - Azure disk mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), with the exception for **v1.8.0, v1.8.1, v1.8.2**. And this feature is only supported on `Windows Server version 1709` (`"agentWindowsSku": "Datacenter-Core-1709-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1709, only container tag with `1709` keyword could run on 1709, e.g. 
-```
-microsoft/aspnet:4.7.2-windowsservercore-1803
-microsoft/windowsservercore:1709
-microsoft/iis:windowsservercore-1709
-```
-
 ### 1. create an azure disk storage class if `hdd` does not exist
  - k8s agent pool is based on managed disk VM
 ```
