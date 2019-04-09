@@ -15,7 +15,7 @@ kubectl create -f storageclass-azurefile-account.yaml
 ```
  > Note: make sure the specified storage account is in the same resource group as your k8s cluster
 
-## 2. create a pvc for azure file first
+## 2. create an azure file PVC
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile.yaml```
 
 #### make sure pvc is created successfully
