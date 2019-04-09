@@ -19,6 +19,7 @@ vi storageclass-azurefile-sse-cmk.yaml
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile-cmk.yaml```
 
 > make sure pvc is created successfully
+
 ```watch kubectl describe pvc pvc-azurefile```
 
 
@@ -26,6 +27,7 @@ vi storageclass-azurefile-sse-cmk.yaml
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml```
 
  > watch the status of pod until its Status changed from `Pending` to `Running`
+
 ```watch kubectl describe po nginx-azurefile```
 
 #### 4. enter the pod container to do validation
