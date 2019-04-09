@@ -5,7 +5,7 @@ metadata:
   name: aspnet-azurefile
 spec:
   containers:
-  - image: microsoft/aspnet:4.7.2-windowsservercore-1803
+  - image: mcr.microsoft.com/dotnet/framework/aspnet:4.7.2-windowsservercore-ltsc2019
     name: aspnet-azurefile
     volumeMounts:
     - name: azurefile01
@@ -16,4 +16,3 @@ spec:
   - name: azurefile01
     persistentVolumeClaim:
       claimName: pvc-azurefile
-
