@@ -9,29 +9,39 @@ SSE+CMK is now available for Azure Files, this page shows how to use this featur
 
 ### Azure File Dynamic Provisioning
 #### 1. Create an azure file storage class which would provision azure file PVC under that the above storage account with SSE+CMK enabled
-```
+```sh
 wget https://raw.githubusercontent.com/andyzhangx/demo/master/pv/storageclass-azurefile-cmk.yaml
 # edit storageAccount and skuName fields
 vi storageclass-azurefile-sse-cmk.yaml
 ```
 
 #### 2. create an azure file PVC
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile-cmk.yaml```
+```sh
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azurefile-cmk.yaml
+```
 
 > make sure pvc is created successfully
 
-```watch kubectl describe pvc pvc-azurefile```
+```sh
+watch kubectl describe pvc pvc-azurefile
+```
 
 
 #### 3. create a pod with azure file pvc
-```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml```
+```sh
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azurefile/nginx-pod-azurefile.yaml
+```
 
  > watch the status of pod until its Status changed from `Pending` to `Running`
 
-```watch kubectl describe po nginx-azurefile```
+```sh
+watch kubectl describe po nginx-azurefile
+```
 
 #### 4. enter the pod container to do validation
-```kubectl exec -it nginx-azurefile -- bash```
+```sh
+kubectl exec -it nginx-azurefile -- bash
+```
 
 ### Azure File Static Provisioning
 refer to [Manually create and use a volume with Azure Files share in Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/azure-files-volume)
