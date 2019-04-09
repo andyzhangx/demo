@@ -2,7 +2,7 @@
 #### Note:
  - Windows agent node set up by acs-engine uses https://github.com/Azure/kubernetes, which contains more features than [upstream](https://github.com/kubernetes/kubernetes), e.g. azure disk & file on Windows features are available from [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1), while these two features are avaiable from v1.9.0 in [upstream](https://github.com/kubernetes/kubernetes)
 
- - Azure file mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1). And this feature is only supported on `Windows Server version 1803` (`"agentWindowsSku": "Datacenter-Core-1803-with-Containers-smalldisk"`), please note that there is a **breaking change** for Windows container running on 1803, only container tag with `1803` keyword could run on 1803, e.g. 
+ - Azure file mount feature on Windows is avalable from version >= [v1.7.2](https://github.com/Azure/kubernetes/tree/acs-v1.7.2-1). And this feature is only supported on `Windows Server version 1803` (`"agentWindowsSku": "Datacenter-Core-1803-with-Containers-smalldisk"`) or above, please note that there is a **breaking change** for Windows container running on 1803, only container tag with `1803` keyword could run on 1803, e.g. 
 ```
 microsoft/aspnet:4.7.2-windowsservercore-1803
 microsoft/windowsservercore:1803
