@@ -1,0 +1,9 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: azurefile-cmk
+provisioner: kubernetes.io/azure-file
+parameters:
+  storageAccount: EXISTING_STORAGE_ACCOUNT_SSE_CMK_ENABLED
+  skuName: Standard_LRS  #should match the original storage acccount type with SSE+CMK enabled
