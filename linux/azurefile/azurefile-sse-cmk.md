@@ -8,7 +8,7 @@ SSE+CMK is now available for Azure Files, this page shows how to use this featur
  > Note: In AKS, the specified storage account should be under a `shadow resource group`(naming as `MC_+{RESOUCE-GROUP-NAME}+{CLUSTER-NAME}+{REGION}`) which contains all resources of your aks cluster.
 
 ### Azure File Dynamic Provisioning
-#### 1. Create an azure file storage class which would provision azure file PVC under that the above storage account with SSE+CMK enabled
+#### 1. Create an azure file storage class which would provision azure file PVC under the above storage account with SSE+CMK enabled
 ```sh
 wget https://raw.githubusercontent.com/andyzhangx/demo/master/pv/storageclass-azurefile-cmk.yaml
 # edit storageAccount and skuName fields
