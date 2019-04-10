@@ -1,0 +1,9 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx
+spec:
+  containers:
+  - image: dockerhub.azk8s.cn/nginx
+    name: nginx
