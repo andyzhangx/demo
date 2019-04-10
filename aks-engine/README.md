@@ -1,5 +1,5 @@
 ### Change default storage class (with single master)
-For k8s cluster setup by acs-engine (prior to v0.10.0), the default storage class would be [unmanaged azure disk storage class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-unmanaged-disk-storage-class), below is the workaround to change the default class to **managed** azure disk storage class:
+For k8s cluster setup by aks-engine (prior to v0.10.0), the default storage class would be [unmanaged azure disk storage class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-unmanaged-disk-storage-class), below is the workaround to change the default class to **managed** azure disk storage class:
 1. edit following file on master:
 ```
 sudo vi /etc/kubernetes/addons/azure-storage-classes.yaml
@@ -48,11 +48,11 @@ sudo systemctl restart kubelet
  - [k8s Windows 1.8.13 git cherry-pick conflicts](https://github.com/Azure/acs-engine/issues/2974)
 
 #### Links
-[Create a Service Principal](https://github.com/Azure/acs-engine/blob/master/docs/serviceprincipal.md#creating-a-service-principal)
+[Create a Service Principal](https://github.com/Azure/aks-engine/blob/master/docs/serviceprincipal.md#creating-a-service-principal)
 
-[acs-engine Cluster Definition](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md)
+[aks-engine Cluster Definition](https://github.com/Azure/aks-engine/blob/master/docs/clusterdefinition.md)
 
-[Make kubernetes dashboard as external access](https://github.com/Azure/devops-sample-solution-for-azure-china/tree/master-dev/acs-engine#9-config-kubernetes-dashboard-optional)
+[Make kubernetes dashboard as external access](https://github.com/Azure/devops-sample-solution-for-azure-china/tree/master-dev/aks-engine#9-config-kubernetes-dashboard-optional)
 
 [Accessing Dashboard 1.7.X and above](https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above)
 

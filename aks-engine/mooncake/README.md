@@ -1,22 +1,22 @@
 # Deploy kubernetes cluster on Azure China
-### 1. download acs-engine binary
+### 1. download aks-engine binary
 ```
 acs_version=v0.26.3
-wget https://mirror.azure.cn/kubernetes/acs-engine/$acs_version/acs-engine-$acs_version-linux-amd64.tar.gz
-tar -xvzf acs-engine-$acs_version-linux-amd64.tar.gz
+wget https://mirror.azure.cn/kubernetes/aks-engine/$acs_version/aks-engine-$acs_version-linux-amd64.tar.gz
+tar -xvzf aks-engine-$acs_version-linux-amd64.tar.gz
 ```
 
-### 2. download acs-engine cluster defination file and edit fields, e.g. `location`, `orchestratorVersion`, `dnsPrefix`, `linuxProfile`, `servicePrincipalProfile` etc.
+### 2. download aks-engine cluster defination file and edit fields, e.g. `location`, `orchestratorVersion`, `dnsPrefix`, `linuxProfile`, `servicePrincipalProfile` etc.
 ```
 k8s_version=1.10.7
-wget -O kubernetes-$k8s_version.json https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json
+wget -O kubernetes-$k8s_version.json https://raw.githubusercontent.com/andyzhangx/Demo/master/aks-engine/mooncake/kubernetes-1.10.7.json
 vi kubernetes-$k8s_version.json
 ```
 > specify `location` as (`chinaeast`, `chinanorth`, `chinaeast2`, `chinanorth2`) in cluster defination file
 
-### 3. generate ARM templates by acs-engine
+### 3. generate ARM templates by aks-engine
 ```
-./acs-engine generate kubernetes-$k8s_version.json
+./aks-engine generate kubernetes-$k8s_version.json
 ```
 
 ### 4. create kubernetes cluster by ARM templates
@@ -48,7 +48,7 @@ ssh azureuser@$dnsPrefix.$REGION.cloudapp.chinacloudapi.cn
  
 #### Related issues
  - [Unable to create Load balancer service in Azure Government](https://github.com/Azure/acs-engine/issues/3754)
- - [Generate Templates with `acs-engine` with location `chinaeast2` failed](https://github.com/Azure/acs-engine/issues/3812)
+ - [Generate Templates with `aks-engine` with location `chinaeast2` failed](https://github.com/Azure/acs-engine/issues/3812)
  - [Cannot deploy generated ARM template to AzureChinaCloud](https://github.com/Azure/acs-engine/issues/3024)
  - [ip-masq-agent daemonset does not work in AzureChinaCloud](https://github.com/Azure/acs-engine/issues/4063)
  - [Can we increase the timeout for docker pull](https://github.com/Azure/acs-engine/issues/4126) 
@@ -61,6 +61,6 @@ ssh azureuser@$dnsPrefix.$REGION.cloudapp.chinacloudapi.cn
  - [use gcr.azk8s.cn for all add-on configs on Azure China](https://github.com/Azure/acs-engine/pull/4190)
 
 #### Links
- - [acs-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/acs-engine/mooncake/kubernetes-1.10.7.json)
- > For detailed steps, refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/acs-engine/
+ - [aks-engine input file example](https://raw.githubusercontent.com/andyzhangx/Demo/master/aks-engine/mooncake/kubernetes-1.10.7.json)
+ > For detailed steps, refer to https://github.com/Azure/devops-sample-solution-for-azure-china/blob/master-dev/aks-engine/
  - [Kubernetes on Azure Government](https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-k8)
