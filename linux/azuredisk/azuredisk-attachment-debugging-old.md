@@ -51,6 +51,8 @@ drwxr-xr-x 9 root root 0 Dec  8 11:21 sdb
 
 The last number of data disk scsi device(`5:0:0:0`) is the LUN number which is consistent with the LUN number in azure portal.
 
+> In Ubuntu 18.04, `3:0:0:0`, `3:0:0:1` are data disks, and `5:0:0:0` is `Virtual CD/ROM`, it's different from Utuntu 16.04, `/dev/disk/azure/` directory must be populated, otherwise data disks could not be recognized.
+
 ### 2. Now take coreos stable as an example, it has attached two datadisks, below is the debugging info need to collect:
 ```
 # sudo ls -lt /dev/disk/azure/
