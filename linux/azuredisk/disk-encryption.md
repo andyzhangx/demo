@@ -1,7 +1,10 @@
 # How to enable disk encryption on AKS
+
+Azure Disk Encryption is a capability that helps you encrypt your Windows and Linux IaaS VM disks. Disk Encryption leverages the industry standard BitLocker feature of Windows and the DM-Crypt feature of Linux to provide volume encryption for the OS and data disks.
+
  - Prerequisite
  
-VM restart may be required in the Azure Disk Encryption process, please make sure there is no workload on the target VM before encryption: run `kubectl drain no <NODE-NAME>` to make sure there is not workload on that VM before encryption.
+VM restart may be required in the [Azure Disk Encryption](https://docs.microsoft.com/en-us/azure/security/azure-security-disk-encryption-overview) process, please make sure there is no workload on the target VM before encryption: run `kubectl drain no <NODE-NAME>` to make sure there is not workload on that VM before encryption.
 
  - Follow below steps when AKS cluster is newly created
 ```
