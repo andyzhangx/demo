@@ -25,10 +25,12 @@ Note:
  - For newly attached disk, it's not encrypted, need to run `az vm encryption enable` command to encrypt again
  - Allowed values for `volume-type`: `ALL`, `DATA`, `OS` (only encrypt `DATA` disk is more stable)
  - More details steps could be found from [Azure Disk Encryption for Windows and Linux IaaS VMs](https://docs.microsoft.com/en-us/azure/security/azure-security-disk-encryption)
- - 
 
 #### Related issues
  - [Failed to mount Azure Disk as a PV when ADE is enabled](https://github.com/kubernetes/kubernetes/issues/66443)
  - [AKS VM Disk Encryption issue](https://github.com/Azure/AKS/issues/629)
  - [VM Encryption does not support Ubuntu 16.04.0-LTS](https://github.com/Azure/azure-cli/issues/2507)
  - [UDEV rule missing issue](https://github.com/kubernetes/kubernetes/issues/66443#issuecomment-406765240): already fixed in AKS and aks-engine by WALinuxAgent-2.2.32
+
+#### Links
+ - [Azure Disk Encryption for IaaS VMs](https://docs.microsoft.com/en-us/azure/security/azure-security-disk-encryption-overview)
