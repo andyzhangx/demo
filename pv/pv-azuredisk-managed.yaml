@@ -7,10 +7,11 @@ spec:
     storage: 5Gi
   accessModes:
     - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
   azureDisk:
     diskName: {disk-id}
     diskURI: /subscriptions/{sub-id}/resourcegroups/{group-name}/providers/microsoft.compute/disks/{disk-id}
     kind: Managed
     cachingMode: ReadOnly
     fsType: ext4
-    readOnly: false    
+    readOnly: false
