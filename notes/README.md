@@ -19,6 +19,7 @@ details: https://github.com/kubernetes/kubernetes/issues/61758#issuecomment-3765
 
 ### Links
  - [Common Kubernetes Ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports)
+ - [All Kubernetes Ports in code](https://github.com/kubernetes/kubernetes/blob/99e61466ab694b3652db2c063b9996a5d324a57a/pkg/master/ports/ports.go#L43)
  - [Feature Gates](https://github.com/kubernetes/kubernetes/blob/master/pkg/features/kube_features.go)
  - [Debug Services](https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/)
  
