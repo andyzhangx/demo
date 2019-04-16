@@ -26,3 +26,7 @@ MountVolume.WaitForAttach failed for volume "pvc-66de4353-f3e0-11e8-ab47-ce9eda1
 | v1.11 | 1.11.7 |
 | v1.12 | 1.12.5 |
 | v1.13 | no such issue |
+
+
+### Tips:
+ - [Postpone deletion of a PV or a PVC when they are being used](https://github.com/kubernetes/kubernetes/blob/f170ef66340f6355d331ed90902574ff0532a20a/pkg/features/kube_features.go#L207-L208) reaches BETA in k8s v1.10
