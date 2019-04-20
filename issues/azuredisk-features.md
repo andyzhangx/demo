@@ -1,6 +1,6 @@
 # Azure disk new features and restrictions
 ## Azure disk new features
- - size grow
+#### 1. disk volume size grow
 
 available from `v1.11.0`, details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kubernetes/pull/64386)
 
@@ -12,13 +12,13 @@ related issues: [Resizing the persistent volume in Azure AKS doesn't reflect the
 
 Tips: [Expand virtual hard disks on a Linux VM with the Azure CLI](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/expand-disks)
 
- - raw block device support
+#### 2. raw block device support
 
 available from `v1.11.0`
 
 details: [Add raw block device support for azure disk](https://github.com/kubernetes/kubernetes/pull/63841)
 
- - Enable dynamic azure disk volume limits
+#### 3. Enable dynamic azure disk volume limits
 
 available from `v1.12.0`, details: [Enable dynamic azure disk volume limits](https://github.com/kubernetes/kubernetes/pull/67772)
 
@@ -27,7 +27,7 @@ Before v1.12.0, the maximum disk number of node is always set as 16 by default, 
 details: [Node-specific Volume Limits](https://kubernetes.io/docs/concepts/storage/storage-limits/)
 > To workaround this in k8s v1.11, try setting [KUBE_MAX_PD_VOLS](https://github.com/kubernetes/kubernetes/blob/591ef236e04a515f1b582cb8d8a4ea29aaee98a3/pkg/scheduler/algorithm/predicates/predicates.go#L106)(default for azure disk is 16) env variable and restart k8s scheduler.
 
- - More disk type support
+#### 4. More disk type support
 
 new managed disk types [`StandardSSD_LRS`](https://aka.ms/StandardSSDBlog), `UltraSSD_LRS` are available from `v1.13.0`
 
@@ -36,7 +36,7 @@ all possible `skuname` values are `Standard_LRS`, `StandardSSD_LRS`, `Premium_LR
 
 details: [add azure UltraSSD, StandardSSD disk type support](https://github.com/kubernetes/kubernetes/pull/70477)
 
- - External resource group support for azure disk PV dynamic provisioning
+#### 5. External resource group support for azure disk PV dynamic provisioning
 > all resource groups should be in same subscription, we don’t support cross-subscription scenario
 
 example: https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-external-rg.yaml
