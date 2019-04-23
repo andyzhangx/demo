@@ -1,0 +1,43 @@
+{
+  "apiVersion": "vlabs",
+  "properties": {
+    "orchestratorProfile": {
+      "orchestratorType": "Kubernetes",
+      "orchestratorVersion": "1.13.4"
+    },
+    "masterProfile": {
+      "count": 1,
+      "dnsPrefix": "andy-zone1134",
+      "vmSize": "Standard_D2s_v3",
+      "availabilityZones": [
+                "1"
+      ]
+    },
+    "agentPoolProfiles": [
+      {
+        "name": "agentpool",
+        "count": 2,
+        "vmSize": "Standard_D2s_v3",
+	"storageProfile" : "ManagedDisks",
+        "availabilityProfile": "VirtualMachineScaleSets",
+        "availabilityZones": [
+                "1"
+        ]
+      }
+    ],
+    "linuxProfile": {
+      "adminUsername": "azureuser",
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": "ssh-rsa ... azureuser@andy-dev"
+          }
+        ]
+      }
+    },
+    "servicePrincipalProfile": {
+      "ClientID": "df7269f2-801b-4a8b-bb2b-...",
+      "Secret": "8c416dc5-b276-4998-946f-..."
+    }
+  }
+}

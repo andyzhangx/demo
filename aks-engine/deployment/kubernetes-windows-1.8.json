@@ -21,7 +21,7 @@
     ],
     "windowsProfile": {
       "adminUsername": "azureuser",
-      "adminPassword": "ostcUser@123"
+      "adminPassword": "abcUser@123"
     },
     "linuxProfile": {
       "adminUsername": "azureuser",
