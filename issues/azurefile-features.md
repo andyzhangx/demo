@@ -22,3 +22,18 @@ az storage account create -n $AKS_PERS_STORAGE_ACCOUNT_NAME -g $AKS_PERS_RESOURC
 ```
  
 Kubernetes 1.13.0 has dynamic provisioning support for azure premium file(create a premium file by k8s), it’s more user friendly, refer to: https://docs.microsoft.com/en-us/azure/aks/azure-files-dynamic-pv
+
+#### 3. External resource group support for azure file PV dynamic provisioning
+> all resource groups should be in same subscription, we don’t support cross-subscription scenario
+
+example: https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azurefile-external-rg.yaml
+
+details: [support cross resource group for azure file](https://github.com/kubernetes/kubernetes/pull/68117)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.8 | not supported |
+| v1.9 | 1.9.11 |
+| v1.10 | 1.10.9 |
+| v1.11 | 1.11.4 |
+| v1.12 | 1.12.0 |
