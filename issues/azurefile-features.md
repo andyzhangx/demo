@@ -1,12 +1,12 @@
 # Azure file new features and restrictions
 ## Azure file new features
- - Azure file size grow
+#### 1. Azure file size grow
 
 available from `v1.11.0`
 
 example: [azurefile storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azurefile-sizegrow.yaml)
 
- - Azure Premium file dynamic provision support
+#### 2. Azure Premium file dynamic provision support
 
 available from `v1.13.0`
 
