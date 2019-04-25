@@ -53,3 +53,5 @@ For details about NFS `mount` command, please refer to:
 https://technet.microsoft.com/en-us/library/cc754350(v=ws.11).aspx
 
 
+ - [add NFS volume support for windows](https://github.com/kubernetes/kubernetes/issues/56188#issuecomment-459194116)
+
