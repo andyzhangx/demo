@@ -4,6 +4,7 @@ apiVersion: storage.k8s.io/v1
 metadata:
   name: azurefile
 provisioner: kubernetes.io/azure-file
+reclaimPolicy: Retain
 parameters:
   skuName: Standard_LRS
   resourceGroup: EXISTING_RESOURCE_GROUP_NAME
