@@ -26,3 +26,6 @@ details: https://github.com/kubernetes/kubernetes/issues/61758#issuecomment-3765
 #### Kubernetes network KB
  - [Basic Iptables Options](https://help.ubuntu.com/community/IptablesHowTo)
  - [Kubernetes Services By Example](https://blog.openshift.com/kubernetes-services-by-example/)
+ 
+#### Kubernetes storage KB
+  - [readOnly should respect values in both FlexVolume PV and PVC ](https://github.com/kubernetes/kubernetes/pull/61759)
