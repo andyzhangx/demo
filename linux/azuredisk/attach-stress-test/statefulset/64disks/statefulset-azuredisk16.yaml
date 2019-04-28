@@ -1,0 +1,34 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: statefulset-azuredisk16
+  labels:
+    k8s-app: nginx
+    version: v1
+spec:
+  serviceName: statefulset-azuredisk16
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: nginx
+        version: v1
+    spec:
+      containers:
+      - name: statefulset-azuredisk16
+        image: nginx
+        volumeMounts:
+        - name: persistent-storage
+          mountPath: /mnt/azuredisk
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: persistent-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
