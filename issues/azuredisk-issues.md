@@ -19,6 +19,7 @@
     - [13. cannot find Lun for disk](#13-cannot-find-Lun-for-disk)
     - [14. azure disk attach/detach failure, mount issue, i/o error](#14-azure-disk-attachdetach-failure-mount-issue-io-error)
     - [15. azure disk could not be detached forever](#15-azure-disk-could-not-be-detached-forever)
+    - [16. potential race condition issue due to detach disk failure retry](#16-potential-race-condition-issue-due-to-detach-disk-failure-retry)
 
 <!-- /TOC -->
 
@@ -569,3 +570,29 @@ We added retry logic for detach azure disk:
 
 **Work around**:
  - if there is disk not detached for long time, detach that disk manually
+ 
+## 16. potential race condition issue due to detach disk failure retry
+ 
+**Issue details**:
+
+In some error condition when detach azure disk failed, azure cloud provider will retry 6 times at most with exponential backoff, it will hold the data disk list for about 3 minutes with a node level lock, and in that time period, if customer update data disk list manually (e.g. need manual operationto attach/detach another disk since there is attach/detach error, ) , the data disk list will be obselete(dirty data), then weird VM status happens, e.g. attach a non-existing disk, we should split those retry operations, every retry should get a fresh data disk list in the beginning.
+
+**Fix**
+
+Following PR refined detach azure disk retry operation, make every detach azure disk operation in a standalone function
+- PR [fix detach azure disk back off issue which has too big lock in failure retry condition](https://github.com/kubernetes/kubernetes/pull/76573)
+- PR [fix azure disk list corruption issue](https://github.com/kubernetes/kubernetes/pull/77187)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.10 | N/A |
+| v1.11 | no fix |
+| v1.12 | 1.12.9 |
+| v1.13 | in cherry-pick |
+| v1.14 | in cherry-pick |
+| v1.15 | 1.15.0 |
+
+**Work around**:
+
+Detach all the non-existing disks from VM (could do that in azure portal by bulk update)
+ > Detaching disk one by one using cli may fail since they are already non-existing disks.
