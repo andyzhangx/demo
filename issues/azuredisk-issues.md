@@ -31,9 +31,9 @@
 | v1.8 | 1.8.13 or later |
 | v1.9 | 1.9.6 or later |
 | v1.10 | 1.10.12 or later |
-| v1.11 | 1.11.6 or later |
-| v1.12 | 1.12.4 or later |
-| v1.13 | 1.13.0 |
+| v1.11 | 1.11.9 or later |
+| v1.12 | 1.12.9 or later |
+| v1.13 | 1.13.4 or later  |
 
 ## 1. disk attach error
 
