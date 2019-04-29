@@ -18,6 +18,7 @@
     - [12. create azure disk PVC failed due to account creation failure](#12-create-azure-disk-pvc-failed-due-to-account-creation-failure)
     - [13. cannot find Lun for disk](#13-cannot-find-Lun-for-disk)
     - [14. azure disk attach/detach failure, mount issue, i/o error](#14-azure-disk-attachdetach-failure-mount-issue-io-error)
+    - [15. azure disk could not be detached forever](#15-azure-disk-could-not-be-detached-forever)
 
 <!-- /TOC -->
 
@@ -540,3 +541,31 @@ We changed the azure disk attach/detach retry logic in k8s v1.13, switch to use 
 
 **Related issues**
  - [Multi Attach Error](https://github.com/Azure/AKS/issues/477)
+
+## 15. azure disk could not be detached forever
+
+**Issue details**:
+
+In some condition when first detach azure disk operation failed, it won't retry and the azure disk would be still attached to the original VM node.
+
+Following error may occur when move one disk from one node to another(keyword: `ConflictingUserInput`):
+```
+[Warning] AttachVolume.Attach failed for volume “pvc-7b7976d7-3a46-11e9-93d5-dee1946e6ce9” : Attach volume “kubernetes-dynamic-pvc-7b7976d7-3a46-11e9-93d5-dee1946e6ce9" to instance “/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Compute/virtualMachines/aks-agentpool-57634498-0” failed with compute.VirtualMachinesClient#CreateOrUpdate: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status= Code=“ConflictingUserInput” Message=“Disk ‘/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-7b7976d7-3a46-11e9-93d5-dee1946e6ce9’ cannot be attached as the disk is already owned by VM ‘/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Compute/virtualMachines/aks-agentpool-57634498-1’.”
+```
+
+**Fix**
+
+We added retry logic for detach azure disk:
+- PR [add retry for detach azure disk](https://github.com/kubernetes/kubernetes/pull/74398)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.10 | N/A |
+| v1.11 | 1.11.9 |
+| v1.12 | 1.12.7 |
+| v1.13 | 1.13.4 |
+| v1.14 | 1.14.0 |
+| v1.15 | 1.15.0 |
+
+**Work around**:
+ - if there is disk not detached for long time, detach that disk manually
