@@ -35,6 +35,7 @@ all possible `skuname` values are `Standard_LRS`, `StandardSSD_LRS`, `Premium_LR
 > Note: `UltraSSD_LRS` is still in Preview, it's only avaiable in certain region and supports Availablity Zone only, while AKS does not support Availablity Zone yet, details about UltraSSD_LRS: [Ultra SSD (preview) Managed Disks for Azure Virtual Machine workloads](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/disks-ultra-ssd)
 
 details: [add azure UltraSSD, StandardSSD disk type support](https://github.com/kubernetes/kubernetes/pull/70477)
+ > check most updated azure disk type from [azure-sdk-for-go](https://github.com/Azure/azure-sdk-for-go/blob/master/services/compute/mgmt/2019-03-01/compute/models.go#L322-L328)
 
 #### 5. External resource group support for azure disk PV dynamic provisioning
 > all resource groups should be in same subscription, we don’t support cross-subscription scenario
