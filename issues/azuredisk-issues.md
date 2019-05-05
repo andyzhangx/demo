@@ -33,7 +33,8 @@
 | v1.10 | 1.10.12 or later |
 | v1.11 | 1.11.9 or later |
 | v1.12 | 1.12.9 or later |
-| v1.13 | 1.13.4 or later  |
+| v1.13 | 1.13.6 or later |
+| v1.14 | 1.14.2 or later  |
 
 ## 1. disk attach error
 
@@ -85,7 +86,7 @@ az vm update -g <group> -n <name>
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.6 | no fix since v1.6 does not accept any cherry-pick |
+| v1.6 | no fix |
 | v1.7 | 1.7.14 |
 | v1.8 | 1.8.9 |
 | v1.9 | 1.9.5 |
@@ -588,8 +589,8 @@ Following PR refined detach azure disk retry operation, make every detach azure 
 | v1.10 | N/A |
 | v1.11 | no fix |
 | v1.12 | 1.12.9 |
-| v1.13 | in cherry-pick |
-| v1.14 | in cherry-pick |
+| v1.13 | 1.13.6 |
+| v1.14 | 1.14.2 |
 | v1.15 | 1.15.0 |
 
 **Work around**:
