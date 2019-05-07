@@ -1,0 +1,133 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: statefulset-azuredisk7
+  labels:
+    k8s-app: statefulset-azuredisk7
+    version: v1
+spec:
+  serviceName: statefulset-azuredisk7
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: statefulset-azuredisk7
+        version: v1
+    spec:
+      containers:
+      - name: statefulset-azuredisk7
+        image: nginx
+        volumeMounts:
+        - name: persistent-storage
+          mountPath: /mnt/azuredisk
+        - name: persistent-storage2
+          mountPath: /mnt/azuredisk2
+        - name: persistent-storage3
+          mountPath: /mnt/azuredisk3
+        - name: persistent-storage4
+          mountPath: /mnt/azuredisk4
+        - name: persistent-storage5
+          mountPath: /mnt/azuredisk5
+        - name: persistent-storage6
+          mountPath: /mnt/azuredisk6
+        - name: persistent-storage7
+          mountPath: /mnt/azuredisk7
+        - name: persistent-storage8
+          mountPath: /mnt/azuredisk8
+        - name: persistent-storage9
+          mountPath: /mnt/azuredisk9
+        - name: persistent-storage10
+          mountPath: /mnt/azuredisk10  		  
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: persistent-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+  - metadata:
+      name: persistent-storage2
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi
+  - metadata:
+      name: persistent-storage3
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 3Gi
+  - metadata:
+      name: persistent-storage4
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 4Gi
+  - metadata:
+      name: persistent-storage5
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+  - metadata:
+      name: persistent-storage6
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 6Gi
+  - metadata:
+      name: persistent-storage7
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 7Gi
+  - metadata:
+      name: persistent-storage8
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 8Gi
+  - metadata:
+      name: persistent-storage9
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 9Gi
+  - metadata:
+      name: persistent-storage10
+      annotations:
+        volume.beta.kubernetes.io/storage-class: hdd
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi		  
