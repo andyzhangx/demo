@@ -1,0 +1,51 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: azurefile-mongo
+provisioner: kubernetes.io/azure-file
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1001
+  - gid=1001
+parameters:
+  skuName: Standard_LRS
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-azurefile
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: azurefile-mongo
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: mongodb-azurefile
+spec:
+  containers:
+  - image: docker.io/bitnami/mongodb:4.0.2-debian-9
+    name: mongodb-azurefile
+    command:
+    - "/bin/sh"
+    - "-c"
+    - while true; do echo $(date) >> /bitnami/outfile; sleep 1; done
+    volumeMounts:
+    - name: mongoteststorage
+      mountPath: /bitnami
+      subPath: mongodata3
+    env:
+    - name: MONGODB_DATABASE1
+      value: "esclouddb"
+    ports:
+    - containerPort: 27017	  
+  volumes:
+  - name: mongoteststorage
+    persistentVolumeClaim:
+      claimName: pvc-azurefile
