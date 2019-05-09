@@ -32,10 +32,6 @@ spec:
   containers:
   - image: docker.io/bitnami/mongodb:4.0.2-debian-9
     name: mongodb-azurefile
-    command:
-    - "/bin/sh"
-    - "-c"
-    - while true; do echo $(date) >> /bitnami/outfile; sleep 1; done
     volumeMounts:
     - name: mongoteststorage
       mountPath: /bitnami
