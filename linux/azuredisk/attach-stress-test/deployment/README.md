@@ -166,3 +166,15 @@ hugetlbfs      hugetlbfs       0     0     0    - /dev/hugepages
 /dev/sdh       ext4         8.4G   19M  7.9G   1% /var/lib/kubelet/pods/52fa8b6c-6a2c-11e8-ad70-0a58ac1f0c4a/volumes/kubernetes.io~azure-disk/pvc-bc4c7433-6a2a-11e8-ad70-0a58ac1f0c4a
 /dev/sdh       ext4         8.4G   19M  7.9G   1% /var/lib/kubelet/pods/52fa8b6c-6a2c-11e8-ad70-0a58ac1f0c4a/volumes/kubernetes.io~azure-disk/pvc-bc4c7433-6a2a-11e8-ad70-0a58ac1f0c4a
 ```
+
+### Tips
+#### 1. Get disk attach/detach API call time cost
+```
+# curl http://localhost:10252/metrics | grep cloudprovider_azure_api_request | grep -e sum -e count | grep disk
+
+cloudprovider_azure_api_request_duration_seconds_sum{request="vmssvm_create_or_update",resource_group="andy-vmss1141",source="attach_disk",subscription_id="b9d2281e-dcd5-4dfd-9a97-xxx"} 40.985180089
+cloudprovider_azure_api_request_duration_seconds_count{request="vmssvm_create_or_update",resource_group="andy-vmss1141",source="attach_disk",subscription_id="b9d2281e-dcd5-4dfd-9a97-xxx"} 2
+cloudprovider_azure_api_request_duration_seconds_sum{request="vmssvm_create_or_update",resource_group="andy-vmss1141",source="detach_disk",subscription_id="b9d2281e-dcd5-4dfd-9a97-xxx"} 40.933383735
+cloudprovider_azure_api_request_duration_seconds_count{request="vmssvm_create_or_update",resource_group="andy-vmss1141",source="detach_disk",subscription_id="b9d2281e-dcd5-4dfd-9a97-xxx"} 2
+```
+In above example, two disk attach API calls cost 40.98s, and 2 disk detach API calls cost 40.9s
