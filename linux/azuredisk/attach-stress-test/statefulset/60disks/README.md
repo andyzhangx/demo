@@ -31,6 +31,24 @@ watch kubectl get po -o wide
 
 #### clean up
 ```
-kubectl delete sts --all
-kubectl delete pvc --all
-```
+kubectl delete sts statefulset-azuredisk1
+kubectl delete sts statefulset-azuredisk2
+kubectl delete sts statefulset-azuredisk3
+kubectl delete sts statefulset-azuredisk4
+kubectl delete sts statefulset-azuredisk5
+kubectl delete sts statefulset-azuredisk6
+kubectl delete sts statefulset-azuredisk7
+kubectl delete sts statefulset-azuredisk8
+kubectl delete sts statefulset-azuredisk9
+kubectl delete sts statefulset-azuredisk10
+
+kubectl delete pvc persistent-storage-statefulset-azuredisk1-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk2-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk3-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk4-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk5-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk6-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk7-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk8-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk9-0
+kubectl delete pvc persistent-storage-statefulset-azuredisk810
