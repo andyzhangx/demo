@@ -7,6 +7,8 @@ provisioner: kubernetes.io/azure-file
 mountOptions:
   - dir_mode=0777
   - file_mode=0777
+  - uid=1001  #set as 1001 per https://github.com/bitnami/bitnami-docker-mariadb/issues/134#issuecomment-335107323
+  - gid=1001  
 parameters:
   skuName: Standard_LRS
 ---
