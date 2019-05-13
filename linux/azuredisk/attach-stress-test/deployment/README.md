@@ -170,7 +170,7 @@ hugetlbfs      hugetlbfs       0     0     0    - /dev/hugepages
 ### Tips
 #### 1. Get disk attach/detach API call time cost
 ```
-# curl http://localhost:10252/metrics | grep cloudprovider_azure_api_request | grep -e sum -e count | grep disk
+# curl http://localhost:10252/metrics | grep cloudprovider_azure_api_request | grep -e sum -e count | grep _disk
 
 cloudprovider_azure_api_request_duration_seconds_sum{request="vmssvm_create_or_update",resource_group="andy-vmss1141",source="attach_disk",subscription_id="b9d2281e-dcd5-4dfd-9a97-xxx"} 40.985180089
 cloudprovider_azure_api_request_duration_seconds_count{request="vmssvm_create_or_update",resource_group="andy-vmss1141",source="attach_disk",subscription_id="b9d2281e-dcd5-4dfd-9a97-xxx"} 2
