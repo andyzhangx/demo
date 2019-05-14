@@ -178,3 +178,13 @@ cloudprovider_azure_api_request_duration_seconds_sum{request="vmssvm_create_or_u
 cloudprovider_azure_api_request_duration_seconds_count{request="vmssvm_create_or_update",resource_group="andy-vmss1141",source="detach_disk",subscription_id="b9d2281e-dcd5-4dfd-9a97-xxx"} 2
 ```
 In above example, two disk attach API calls cost 40.98s, and 2 disk detach API calls cost 40.9s
+
+#### 2. monitor attach/detach metrics on master node
+```
+wget -O /home/azureuser/attach-detach-disk-monitor.sh https://raw.githubusercontent.com/andyzhangx/demo/master/linux/azuredisk/attach-stress-test/attach-detach-disk-monitor.sh
+chmod a+x attach-detach-disk-monitor.sh
+
+crontab -e
+# m h  dom mon dow   command
+*/1 * * * * sudo /home/azureuser/attach-detach-disk-monitor.sh
+```
