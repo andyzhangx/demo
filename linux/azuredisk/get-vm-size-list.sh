@@ -2,8 +2,12 @@
 
 for location in `cat ./locations`
 do
+	echo "get vm list-sizes on $$location region ..."
 	az vm list-sizes -l $location -o tsv | awk -F '\t' '{print "\""$3"\":"$1","}' | sort | uniq > $location.txt
 done
 
 cat *.txt > vmsizelist.data
-cat vmsizelist.data | sort | uniq > vmsizelist.final
+OUTPUT-FILE="vmsizelist.final"
+cat vmsizelist.data | sort | uniq > $OUTPUT-FILE
+
+echo "got all vm list-sizes from all regions, output file: $OUTPUT-FILE"
