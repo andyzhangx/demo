@@ -99,16 +99,17 @@ make
 ```
 
 ##### Build your own `hyperkube` image
- - copy `hyperkube` binary to `~/go/src/k8s.io/kubernetes/cluster/images/hyperkube` directory
 ```
+cp _output/bin/hyperkube ~/go/src/k8s.io/kubernetes/cluster/images/hyperkube/	
 export BASEIMAGE=k8s.gcr.io/debian-hyperkube-base-amd64:0.10
-docker build --no-cache -t andyzhangx/hyperkube:v1.10.2-azuredisk-block .
-docker push andyzhangx/hyperkube:v1.10.2-azuredisk-block
+IMAGE_TAG=andyzhangx/hyperkube:v1.15.0-azure-metrics
+docker build --no-cache -t $IMAGE_TAG .
+docker push $IMAGE_TAG	
 ```
  - Build Your Custom Kubelet Image
 ```
 cd cluster/images/hyperkube/
-make VERSION=$YOURCOOLTAG ARCH=amd64
+make VERSION=v1.15.0-azure-metrics ARCH=amd64
 ```
  > For details, refer to https://tureus.github.io/devops/2017/01/24/build-your-custom-kubelet-image.html
 
