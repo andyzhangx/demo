@@ -4,7 +4,7 @@
 
 available from `v1.11.0`
 
-example: [azurefile storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azurefile-sizegrow.yaml)
+only supported in dynamic provision, `allowVolumeExpansion: true` must be specified in azure file storage class, example: [azurefile storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azurefile-sizegrow.yaml)
 
 #### 2. Azure Premium file dynamic provision support
 
