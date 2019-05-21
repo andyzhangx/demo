@@ -20,6 +20,7 @@
     - [14. azure disk attach/detach failure, mount issue, i/o error](#14-azure-disk-attachdetach-failure-mount-issue-io-error)
     - [15. azure disk could not be detached forever](#15-azure-disk-could-not-be-detached-forever)
     - [16. potential race condition issue due to detach disk failure retry](#16-potential-race-condition-issue-due-to-detach-disk-failure-retry)
+    - [17. very slow disk attach/detach issue when disk num is large](#17-very-slow-disk-attachdetach-issue-when-disk-num-is-large)
 
 <!-- /TOC -->
 
