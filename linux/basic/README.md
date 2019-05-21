@@ -5,4 +5,7 @@
 ```watch kubectl describe po nginx```
 
 ## 3. enter the pod container to do validation
-```kubectl exec -it nginx -- bash```
+```
+kubectl exec -it nginx -- bash
+# apt update
+```
