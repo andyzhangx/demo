@@ -597,3 +597,17 @@ Following PR refined detach azure disk retry operation, make every detach azure 
 
 Detach all the non-existing disks from VM (could do that in azure portal by bulk update)
  > Detaching disk one by one using cli may fail since they are already non-existing disks.
+
+## 17. very slow disk attach/detach issue when disk num is large
+ 
+**Issue details**:
+
+We hit very slow disk attach/detach issue when disk num is large(> 10 disks on one VM)
+
+**Fix**
+
+Azure disk team are fixing this issue.
+
+**Work around**:
+
+No workaround.
