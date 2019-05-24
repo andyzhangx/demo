@@ -1,4 +1,5 @@
 **How to use azure disk size grow feature**
+ > available from `v1.11.0`, details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kubernetes/pull/64386)
  - In the beginning, pls make sure the azure disk PVC is created by `kubernetes.io/azure-disk` storage class with `allowVolumeExpansion: true` (default is false)
 ```
 kind: StorageClass
