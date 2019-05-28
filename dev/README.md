@@ -101,8 +101,9 @@ make
 ##### Build your own `hyperkube` image
 ```
 cp _output/bin/hyperkube ~/go/src/k8s.io/kubernetes/cluster/images/hyperkube/	
-export BASEIMAGE=k8s.gcr.io/debian-hyperkube-base-amd64:0.10
-IMAGE_TAG=andyzhangx/hyperkube:v1.15.0-azure-metrics
+#export BASEIMAGE=k8s.gcr.io/debian-hyperkube-base-amd64:0.10
+sed -i 's/BASEIMAGE/k8s.gcr.io\/debian-hyperkube-base-amd64:0.10/g' Dockerfile
+IMAGE_TAG=andyzhangx/hyperkube:v1.15.0-azure-config
 docker build --no-cache -t $IMAGE_TAG .
 docker push $IMAGE_TAG	
 ```
