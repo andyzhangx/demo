@@ -51,8 +51,8 @@ PR [fix Azure Container Registry anonymous repo image pull error](https://github
 | v1.10 | no fix |
 | v1.11 | 1.11.9 |
 | v1.12 | 1.12.7 |
-| v1.13 | 1.13.4 |
-| v1.14 | no such issue |
+| v1.13 | 1.13.5 |
+| v1.14 | 1.14.0 |
 
 **Work around**:
  - provide a secret with empty username/password, specify that secret in `spec.imagePullSecrets` according to [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry):
