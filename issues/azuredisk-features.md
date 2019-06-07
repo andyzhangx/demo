@@ -27,6 +27,11 @@ Before v1.12.0, the maximum disk number of node is always set as 16 by default, 
 details: [Node-specific Volume Limits](https://kubernetes.io/docs/concepts/storage/storage-limits/)
 > To workaround this in k8s v1.11, try setting [KUBE_MAX_PD_VOLS](https://github.com/kubernetes/kubernetes/blob/591ef236e04a515f1b582cb8d8a4ea29aaee98a3/pkg/scheduler/algorithm/predicates/predicates.go#L106)(default for azure disk is 16) env variable and restart k8s scheduler.
 
+ - Check maximum disk number of node
+```
+kubectl describe no | grep attachable-volumes-azure-disk
+```
+
 #### 4. More disk type support
 
 new managed disk types [`StandardSSD_LRS`](https://aka.ms/StandardSSDBlog), `UltraSSD_LRS` are available from `v1.13.0`
