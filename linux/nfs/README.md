@@ -52,3 +52,6 @@ Filesystem      Size  Used Avail Use% Mounted on
 10.0.0.5:/test  100T  320K  100T   1% /mnt/azure
 ...
 ```
+
+### Links
+ - [Manually create and use an NFS (Network File System) Linux Server volume with Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/azure-nfs-volume)
