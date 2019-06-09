@@ -612,3 +612,28 @@ Azure disk team are fixing this issue.
 **Work around**:
 
 No workaround.
+
+## 18. detach azure disk make VM run into a limbo state
+ 
+**Issue details**:
+
+In some corner condition, detach azure disk would sometimes make VM run into a limbo state
+
+**Fix**
+
+Following two PRs would fix this issue by retry update VM if detach disk partially fail:
+ - [fix azure retry issue when return 2XX with error](https://github.com/kubernetes/kubernetes/pull/78298)
+ - [fix: retry detach azure disk issue](https://github.com/kubernetes/kubernetes/pull/78700)
+
+
+**Work around**:
+
+Update VM status manually would solve the problem:
+ - Update Availability Set VM
+ ```
+ az vm update -n <VM_NAME> -g <RESOURCE_GROUP_NAME>
+ ```
+ - Update Scale Set VM
+ ```
+ az vmss update-instances -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(number)>
+ ```
