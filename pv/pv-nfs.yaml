@@ -5,7 +5,7 @@ metadata:
   name: pv-nfs
 spec:
   capacity:
-    storage: 1Gi
+    storage: 100Gi
   accessModes:
     - ReadWriteMany
   nfs:
