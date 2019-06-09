@@ -4,7 +4,7 @@
 ## Limitations
  - Azure NetApp Files (ANF) is available in a few Azure regions
  - NFS data path in ANF does not go over the Internet, ANF must be created in the same virtual network with AKS
- - Currently only static provisioning(users create ANF in advance) is supported on AKS
+ - Currently only static provisioning(create ANF in advance) is supported on AKS
  
 ## Prerequisite
  - [Set up Azure NetApp Files and create an NFS volume](https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-quickstart-set-up-account-create-volumes), including following steps:
