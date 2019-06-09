@@ -46,13 +46,9 @@ watch kubectl describe po nginx-nfs
 ## 4. enter the pod container to do validation
 ```
 kubectl exec -it nginx-nfs -- bash
-root@nginx-nfs:/mnt/azure# df -h
-Filesystem                            Size  Used Avail Use% Mounted on
-overlay                                30G  3.9G   26G  14% /
-tmpfs                                 6.9G     0  6.9G   0% /dev
-tmpfs                                 6.9G     0  6.9G   0% /sys/fs/cgroup
-nfstest.eastus2.cloudapp.azure.com:/   30G  1.3G   28G   5% /mnt/azure
-/dev/sda1                              30G  3.9G   26G  14% /etc/hosts
-shm                                    64M     0   64M   0% /dev/shm
-tmpfs                                 6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
+root@nginx-nfs:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+...
+10.0.0.5:/test  100T  320K  100T   1% /mnt/azure
+...
 ```
