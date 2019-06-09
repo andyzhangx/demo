@@ -21,6 +21,7 @@
     - [15. azure disk could not be detached forever](#15-azure-disk-could-not-be-detached-forever)
     - [16. potential race condition issue due to detach disk failure retry](#16-potential-race-condition-issue-due-to-detach-disk-failure-retry)
     - [17. very slow disk attach/detach issue when disk num is large](#17-very-slow-disk-attachdetach-issue-when-disk-num-is-large)
+    - [18. detach azure disk make VM run into a limbo state](#18-detach-azure-disk-make-vm-run-into-a-limbo-state)
 
 <!-- /TOC -->
 
@@ -625,6 +626,13 @@ Following two PRs would fix this issue by retry update VM if detach disk partial
  - [fix azure retry issue when return 2XX with error](https://github.com/kubernetes/kubernetes/pull/78298)
  - [fix: retry detach azure disk issue](https://github.com/kubernetes/kubernetes/pull/78700)
 
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.11 | no fix |
+| v1.12 | in cherry pick |
+| v1.13 | in cherry pick |
+| v1.14 | in cherry pick |
+| v1.15 | 1.15.0 |
 
 **Work around**:
 
