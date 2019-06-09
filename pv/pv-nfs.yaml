@@ -9,6 +9,5 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    # FIXME: use the right IP
-    server: nfstest.eastus2.cloudapp.azure.com
-    path: "/"
+    server: <NFS_INTERNAL_IP>
+    path: <NFS_EXPORT_FILE_PATH>
