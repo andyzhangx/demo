@@ -7,8 +7,10 @@
  - Currently only static provisioning(users create ANF in advance) is supported on AKS
  
 ## Prerequisite
- - [Set up Azure NetApp Files and create an NFS volume](https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-quickstart-set-up-account-create-volumes)
- > select the same virtual network with AKS in ANF setup and write down the NFS mount path in the `mount instructions` after set up completed
+ - [Set up Azure NetApp Files and create an NFS volume](https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-quickstart-set-up-account-create-volumes), including following steps:
+   - Create a NetApp account in the `nodeResourceGroup`(started with `MC_` by default)
+   - Create a capacity pool
+   - Create a volume, and select the same virtual network with AKS in volume setup, after volume is created, write down the NFS mount path in the `mount instructions` 
 
 ## 1. create a nfs persistent volume (pv)
  - download `pv-nfs.yaml`, change `nfs` config and then create a nfs persistent volume (pv)
