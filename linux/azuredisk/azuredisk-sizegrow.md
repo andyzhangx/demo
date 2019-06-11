@@ -13,7 +13,12 @@ parameters:
   cachingmode: None
 allowVolumeExpansion: true
 ```
- - Before run `kubectl edit pvc pvc-azuredisk` operation, pls make sure this PVC is not mounted by any pod(change the replica count to 0, this will terminate the pod and detach the disk, need wait a few minutes) otherwise there would be resize error. Now run `kubectl edit pvc pvc-azuredisk` to change azuredisk PVC size from 6GB to 10GB
+ - Before run `kubectl edit pvc pvc-azuredisk` operation, pls make sure this PVC is not mounted by any pod, otherwise there would be resize error. There are a few ways to achieve this, wait a few minutes for the PVC disk detached from the node after below operation:
+   - option#1: cordon all nodes and then delete the original pod, 
+   - option#2: change the replica count to 0, this will terminate the pod and detach the disk
+
+Now run `kubectl edit pvc pvc-azuredisk` to change azuredisk PVC size from 6GB to 10GB
+  
 ```
 # Please edit the object below. Lines beginning with a '#' will be ignored,
 # and an empty file will abort the edit. If an error occurs while saving this file will be
@@ -83,12 +88,3 @@ Filesystem      Size  Used Avail Use% Mounted on
 ```
 
 Note: [volume expansion feature](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims) is beta in v1.11
-
-**Release note**:
-<!--  Write your release note:
-1. Enter your extended release note in the below block. If the PR requires additional action from users switching to the new release, include the string "action required".
-2. If no release note is required, just write "NONE".
--->
-```
-Add azuredisk size grow feature
-```
