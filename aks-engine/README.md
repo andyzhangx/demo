@@ -41,9 +41,13 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
 
-### Scale up/down an existing cluster set up by aks-engine
+### [Scale up/down an existing cluster](https://github.com/Azure/aks-engine/blob/master/docs/topics/scale.md) set up by aks-engine
 ```
-./aks-engine scale --new-node-count 1 -g rg-name -s subs-id -l eastus2 --client-id client-id --client-secret client-secret --api-model ~/acs/kubernetes-vmss-1.12.9.json
+./aks-engine scale --new-node-count 1 -g rg-name -s subs-id -l eastus2 --client-id client-id --client-secret client-secret --api-model _output/andy-vmss1129/apimodel.json --auth-method client_secret
+```
+### [upgrade an existing cluster](https://github.com/Azure/aks-engine/blob/master/docs/topics/upgrade.md) set up by aks-engine
+```
+./aks-engine upgrade --upgrade-version 1.13.5 -g rg-name -s subs-id -l eastus2 --client-id client-id --client-secret client-secret --api-model _output/andy-vmss1129/apimodel.json --auth-method client_secret
 ```
 
 **related issues**
