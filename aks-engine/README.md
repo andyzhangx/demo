@@ -41,6 +41,11 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
 
+### Scale up/down an existing cluster set up by aks-engine
+```
+./aks-engine scale --new-node-count 1 -g rg-name -s subs-id -l eastus2 --client-id client-id --client-secret client-secret --api-model ~/acs/kubernetes-vmss-1.12.9.json
+```
+
 **related issues**
  - [Put /var/lib/docker under /mnt?](https://github.com/Azure/acs-engine/issues/1307)
  - [Document Usage of Ephemeral Disks](https://github.com/Azure/acs-engine/issues/543)
