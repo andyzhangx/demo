@@ -9,6 +9,7 @@ k8s-master-55859097-0       Ready     29d       v1.7.9
 #### 2. Get agent metrics from kubelet
 ```
 curl http://k8s-agentpool1-55859097-0:10255/stats/summary
+# curl http://127.0.0.1:10255/stats/summary
 ```
 
 #### 3. Get metrics from cAdvisor Web UI
