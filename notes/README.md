@@ -22,6 +22,7 @@ details: https://github.com/kubernetes/kubernetes/issues/61758#issuecomment-3765
  - [All Kubernetes Ports in code](https://github.com/kubernetes/kubernetes/blob/99e61466ab694b3652db2c063b9996a5d324a57a/pkg/master/ports/ports.go#L43)
  - [Feature Gates](https://github.com/kubernetes/kubernetes/blob/master/pkg/features/kube_features.go)
  - [Debug Services](https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/)
+ - [Improving Kubernetes reliability: quicker detection of a Node down](https://fatalfailure.wordpress.com/2016/06/10/improving-kubernetes-reliability-quicker-detection-of-a-node-down/), [Kubernetes recreate pod if node becomes offline timeout](https://stackoverflow.com/questions/53641252/kubernetes-recreate-pod-if-node-becomes-offline-timeout)
  
 #### Kubernetes network KB
  - [Basic Iptables Options](https://help.ubuntu.com/community/IptablesHowTo)
