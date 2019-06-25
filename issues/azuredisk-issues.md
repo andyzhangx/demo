@@ -635,9 +635,9 @@ Following two PRs would fix this issue by retry update VM if detach disk partial
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.11 | no fix |
-| v1.12 | in cherry pick |
-| v1.13 | in cherry pick |
-| v1.14 | in cherry pick |
+| v1.12 | 1.12.10 |
+| v1.13 | 1.13.8 |
+| v1.14 | 1.14.4 |
 | v1.15 | 1.15.0 |
 
 **Work around**:
