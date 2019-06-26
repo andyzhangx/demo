@@ -55,6 +55,8 @@ parameters:
   shareName: SHARE_NAME
 ```
 
+ - supported version
+ 
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.11 | not supported |
