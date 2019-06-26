@@ -64,3 +64,7 @@ parameters:
 | v1.13 | 1.13.6 |
 | v1.14 | 1.14.2 |
 | v1.15 | 1.15.0 |
+
+ - Tips
+ 
+ For lower kubernetes versions, user could use azure storage account key as `secret` to mount existing file share.
