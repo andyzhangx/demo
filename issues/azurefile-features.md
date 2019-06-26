@@ -37,3 +37,28 @@ details: [support cross resource group for azure file](https://github.com/kubern
 | v1.10 | 1.10.9 |
 | v1.11 | 1.11.4 |
 | v1.12 | 1.12.0 |
+
+#### 4. Use existing file share in azure file storage class
+With PR [specify azure file share name in azure file plugin](https://github.com/kubernetes/kubernetes/pull/76988), user could specify azure file share name in azure file plugin, azure file plugin will create a new one if the specified file share name does not exist.
+
+```
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: azurefile
+provisioner: kubernetes.io/azure-file
+parameters:
+  skuName: Standard_LRS
+  resourceGroup: EXISTING_RESOURCE_GROUP_NAME
+  storageAccount: EXISTING_STORAGE_ACCOUNT_NAME
+  shareName: SHARE_NAME
+```
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.11 | not supported |
+| v1.12 | 1.12.9 |
+| v1.13 | 1.13.6 |
+| v1.14 | 1.14.2 |
+| v1.15 | 1.15.0 |
