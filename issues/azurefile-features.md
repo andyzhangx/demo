@@ -67,4 +67,4 @@ parameters:
 
  - Tips
  
- For lower kubernetes versions, user could use azure storage account key as `secret` to mount existing file share.
+ For lower kubernetes versions, user could use azure storage account key as `secret` to mount existing file share, find detailed steps [here](https://docs.microsoft.com/en-us/azure/aks/azure-files-volume)
