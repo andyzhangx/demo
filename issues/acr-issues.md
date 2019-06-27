@@ -79,3 +79,9 @@ spec:
 az login --service-principal -u <aadClientId> -p <aadClientSecret> -t <tenantId>
 az acr list
 ```
+
+ - How to get the service principal inside an AKS cluster
+ ```
+ az aks show -n <ASK-CLUSTER-NAME> -g <RESOURCE_GROUP_NAME> | grep clientId
+ ```
+ > Make sure this service principal could access your ACR, you could set from azure portal "Container Registry"\"Access Control"\"Add Role Assignment", input the `clientId` value and add as `Reader` role
