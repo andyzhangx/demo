@@ -27,6 +27,27 @@ MountVolume.WaitForAttach failed for volume "pvc-66de4353-f3e0-11e8-ab47-ce9eda1
 | v1.12 | 1.12.5 |
 | v1.13 | no such issue |
 
+### 2. pod stuck in Terminating issue due to corrupt mnt point in flexvol plugin
+
+**Issue details**:
+pod could not be terminated when pod volume path is corrupted due to smb server return error status: resource temporarily unavailable, in this condition, pod will be in `Terminating` forever.
+
+**Related issues**
+- [pod could not be terminated when pod volume path is corrupted](https://github.com/kubernetes/kubernetes/issues/75233)
+
+**Fix**
+
+- PR [fix pod stuck in Terminating issue due to corrupt mnt point in flexvol plugin](https://github.com/kubernetes/kubernetes/pull/75234) would call Unmount if PathExists returns any error.
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.11 | no fix |
+| v1.12 | 1.12.10|
+| v1.13 | 1.13.8 |
+| v1.14 | 1.14.4 |
+| v1.15 | 1.15.1 |
+| v1.16 | 1.16.0 |
+
 
 ### Tips:
  - [Postpone deletion of a PV or a PVC when they are being used](https://github.com/kubernetes/kubernetes/blob/f170ef66340f6355d331ed90902574ff0532a20a/pkg/features/kube_features.go#L207-L208) reaches BETA in k8s v1.10
