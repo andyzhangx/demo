@@ -48,6 +48,20 @@ pod could not be terminated when pod volume path is corrupted due to smb server 
 | v1.15 | 1.15.1 |
 | v1.16 | 1.16.0 |
 
+**Workaround**
+ - on agent node, run “mount | grep cifs” to get all cifs mounts
+ - check every cifs mount, e.g.
+```
+sudo ls -lt /var/lib/kubelet/pods/5c949781-4c6d-11e9-825d-000d3a0dd47b/volumes/microsoft.com~smb/test
+ls: cannot access '/var/lib/kubelet/pods/5c949781-4c6d-11e9-825d-000d3a0dd47b/volumes/microsoft.com~smb/test': Permission denied
+```
+ - if `s -lt …` failed (in above example), run:
+```
+sudo umount /var/lib/kubelet/pods/5c949781-4c6d-11e9-825d-000d3a0dd47b/volumes/microsoft.com~smb/test
+```
+
+And then the pod will be in terminated soon.
+
 
 ### Tips:
  - [Postpone deletion of a PV or a PVC when they are being used](https://github.com/kubernetes/kubernetes/blob/f170ef66340f6355d331ed90902574ff0532a20a/pkg/features/kube_features.go#L207-L208) reaches BETA in k8s v1.10
