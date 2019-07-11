@@ -2,7 +2,7 @@
 [Azure NetApp Files](https://azure.microsoft.com/en-us/services/netapp/) is a managed NFS service on Azure, this article will show you how to create and Azure NetApp File and then give your AKS containers access to this shared file system.
 
 ## Limitations
- - Azure NetApp Files (ANF) is only available in a few Azure regions, including: US East, US West2, US South Central, US Central, EU West, and EU North. Customer needs to apply for whitelisting before using using this service. Find more details from [here](https://azure.microsoft.com/en-us/services/netapp/)
+ - Azure NetApp Files (ANF) is only available in selected Azure regions. See ANF region availability [here](https://azure.microsoft.com/en-us/global-infrastructure/services/?products=netapp). Customer needs to apply for whitelisting before using using this service. Find more details from [here](https://azure.microsoft.com/en-us/services/netapp/)
  - NFS data path in ANF does not go over the Internet, ANF must be created in the same virtual network with AKS
  - Currently only static provisioning(create ANF in advance) is supported on AKS
  
@@ -58,3 +58,4 @@ Filesystem      Size  Used Avail Use% Mounted on
 ### Links
  - [Manually create and use an NFS (Network File System) Linux Server volume with Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/azure-nfs-volume)
  - [Set up Azure NetApp Files and create an NFS volume](https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-quickstart-set-up-account-create-volumes)
+ - [Solution architectures using Azure NetApp Files](https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-solution-architectures)
