@@ -37,6 +37,7 @@ spec:
         volumeMounts:
         - name: azuredisk
           mountPath: "/mnt/azuredisk"
+          readOnly: false
       volumes:
       - name: azuredisk
         persistentVolumeClaim:
