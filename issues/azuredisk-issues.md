@@ -22,6 +22,7 @@
     - [16. potential race condition issue due to detach disk failure retry](#16-potential-race-condition-issue-due-to-detach-disk-failure-retry)
     - [17. very slow disk attach/detach issue when disk num is large](#17-very-slow-disk-attachdetach-issue-when-disk-num-is-large)
     - [18. detach azure disk make VM run into a limbo state](#18-detach-azure-disk-make-vm-run-into-a-limbo-state)
+    - [19. disk attach/detach self-healing](#-18disk-attachdetach-self-healing)    
 
 <!-- /TOC -->
 
@@ -651,3 +652,25 @@ Update VM status manually would solve the problem:
  ```
  az vmss update-instances -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(number)>
  ```
+
+## 19. disk attach/detach self-healing
+
+**Issue details**:
+There could be disk detach failure due to many reasons(e.g. disk RP busy, controller manager crash, etc.), and it would fail when attach one disk to other node if that disk is still attached to the old node, user needs to manually detach disk in problem in the before, with this fix, azure cloud provider would check and detach this disk if it's already attached to the other node, that's like self-healing. This PR could fix lots of such disk attachment issue.
+
+**Fix**
+
+Following PR would first check whether current disk is already attached to other node, if so, it would trigger a dangling error and k8s controller would detach disk first, and then do the attach volume operation:
+ - [fix: detach azure disk issue using dangling error](https://github.com/kubernetes/kubernetes/pull/81266)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.12 | no fix |
+| v1.13 | in cherry-pick |
+| v1.14 | in cherry-pick |
+| v1.15 | in cherry-pick |
+| v1.15 | 1.16.0 |
+
+**Work around**:
+
+manually detach disk in problem
