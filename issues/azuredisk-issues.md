@@ -22,7 +22,7 @@
     - [16. potential race condition issue due to detach disk failure retry](#16-potential-race-condition-issue-due-to-detach-disk-failure-retry)
     - [17. very slow disk attach/detach issue when disk num is large](#17-very-slow-disk-attachdetach-issue-when-disk-num-is-large)
     - [18. detach azure disk make VM run into a limbo state](#18-detach-azure-disk-make-vm-run-into-a-limbo-state)
-    - [19. disk attach/detach self-healing](#-19disk-attachdetach-self-healing)    
+    - [19. disk attach/detach self-healing](#19-disk-attachdetach-self-healing)    
 
 <!-- /TOC -->
 
