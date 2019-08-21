@@ -671,9 +671,9 @@ azure_controller_standard.go:134] detach azure disk: disk  not found, diskURI: /
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.12 | no fix |
-| v1.13 | in cherry-pick |
-| v1.14 | in cherry-pick |
-| v1.15 | in cherry-pick |
+| v1.13 | 1.13.11 |
+| v1.14 | 1.14.7 |
+| v1.15 | 1.15.4 |
 | v1.15 | 1.16.0 |
 
 **Work around**:
