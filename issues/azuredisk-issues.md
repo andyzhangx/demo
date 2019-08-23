@@ -667,6 +667,7 @@ This PR would also fix a "disk not found" issue when detach azure disk due to di
 azure_controller_standard.go:134] detach azure disk: disk  not found, diskURI: /subscriptions/xxx/resourceGroups/andy-mg1160alpha3/providers/Microsoft.Compute/disks/xxx-dynamic-pvc-41a31580-f5b9-4f08-b0ea-0adcba15b6db
 ```
  - [fix: detach azure disk issue using dangling error](https://github.com/kubernetes/kubernetes/pull/81266)
+ - [fix: azure disk name matching issue](https://github.com/kubernetes/kubernetes/pull/81720)
 
 | k8s version | fixed version |
 | ---- | ---- |
