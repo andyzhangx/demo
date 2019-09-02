@@ -57,6 +57,35 @@ details: [fix azure disk creation issue when specifying external resource group]
 | v1.10 | 1.10.6 |
 | v1.11 | 1.11.0 |
 
+#### 6. disk attach/detach self-healing
+
+**Issue details**:
+There could be disk detach failure due to many reasons(e.g. disk RP busy, controller manager crash, etc.), and it would fail when attach one disk to other node if that disk is still attached to the old node, user needs to manually detach disk in problem in the before, with this fix, azure cloud provider would check and detach this disk if it's already attached to the other node, that's like self-healing. This PR could fix lots of such disk attachment issue.
+
+**Fix**
+
+Following PR would first check whether current disk is already attached to other node, if so, it would trigger a dangling error and k8s controller would detach disk first, and then do the attach volume operation.
+
+This PR would also fix a "disk not found" issue when detach azure disk due to disk URI case sensitive case, error logs are like following(without this PR):
+```
+azure_controller_standard.go:134] detach azure disk: disk  not found, diskURI: /subscriptions/xxx/resourceGroups/andy-mg1160alpha3/providers/Microsoft.Compute/disks/xxx-dynamic-pvc-41a31580-f5b9-4f08-b0ea-0adcba15b6db
+```
+ - [fix: detach azure disk issue using dangling error](https://github.com/kubernetes/kubernetes/pull/81266)
+ - [fix: azure disk name matching issue](https://github.com/kubernetes/kubernetes/pull/81720)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.12 | no fix |
+| v1.13 | 1.13.11 |
+| v1.14 | 1.14.7 |
+| v1.15 | 1.15.4 |
+| v1.15 | 1.16.0 |
+
+**Work around**:
+
+manually detach disk in problem
+
+
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
 Error would be like following:
