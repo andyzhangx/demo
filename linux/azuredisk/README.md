@@ -118,3 +118,4 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
  - [Azure Premium Disk Scalability and Performance Targets](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/premium-storage#premium-storage-disk-limits)
  - [Debug Azure disk attachment issue](https://github.com/andyzhangx/Demo/blob/master/linux/azuredisk/azuredisk-attachment-debugging.md)
  - [Exploring Windows Azure Drives, Disks, and Images](https://blogs.msdn.microsoft.com/windowsazurestorage/2012/06/27/exploring-windows-azure-drives-disks-and-images/)
+ - [Kubernetes Persistent Volumes with Deployment and StatefulSet](https://akomljen.com/kubernetes-persistent-volumes-with-deployment-and-statefulset/)
