@@ -18,7 +18,7 @@
     - [12. create azure disk PVC failed due to account creation failure](#12-create-azure-disk-pvc-failed-due-to-account-creation-failure)
     - [13. cannot find Lun for disk](#13-cannot-find-Lun-for-disk)
     - [14. azure disk attach/detach failure, mount issue, i/o error](#14-azure-disk-attachdetach-failure-mount-issue-io-error)
-    - [15. azure disk could be not detached forever](#15-azure-disk-could-not-be-detached-forever)
+    - [15. azure disk could be not detached forever](#15-azure-disk-could-be-not-detached-forever)
     - [16. potential race condition issue due to detach disk failure retry](#16-potential-race-condition-issue-due-to-detach-disk-failure-retry)
     - [17. very slow disk attach/detach issue when disk num is large](#17-very-slow-disk-attachdetach-issue-when-disk-num-is-large)
     - [18. detach azure disk make VM run into a limbo state](#18-detach-azure-disk-make-vm-run-into-a-limbo-state)
