@@ -9,3 +9,4 @@ parameters:
   cachingMode: None
   diskIopsReadWrite: "1400"
   diskMbpsReadWrite: "320"
+  zone: "1"
