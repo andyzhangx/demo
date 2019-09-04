@@ -679,4 +679,4 @@ azure_controller_standard.go:134] detach azure disk: disk  not found, diskURI: /
 
 **Work around**:
 
-manually detach disk in problem
+manually detach disk in problem and wait for disk attachment happen automatically
