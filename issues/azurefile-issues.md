@@ -27,6 +27,10 @@
 | v1.8 | 1.8.11 or later |
 | v1.9 | 1.9.7 or later |
 | v1.10 | 1.10.2 or later|
+| v1.11 | 1.11.8 or later|
+| v1.12 | 1.12.6 or later|
+| v1.13 | 1.13.4 or later|
+| v1.14 | 1.14.0 or later|
 
 ## 1. azure file mountOptions setting
 
