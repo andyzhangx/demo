@@ -1,0 +1,32 @@
+2019/09/12 18:19:40 [6864] [cni-ipam] Plugin azure-vnet-ipam version v1.0.25.
+2019/09/12 18:19:40 [6864] [cni-ipam] Running on Linux version 4.15.0-1052-azure (buildd@lgw01-amd64-001) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.10)) #57-Ubuntu SMP Tue Jul 23 19:07:16 UTC 2019
+2019/09/12 18:19:40 [6864] os.stat() for file /var/run/azure-vnet-ipam.json failed: stat /var/run/azure-vnet-ipam.json: no such file or directory
+2019/09/12 18:19:40 [6864] [ipam] store key not found
+2019/09/12 18:19:40 [6864] [cni-ipam] Plugin started.
+2019/09/12 18:19:40 [6864] [cni-ipam] Processing ADD command with args {ContainerID:bcd6085b3a9f33c76181a0b59cc3105d7500b74186c9a3922402799f23ac35b9 Netns:/proc/6593/ns/net IfName:eth0 Args:IgnoreUnknown=1;K8S_POD_NAMESPACE=kube-system;K8S_POD_NAME=sysctl-patch-lsgdg;K8S_POD_INFRA_CONTAINER_ID=bcd6085b3a9f33c76181a0b59cc3105d7500b74186c9a3922402799f23ac35b9 Path:/opt/cni/bin}.
+2019/09/12 18:19:40 [6864] [cni-ipam] Read network configuration &{CNIVersion:0.3.0 Name:azure Type:azure-vnet Mode:bridge Master: Bridge:azure0 LogLevel: LogTarget: InfraVnetAddressSpace: PodNamespaceForDualNetwork:[] MultiTenancy:false EnableSnatOnHost:false EnableExactMatchForPodName:false CNSUrl: Ipam:{Type:azure-vnet-ipam Environment: AddrSpace: Subnet: Address: QueryInterval:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RuntimeConfig:{PortMappings:[] DNS:{Servers:[] Searches:[] Options:[]}} AdditionalArgs:[]}.
+2019/09/12 18:19:40 [6864] [ipam] Starting source azure.
+2019/09/12 18:19:40 [6864] [ipam] Refreshing address source.
+2019/09/12 18:19:40 [6864] [ipam] Save succeeded.
+2019/09/12 18:19:40 [6864] [ipam] Requesting pool with poolId: options:map[azure.interface.name:] v6:false.
+2019/09/12 18:19:40 [6864] [ipam] Checking pool 10.144.128.0/17.
+2019/09/12 18:19:40 [6864] [ipam] Pool 10.144.128.0/17 matches requirements.
+2019/09/12 18:19:40 [6864] [ipam] Pool request completed with pool:&{as:0xc0000cb440 Id:10.144.128.0/17 IfName:eth0 Subnet:{IP:10.144.128.0 Mask:ffff8000} Gateway:10.144.128.1 Addresses:map[10.144.142.148:0xc0001da5c0 10.144.142.169:0xc0001dab00 10.144.142.170:0xc0001dab40 10.144.142.157:0xc0001da800 10.144.142.166:0xc0001daa40 10.144.142.145:0xc0001da500 10.144.142.153:0xc0001da700 10.144.142.154:0xc0001da740 10.144.142.156:0xc0001da7c0 10.144.142.143:0xc0001da480 10.144.142.146:0xc0001da540 10.144.142.161:0xc0001da900 10.144.142.171:0xc0001dab80 10.144.142.162:0xc0001da940 10.144.142.164:0xc0001da9c0 10.144.142.142:0xc0001da440 10.144.142.150:0xc0001da640 10.144.142.152:0xc0001da6c0 10.144.142.159:0xc0001da880 10.144.142.147:0xc0001da580 10.144.142.167:0xc0001daa80 10.144.142.165:0xc0001daa00 10.144.142.144:0xc0001da4c0 10.144.142.149:0xc0001da600 10.144.142.151:0xc0001da680 10.144.142.158:0xc0001da840 10.144.142.155:0xc0001da780 10.144.142.160:0xc0001da8c0 10.144.142.163:0xc0001da980 10.144.142.168:0xc0001daac0] addrsByID:map[] IsIPv6:false Priority:0 RefCount:1 epoch:0} err:<nil>.
+2019/09/12 18:19:40 [6864] [ipam] Save succeeded.
+2019/09/12 18:19:40 [6864] [cni-ipam] Allocated address poolID 10.144.128.0/17 with subnet 10.144.128.0/17.
+2019/09/12 18:19:40 [6864] [ipam] Refreshing address source.
+2019/09/12 18:19:40 [6864] [ipam] Requesting address with address: options:map[].
+2019/09/12 18:19:40 [6864] [ipam] Address request completed with address:10.144.142.143/17 err:<nil>.
+2019/09/12 18:19:40 [6864] [ipam] Save succeeded.
+2019/09/12 18:19:40 [6864] [cni-ipam] Allocated address 10.144.142.143/17.
+2019/09/12 18:19:40 [6864] [cni-ipam] ADD command completed with result:IP:[{Version:4 Interface:<nil> Address:{IP:10.144.142.143 Mask:ffff8000} Gateway:10.144.128.1}], Routes:[{Dst:{IP:0.0.0.0 Mask:00000000} GW:10.144.128.1}], DNS:{Nameservers:[168.63.129.16] Domain: Search:[] Options:[]} err:<nil>.
+2019/09/12 18:19:40 [6864] [cni-ipam] Plugin stopped.
+2019/09/12 18:19:48 [7555] [cni-ipam] Plugin azure-vnet-ipam version v1.0.25.
+2019/09/12 18:19:48 [7555] [cni-ipam] Running on Linux version 4.15.0-1052-azure (buildd@lgw01-amd64-001) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.10)) #57-Ubuntu SMP Tue Jul 23 19:07:16 UTC 2019
+2019/09/12 18:19:48 [7555] [ipam] reboot time 2019-09-12 18:15:42 +0000 UTC store mod time 2019-09-12 18:19:40.583529908 +0000 UTC
+2019/09/12 18:19:48 [7555] [ipam] Restored state, &{Version:v1.0.25 TimeStamp:2019-09-12 18:19:40.585243108 +0000 UTC AddrSpaces:map[local:0xc0000cb140] store:0xc0000cae40 source:<nil> netApi:<nil> Mutex:{state:0 sema:0}}
+2019/09/12 18:19:48 [7555] [cni-ipam] Plugin started.
+2019/09/12 18:19:48 [7555] [cni-ipam] Processing ADD command with args {ContainerID:532549deb1efd3defd5044d3766f9047cab91e305d768fdc971b4e6933a880a3 Netns:/proc/7372/ns/net IfName:eth0 Args:IgnoreUnknown=1;K8S_POD_NAMESPACE=kube-system;K8S_POD_NAME=omsagent-ksp82;K8S_POD_INFRA_CONTAINER_ID=532549deb1efd3defd5044d3766f9047cab91e305d768fdc971b4e6933a880a3 Path:/opt/cni/bin}.
+2019/09/12 18:19:48 [7555] [cni-ipam] Read network configuration &{CNIVersion:0.3.0 Name:azure Type:azure-vnet Mode:bridge Master: Bridge:azure0 LogLevel: LogTarget: InfraVnetAddressSpace: PodNamespaceForDualNetwork:[] MultiTenancy:false EnableSnatOnHost:false EnableExactMatchForPodName:false CNSUrl: Ipam:{Type:azure-vnet-ipam Environment: AddrSpace: Subnet:10.144.128.0/17 Address: QueryInterval:} DNS:{Nameservers:[] Domain: Search:[] Options:[]} RuntimeConfig:{PortMappings:[] DNS:{Servers:[] Searches:[] Options:[]}} AdditionalArgs:[]}.
+2019/09/12 18:19:48 [7555] [ipam] Starting source azure.
+2019/09/12 18:19:48 [7555] [ipam] Refreshing address source.
