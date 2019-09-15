@@ -703,4 +703,4 @@ If a node with a Azure Disk attached is deleted (before the volume is detached),
 
 **Work around**:
 
-Restart the kube-controller-manager binary on the master node.
+Restart kube-controller-manager on master node.
