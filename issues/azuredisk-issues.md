@@ -22,7 +22,8 @@
     - [16. potential race condition issue due to detach disk failure retry](#16-potential-race-condition-issue-due-to-detach-disk-failure-retry)
     - [17. very slow disk attach/detach issue when disk num is large](#17-very-slow-disk-attachdetach-issue-when-disk-num-is-large)
     - [18. detach azure disk make VM run into a limbo state](#18-detach-azure-disk-make-vm-run-into-a-limbo-state)
-    - [19. disk attach/detach self-healing](#19-disk-attachdetach-self-healing)    
+    - [19. disk attach/detach self-healing](#19-disk-attachdetach-self-healing)
+    - [20. azure disk detach failure if node not exists](#20-azure-disk-detach-failure-if-node-not-exists)
 
 <!-- /TOC -->
 
@@ -682,3 +683,24 @@ azure_controller_standard.go:134] detach azure disk: disk  not found, diskURI: /
 **Work around**:
 
 manually detach disk in problem and wait for disk attachment happen automatically
+
+## 20. azure disk detach failure if node not exists
+
+**Issue details**:
+If a node with a Azure Disk attached is deleted (before the volume is detached), subsequent attempts by the attach/detach controller to detach it continuously fail, and prevent the controller from attaching the volume to another node.
+
+**Fix**
+
+ - [fix: azure disk detach failure if node not exists](https://github.com/kubernetes/kubernetes/pull/82640)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.12 | no fix |
+| v1.13 | in cherry-pick |
+| v1.14 | in cherry-pick |
+| v1.15 | in cherry-pick |
+| v1.16 | in cherry-pick |
+
+**Work around**:
+
+Restart the kube-controller-manager binary on the master node.
