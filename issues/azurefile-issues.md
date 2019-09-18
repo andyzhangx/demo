@@ -17,6 +17,7 @@
     - [9. Long latency when handling lots of small files](#9-long-latency-compared-to-disk-when-handling-lots-of-small-files)
     - [10. `allow access from selected network` setting on storage account will break azure file dynamic provisioning](#10-allow-access-from-selected-network-setting-on-storage-account-will-break-azure-file-dynamic-provisioning)
     - [11. azure file remount on Windows in same node would fail](#11-azure-file-remount-on-windows-in-same-node-would-fail)
+    - [12. update azure file secret if azure storage account key changed](#12-update-azure-file-secret-if-azure-storage-account-key-changed)
 <!-- /TOC -->
 
 ## Recommended stable version for azure file
@@ -297,3 +298,21 @@ E0118 08:15:52.041014    2112 nestedpendingoperations.go:267] Operation for "\"k
 
 - [azure file remount on Windows in same node would fail](https://github.com/kubernetes/kubernetes/issues/73087)
 - [Mounting volume to pods fails randomly](https://github.com/Azure/aks-engine/issues/327)
+
+## 12. update azure file secret if azure storage account key changed
+
+**Issue details**: 
+There would be azure file mount failure if azure storage account key changed
+
+**Workaround**:
+User needs to update `azurestorageaccountkey` field manually in azure file secret(secret name format: `azure-storage-account-{storage-account-name}-secret` in `default` namespace):
+ - copy azure storage account key and do `base64` encoding, e.g.
+```console
+echo X+ALAAUgMhWHL7QmQ87E1kSfIqLKfgC03Guy7/xk9MyIg2w4Jzqeu60CVw2r/dm6v6E0DWHTnJUEJGVQAoPaBc== | base64
+```
+ - edit `azurestorageaccountkey` field in in azure file secret with base64 encoded storage account key
+ ```console 
+ kubectl edit secret azure-storage-account-{storage-account-name}-secret
+ ```
+ 
+ - wait a few minutes for agent node retry azure file mount
