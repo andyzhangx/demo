@@ -696,10 +696,11 @@ If a node with a Azure Disk attached is deleted (before the volume is detached),
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.12 | no fix |
-| v1.13 | in cherry-pick |
-| v1.14 | in cherry-pick |
-| v1.15 | in cherry-pick |
-| v1.16 | in cherry-pick |
+| v1.13 | 1.13.9 |
+| v1.14 | 1.14.8 |
+| v1.15 | 1.15.5 |
+| v1.16 | 1.16.1 |
+| v1.16 | 1.17.0 |
 
 **Work around**:
 
