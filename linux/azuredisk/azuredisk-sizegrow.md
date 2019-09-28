@@ -17,7 +17,7 @@ allowVolumeExpansion: true
    - option#1: cordon all nodes and then delete the original pod, this will make the pod in pending state
    - option#2: change the replica count to 0, this will terminate the pod and detach the disk
 
-**Make sure the only pod is terminated from the agent node, otherwise you may hit `VolumeResizeFailed`**
+**Make sure the only pod is terminated from the agent node, otherwise may hit `VolumeResizeFailed` when edit disk PVC**
 
 Now run `kubectl edit pvc pvc-azuredisk` to change azuredisk PVC size from 6GB to 10GB
   
