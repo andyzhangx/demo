@@ -20,6 +20,13 @@ vi pv-nfs.yaml
 kubectl create -f pv-nfs.yaml
 ```
 
+> for `NFSv3` support, use `pv-nfs-mountoptions.yaml` (kubernetes supports `NFSv4` by default):
+```
+wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv-nfs-mountoptions.yaml
+vi pv-nfs-mountoptions.yaml
+kubectl create -f pv-nfs-mountoptions.yaml
+```
+
 make sure pv is in `Available` status
 ```
 kubectl describe pv pv-nfs
