@@ -24,6 +24,7 @@
     - [18. detach azure disk make VM run into a limbo state](#18-detach-azure-disk-make-vm-run-into-a-limbo-state)
     - [19. disk attach/detach self-healing](#19-disk-attachdetach-self-healing)
     - [20. azure disk detach failure if node not exists](#20-azure-disk-detach-failure-if-node-not-exists)
+    - [21. invalid disk URI error](#21-invalid-disk-URI-error)
 
 <!-- /TOC -->
 
@@ -705,3 +706,30 @@ If a node with a Azure Disk attached is deleted (before the volume is detached),
 **Work around**:
 
 Restart kube-controller-manager on master node.
+
+## 21. invalid disk URI error
+
+**Issue details**:
+
+When user use an existing disk in static provisioning, may hit following error:
+```
+AttachVolume.Attach failed for volume "azure" : invalid disk URI: /subscriptions/xxx/resourcegroups/xxx/providers/Microsoft.Compute/disks/Test_Resize_1/”
+```
+
+
+**Fix**
+
+ - [fix: make azure disk URI as case insensitive](https://github.com/kubernetes/kubernetes/pull/79020)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.12 | no fix |
+| v1.13 | in cherry-pick |
+| v1.14 | in cherry-pick |
+| v1.15 | in cherry-pick |
+| v1.16 | 1.16.0 |
+| v1.16 | 1.17.0 |
+
+**Work around**:
+
+Use `resourceGroups` instead of `resourcegroups` in disk PV configuration
