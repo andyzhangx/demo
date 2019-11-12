@@ -1,0 +1,43 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-azuredisk6
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 6Gi
+  storageClassName: hdd
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: deployment-azuredisk6
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx  
+  template:
+    metadata:
+      labels:
+        app: nginx
+      name: deployment-azuredisk6
+    spec:
+      containers:
+      - name: deployment-azuredisk6
+        image: nginx
+        command:
+        - "/bin/sh"
+        - "-c"
+        - while true; do echo $(date) >> /mnt/azuredisk/outdisk; sleep 1; done		
+        volumeMounts:
+        - name: azuredisk
+          mountPath: "/mnt/azuredisk"
+      volumes:
+      - name: azuredisk
+        persistentVolumeClaim:
+          claimName: pvc-azuredisk6
