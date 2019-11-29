@@ -723,10 +723,9 @@ AttachVolume.Attach failed for volume "azure" : invalid disk URI: /subscriptions
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.12 | no fix |
-| v1.13 | in cherry-pick |
-| v1.14 | in cherry-pick |
-| v1.15 | in cherry-pick |
+| v1.13 | no fix |
+| v1.14 | 1.14.9 |
+| v1.15 | 1.15.6 |
 | v1.16 | 1.16.0 |
 | v1.16 | 1.17.0 |
 
