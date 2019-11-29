@@ -26,6 +26,7 @@
     - [20. azure disk detach failure if node not exists](#20-azure-disk-detach-failure-if-node-not-exists)
     - [21. invalid disk URI error](#21-invalid-disk-URI-error)
     - [22. vmss dirty cache issue](#22-vmss-dirty-cache-issue)
+    - [22. race condition when delete disk right after attach disk](#23-race-condition-when-delete-disk-right-after-attach-disk)
     
 <!-- /TOC -->
 
@@ -754,6 +755,30 @@ since update operation may cost 30s or more, and at that time period, if there i
 | v1.14 | 1.14.10 | regression only in 1.14.8, 1.14.9 (hotfixed in AKS release) |
 | v1.15 | 1.15.7 | regression only in 1.15.5, 1.15.6 (hotfixed in AKS release)  |
 | v1.16 | 1.16.4 | regression only in 1.16.2, 1.16.3 (hotfixed in AKS release)  |
+| v1.17 | 1.17.0 | |
+
+**Work around**:
+
+Detach disk in problem manually
+
+## 23. race condition when delete disk right after attach disk
+
+**Issue details**:
+
+There is condition that attach and delete disk happens in same time, azure CRP don't check such race condition
+
+ - [should not delete an azure disk when that disk is being attached](https://github.com/kubernetes/kubernetes/issues/82714)
+
+**Fix**
+
+ - [fix race condition when delete azure disk right after attach azure disk](https://github.com/kubernetes/kubernetes/pull/84917)
+
+| k8s version | fixed version | notes |
+| ---- | ---- | ---- |
+| v1.13 | no fix | hotfixed in AKS release since 1.13.12 |
+| v1.14 | 1.14.10 | hotfixed in AKS release in 1.14.8, 1.14.9 |
+| v1.15 | 1.15.7 | hotfixed in AKS release in 1.15.5, 1.15.6  |
+| v1.16 | 1.16.4 | hotfixed in AKS release in 1.16.2, 1.16.3  |
 | v1.17 | 1.17.0 | |
 
 **Work around**:
