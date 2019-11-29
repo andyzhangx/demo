@@ -25,7 +25,8 @@
     - [19. disk attach/detach self-healing](#19-disk-attachdetach-self-healing)
     - [20. azure disk detach failure if node not exists](#20-azure-disk-detach-failure-if-node-not-exists)
     - [21. invalid disk URI error](#21-invalid-disk-URI-error)
-
+    - [22. vmss dirty cache issue](#21-vmss-dirty-cache-issue)
+    
 <!-- /TOC -->
 
 ## Recommended stable version for azure disk
@@ -727,8 +728,34 @@ AttachVolume.Attach failed for volume "azure" : invalid disk URI: /subscriptions
 | v1.14 | 1.14.9 |
 | v1.15 | 1.15.6 |
 | v1.16 | 1.16.0 |
-| v1.16 | 1.17.0 |
+| v1.17 | 1.17.0 |
 
 **Work around**:
 
 Use `resourceGroups` instead of `resourcegroups` in disk PV configuration
+
+## 22. vmss dirty cache issue
+
+**Issue details**:
+
+clean vmss cache should happen after disk attach/detach operation, now it's before those operations, which would lead to dirty cache.
+since update operation may cost 30s or more, and at that time period, if there is another get vmss operation, it would get the old data disk list
+
+ - [VMSS disk attach/detach issues w/ v1.13.12, v1.14.8, v1.15.5, v1.16.2](https://github.com/Azure/aks-engine/issues/2312)
+
+**Fix**
+
+ - [fix vmss dirty cache issue](https://github.com/kubernetes/kubernetes/pull/85158)
+ - [Disk attachment/mounting problems, all pods with PVCs stuck in ContainerCreating](https://github.com/Azure/AKS/issues/1278)
+
+| k8s version | fixed version | notes |
+| ---- | ---- | ---- |
+| v1.13 | no fix | regression since 1.13.12 (hotfixed in AKS release) |
+| v1.14 | 1.14.10 | regression only in 1.14.8, 1.14.9 (hotfixed in AKS release) |
+| v1.15 | 1.15.7 | regression only in 1.15.5, 1.15.6 (hotfixed in AKS release)  |
+| v1.16 | 1.16.4 | regression only in 1.16.2, 1.16.3 (hotfixed in AKS release)  |
+| v1.17 | 1.17.0 | |
+
+**Work around**:
+
+Detach disk in problem manually
