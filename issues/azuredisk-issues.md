@@ -25,7 +25,7 @@
     - [19. disk attach/detach self-healing](#19-disk-attachdetach-self-healing)
     - [20. azure disk detach failure if node not exists](#20-azure-disk-detach-failure-if-node-not-exists)
     - [21. invalid disk URI error](#21-invalid-disk-URI-error)
-    - [22. vmss dirty cache issue](#21-vmss-dirty-cache-issue)
+    - [22. vmss dirty cache issue](#22-vmss-dirty-cache-issue)
     
 <!-- /TOC -->
 
@@ -742,11 +742,11 @@ clean vmss cache should happen after disk attach/detach operation, now it's befo
 since update operation may cost 30s or more, and at that time period, if there is another get vmss operation, it would get the old data disk list
 
  - [VMSS disk attach/detach issues w/ v1.13.12, v1.14.8, v1.15.5, v1.16.2](https://github.com/Azure/aks-engine/issues/2312)
+ - [Disk attachment/mounting problems, all pods with PVCs stuck in ContainerCreating](https://github.com/Azure/AKS/issues/1278) 
 
 **Fix**
 
  - [fix vmss dirty cache issue](https://github.com/kubernetes/kubernetes/pull/85158)
- - [Disk attachment/mounting problems, all pods with PVCs stuck in ContainerCreating](https://github.com/Azure/AKS/issues/1278)
 
 | k8s version | fixed version | notes |
 | ---- | ---- | ---- |
