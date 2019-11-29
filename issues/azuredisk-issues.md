@@ -26,7 +26,7 @@
     - [20. azure disk detach failure if node not exists](#20-azure-disk-detach-failure-if-node-not-exists)
     - [21. invalid disk URI error](#21-invalid-disk-URI-error)
     - [22. vmss dirty cache issue](#22-vmss-dirty-cache-issue)
-    - [22. race condition when delete disk right after attach disk](#23-race-condition-when-delete-disk-right-after-attach-disk)
+    - [23. race condition when delete disk right after attach disk](#23-race-condition-when-delete-disk-right-after-attach-disk)
     
 <!-- /TOC -->
 
