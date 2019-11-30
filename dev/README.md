@@ -189,6 +189,12 @@ Sep 27 10:25:08 operation_generator.go:557] MountVolume.SetUp succeeded for volu
 rm -Recurse -Force C:\Windows\Temp\*
 ```
 
+### kubectl-enter
+```
+wget -O /usr/local/bin/kubectl-enter https://raw.githubusercontent.com/andyzhangx/demo/master/dev/kubectl-ente
+chmod a+x /usr/local/bin/kubectl-enter
+```
+
 #### Links
 [How to update hyperkube image directly in k8s master](https://github.com/andyzhangx/Demo/blob/master/dev/update-hyperkube.md)
 
