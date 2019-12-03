@@ -18,20 +18,21 @@
     - [10. `allow access from selected network` setting on storage account will break azure file dynamic provisioning](#10-allow-access-from-selected-network-setting-on-storage-account-will-break-azure-file-dynamic-provisioning)
     - [11. azure file remount on Windows in same node would fail](#11-azure-file-remount-on-windows-in-same-node-would-fail)
     - [12. update azure file secret if azure storage account key changed](#12-update-azure-file-secret-if-azure-storage-account-key-changed)
+    - [13. Create Azure Files PV AuthorizationFailure when using advanced networking](#13-create-azure-files-pv-authorizationfailure-when-using-advanced-networking)
 <!-- /TOC -->
 
 ## Recommended stable version for azure file
 
 | k8s version | stable version |
 | ---- | ---- |
-| v1.7 | 1.7.14 or later |
-| v1.8 | 1.8.11 or later |
-| v1.9 | 1.9.7 or later |
-| v1.10 | 1.10.2 or later|
-| v1.11 | 1.11.8 or later|
-| v1.12 | 1.12.6 or later|
-| v1.13 | 1.13.4 or later|
-| v1.14 | 1.14.0 or later|
+| v1.7 | 1.7.14+ |
+| v1.8 | 1.8.11+ |
+| v1.9 | 1.9.7+ |
+| v1.10 | 1.10.2+ |
+| v1.11 | 1.11.8+ |
+| v1.12 | 1.12.6+ |
+| v1.13 | 1.13.4+ |
+| v1.14 | 1.14.0+ |
 
 ## 1. azure file mountOptions setting
 
@@ -316,3 +317,33 @@ echo X+ALAAUgMhWHL7QmQ87E1kSfIqLKfgC03Guy7/xk9MyIg2w4Jzqeu60CVw2r/dm6v6E0DWHTnJU
  ```
  
  - wait a few minutes for agent node retry azure file mount
+ 
+## 13. Create Azure Files PV AuthorizationFailure when using advanced networking
+
+**Issue details**: 
+
+When create an azure file PV using advanced networking, user may hit following error:
+```
+err: storage: service returned error: StatusCode=403, ErrorCode=AuthorizationFailure, ErrorMessage=This request is not authorized to perform this operation
+```
+
+Before api-version `2019-06-01`, create file share action is considered as data-path operation, since `2019-06-01`, it would be considered as control-path operation, not blocked by advanced networking any more.
+
+**Related issues**
+ - [Azure Files PV AuthorizationFailure when using advanced networking](https://github.com/Azure/AKS/issues/804)
+ - [Azure Files PV AuthorizationFailure when using advanced networking](https://github.com/kubernetes/kubernetes/issues/85354)
+
+ **Fix**
+
+- PR [upgrade api-version to fix azure file AuthorizationFailure](https://github.com/kubernetes/kubernetes/pull/85475)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.17 | no fix |
+| v1.18 | 1.18.0 |
+
+**Workaround**:
+
+Shut down the advanced networking when create azure file PV.
+ 
+
