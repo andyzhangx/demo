@@ -27,7 +27,7 @@
     - [21. invalid disk URI error](#21-invalid-disk-URI-error)
     - [22. vmss dirty cache issue](#22-vmss-dirty-cache-issue)
     - [23. race condition when delete disk right after attach disk](#23-race-condition-when-delete-disk-right-after-attach-disk)
-    - [24. attach disk costs 10min](#23-attach-disk-costs-10min)  
+    - [24. attach disk costs 10min](#24-attach-disk-costs-10min)  
     
 <!-- /TOC -->
 
