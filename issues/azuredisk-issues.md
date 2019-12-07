@@ -804,7 +804,7 @@ Events:
   Normal   Started                 21m                 kubelet, aks-nodepool1-29122124-vmss000004  Started container authentication-mssql
 ```
 
-This slow disk attachment issue only exists on `1.13.12+`, `1.14.8+`, fortunately, from k8s 1.15.0, won't have this issue, since we have refactored the disk detect logic(already has PR:[fix azure disk lun error](https://github.com/kubernetes/kubernetes/pull/77912)), it won't depend on getVMSS operation to get the disk LUN
+This slow disk attachment issue only exists on `1.13.12+`, `1.14.8+`, fortunately, from k8s 1.15.0, this issue won't happen, since getDiskLUN logic has already been refactored (already has PR:[fix azure disk lun error](https://github.com/kubernetes/kubernetes/pull/77912), won't depend on getVMSS operation to get disk LUN.
 
 **Relate issues**:
  - [GetAzureDiskLun sometimes costs 10min which is too long time](https://github.com/kubernetes/kubernetes/issues/69262#issuecomment-562567413)
