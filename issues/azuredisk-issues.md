@@ -27,6 +27,7 @@
     - [21. invalid disk URI error](#21-invalid-disk-URI-error)
     - [22. vmss dirty cache issue](#22-vmss-dirty-cache-issue)
     - [23. race condition when delete disk right after attach disk](#23-race-condition-when-delete-disk-right-after-attach-disk)
+    - [24. attach disk costs 10min](#23-attach-disk-costs-10min)  
     
 <!-- /TOC -->
 
@@ -34,16 +35,16 @@
 
 | k8s version | stable version |
 | ---- | ---- |
-| v1.7 | 1.7.14 or later |
-| v1.8 | 1.8.13 or later |
-| v1.9 | 1.9.6 or later |
-| v1.10 | 1.10.12 or later |
-| v1.11 | 1.11.9 or later |
-| v1.12 | 1.12.10 or later |
-| v1.13 | 1.13.11 or later |
-| v1.14 | 1.14.7 or later |
-| v1.15 | 1.15.4 or later |
-| v1.16 | 1.16.0 or later |
+| v1.7 | 1.7.14+ |
+| v1.8 | 1.8.13+ |
+| v1.9 | 1.9.6+ |
+| v1.10 | 1.10.12+ |
+| v1.11 | 1.11.9+ |
+| v1.12 | 1.12.10+ |
+| v1.13 | 1.13.11+ |
+| v1.14 | 1.14.7+ |
+| v1.15 | 1.15.4+ |
+| v1.16 | 1.16.0+ |
 
 ## 1. disk attach error
 
@@ -784,3 +785,41 @@ There is condition that attach and delete disk happens in same time, azure CRP d
 **Work around**:
 
 Detach disk in problem manually
+
+## 24. attach disk costs 10min
+
+**Issue details**:
+
+PR [Fix aggressive VM calls for Azure VMSS](https://github.com/kubernetes/kubernetes/pull/83102) change getVMSS cache TTL from 1min to 10min, getVMAS cache TTL from 5min to 10min, that will cause error `WaitForAttach ... Cannot find Lun for disk`, and it would make attach disk opeation costs 10min on VMSS and 15min on VMAS, detailed error would be like following:
+```
+Events:
+  Type     Reason                  Age                 From                                        Message
+  ----     ------                  ----                ----                                        -------
+  Normal   Scheduled               29m                 default-scheduler                           Successfully assigned authentication/authentication-mssql-statefulset-0 to aks-nodepool1-29122124-vmss000004
+  Normal   SuccessfulAttachVolume  28m                 attachdetach-controller                     AttachVolume.Attach succeeded for volume "pvc-8d9f0ade-1825-11ea-83a0-22ced17d4a3d"
+  Warning  FailedMount             23m (x10 over 27m)  kubelet, aks-nodepool1-29122124-vmss000004  MountVolume.WaitForAttach failed for volume "pvc-8d9f0ade-1825-11ea-83a0-22ced17d4a3d" : Cannot find Lun for disk kubernetes-dynamic-pvc-8d9f0ade-1825-11ea-83a0-22ced17d4a3d
+  Warning  FailedMount             23m (x3 over 27m)   kubelet, aks-nodepool1-29122124-vmss000004  Unable to mount volumes for pod "authentication-mssql-statefulset-0_authentication(8df467e7-1825-11ea-83a0-22ced17d4a3d)": timeout expired waiting for volumes to attach or mount for pod "authentication"/"authentication-mssql-statefulset-0". list of unmounted volumes=[authentication-mssql-persistent-data-storage]. list of unattached volumes=[authentication-mssql-persistent-data-storage default-token-b7spv]
+  Normal   Pulled                  21m                 kubelet, aks-nodepool1-29122124-vmss000004  Container image "mcr.microsoft.com/mssql/server:2019-CTP3.2-ubuntu" already present on machine
+  Normal   Created                 21m                 kubelet, aks-nodepool1-29122124-vmss000004  Created container authentication-mssql
+  Normal   Started                 21m                 kubelet, aks-nodepool1-29122124-vmss000004  Started container authentication-mssql
+```
+
+This slow disk attachment issue only exists on `1.13.12+`, `1.14.8+`
+
+**Relate issues**:
+ - [GetAzureDiskLun sometimes costs 10min which is too long time](https://github.com/kubernetes/kubernetes/issues/69262#issuecomment-562567413)
+
+**Fix**
+
+ - [fix azure disk lun error](https://github.com/kubernetes/kubernetes/pull/77912)
+
+| k8s version | fixed version | notes |
+| ---- | ---- | ---- |
+| v1.13 | no fix | need to hotfix in AKS release since 1.13.12 (slow disk attachment exists on `1.13.12+`) |
+| v1.14 | in cherry-pick | need to hotfix in AKS release in 1.14.8, 1.14.9 (slow disk attachment exists on `1.14.8+`) |
+| v1.15 | 1.15.0 | |
+| v1.16 | 1.16.0 | |
+
+**Work around**:
+
+Wait for about 10min or 15min, `MountVolume.WaitForAttach` operation would retry and would finally succeed
