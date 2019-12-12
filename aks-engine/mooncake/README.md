@@ -1,7 +1,7 @@
 # Deploy kubernetes cluster on Azure China
 ### 1. download aks-engine binary
 ```
-acs_version=v0.26.3
+acs_version=v0.44.2
 wget https://mirror.azure.cn/kubernetes/aks-engine/$acs_version/aks-engine-$acs_version-linux-amd64.tar.gz
 tar -xvzf aks-engine-$acs_version-linux-amd64.tar.gz
 ```
