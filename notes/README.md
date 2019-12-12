@@ -19,6 +19,19 @@ At present, we allow two approaches to set PVC's ReadOnly attribute: specified b
 ```
 details: https://github.com/kubernetes/kubernetes/issues/61758#issuecomment-376506621
 
+- namespace can not be deleted
+
+Try the following steps:
+  - Get all the resources in the namespace and delete if they’re some resources:
+```
+kubectl api-resources --verbs=list --namespaced -o name | xargs -n 1 kubectl get --show-kind --ignore-not-found -n $NAMESPACE
+```
+  - Delete finalizers:
+```
+kubectl get namespaces $NAMESPACE -o json | jq '.spec.finalizers=[]' > /tmp/ns.json
+kubectl proxy &
+curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json http://127.0.0.1:8001/api/v1/namespaces/$NAMESPACE/finalize
+```
 
 ### Links
  - [Common Kubernetes Ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports)
