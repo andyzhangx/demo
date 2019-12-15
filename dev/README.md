@@ -113,6 +113,7 @@ cd cluster/images/hyperkube/
 make VERSION=v1.15.0-azure-metrics ARCH=amd64
 ```
  > For details, refer to https://tureus.github.io/devops/2017/01/24/build-your-custom-kubelet-image.html
+ > https://github.com/kubernetes/kubernetes/tree/master/cluster/images/hyperkube
 
 ## General development practices
 #### precheck before submit any code
