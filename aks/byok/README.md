@@ -14,7 +14,7 @@ curl -sL https://github.com/yangl900/armclient-go/releases/download/v0.2.3/armcl
  refer to https://github.com/yangl900/armclient-go#how-to-use-it
  
 ### 1. Create a DiskEncryptionSet
- - [azure cli command steps](./byok.md)
+ - [azure cli command steps](./create-diskencryptionset.sh)
  - [powershell command steps](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption) 
 
 ### 2. Write an AKS cluster creation file with BYOK(SSE+CMK) enabled
