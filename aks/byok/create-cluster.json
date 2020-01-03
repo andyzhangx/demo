@@ -1,0 +1,37 @@
+{
+      "location": "eastus2euap",
+      "tags": {
+        "tier": "byok",
+        "archv2": ""
+      },
+      "properties": {
+        "kubernetesVersion": "1.17.0",
+        "dnsPrefix": "",
+        "agentPoolProfiles": [
+          {
+            "name": "nodepool1",
+            "count": 1,
+            "vmSize": "Standard_DS1_v2",
+            "osType": "Linux",
+            "type": "VirtualMachineScaleSets",
+            "availabilityZones": [
+              "1",
+              "2",
+              "3"
+            ]
+          }
+        ],
+        "networkProfile": {
+          "loadBalancerSku": "standard",
+          "outboundType": "loadBalancer"
+        },
+        "servicePrincipalProfile": {
+          "clientId": "",
+          "secret": ""
+        },
+        "addonProfiles": {},
+        "enableRBAC": true,
+        "diskEncryptionSetID": "",
+        "enablePodSecurityPolicy": false
+      }
+    }
