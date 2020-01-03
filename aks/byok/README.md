@@ -25,7 +25,7 @@ dnsPrefix, clientId, secret, diskEncryptionSetID
 ```
 > `diskEncryptionSetID` format is like `/subscriptions/{subs-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSet-name}`
 
-### 3. Create an AKS cluster with api-version 'v2020-01-01'
+### 3. Create an AKS cluster with api-version `v2020-01-01`
 
  - Canary region
 ```sh
