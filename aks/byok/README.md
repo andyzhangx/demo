@@ -1,8 +1,8 @@
 # How to create a BYOK(SSE+CMK) enabled AKS cluster
 
 ### Prerequisite
-BYOK(SSE+CMK) feature requires api-version `v2020-01-01`, azure-cli AKS command is not ready for this api-version, need to leverage [armclient](https://github.com/yangl900/armclient-go) tool to create a BYOK enabled AKS cluster.
-Currently region `eastus2euap` is available with both BYOK and api-version `v2020-01-01` supported.
+[BYOK(SSE+CMK)](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption) feature requires api-version `v2020-01-01`, azure-cli AKS command is not ready for this api-version, need to leverage [armclient](https://github.com/yangl900/armclient-go) tool to create a BYOK enabled AKS cluster.
+Currently region `eastus2euap` is available with both BYOK and api-version `v2020-01-01` supported. And make sure your subscription is whitelisted by BYOK feature team.
 
  - install armclient
 ```
