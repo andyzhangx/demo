@@ -27,8 +27,9 @@
     - [21. invalid disk URI error](#21-invalid-disk-URI-error)
     - [22. vmss dirty cache issue](#22-vmss-dirty-cache-issue)
     - [23. race condition when delete disk right after attach disk](#23-race-condition-when-delete-disk-right-after-attach-disk)
-    - [24. attach disk costs 10min](#24-attach-disk-costs-10min)  
-    
+    - [24. attach disk costs 10min](#24-attach-disk-costs-10min)
+    - [25. Multi-Attach error](#25-multi-attach-error)
+
 <!-- /TOC -->
 
 ## Recommended stable version for azure disk
@@ -823,3 +824,32 @@ This slow disk attachment issue only exists on `1.13.12+`, `1.14.8+`, fortunatel
 **Work around**:
 
 Wait for about 10min or 15min, `MountVolume.WaitForAttach` operation would retry and would finally succeed
+
+## 25. Multi-Attach error
+
+**Issue details**:
+
+If two pods on different node are using same disk PVC(this issue may also happen when doing rollingUpdate in Deployment using one replica), would probably hit following error:
+```
+Events:
+Warning  FailedAttachVolume  9m                attachdetach-controller                     Multi-Attach error for volume "pvc-fc0bed38-48bf-43f1-a7e4-255eef48ffb9" Volume is already used by pod(s) sqlserver3-5b8449449-5chzx
+
+  Warning  FailedMount         42s (x4 over 7m)  kubelet, aks-nodepool1-15915763-vmss000001  Unable to mount volumes for pod "sqlserver3-55754785bb-jjr6d_default(55381f38-9640-43a9-888d-096387cbb780)": timeout expired waiting for volumes to attach or mount for pod "default"/"sqlserver3-55754785bb-jjr6d". list of unmounted volumes=[mssqldb]. list of unattached volumes=[mssqldb default-token-q7cw9]
+```
+
+The above issue is by design since azure disk PVC could not be attached to one node.
+
+**Work around**:
+
+When using disk PVC config in deployment, `maxSurge: 0` could make sure there would not be no more than two pods in `Running/ContainerCreating` state when doing rollingUpdate:
+```
+template:
+...
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+```
+
+Refer to [Rolling Updates with Kubernetes Deployments](https://tachingchen.com/blog/kubernetes-rolling-update-with-deployment/) for more detailed rollingUpdate config, and you could find `maxSurge: 0` setting example [here](https://github.com/andyzhangx/demo/blob/c3199932c4c00ca1095481e845642a0ec4bda598/linux/azuredisk/attach-stress-test/deployment/deployment-azuredisk1.yaml#L45-L49)
