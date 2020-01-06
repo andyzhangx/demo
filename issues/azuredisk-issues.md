@@ -838,6 +838,9 @@ Warning  FailedMount         42s (x4 over 7m)  kubelet, aks-nodepool1-15915763-v
 
 The above issue is by design since azure disk PVC could not be attached to one node.
 
+**Relate issues**:
+ - [Trouble attaching volume](https://github.com/Azure/AKS/issues/884#issuecomment-571165826)
+ 
 **Work around**:
 
 When using disk PVC config in deployment, `maxSurge: 0` could make sure there would not be no more than two pods in `Running/ContainerCreating` state when doing rollingUpdate:
@@ -852,3 +855,14 @@ template:
 ```
 
 Refer to [Rolling Updates with Kubernetes Deployments](https://tachingchen.com/blog/kubernetes-rolling-update-with-deployment/) for more detailed rollingUpdate config, and you could find `maxSurge: 0` setting example [here](https://github.com/andyzhangx/demo/blob/c3199932c4c00ca1095481e845642a0ec4bda598/linux/azuredisk/attach-stress-test/deployment/deployment-azuredisk1.yaml#L45-L49)
+
+**Note**
+
+there are two kinds of `Multi-Attach error` issues:
+ - `Multi-Attach error for volume "pvc-e9b72e86-129a-11ea-9a02-9abdbf393c78" Volume is already used by pod(s)` (by design)
+
+two pods are using same disk PVC, this issue could happen even using `Deployment` with one replica, check detailed explanation and workaround here with above explanation
+
+ - `Multi-Attach error for volume "pvc-0d7740b9-3a43-11e9-93d5-dee1946e6ce9" Volume is already exclusively attached to one node and can't be attached to another` (fixed in Nov.2019)
+
+We already fixed this issue by [vmss dirty cache issue](#22-vmss-dirty-cache-issue) on AKS in Nov.2019, and also we have added [disk attach/detach self-healing](#19-disk-attachdetach-self-healing) feature to make disk could be detached finally when pod is scheduled on the node.
