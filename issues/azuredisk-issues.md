@@ -836,7 +836,7 @@ Warning  FailedAttachVolume  9m                attachdetach-controller          
 Warning  FailedMount         42s (x4 over 7m)  kubelet, aks-nodepool1-15915763-vmss000001  Unable to mount volumes for pod "sqlserver3-55754785bb-jjr6d_default(55381f38-9640-43a9-888d-096387cbb780)": timeout expired waiting for volumes to attach or mount for pod "default"/"sqlserver3-55754785bb-jjr6d". list of unmounted volumes=[mssqldb]. list of unattached volumes=[mssqldb default-token-q7cw9]
 ```
 
-The above issue is by design since azure disk PVC could not be attached to one node.
+The above issue is by design([detailed error code](https://github.com/kubernetes/kubernetes/blob/20c265fef0741dd71a66480e35bd69f18351daea/pkg/controller/volume/attachdetach/reconciler/reconciler.go#L351)) since azure disk PVC could not be attached to one node.
 
 **Relate issues**:
  - [Trouble attaching volume](https://github.com/Azure/AKS/issues/884#issuecomment-571165826)
