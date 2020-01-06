@@ -833,8 +833,7 @@ If two pods on different node are using same disk PVC(this issue may also happen
 ```
 Events:
 Warning  FailedAttachVolume  9m                attachdetach-controller                     Multi-Attach error for volume "pvc-fc0bed38-48bf-43f1-a7e4-255eef48ffb9" Volume is already used by pod(s) sqlserver3-5b8449449-5chzx
-
-  Warning  FailedMount         42s (x4 over 7m)  kubelet, aks-nodepool1-15915763-vmss000001  Unable to mount volumes for pod "sqlserver3-55754785bb-jjr6d_default(55381f38-9640-43a9-888d-096387cbb780)": timeout expired waiting for volumes to attach or mount for pod "default"/"sqlserver3-55754785bb-jjr6d". list of unmounted volumes=[mssqldb]. list of unattached volumes=[mssqldb default-token-q7cw9]
+Warning  FailedMount         42s (x4 over 7m)  kubelet, aks-nodepool1-15915763-vmss000001  Unable to mount volumes for pod "sqlserver3-55754785bb-jjr6d_default(55381f38-9640-43a9-888d-096387cbb780)": timeout expired waiting for volumes to attach or mount for pod "default"/"sqlserver3-55754785bb-jjr6d". list of unmounted volumes=[mssqldb]. list of unattached volumes=[mssqldb default-token-q7cw9]
 ```
 
 The above issue is by design since azure disk PVC could not be attached to one node.
