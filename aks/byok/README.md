@@ -2,7 +2,7 @@
 
 ### Prerequisite
 [BYOK(SSE+CMK)](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption) feature requires api-version `v2020-01-01`.
-Now user could add one new parameter `az ask create --node-osdisk-diskencryptionset-id` command to create a BYOK enabled AKS cluster.
+Now user could use `az ask create --node-osdisk-diskencryptionset-id` command to create a BYOK enabled AKS cluster.
 
  - install azure cli extension
 ```
