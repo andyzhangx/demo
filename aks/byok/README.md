@@ -4,6 +4,16 @@
 [BYOK(SSE+CMK)](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption) feature requires api-version `v2020-01-01`.
 Now user could use `az ask create --node-osdisk-diskencryptionset-id` command to create a BYOK enabled AKS cluster.
 
+Make sure your subscription is whitelisted by azure disk team, otherwise you may get following error when create a BYOK enabled AKS cluster:
+```console
+# az aks create ... --kubernetes-version 1.17.0 --node-osdisk-diskencryptionset-id /subscriptions/{subs-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSet-name}
+Deployment failed. Correlation ID: efeb8ef5-aa92-45e9-b5b3-7c62ee1b5411. VMSSAgentPoolReconciler retry failed: deployment operations failed with error messages: {
+  "code": "InvalidParameter",
+  "message": "Parameter 'diskEncryptionSets' is not allowed.",
+  "target": "diskEncryptionSets"
+ }
+```
+
  - install azure cli extension
 ```
 # update to latest azure-cli version
@@ -17,7 +27,8 @@ az aks create -h
  
 ### 1. Create a DiskEncryptionSet
  - [azure cli command steps](./create-diskencryptionset.sh)
- - [powershell command steps](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption) 
+ - [powershell command steps](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption)
+> make sure current user role is `Owner` in the subscription
 
 ### 2. Create an AKS cluster with BYOK(SSE+CMK) enabled
 ```console
@@ -32,7 +43,8 @@ az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 1 --generate
 az aks get-credentials -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --overwrite-existing
 kubectl get nodes
 ```
-> `diskEncryptionSetID` format is like `/subscriptions/{subs-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSet-name}`
+ - `diskEncryptionSetID` format is like `/subscriptions/{subs-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSet-name}`
+
 
 ### 3. Verify BYOK feature is working
  - Make sure all agent nodes are up
