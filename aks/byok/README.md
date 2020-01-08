@@ -60,5 +60,7 @@ In azure portal: remove DiskEncryptionSet in "Azure Key Vault"\"Access policies"
 In azure portal: go to DiskEncryptionSet page, there is a hint to add access to "Azure Key Vault" automatically
  - After a few minutes, make sure all agent nodes are up
 
-### 4. Data disk(disk volume) BYOK
+### 4. Data disk(disk volume) BYOK supported since 1.17.0
 User could use this azure disk storage class: https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-byok.yaml, the above E2E BYOK scenario also applies to data disk.
+
+From k8s v1.17.1, azure data disk would use same encryption key as os disk if key is not provided by user.
