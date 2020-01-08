@@ -28,7 +28,7 @@ az aks create -h
 ### 1. Create a DiskEncryptionSet
  - [azure cli command steps](./create-diskencryptionset.sh)
  - [powershell command steps](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption)
-> make sure current user role is `Owner` in the subscription
+> make sure current user role is `Owner` in the subscription, otherwise you may get key vault access assignment error
 
 ### 2. Create an AKS cluster with BYOK(SSE+CMK) enabled
 ```console
@@ -59,3 +59,6 @@ In azure portal: remove DiskEncryptionSet in "Azure Key Vault"\"Access policies"
 
 In azure portal: go to DiskEncryptionSet page, there is a hint to add access to "Azure Key Vault" automatically
  - After a few minutes, make sure all agent nodes are up
+
+### 4. Data disk(disk volume) BYOK
+User could use this azure disk storage class: https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azuredisk-byok.yaml, the above E2E BYOK scenario also applies to data disk.
