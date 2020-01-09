@@ -21,8 +21,8 @@ sudo apt-get update
 sudo apt-get install azure-cli
 
 az extension remove --name aks-preview
-az extension add --source https://raw.githubusercontent.com/andyzhangx/demo/master/aks/byok/aks_preview-0.4.25-py2.py3-none-any.whl -y
-az aks create -h
+az extension add -y -n aks-preview
+az aks create -h | grep diskencryptionset
 ```
  
 ### 1. Create a DiskEncryptionSet
