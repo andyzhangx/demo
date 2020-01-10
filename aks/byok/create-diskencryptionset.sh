@@ -2,7 +2,7 @@
 
 subscriptionId=
 rgName=andy-diskencryptionset 
-location=northeurope 
+location=southcentralus 
 keyVaultName=andy-des
 keyName=andy-des
 diskEncryptionSetName=andy-des
