@@ -59,4 +59,4 @@ From k8s v1.17.1, azure data disk would use same encryption key as os disk if ke
 Refer to [Dynamically create and use a persistent volume with Azure disks in Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/azure-disks-dynamic-pv) for more detaied steps about how to use azure disk volume.
 
 ### 5. Key rotation
-Follow steps (here](https://github.com/andyzhangx/demo/blob/master/aks/byok/create-diskencryptionset.sh#L21-L27)
+Follow steps [here](https://github.com/andyzhangx/demo/blob/master/aks/byok/create-diskencryptionset.sh#L21-L27)
