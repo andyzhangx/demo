@@ -17,7 +17,7 @@ az aks create -h | grep diskencryptionset
 ```
  
 ### 1. Create a DiskEncryptionSet
- - [azure cli command steps](./create-diskencryptionset.sh)
+ - [azure cli command steps](https://github.com/andyzhangx/demo/blob/master/aks/byok/create-diskencryptionset.sh#L3-L19)
  - [powershell command steps](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption)
 > make sure current user role is `Owner` in the subscription, otherwise you may get key vault access assignment error
 
@@ -57,3 +57,6 @@ User could use this azure disk storage class: https://github.com/andyzhangx/demo
 From k8s v1.17.1, azure data disk would use same encryption key as os disk if key is not provided by user.
 
 Refer to [Dynamically create and use a persistent volume with Azure disks in Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/azure-disks-dynamic-pv) for more detaied steps about how to use azure disk volume.
+
+### 5. Key rotation
+Follow steps (here](https://github.com/andyzhangx/demo/blob/master/aks/byok/create-diskencryptionset.sh#L21-L27)
