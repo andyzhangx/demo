@@ -4,14 +4,6 @@
 [BYOK(SSE+CMK)](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption) feature requires api-version `v2020-01-01`.
 Now user could use `az ask create --node-osdisk-diskencryptionset-id` command to create a BYOK enabled AKS cluster.
 
-Make sure your subscription is whitelisted by azure disk team, otherwise you may get following error when create a BYOK enabled AKS cluster:
-```console
-# az aks create ... --kubernetes-version 1.17.0 --node-osdisk-diskencryptionset-id /subscriptions/{subs-id}/resourceGroups/{rg-name}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSet-name}
-Deployment failed. Correlation ID: efeb8ef5-aa92-45e9-b5b3-7c62ee1b5411. VMSSAgentPoolReconciler retry failed: deployment operations failed with error messages: {
-  "code": "InvalidParameter",
-  "message": "Parameter 'diskEncryptionSets' is not allowed.",
-  "target": "diskEncryptionSets"
- }
 ```
 
  - install azure cli extension
@@ -34,7 +26,7 @@ az aks create -h | grep diskencryptionset
 ```console
 RESOURCE_GROUP_NAME=
 CLUSTER_NAME=
-LOCATION=northeurope  #`northeurope`, `eastus2euap` regions are BYOK available
+LOCATION=southcentralus  #`southcentralus`, `northeurope`, `eastus2euap` regions are BYOK available
 
 az group create -n $RESOURCE_GROUP_NAME -l $LOCATION
 az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 1 --generate-ssh-keys --kubernetes-version 1.17.0 --node-osdisk-diskencryptionset-id 
