@@ -15,7 +15,7 @@ sudo apt-get update
 sudo apt-get install azure-cli
 
 az extension remove --name aks-preview
-az extension add -y -n aks-preview
+az extension add -y -s https://azurecliaks.blob.core.windows.net/azure-cli-extension/aks_preview-0.4.27-py2.py3-none-any.whl
 az aks create -h | grep diskencryptionset
 ```
  
