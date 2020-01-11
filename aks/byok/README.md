@@ -20,7 +20,7 @@ az aks create -h | grep diskencryptionset
 ```
  
 ### 1. Create a DiskEncryptionSet
- - [azure cli command steps](https://github.com/andyzhangx/demo/blob/master/aks/byok/create-diskencryptionset.sh#L3-L19)
+ - [azure cli command steps](https://github.com/andyzhangx/demo/blob/master/aks/byok/create-diskencryptionset.sh#L3-L21)
  - [powershell command steps](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption)
 > make sure current user role is `Owner` in the subscription, otherwise you may get key vault access assignment error
 
