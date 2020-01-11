@@ -1,7 +1,7 @@
 # How to create a BYOK(SSE+CMK) enabled AKS cluster
 
 ### Current BYOK(SSE+CMK)  supported regions
-`southcentralus`, `northeurope`, `eastus2euap`
+`southcentralus`, `eastus`, `westus2`, `northeurope`, `eastus2euap`
 
 ### Prerequisite
 [BYOK(SSE+CMK)](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption) feature requires api-version `v2020-01-01`.
