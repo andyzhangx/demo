@@ -10,13 +10,11 @@ Now user could use `az ask create --node-osdisk-diskencryptionset-id` command to
  - install azure cli extension
 
 ```
-# update to latest azure-cli version
-sudo apt-get update
-sudo apt-get install azure-cli
+# Install the aks-preview extension
+az extension add --name aks-preview
 
-az extension remove --name aks-preview
-az extension add -y -s https://azurecliaks.blob.core.windows.net/azure-cli-extension/aks_preview-0.4.27-py2.py3-none-any.whl
-az aks create -h | grep diskencryptionset
+# Update the extension to make sure you have the latest version installed
+az extension update --name aks-preview
 ```
  
 ### 1. Create a DiskEncryptionSet
