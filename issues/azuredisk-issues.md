@@ -858,11 +858,10 @@ Refer to [Rolling Updates with Kubernetes Deployments](https://tachingchen.com/b
 
 **Note**
 
-there are two kinds of `Multi-Attach error` issues:
- - `Multi-Attach error for volume "pvc-e9b72e86-129a-11ea-9a02-9abdbf393c78" Volume is already used by pod(s)` (by design)
+ - error messages:
+   - `Multi-Attach error for volume "pvc-e9b72e86-129a-11ea-9a02-9abdbf393c78" Volume is already used by pod(s)`
+   - `Multi-Attach error for volume "pvc-0d7740b9-3a43-11e9-93d5-dee1946e6ce9" Volume is already exclusively attached to one node and can't be attached to another`
 
 two pods are using same disk PVC, this issue could happen even using `Deployment` with one replica, check detailed explanation and workaround here with above explanation
 
- - `Multi-Attach error for volume "pvc-0d7740b9-3a43-11e9-93d5-dee1946e6ce9" Volume is already exclusively attached to one node and can't be attached to another` (fixed in Nov.2019)
 
-We already fixed this issue by [vmss dirty cache issue](#22-vmss-dirty-cache-issue) on AKS in Nov.2019, and also we have added [disk attach/detach self-healing](#19-disk-attachdetach-self-healing) feature to make disk could be detached finally when pod is scheduled on the node.
