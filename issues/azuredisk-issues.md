@@ -860,8 +860,11 @@ Refer to [Rolling Updates with Kubernetes Deployments](https://tachingchen.com/b
 
  - error messages:
    - `Multi-Attach error for volume "pvc-e9b72e86-129a-11ea-9a02-9abdbf393c78" Volume is already used by pod(s)`
-   - `Multi-Attach error for volume "pvc-0d7740b9-3a43-11e9-93d5-dee1946e6ce9" Volume is already exclusively attached to one node and can't be attached to another`
 
 two pods are using same disk PVC, this issue could happen even using `Deployment` with one replica, check detailed explanation and workaround here with above explanation
 
+   - `Multi-Attach error for volume "pvc-0d7740b9-3a43-11e9-93d5-dee1946e6ce9" Volume is already exclusively attached to one node and can't be attached to another`
 
+This could be a transient error when move volume from one node to another.
+
+related code: [reportMultiAttachError](https://github.com/kubernetes/kubernetes/blob/36e40fb850293076b415ae3d376f5f81dc897105/pkg/controller/volume/attachdetach/reconciler/reconciler.go#L300)
