@@ -6,12 +6,13 @@ Below are the steps about how to debug azure disk issues on Kubernetes.
    - Step#3 is needed if there is disk mount/read/write issue
 
 ### 1. Get disk info by azure cli
-```
+```console
 az disk show -g <resource-group-name> -n <disk-name>
 ```
 
 ### 2. Get `volumesAttached` info by `kubectl get no NODE-NAME -o yaml`, e.g.
-```
+```console
+# kubectl get no -o yaml | grep volumesAttached -A 10
 volumesAttached:
   - devicePath: "0"
     name: kubernetes.io/azure-disk//subscriptions/.../resourceGroups/MC_nozzle-central_nzcentral_centralus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-e684185c-b3ea-11e8-bf5c-0a58ac1f0f2f
@@ -23,7 +24,7 @@ volumesAttached:
 
 ### 3. Take Ubuntu 16.04 as an example, it has attached 3 data disks, below is the debugging info need to collect:
 #### `/dev/disk/azure/` contains one OS disk(`sda`), one resource disk(`sdb`), 3 data disks(`sdc`, `sdd`, `sde`)
-```
+```console
 sudo apt install tree -y
 tree /dev/disk/azure
 /dev/disk/azure
@@ -46,7 +47,7 @@ $ sudo lsscsi
 ```
 
 #### Run `sudo df -aTH | grep dev` to get all mounting info
-```
+```console
 $ sudo df -aTH | grep dev
 Filesystem     Type        Size  Used Avail Use% Mounted on
 ...
@@ -73,7 +74,7 @@ tmpfs          tmpfs       1.5G     0  1.5G   0% /run/user/1000
 ```
 Note:
 If you got following error, then it would be a bug, you could refer to [Issue#57444](https://github.com/kubernetes/kubernetes/issues/57444) for more details
-```
+```console
 sudo ls -lt /var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/b3543426255
 ls: reading directory '/var/lib/kubelet/plugins/kubernetes.io/azure-disk/mounts/b3543426255': Input/output error
 total 0
