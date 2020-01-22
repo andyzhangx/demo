@@ -1,3 +1,5 @@
+#### Azure disk could not be resized when it's in "attached" state, we could only resize azure disk when it's in "unattached" state, this page will show you how to archieve this.
+
 **How to use azure disk size grow feature**
  > available from `v1.11.0`, details: [Add azuredisk PV size grow feature](https://github.com/kubernetes/kubernetes/pull/64386)
  - In the beginning, pls make sure the azure disk PVC is created by `kubernetes.io/azure-disk` storage class with `allowVolumeExpansion: true` (default is false)
