@@ -865,6 +865,9 @@ two pods are using same disk PVC, this issue could happen even using `Deployment
 
    - `Multi-Attach error for volume "pvc-0d7740b9-3a43-11e9-93d5-dee1946e6ce9" Volume is already exclusively attached to one node and can't be attached to another`
 
-This could be a transient error when move volume from one node to another.
+This could be a transient error when move volume from one node to another, use following command to find attached node:
+```console  
+kubectl get no -o yaml | grep volumesAttached -A 15 | grep pvc-0d7740b9-3a43-11e9-93d5-dee1946e6ce9 -B 10 -A 15
+```
 
 related code: [reportMultiAttachError](https://github.com/kubernetes/kubernetes/blob/36e40fb850293076b415ae3d376f5f81dc897105/pkg/controller/volume/attachdetach/reconciler/reconciler.go#L300)
