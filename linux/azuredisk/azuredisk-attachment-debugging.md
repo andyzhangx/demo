@@ -22,7 +22,13 @@ volumesAttached:
     name: kubernetes.io/azure-disk//subscriptions/.../resourceGroups/MC_nozzle-central_nzcentral_centralus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-936d310f-0357-11e9-be1f-0a58ac1f147d    
 ```
 
-### 3. Take Ubuntu 16.04 as an example, it has attached 3 data disks, below is the debugging info need to collect:
+### 3. Log on agent node and check device info
+ - use [kubectl-enter](https://github.com/andyzhangx/demo/tree/master/dev#kubectl-enter) to log on the agent node
+```console
+kubectl-enter node-name
+```
+
+Take Ubuntu 16.04 as an example, it has attached 3 data disks, below is the debugging info need to collect:
 #### `/dev/disk/azure/` contains one OS disk(`sda`), one resource disk(`sdb`), 3 data disks(`sdc`, `sdd`, `sde`)
 ```console
 sudo apt install tree -y
