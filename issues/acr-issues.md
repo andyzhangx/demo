@@ -71,6 +71,24 @@ spec:
   - name: emptysecret
 ```
  
+### 3. pull private ACR image error on a MSI enabled cluster
+
+**Issue details**:
+On a MSI enabled cluster, pull private ACR image does not work on k8s cluster version < 1.15
+
+**Related issues**
+- [UseManagedIdentityExtension is broken for Auth with Azure container registry](https://github.com/kubernetes/kubernetes/issues/87579)
+
+**Fix**
+
+PR [Fix ACR MSI cross-subscription authentication error](https://github.com/kubernetes/kubernetes/pull/77245) fixed this issue 
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.14 | no fix |
+| v1.15 | 1.15.0 |
+| v1.16 | 1.16.0 |
+
 ### Tips
 #### How to check whether current service principal could access ACR?
 
