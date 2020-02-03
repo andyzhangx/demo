@@ -192,8 +192,8 @@ rm -Recurse -Force C:\Windows\Temp\*
 
 ### kubectl-enter
 ```
-sudo wget -O /usr/local/bin/kubectl-enter https://raw.githubusercontent.com/andyzhangx/demo/master/dev/kubectl-enter
-sudo chmod a+x /usr/local/bin/kubectl-enter
+sudo wget https://raw.githubusercontent.com/andyzhangx/demo/master/dev/kubectl-enter
+sudo chmod a+x ./kubectl-enter
 ```
 
 #### Links
