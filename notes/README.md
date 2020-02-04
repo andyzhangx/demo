@@ -41,6 +41,7 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
  - [Improving Kubernetes reliability: quicker detection of a Node down](https://fatalfailure.wordpress.com/2016/06/10/improving-kubernetes-reliability-quicker-detection-of-a-node-down/), [Kubernetes recreate pod if node becomes offline timeout](https://stackoverflow.com/questions/53641252/kubernetes-recreate-pod-if-node-becomes-offline-timeout)
  - [Increase maximum pods per node](https://github.com/kubernetes/kubernetes/issues/23349)
  - [Kubernetes API Resources: Which Group and Version to Use](https://akomljen.com/kubernetes-api-resources-which-group-and-version-to-use)
+ - [Accessing Kubernetes Pods from Outside of the Cluster](http://alesnosek.com/blog/2017/02/14/accessing-kubernetes-pods-from-outside-of-the-cluster/)
  
 #### Kubernetes network KB
  - [Basic Iptables Options](https://help.ubuntu.com/community/IptablesHowTo)
