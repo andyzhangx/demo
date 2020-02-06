@@ -32,6 +32,9 @@ details: [Node-specific Volume Limits](https://kubernetes.io/docs/concepts/stora
 kubectl describe no | grep attachable-volumes-azure-disk
 ```
 
+ - related issues
+   - [AKS can assign pods to nodes with insufficient disks to attach](https://github.com/kubernetes/kubernetes/issues/77225#issuecomment-582783869)
+
 #### 4. More disk type support
 
 new managed disk types [`StandardSSD_LRS`](https://aka.ms/StandardSSDBlog), `UltraSSD_LRS` are available from `v1.13.0`
