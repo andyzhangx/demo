@@ -32,6 +32,7 @@ kubectl get namespaces $NAMESPACE -o json | jq '.spec.finalizers=[]' > /tmp/ns.j
 kubectl proxy &
 curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json http://127.0.0.1:8001/api/v1/namespaces/$NAMESPACE/finalize
 ```
+ - [Namespaces stuck in Terminating state](https://github.com/Azure/AKS/issues/733#issuecomment-583714454)
 
 ### Links
  - [Common Kubernetes Ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports)
