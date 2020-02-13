@@ -17,9 +17,8 @@ spec:
         - name: docker-directory
           hostPath:
             path: /var/lib/docker
-
       containers:
-        - image: andyzhangx/docker-cleanup:latest
+        - image: andyzhangx/docker-cleanup:latest  # based on https://hub.docker.com/r/meltwater/docker-cleanup/
           name: clean-up
           env:
             - name: CLEAN_PERIOD
