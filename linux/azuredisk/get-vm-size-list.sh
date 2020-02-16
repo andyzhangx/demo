@@ -10,5 +10,6 @@ done
 cat *.txt > vmsizelist.data
 OUTPUT="vmsizelist.final"
 cat vmsizelist.data | sort | uniq > $OUTPUT
+sed -i 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' $OUTPUT
 
 echo "got all vm list-sizes from all regions, output file: $OUTPUT"
