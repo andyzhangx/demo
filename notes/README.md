@@ -52,6 +52,7 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
   - [readOnly should respect values in both FlexVolume PV and PVC ](https://github.com/kubernetes/kubernetes/pull/61759)
   - [Volume Security](https://docs.okd.io/latest/install_config/persistent_storage/pod_security_context.html#overview)
   - [Kubernetes: how to set VolumeMount user group and file permissions](https://stackoverflow.com/questions/43544370/kubernetes-how-to-set-volumemount-user-group-and-file-permissions)
+  - [Allow volume ownership to be only set after fs formatting](https://github.com/kubernetes/kubernetes/issues/69699)
   
 #### Service Mesh
   - [Istio Example](https://istio.io/docs/examples/)
