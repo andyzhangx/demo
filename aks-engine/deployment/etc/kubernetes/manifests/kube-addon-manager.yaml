@@ -5,25 +5,27 @@ metadata:
   namespace: kube-system
   version: v1
 spec:
+  priorityClassName: system-node-critical
   hostNetwork: true
   containers:
   - name: kube-addon-manager
-    image: k8s-gcrio.azureedge.net/kube-addon-manager-amd64:v8.6
+    image: k8s.gcr.io/kube-addon-manager-amd64:v9.0.2
+    imagePullPolicy: IfNotPresent
     resources:
       requests:
         cpu: 5m
         memory: 50Mi
     volumeMounts:
     - name: addons
-      mountPath: "/etc/kubernetes/addons"
+      mountPath: /etc/kubernetes/addons
       readOnly: true
     - name: msi
-      mountPath: "/var/lib/waagent/ManagedIdentity-Settings"
+      mountPath: /var/lib/waagent/ManagedIdentity-Settings
       readOnly: true
   volumes:
   - name: addons
     hostPath:
-      path: "/etc/kubernetes/addons"
+      path: /etc/kubernetes/addons
   - name: msi
     hostPath:
-      path: "/var/lib/waagent/ManagedIdentity-Settings"
+      path: /var/lib/waagent/ManagedIdentity-Settings
