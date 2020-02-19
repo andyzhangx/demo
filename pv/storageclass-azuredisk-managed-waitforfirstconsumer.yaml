@@ -1,3 +1,4 @@
+---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -6,5 +7,3 @@ provisioner: kubernetes.io/azure-disk
 volumeBindingMode: WaitForFirstConsumer
 parameters:
   skuname: Standard_LRS
-  kind: managed
-  cachingMode: ReadOnly
