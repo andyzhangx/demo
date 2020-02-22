@@ -302,9 +302,9 @@ mount: wrong fs type, bad option, bad superblock on /dev/sde,
 That's because azureDisk use ext4,xfs file system by default, mountOptions like [uid=x,gid=x] could not be set in mount time.
 
 **Related issues**
-
-- [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014)
+- [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014#issuecomment-589915496)
 - [Pod failed mounting xfs format volume with mountOptions](https://github.com/Azure/AKS/issues/1030)
+- [Allow volume ownership to be only set after fs formatting](https://github.com/kubernetes/kubernetes/issues/69699#issuecomment-558861917)
 
 **Solution**:
 
