@@ -59,3 +59,4 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
 
 #### Other
   - [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
+  - [Go testing style guide](https://www.arp242.net/go-testing-style.html)
