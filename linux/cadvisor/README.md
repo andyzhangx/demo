@@ -22,4 +22,8 @@ curl http://localhost:4194/containers/
 ```
 The Kubelet also starts an internal HTTP server on port 10255 and exposes some endpoints (mostly for debugging, stats, and for one-off container operations such as kubectl logs or kubectl exec), such as /metrics, /metrics/cadvisor, /pods, /spec, and so on.
 ```
-[Kubernetes Node Components: Service Proxy, Kubelet, and cAdvisor](https://medium.com/jorgeacetozi/kubernetes-node-components-service-proxy-kubelet-and-cadvisor-dcc6928ef58c)
+ - [Kubernetes Node Components: Service Proxy, Kubelet, and cAdvisor](https://medium.com/jorgeacetozi/kubernetes-node-components-service-proxy-kubelet-and-cadvisor-dcc6928ef58c)
+
+ - AKS kubelet 10255/10250 port
+ 
+ Since AKS 1.17.x, insecure port 10255 will be replaced by secure port 10250.
