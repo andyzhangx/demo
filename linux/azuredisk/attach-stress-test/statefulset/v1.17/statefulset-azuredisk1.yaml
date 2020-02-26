@@ -22,6 +22,10 @@ spec:
           mountPath: /mnt/azuredisk
   updateStrategy:
     type: RollingUpdate
+  selector:
+    matchLabels:
+      k8s-app: nginx
+      version: v1    
   volumeClaimTemplates:
   - metadata:
       name: persistent-storage
