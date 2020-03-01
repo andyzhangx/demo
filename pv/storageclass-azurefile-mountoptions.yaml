@@ -4,6 +4,7 @@ apiVersion: storage.k8s.io/v1
 metadata:
   name: azurefile
 provisioner: kubernetes.io/azure-file
+allowVolumeExpansion: true
 mountOptions:
   - dir_mode=0777
   - file_mode=0777
