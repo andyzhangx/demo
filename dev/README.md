@@ -1,6 +1,16 @@
 # kubernetes developing practices
+### 1. build hyperkube image
+```
+# Run the following from the top level kubernetes directory, to build the binaries necessary for creating hyperkube image.
+$ KUBE_BUILD_PLATFORMS=linux/amd64 make kube-apiserver kube-controller-manager kube-proxy kube-scheduler kubectl kubelet
+
+# Create and push the hyperkube image
+$ REGISTRY=andyzhangx VERSION=1.18.0-beta-azurefile ARCH=amd64 make -C cluster/images/hyperkube push
+```
+for details, refer to [build hyperkube image and push](https://github.com/kubernetes/kubernetes/tree/master/cluster/images/hyperkube)
+
 ## kubernetes on Windows
-### 1. build kubernetes on Windows
+### 2. build kubernetes on Windows
 run dos in admin mode
 ```
 cd C:\Go\src\k8s.io\kubernetes\vendor\k8s.io
