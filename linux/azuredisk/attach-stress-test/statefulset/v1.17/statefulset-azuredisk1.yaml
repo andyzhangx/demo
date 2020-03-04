@@ -6,6 +6,7 @@ metadata:
     k8s-app: nginx
     version: v1
 spec:
+  podManagementPolicy: Parallel  # OrderedReady
   serviceName: statefulset-azuredisk1
   replicas: 1
   template:
