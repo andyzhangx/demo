@@ -31,7 +31,7 @@ spec:
   - metadata:
       name: persistent-storage
       annotations:
-        volume.beta.kubernetes.io/storage-class: hdd
+        volume.beta.kubernetes.io/storage-class: default
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
