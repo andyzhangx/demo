@@ -57,6 +57,7 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
 #### Service Mesh
   - [Istio Example](https://istio.io/docs/examples/)
 
-#### Other
+#### Golang
   - [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
   - [Go testing style guide](https://www.arp242.net/go-testing-style.html)
+  - [Golang CommonMistakes](https://github.com/golang/go/wiki/CommonMistakes#table-of-contents)
