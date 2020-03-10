@@ -29,6 +29,7 @@
     - [23. race condition when delete disk right after attach disk](#23-race-condition-when-delete-disk-right-after-attach-disk)
     - [24. attach disk costs 10min](#24-attach-disk-costs-10min)
     - [25. Multi-Attach error](#25-multi-attach-error)
+    - [26. attached non-existing disk volume on agent node](#26-attached-non-existing-disk-volume-on agent-node)
 
 <!-- /TOC -->
 
@@ -873,3 +874,26 @@ kubectl get no -o yaml | grep volumesAttached -A 15 | grep pvc-0d7740b9-3a43-11e
 ```
 
 related code: [reportMultiAttachError](https://github.com/kubernetes/kubernetes/blob/36e40fb850293076b415ae3d376f5f81dc897105/pkg/controller/volume/attachdetach/reconciler/reconciler.go#L300)
+
+## 26. attached non-existing disk volume on agent node
+
+**Issue details**:
+
+There is little possibility that attach/detach disk and disk deletion happened in same time, that would cause race condition. This PR add remediation when attach/detach disk, if returned 404 error, it will filter out all non-existing disks and try attach/detach operation again.
+
+**Fix**
+
+ - [fix: add remediation in azure disk attach/detach](https://github.com/kubernetes/kubernetes/pull/88444)
+ - [fix: azure disk remediation issue](https://github.com/kubernetes/kubernetes/pull/88620)
+
+| k8s version | fixed version | notes |
+| ---- | ---- | ---- |
+| v1.14 | no fix | |
+| v1.15 | 1.15.11 | |
+| v1.16 | 1.16.8 | |
+| v1.17 | 1.17.4 | |
+| v1.18 | 1.18.0 | |
+
+**Work around**:
+
+Detach disk in problem manually
