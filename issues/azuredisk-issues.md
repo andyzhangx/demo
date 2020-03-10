@@ -886,13 +886,13 @@ There is little possibility that attach/detach disk and disk deletion happened i
  - [fix: add remediation in azure disk attach/detach](https://github.com/kubernetes/kubernetes/pull/88444)
  - [fix: azure disk remediation issue](https://github.com/kubernetes/kubernetes/pull/88620)
 
-| k8s version | fixed version | notes |
-| ---- | ---- | ---- |
-| v1.14 | no fix | |
-| v1.15 | 1.15.11 | |
-| v1.16 | 1.16.8 | |
-| v1.17 | 1.17.4 | |
-| v1.18 | 1.18.0 | |
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.14 | no fix |
+| v1.15 | 1.15.11 |
+| v1.16 | 1.16.8 |
+| v1.17 | 1.17.4 |
+| v1.18 | 1.18.0 |
 
 **Work around**:
 
