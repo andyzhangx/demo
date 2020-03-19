@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1 
+kind: DaemonSet 
+metadata: 
+  labels: 
+    component: waagent 
+  name: waagent 
+spec: 
+  selector: 
+    matchLabels: 
+      component: waagent 
+      tier: node 
+  template: 
+    metadata: 
+      labels: 
+        component: waagent 
+        tier: node 
+    spec: 
+      containers:
+      - command:
+        - nsenter
+        - --target
+        - "1"
+        - --mount
+        - --uts
+        - --ipc
+        - --net
+        - --pid
+        - --
+        - sh
+        - -c
+        - |
+          if cat /etc/waagent.conf | grep "OS.EnableFirewall=n"; then
+            echo WAAGENT FIREWALL is already disabled
+          else
+            echo disabling FIREWALL
+            sed -i 's/OS.EnableFirewall=y/OS.EnableFirewall=n/' /etc/waagent.conf
+            service walinuxagent restart
+          fi  
+          while true; do sleep 100000; done
+        image: alpine 
+        imagePullPolicy: IfNotPresent 
+        name: waagent 
+        resources: 
+          requests: 
+            cpu: 10m 
+        securityContext: 
+          privileged: true 
+      dnsPolicy: ClusterFirst 
+      hostPID: true 
+      tolerations: 
+      - effect: NoSchedule 
+        operator: Exists 
+      restartPolicy: Always 
+  updateStrategy: 
+    type: RollingUpdate
