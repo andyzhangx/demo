@@ -35,7 +35,7 @@ vi _output/xxx/azuredeploy.json
 
  - create a kubernetes cluster on `westcentralus` region
 ```console
-CLUSTER_NAME=andy-11174
+CLUSTER_NAME=YOUR-CLUSTER-NAME
 RESOURCE_GROUP_NAME=$CLUSTER_NAME
 az group create -l westcentralus -n $RESOURCE_GROUP_NAME
 az group deployment create \
