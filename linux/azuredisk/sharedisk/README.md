@@ -45,7 +45,8 @@ az group deployment create \
     --parameters "@./_output/$CLUSTER_NAME/azuredeploy.parameters.json"
 ```
 
- - Go to the resource group of the Kubernetes cluster in Azure portal
+ - move availability set or scaleset to a [proximity placement group](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/proximity-placement-groups)
+   - Go to the resource group of the Kubernetes cluster in Azure portal
    - create a new proximity placement group in same region
    - stop all agent VMs
    - set proximity placement group in agent VM availability set or scaleset
