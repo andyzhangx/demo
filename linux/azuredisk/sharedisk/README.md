@@ -1,6 +1,6 @@
 # Shared disk(Multi-node ReadWrite)
 
-Azure shared disk feature is already supported on [Azure Disk CSI driver](https://github.com/andyzhangx/azuredisk-csi-driver/tree/sharedisk-doc/deploy/example/sharedisk)
+Azure shared disk feature is already supported on [Azure Disk CSI driver](https://github.com/kubernetes-sigs/azuredisk-csi-driver/tree/master/deploy/example/sharedisk)
 
 ### Prerequisite
  - Make sure Azure shared disk is already registered with your subscription
@@ -61,4 +61,4 @@ curl -skSL https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-drive
 
 ### Try with shared disk feature
 
-follow guide here: https://github.com/andyzhangx/azuredisk-csi-driver/tree/sharedisk-doc/deploy/example/sharedisk
+follow guide here: https://github.com/kubernetes-sigs/azuredisk-csi-driver/tree/master/deploy/example/sharedisk
