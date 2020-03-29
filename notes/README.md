@@ -65,3 +65,11 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
   - [arrays-and-slices](https://blog.csdn.net/u011304970/article/details/74938457)
   - [sync](https://mp.weixin.qq.com/s/UpYbmFTowjCPU83W3DxP6Q)
   - [goroutine](https://blog.csdn.net/nuli888/article/details/63331156)
+
+#### Docker
+  - [Docker: Remove all images and containers](https://techoverflow.net/2013/10/22/docker-remove-all-images-and-containers/)
+ ```
+docker rm $(docker ps -a -q)
+docker rmi $(docker images -q)
+docker rmi $(docker images -q) --force
+ ```
