@@ -114,6 +114,7 @@ root@nginx-azurefile:/# mount | grep cifs
  - [Toubleshoot CIFS share mount errors](https://superuser.com/questions/430163/cifs-share-mount-errors)
  - [Troubleshoot Azure Files problems in Linux](https://docs.microsoft.com/en-us/azure/storage/files/storage-troubleshoot-linux-file-connection-problems)
  - [Troubleshooting tool for Azure Files mounting errors on Linux](https://gallery.technet.microsoft.com/Troubleshooting-tool-for-02184089)
+ - [LinuxCIFS troubleshooting/Enabling Debugging](https://wiki.samba.org/index.php/LinuxCIFS_troubleshooting#Enabling_Debugging)
 
 #### Links
  - [Azure File Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/#azure-file)
