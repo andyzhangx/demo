@@ -29,8 +29,8 @@ vi _output/xxx/azuredeploy.json
       "location": "[variables('location')]",
       "name": "[variables('agentpoolAvailabilitySet')]",
       "properties": {
-        "platformFaultDomainCount": **1**,
-        "platformUpdateDomainCount": **1**
+        "platformFaultDomainCount": 1,
+        "platformUpdateDomainCount": 1
       },
 
  - create a kubernetes cluster on `westcentralus` region
