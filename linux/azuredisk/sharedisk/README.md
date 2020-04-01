@@ -56,7 +56,7 @@ az group deployment create \
 
 After Kubernetes cluster set up successfully, ssh to master node and [install Azure Disk CSI driver](https://github.com/andyzhangx/azuredisk-csi-driver/blob/sharedisk-doc/docs/install-csi-driver-master.md):
 ```console
-curl -skSL https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/install-driver-standalone.sh | bash -s --
+curl -skSL https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/install-driver.sh | bash -s --
 ```
 
 ### Try with shared disk feature
