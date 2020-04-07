@@ -3,10 +3,7 @@ apiVersion: storage.k8s.io/v1
 metadata:
   name: ultrassd
 provisioner: kubernetes.io/azure-disk
+volumeBindingMode: WaitForFirstConsumer
 parameters:
   skuname: UltraSSD_LRS
-  kind: managed
-  cachingMode: ReadOnly
-  diskIopsReadWrite: "1400"
-  diskMbpsReadWrite: "320"
-  zone: "1"
+  zoned: true  # zone: "1"
