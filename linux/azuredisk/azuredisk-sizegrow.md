@@ -16,8 +16,8 @@ parameters:
 allowVolumeExpansion: true
 ```
  - Before run `kubectl edit pvc pvc-azuredisk` operation, pls make sure this PVC is not mounted by any pod, otherwise there would be resize error. There are a few ways to achieve this, wait a few minutes for the PVC disk detached from the node after below operation:
-   - option#1: cordon all nodes and then delete the original pod, this will make the pod in pending state
-   - option#2: change the replica count to 0, this will terminate the pod and detach the disk
+   - option#1: change the replica count to 0, this will terminate the pod and detach the disk
+   - option#2: cordon all nodes and then delete the original pod, this will make the pod in pending state
 
 **Make sure the only pod is terminated from the agent node, otherwise may hit `VolumeResizeFailed` when edit disk PVC**
 
