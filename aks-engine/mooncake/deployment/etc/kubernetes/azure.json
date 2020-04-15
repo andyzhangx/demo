@@ -1,9 +1,9 @@
 {
     "cloud":"AzureChinaCloud",
-    "tenantId": "72f988bf-86f1-41af-91ab-xxx",
-    "subscriptionId": "4be8920b-2978-43d7-ab14-xxx",
-    "aadClientId": "91fe9b3f-d35a-4f9b-8c92-xxx",
-    "aadClientSecret": "ed0a7cc2-070e-416c-b42c-xxx",
+    "tenantId": "xxx-xxx-xxx-xxx-xxx",
+    "subscriptionId": "xxx-xxx-xxx-xxx-xxx",
+    "aadClientId": "xxx-xxx-xxx-xxx-xxx",
+    "aadClientSecret": "xxx-xxx-xxx-xxx-xxx",
     "resourceGroup": "andy-mg110",
     "location": "chinaeast",
     "subnetName": "k8s-subnet",
