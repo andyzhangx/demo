@@ -1,5 +1,5 @@
 # Use NFS Server Provisioner on AKS
-[NFS Server Provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs) is an out-of-tree dynamic provisioner for Kubernetes. You can use it to quickly & easily deploy shared storage that works almost anywhere. This doc shows how to set NFS Server Provisioner on AKS using [NFS Server Provisioner helm chart](https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner)
+[NFS Server Provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs) is an out-of-tree dynamic provisioner for Kubernetes. You can use it to quickly & easily deploy shared storage that works almost anywhere. This doc shows how to set NFS Server Provisioner on AKS using [NFS Server Provisioner helm chart](https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner), the NFS server data is stored on Azure managed disk.
  
 ## 1. Install nfs-server-provisioner helm chart
  - following example would provision 100GB storage(one data disk) on an agent node, serving as a NFSv3 server
