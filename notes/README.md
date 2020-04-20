@@ -43,6 +43,7 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
  - [Increase maximum pods per node](https://github.com/kubernetes/kubernetes/issues/23349)
  - [Kubernetes API Resources: Which Group and Version to Use](https://akomljen.com/kubernetes-api-resources-which-group-and-version-to-use)
  - [Accessing Kubernetes Pods from Outside of the Cluster](http://alesnosek.com/blog/2017/02/14/accessing-kubernetes-pods-from-outside-of-the-cluster/)
+ - [From Cloud Provider to CCM](https://cloud.tencent.com/developer/article/1549964)
  
 #### Kubernetes network KB
  - [Basic Iptables Options](https://help.ubuntu.com/community/IptablesHowTo)
