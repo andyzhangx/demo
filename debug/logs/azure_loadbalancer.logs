@@ -1,0 +1,35 @@
+$ grep 'andylb\|ada5e2b24f75d4aed91e5f06c85b9bf5' controller-manager.log  | grep azure
+I0423 09:18:31.197737       1 azure_loadbalancer.go:155] ensureloadbalancer(default/andylb): START clusterName="andy-1182"
+I0423 09:18:31.197749       1 azure_loadbalancer.go:676] reconcileLoadBalancer for service(default/andylb) - wantLb(true): started
+I0423 09:18:31.234745       1 azure_loadbalancer.go:684] reconcileLoadBalancer for service(default/andylb): lb(andy-1182/andy-1182) wantLb(true) resolved load balancer name
+I0423 09:18:31.234796       1 azure_loadbalancer.go:707] reconcileLoadBalancer for service (default/andylb)(true): lb backendpool - found wanted backendpool. not adding anything
+I0423 09:18:31.254816       1 azure_publicipclient.go:124] Received error in publicip.get.request: resourceID: /subscriptions/b9d2281e-dcd5-4dfd-9a97-0d50377cdf76/resourceGroups/andy-1182/providers/Microsoft.Network/publicIPAddresses/andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5, error: Retriable: false, RetryAfter: 0s, HTTPStatusCode: 404, RawError: Retriable: false, RetryAfter: 0s, HTTPStatusCode: 404, RawError: {"error":{"code":"ResourceNotFound","message":"The Resource 'Microsoft.Network/publicIPAddresses/andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5' under resource group 'andy-1182' was not found."}}
+I0423 09:18:31.254999       1 azure_wrap.go:109] Public IP "andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5" not found
+I0423 09:18:31.255112       1 azure_loadbalancer.go:541] ensurePublicIPExists for service(default/andylb): pip(andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5) - creating
+I0423 09:18:31.255254       1 azure_loadbalancer.go:567] service(default/andylb): pip(andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5) - creating as ipv4 for clusterIP:10.0.74.250
+I0423 09:18:31.255341       1 azure_loadbalancer.go:570] ensurePublicIPExists for service(default/andylb): pip(andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5) - creating
+I0423 09:18:31.255442       1 azure_loadbalancer.go:572] CreateOrUpdatePIP(andy-1182, "andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5"): start
+I0423 09:18:34.118091       1 azure_backoff.go:243] PublicIPAddressesClient.CreateOrUpdate(andy-1182, andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5): end
+I0423 09:18:34.118150       1 azure_loadbalancer.go:578] CreateOrUpdatePIP(andy-1182, "andy-1182-ada5e2b24f75d4aed91e5f06c85b9bf5"): end
+I0423 09:18:34.143146       1 azure_loadbalancer.go:827] reconcileLoadBalancer for service (default/andylb)(true): lb frontendconfig(ada5e2b24f75d4aed91e5f06c85b9bf5) - adding
+I0423 09:18:34.143183       1 azure_loadbalancer.go:1032] reconcileLoadBalancerRule lb name (andy-1182) rule name (ada5e2b24f75d4aed91e5f06c85b9bf5-TCP-1234)
+I0423 09:18:34.143374       1 azure_loadbalancer.go:872] reconcileLoadBalancer for service (default/andylb)(true): lb probe(ada5e2b24f75d4aed91e5f06c85b9bf5-TCP-1234) - adding
+I0423 09:18:34.143409       1 azure_loadbalancer.go:913] reconcileLoadBalancer for service (default/andylb)(true): lb rule(ada5e2b24f75d4aed91e5f06c85b9bf5-TCP-1234) adding
+I0423 09:18:34.143436       1 azure_loadbalancer.go:955] reconcileLoadBalancer: reconcileLoadBalancer for service(default/andylb): lb(andy-1182) - updating
+I0423 09:18:35.001838       1 azure_loadbalancer.go:988] reconcileLoadBalancer for service(default/andylb): lb(andy-1182) finished
+I0423 09:18:35.032899       1 azure_loadbalancer.go:423] getServiceLoadBalancerStatus gets ingress IP "52.177.241.25" from frontendIPConfiguration "ada5e2b24f75d4aed91e5f06c85b9bf5" for service "default/andylb"
+I0423 09:18:35.032925       1 azure_loadbalancer.go:173] EnsureLoadBalancer: reconciling security group for service "default/andylb" with IP "52.177.241.25", wantLb = true
+I0423 09:18:35.032934       1 azure_loadbalancer.go:1118] reconcileSecurityGroup(default/andylb): START clusterName="andy-1182"
+I0423 09:18:35.032962       1 azure_loadbalancer.go:1191] Expecting security rule for andylb: Internet:* -> 52.177.241.25:1234
+I0423 09:18:35.033005       1 azure_loadbalancer.go:1202] Existing security rule while processing andylb: *:* -> *:22-22
+I0423 09:18:35.033014       1 azure_loadbalancer.go:1202] Existing security rule while processing andylb: *:* -> *:443-443
+I0423 09:18:35.033019       1 azure_loadbalancer.go:1202] Existing security rule while processing andylb: Internet:* -> 52.177.232.210:1234
+I0423 09:18:35.033036       1 azure_loadbalancer.go:1280] reconcile(default/andylb)(true): sg rule(ada5e2b24f75d4aed91e5f06c85b9bf5-TCP-1234-Internet) - adding
+I0423 09:18:35.033046       1 azure_loadbalancer.go:1294] Updated security rule while processing andylb: *:* -> *:22-22
+I0423 09:18:35.033054       1 azure_loadbalancer.go:1294] Updated security rule while processing andylb: *:* -> *:443-443
+I0423 09:18:35.033061       1 azure_loadbalancer.go:1294] Updated security rule while processing andylb: Internet:* -> 52.177.232.210:1234
+I0423 09:18:35.033085       1 azure_loadbalancer.go:1294] Updated security rule while processing andylb: Internet:* -> 52.177.241.25:1234
+I0423 09:18:35.033094       1 azure_loadbalancer.go:1299] reconcileSecurityGroup for service(default/andylb): sg(k8s-master-23789806-nsg) - updating
+I0423 09:18:45.373040       1 azure_loadbalancer.go:676] reconcileLoadBalancer for service(default/andylb) - wantLb(false): started
+I0423 09:18:45.490879       1 azure_loadbalancer.go:684] reconcileLoadBalancer for service(default/andylb): lb(andy-1182/andy-1182-internal) wantLb(false) resolved load balancer name
+I0423 09:18:45.490902       1 azure_loadbalancer.go:988] reconcileLoadBalancer for service(default/andylb): lb(andy-1182-internal) finished
