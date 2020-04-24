@@ -1,5 +1,5 @@
 ## Current Status of Windows Server support for kubernetes on Azure
-> kubernetes on Windows is in **Beta** stage.
+> kubernetes on Windows is in **GA** stage.
 
 ## k8s windows cluster could be created by two ways:
 ### 1. azure portal
@@ -91,14 +91,9 @@ open file _output/`dnsPrefix`/azuredeploy.json under acs-engine:
 Fixed in Windows Server 1809
 
 ##### Links
-[Using Windows Server Containers in Kubernetes](https://kubernetes.io/docs/getting-started-guides/windows/)
-
-[Microsoft Azure Container Service Engine - Kubernetes Windows Walkthrough](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
-
-[Windows Server version 1709](https://docs.microsoft.com/en-us/windows-server/get-started/whats-new-in-windows-server-1709)
-
-[Windows Container Version Compatibility](https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility)
-
-[Windows Containers Documentation](https://docs.microsoft.com/en-us/virtualization/windowscontainers/)
-
-
+ - [Using Windows Server Containers in Kubernetes](https://kubernetes.io/docs/getting-started-guides/windows/)
+ - [Microsoft Azure Container Service Engine - Kubernetes Windows Walkthrough](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
+ - [Windows Server version 1709](https://docs.microsoft.com/en-us/windows-server/get-started/whats-new-in-windows-server-1709)
+ - [Windows Container Version Compatibility](https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility)
+ - [Windows Containers Documentation](https://docs.microsoft.com/en-us/virtualization/windowscontainers/)
+ - [PowerShell equivalents for common Linux/bash commands](https://mathieubuisson.github.io/powershell-linux-bash/)
