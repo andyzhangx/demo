@@ -6,4 +6,4 @@ metadata:
 provisioner: kubernetes.io/azure-file
 parameters:
   skuName: Standard_LRS
-  resourceGroup: RESOURCE_GROUP_NAME
+  resourceGroup: EXISTING_RESOURCE_GROUP_NAME
