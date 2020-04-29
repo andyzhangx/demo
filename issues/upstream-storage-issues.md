@@ -62,6 +62,17 @@ sudo umount /var/lib/kubelet/pods/5c949781-4c6d-11e9-825d-000d3a0dd47b/volumes/m
 
 And then the pod will be in terminated soon.
 
+### 3. node shutdown make disk volume detach in statefulset costs more than 5min
+
+**Issue details**:
+
+When a node is shutdown the control plane do not distinguish between a kubelet or node failure and generally cannot answer the question "are pods still running on the node ?" This leads to a situation where it cannot make the right assumptions to preserve the availability of stateful workloads, this manifests as volumes not being detached due the fact that the control plane is not able to determine if containers are still running.
+
+**Fix**
+- [add node shutdown KEP](https://github.com/kubernetes/enhancements/pull/1116)
+
+**Workaround**
+ - [Improving Kubernetes reliability: quicker detection of a Node down](https://fatalfailure.wordpress.com/2016/06/10/improving-kubernetes-reliability-quicker-detection-of-a-node-down/)
 
 ### Tips:
  - [Postpone deletion of a PV or a PVC when they are being used](https://github.com/kubernetes/kubernetes/blob/f170ef66340f6355d331ed90902574ff0532a20a/pkg/features/kube_features.go#L207-L208) reaches BETA in k8s v1.10
