@@ -60,6 +60,26 @@ hing storage account
  - Workaround:
 Create a `Standard_LRS` storage account in a `shadow resource group` which contains all resources of your aks cluster, naming as `MC_{RESOUCE-GROUP-NAME}{CLUSTER-NAME}{REGION}`, e.g. if you create an aks cluster `andy-aks182` in resouce group `aks` in westus2 region, then `shadow resource group` would be `MC_aks_andy-aks182_westus2`, wait for a few seconds, azure file PVC will be created successfully.
 
+#### Image garbage collection
+
+Current AKS kubelet default setting:
+```
+/usr/local/bin/kubelet
+--image-gc-high-threshold=85
+--image-gc-low-threshold=80
+```
+
+Kubernetes manages lifecycle of all images through imageManager, with the cooperation of cadvisor.
+
+The policy for garbage collecting images takes two factors into consideration: HighThresholdPercent and LowThresholdPercent. Disk usage above the high threshold will trigger garbage collection. The garbage collection will delete least recently used images until the low threshold has been met.
+
+https://kubernetes.io/docs/concepts/cluster-administration/kubelet-garbage-collection/#image-collection
+
+to fasten the docker image cleanup, user could use following daemonset as workaround:
+```console
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/dev/docker-image-cleanup.yaml
+```
+
 #### Kubernetes dashboard error due to RBAC enabled
 please refer to https://docs.microsoft.com/en-us/azure/aks/kubernetes-dashboard#for-rbac-enabled-clusters
 
