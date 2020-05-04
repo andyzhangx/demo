@@ -1,0 +1,76 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: footestdb
+provisioner: kubernetes.io/azure-file
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: footestdb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: footestdb
+  resources:
+    requests:
+      storage: 60Gi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: foo-test-db
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  labels:
+    app: foo-test-db
+spec:
+  type: LoadBalancer
+  selector:
+    app: foo-test-db
+  ports:
+    - port: 5432
+      name: postgresql
+---
+kind: Deployment
+apiVersion: apps/v1beta1
+metadata:
+  name: foo-test-db
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: foo-test-db
+      labels:
+        app: foo-test-db
+    spec:
+      containers:
+      - name: foo-test-db
+        image: postgres:10.3
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/
+          subPath: data
+          name: footestdb
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: hive
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: foo-db-creds
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: foo-db-creds
+              key: password
+      volumes:
+      - name: footestdb
+        persistentVolumeClaim:
+          claimName: footestdb
