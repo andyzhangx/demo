@@ -208,7 +208,7 @@ Use `mountOptions` with `dir_mode`, `file_mode` set as `0777`:
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: footestdb
+  name: azurefile
 provisioner: kubernetes.io/azure-file
 mountOptions:
   - dir_mode=0777
