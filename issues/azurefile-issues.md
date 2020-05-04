@@ -201,7 +201,20 @@ fixing permissions on existing directory /var/lib/postgresql/data
 azure file plugin is using cifs/SMB protocol, file/dir permission could not be changed after mounting
 
 **Workaround**:
-Use `subPath` together with azure disk plugin (for ext3/4 disk type, there is a `lost+found` directory after disk format)
+
+Use `mountOptions` with `dir_mode`, `file_mode` set as `0777`:
+
+```yaml
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: footestdb
+provisioner: kubernetes.io/azure-file
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+```
+> follow detailed config [here](../linux/azurefile/postgresql)
 
 **Related issues**
 [Persistent Volume Claim permissions](https://github.com/Azure/AKS/issues/225)
