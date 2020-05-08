@@ -14,7 +14,7 @@ metadata:
   name: footestdb
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   storageClassName: footestdb
   resources:
     requests:
