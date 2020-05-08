@@ -22,7 +22,7 @@
     - [16. potential race condition issue due to detach disk failure retry](#16-potential-race-condition-issue-due-to-detach-disk-failure-retry)
     - [17. very slow disk attach/detach issue when disk num is large](#17-very-slow-disk-attachdetach-issue-when-disk-num-is-large)
     - [18. detach azure disk make VM run into a limbo state](#18-detach-azure-disk-make-vm-run-into-a-limbo-state)
-    - [19. disk attach/detach self-healing](#19-disk-attachdetach-self-healing)
+    - [19. disk attach/detach self-healing on VMAS](#19-disk-attachdetach-self-healing-on-vmas)
     - [20. azure disk detach failure if node not exists](#20-azure-disk-detach-failure-if-node-not-exists)
     - [21. invalid disk URI error](#21-invalid-disk-URI-error)
     - [22. vmss dirty cache issue](#22-vmss-dirty-cache-issue)
@@ -30,6 +30,7 @@
     - [24. attach disk costs 10min](#24-attach-disk-costs-10min)
     - [25. Multi-Attach error](#25-multi-attach-error)
     - [26. attached non-existing disk volume on agent node](#26-attached-non-existing-disk-volume-on-agent-node)
+    - [27. failed to get azure instance id for node (not a vmss instance)](#27-failed-to-get-azure-instance-id-for-node-not-a-vmss-instance)
 
 <!-- /TOC -->
 
@@ -656,7 +657,7 @@ Update VM status manually would solve the problem:
  az vmss update-instances -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(number)>
  ```
 
-## 19. disk attach/detach self-healing
+## 19. disk attach/detach self-healing on VMAS
 
 **Issue details**:
 There could be disk detach failure due to many reasons(e.g. disk RP busy, controller manager crash, etc.), and it would fail when attach one disk to other node if that disk is still attached to the old node, user needs to manually detach disk in problem in the before, with this fix, azure cloud provider would check and detach this disk if it's already attached to the other node, that's like self-healing. This PR could fix lots of such disk attachment issue.
@@ -897,3 +898,29 @@ There is little possibility that attach/detach disk and disk deletion happened i
 **Work around**:
 
 Detach disk in problem manually
+
+## 27. failed to get azure instance id for node (not a vmss instance)
+
+**Issue details**:
+
+PR(https://github.com/kubernetes/kubernetes/pull/81266) does not convert the VMSS node name which causes error like this:
+```
+failed to get azure instance id for node \"k8s-agentpool1-32474172-vmss_1216\" (not a vmss instance)
+```
+That will make dangling attach return error, and k8s volume attach/detach controller will getVmssInstance, and since the nodeName is in an incorrect format, it will always clean vmss cache if node not found, thus incur a get vmss API call storm.
+
+**Fix**
+
+ - [fix: azure disk dangling attach issue on VMSS which would cause API throttling](https://github.com/kubernetes/kubernetes/pull/90749)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.15 | no fix |
+| v1.16 | in cherry-pick |
+| v1.17 | in cherry-pick |
+| v1.18 | in cherry-pick |
+| v1.19 | 1.19.0 |
+
+**Work around**:
+
+Restart kube-controller-manager
