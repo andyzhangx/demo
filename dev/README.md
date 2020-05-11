@@ -204,6 +204,7 @@ rm -Recurse -Force C:\Windows\Temp\*
 ```
 sudo wget https://raw.githubusercontent.com/andyzhangx/demo/master/dev/kubectl-enter
 sudo chmod a+x ./kubectl-enter
+./kubectl-enter <node-name>
 ```
 
 #### Links
