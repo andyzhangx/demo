@@ -936,4 +936,23 @@ That will make dangling attach return error, and k8s volume attach/detach contro
 
 **Work around**:
 
-Restart kube-controller-manager
+1.	Stop kube-controller-manager
+2.	detach disk in problem from that vmss node manually
+```console
+az vmss disk detach -g <RESOURCE_GROUP_NAME> --name <VMSS_NAME> --instance-id <ID(number)> --lun number
+```
+
+e.g. per below logs, 
+```
+E0501 11:15:40.981758       1 attacher.go:277] failed to detach azure disk "/subscriptions/xxx/resourceGroups/rg/providers/Microsoft.Compute/disks/rg-dynamic-pvc-dc282131-b669-47db-8d57-cb3b9789ac3e", err failed to get azure instance id for node "k8s-agentpool1-32474172-vmss_1216" (not a vmss instance)
+```
+ - find lun number of disk `rg-dynamic-pvc-dc282131-b669-47db-8d57-cb3b9789ac3e`:
+```console
+az vmss show -g rg --name k8s-agentpool1-32474172-vmss --instance-id 1216
+```
+ - detach vmss disk manually:
+```console
+az vmss disk detach -g rg --name k8s-agentpool1-32474172-vmss --instance-id 1216 --lun number
+```
+3.	Start kube-controller-manager
+
