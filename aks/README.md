@@ -85,6 +85,7 @@ please refer to https://docs.microsoft.com/en-us/azure/aks/kubernetes-dashboard#
 
 #### Issues
  - [Cannot set a different default storage class](https://github.com/Azure/AKS/issues/118#issuecomment-627860179)
+ - [kubelet port 10255/10250](https://github.com/Azure/AKS/issues/1601#issuecomment-627922947)
 
 #### Links
  - [Azure Container Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/)
