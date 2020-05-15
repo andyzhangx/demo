@@ -90,6 +90,10 @@ open file _output/`dnsPrefix`/azuredeploy.json under acs-engine:
 
 Fixed in Windows Server 1809
 
+##### mountPath translation for Windows pod
+ - [MakeAbsolutePath](https://github.com/kubernetes/kubernetes/blob/71277de4d62012631f54dfee606e72eb3eb35ab9/pkg/volume/util/util.go#L486-L502)
+ - [kubelet_pods.go](https://github.com/kubernetes/kubernetes/blob/71277de4d62012631f54dfee606e72eb3eb35ab9/pkg/kubelet/kubelet_pods.go#L227-L236)
+
 ##### Links
  - [Using Windows Server Containers in Kubernetes](https://kubernetes.io/docs/getting-started-guides/windows/)
  - [Microsoft Azure Container Service Engine - Kubernetes Windows Walkthrough](https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/windows.md#supported-windows-versions)
@@ -97,3 +101,4 @@ Fixed in Windows Server 1809
  - [Windows Container Version Compatibility](https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility)
  - [Windows Containers Documentation](https://docs.microsoft.com/en-us/virtualization/windowscontainers/)
  - [PowerShell equivalents for common Linux/bash commands](https://mathieubuisson.github.io/powershell-linux-bash/)
+
