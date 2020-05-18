@@ -55,6 +55,7 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
   - [Kubernetes: how to set VolumeMount user group and file permissions](https://stackoverflow.com/questions/43544370/kubernetes-how-to-set-volumemount-user-group-and-file-permissions)
   - [Allow volume ownership to be only set after fs formatting](https://github.com/kubernetes/kubernetes/issues/69699)
   - [Best of 2019: Demystifying Persistent Storage Myths for Stateful Workloads in Kubernetes](https://containerjournal.com/topics/container-networking/demystifying-persistent-storage-myths-for-stateful-workloads-in-kubernetes/)
+  - [深度解析 Kubernetes Local Persistent Volume](https://cloud.tencent.com/developer/article/1195068)
   
 #### Service Mesh
   - [Istio Example](https://istio.io/docs/examples/)
