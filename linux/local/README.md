@@ -35,3 +35,5 @@ tmpfs           3.4G     0  3.4G   0% /sys/firmware
 
 #### Links
  - [Local Volume](https://kubernetes.io/docs/concepts/storage/volumes/#local)
+ - [sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner)
+ - [Kubernetes 1.14: Local Persistent Volumes GA](https://kubernetes.io/blog/2019/04/04/kubernetes-1.14-local-persistent-volumes-ga/)
