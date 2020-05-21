@@ -12,6 +12,6 @@ mountOptions:
   - gid=0
   - mfsymlinks
   - cache=strict  # https://github.com/piastry/cifs-utils/blob/master/mount.cifs.rst
-  - nosharesock
+  - nosharesock  # reduce probability of reconnect races
 parameters:
   skuName: Premium_LRS  # available values: Standard_LRS, Standard_GRS, Standard_ZRS, Standard_RAGRS, Premium_LRS, Premium_ZRS
