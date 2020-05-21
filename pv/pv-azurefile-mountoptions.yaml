@@ -18,3 +18,4 @@ spec:
     - gid=1000
     - mfsymlinks
     - nobrl
+    - nosharesock
