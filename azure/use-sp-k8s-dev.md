@@ -29,14 +29,14 @@ az group list
  > in below example, we use [kubernetes-1.18.3.json](./kubernetes-1.18.3.json), modify the missing fields including `dnsPrefix`, `keyData`, `ClientID`(appID), `Secret`(password)
 ```
 ./aks-engine generate ./kubernetes-1.18.3.json
-dnsPrefix=k8s1133
+dnsPrefix=k8s1183
 az group deployment create \
     --name="your-deployment-name" \
     --resource-group=$RESOURCE_GROUP_NAME \
     --template-file="./_output/$dnsPrefix/azuredeploy.json" \
     --parameters "@./_output/$dnsPrefix/azuredeploy.parameters.json"
 ```
-for detailed steps, refer to https://github.com/Azure/container-service-for-azure-china/tree/master/aks-engine
+for detailed steps, refer to https://github.com/Azure/aks-engine
 
  - use service principal to create kubernetes cluster by AKS
 ```
