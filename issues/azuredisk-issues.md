@@ -38,10 +38,11 @@
 
 | k8s version | stable version |
 | ---- | ---- |
-| v1.14 | 1.14.10+ |
-| v1.15 | 1.15.7+ |
-| v1.16 | 1.16.4+ |
-| v1.17 | 1.17.0 |
+| v1.15 | 1.15.11+ |
+| v1.16 | 1.16.10+ |
+| v1.17 | 1.17.6+ |
+| v1.18 | 1.18.3+ |
+| v1.19 | 1.19.0+ |
 
 ## 1. disk attach error
 
@@ -929,7 +930,7 @@ That will make dangling attach return error, and k8s volume attach/detach contro
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.15 | no fix |
-| v1.16 | 1.16.9 |
+| v1.16 | 1.16.10 |
 | v1.17 | 1.17.6 |
 | v1.18 | 1.18.3 |
 | v1.19 | 1.19.0 |
