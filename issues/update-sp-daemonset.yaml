@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: sysctl-patch
+  name: sysctl-patch
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: sysctl-patch
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: sysctl-patch
+        tier: node
+    spec:
+      containers:
+      - command:
+        - nsenter
+        - --target
+        - "1"
+        - --mount
+        - --uts
+        - --ipc
+        - --net
+        - --pid
+        - --
+        - sh
+        - -c
+        - |
+          spid=`cat /etc/kubernetes/azure.json |grep aadClientId |cut -d'"' -f 4`
+          spsecret=`cat /etc/kubernetes/azure.json |grep aadClientSecret |cut -d'"' -f 4`
+          sed -i "s/$spid/new-aadClientID/g" /etc/kubernetes/azure.json
+          sed -i "s/$spsecret/new-aadClientSecret/g" /etc/kubernetes/azure.json
+          systemctl restart kubelet
+          sleep 600000000s
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        name: sysctl-patch
+        resources:
+          requests:
+            cpu: 10m
+        securityContext:
+          privileged: true
+      dnsPolicy: ClusterFirst
+      hostPID: true
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
