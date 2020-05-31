@@ -917,7 +917,7 @@ Detach disk in problem manually
 
 **Issue details**:
 
-PR(https://github.com/kubernetes/kubernetes/pull/81266) does not convert the VMSS node name which causes error like this:
+[PR#81266](https://github.com/kubernetes/kubernetes/pull/81266) does not convert the VMSS node name which causes error like this:
 ```
 failed to get azure instance id for node \"k8s-agentpool1-32474172-vmss_1216\" (not a vmss instance)
 ```
@@ -929,8 +929,9 @@ That will make dangling attach return error, and k8s volume attach/detach contro
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.15 | no fix |
-| v1.16 | 1.16.10 |
+| v1.14 | only hotfixed with image `mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.8-hotfix.20200529` |
+| v1.15 | only hotfixed with image `mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200529` |
+| v1.16 | 1.16.10 (also hotfixed with image `mcr.microsoft.com/oss/kubernetes/hyperkube:v1.16.9-hotfix.20200529`) |
 | v1.17 | 1.17.6 |
 | v1.18 | 1.18.3 |
 | v1.19 | 1.19.0 |
