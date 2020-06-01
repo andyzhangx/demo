@@ -91,7 +91,7 @@ manually detach disk in problem
 #### 7. Write accelerator
 
 - available from `v1.18.0`
-- create a disk with [Write Accelerator Enabled](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/how-to-enable-write-accelerator)
+- create a disk with [Write Accelerator Enabled](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/how-to-enable-write-accelerator):
 ```yaml
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -105,6 +105,33 @@ parameters:
  - details: [add azure disk WriteAccelerator support](https://github.com/kubernetes/kubernetes/pull/87945)
 
 #### 8. Shared disk
+
+- available from `v1.19.0`
+- added a new field(`maxShares`) in azure disk storage class to support [Azure shared disk](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-shared-enable):
+```yaml
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: shared-disk
+provisioner: kubernetes.io/azure-disk
+parameters:
+  skuname: Premium_LRS  # Currently only available with premium SSDs.
+  cachingMode: None  # ReadOnly host caching is not available for premium SSDs with maxShares>1
+  maxShares: "2"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-azuredisk
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: shared-disk
+```
+ - details: [feat: support Azure shared disk](https://github.com/kubernetes/kubernetes/pull/89328)
 
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
