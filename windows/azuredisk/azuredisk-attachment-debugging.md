@@ -40,8 +40,12 @@ number location
 In above example, there are two data disks which contain `LUN`, OS disk is `PCI Slot 0 : Adapter 0 : Channel 0 : Device 0`, resource disk is `PCI Slot 1 : Adapter 0 : Channel 1 : Device 0`
 
  - Show detaled info of one data disk
-```
+```console
 Get-Disk -Number 2 | Format-list
 ```
 
  - All disk mounts are under `c:\var\lib\kubelet\plugins\kubernetes.io\azure-disk\mounts\` on Windows
+ - Check error logs in `c:\k\kubelet.err.log`
+ ```console
+ grep mount_windows c:\k\kubelet.err.log
+ ```
