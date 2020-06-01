@@ -1,7 +1,29 @@
-## Debug Azure disk attachment issue
-There is some corner case in the before that k8s agent could not recognize the correct azure data disk.
-### 1. Take `Windows Version 1709` as an example, it has attached two datadisks, below is the debugging info need to collect:
-#### Run PowerShell command `Get-Disk` in admin mode
+## Debug Azure disk attach/detach/mount/read/write issue
+Below are the steps about how to debug azure disk issues on Kubernetes.
+
+ - Note: 
+   - Step#1, #2 are needed if there is disk attach/detach issue 
+   - Step#3 is needed if there is disk mount/read/write issue
+
+### 1. Get disk info by azure cli
+```console
+az disk show -g <resource-group-name> -n <disk-name>
+```
+
+### 2. Get `volumesAttached` info by `kubectl get no NODE-NAME -o yaml`, e.g.
+```console
+# kubectl get no -o yaml | grep volumesAttached -A 10
+volumesAttached:
+  - devicePath: "0"
+    name: kubernetes.io/azure-disk//subscriptions/.../resourceGroups/MC_nozzle-central_nzcentral_centralus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-e684185c-b3ea-11e8-bf5c-0a58ac1f0f2f
+  - devicePath: "1"
+    name: kubernetes.io/azure-disk//subscriptions/.../resourceGroups/MC_nozzle-central_nzcentral_centralus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-96f3060b-b3ec-11e8-bf5c-0a58ac1f0f2f
+  - devicePath: "2"
+    name: kubernetes.io/azure-disk//subscriptions/.../resourceGroups/MC_nozzle-central_nzcentral_centralus/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-936d310f-0357-11e9-be1f-0a58ac1f147d    
+```
+
+### 3. Log on agent node and check device info on Windows
+ - Run PowerShell command `Get-Disk` in admin mode
 ```
 PS C:\k> Get-Disk | select number, location
 number location
@@ -17,57 +39,9 @@ number location
 ```
 In above example, there are two data disks which contain `LUN`, OS disk is `PCI Slot 0 : Adapter 0 : Channel 0 : Device 0`, resource disk is `PCI Slot 1 : Adapter 0 : Channel 1 : Device 0`
 
-#### Show detaled info of one data disk
+ - Show detaled info of one data disk
 ```
-$disks = Get-Disk
-$disks[3] | select *
-```
-
-```
-DiskNumber            : 5
-PartitionStyle        : MBR
-ProvisioningType      : Thin
-OperationalStatus     : Online
-HealthStatus          : Healthy
-BusType               : SAS
-UniqueIdFormat        : Vendor Id
-OfflineReason         :
-ObjectId              : {1}\\77890K8S9010\root/Microsoft/Windows/Storage/Providers_v2\WSP_Disk.ObjectId="{aa117a5a-e3b6
-                        -11e7-8f78-806e6f6e6963}:DI:\\?\scsi#disk&ven_msft&prod_virtual_disk#000001#{53f56307-b6bf-11d0
-                        -94f2-00a0c91efb8b}"
-PassThroughClass      :
-PassThroughIds        :
-PassThroughNamespace  :
-PassThroughServer     :
-UniqueId              : 4D534654202020209C8E3C77A846CD4AA6B8901C0E8E917D
-AdapterSerialNumber   :
-AllocatedSize         : 5368709120
-BootFromDisk          : False
-FirmwareVersion       : 1.0
-FriendlyName          : Msft Virtual Disk
-Guid                  :
-IsBoot                : False
-IsClustered           : False
-IsHighlyAvailable     : False
-IsOffline             : False
-IsReadOnly            : False
-IsScaleOut            : False
-IsSystem              : False
-LargestFreeExtent     : 0
-Location              : Integrated : Adapter 3 : Port 0 : Target 0 : LUN 1
-LogicalSectorSize     : 512
-Manufacturer          : Msft
-Model                 : Virtual Disk
-Number                : 5
-NumberOfPartitions    : 1
-Path                  : \\?\scsi#disk&ven_msft&prod_virtual_disk#000001#{53f56307-b6bf-11d0-94f2-00a0c91efb8b}
-PhysicalSectorSize    : 512
-SerialNumber          :
-Signature             : 2134170139
-Size                  : 5368709120
-PSComputerName        :
-CimClass              : ROOT/Microsoft/Windows/Storage:MSFT_Disk
-CimInstanceProperties : {ObjectId, PassThroughClass, PassThroughIds, PassThroughNamespace...}
-CimSystemProperties   : Microsoft.Management.Infrastructure.CimSystemProperties
+Get-Disk -Number 2 | Format-list
 ```
 
+ - All disk mounts are under `c:\var\lib\kubelet\plugins\kubernetes.io\azure-disk\mounts\` on Windows
