@@ -46,36 +46,49 @@ KUBE_BUILD_PLATFORMS=darwin/amd64 make
 
 ### debug kubernetes windows node
 
-##### Replace `kubelet.exe` binary on Windows ServerCore
-Prerequisite:
-assign a public ip to the agent in azure portal and use RDP to connect to that agent. (only for debugging purpose)
-
-1. open a powershell window
+#### Replace `kubelet.exe` binary on Windows Agent node
+ - Prerequisite:
+assign a public ip to the agent in azure portal (only for debugging purpose)
+ - build `kubelet.exe` on Kubernetes branch
+```console
+KUBE_BUILD_PLATFORMS=windows/amd64 make WHAT=cmd/kubelet
 ```
+
+1. Copy `kubelet.exe` to the agent node
+##### Option#1 (ssh)
+ - scp `kubelet.exe` to the agent node, e.g.
+```console
+scp ./_output/local/bin/windows/amd64/kubelet.exe azureuser@hostname.eastus2.cloudapp.azure.com:/tmp/
+```
+
+##### Option#2 (RDP)
+ - use RDP to connect to that agent
+ - open a powershell window
+```console
 start powershell
 ```
-2. download pscp.exe tool
-```
+ - download pscp.exe tool
+```console
 cd c:\k
 $webclient = New-Object System.Net.WebClient
 $url = "https://mirror.azure.cn/putty/0.73/w64/pscp.exe"
 $file = " $pwd\pscp.exe"
 $webclient.DownloadFile($url,$file)
 ```
-3. replace with your linux machine IP, password and then scp `kubelet.exe` to your node
-```
+ - replace with your linux machine IP, password and then scp `kubelet.exe` to your node
+```console
 mkdir c:\tmp
 cd c:\tmp
 Start-Process "$pwd\pscp.exe"  -ArgumentList ("-scp -pw PASSWROD azureuser@SERVER-IP:/tmp/kubelet.exe c:\tmp")
 .\kubelet.exe --version
 ```
 
-4. Backup your original binaries first
+2. Backup your original binaries first
 ```
 cp c:\k c:\k-backup -Recurse
 ```
 
-5. Stop `kubeproxy`, `kubelet` services, replace `kubelet.exe` and then start these services 
+3. Stop `kubeproxy`, `kubelet` services, replace `kubelet.exe` and then start these services 
 ```
 stop-service kubeproxy
 stop-service kubelet
