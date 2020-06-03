@@ -1,0 +1,250 @@
+
+Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+System Idle Process              0 Services                   0          8 K
+System                           4 Services                   0        160 K
+Registry                        88 Services                   0     77,160 K
+smss.exe                       380 Services                   0      1,112 K
+csrss.exe                      500 Services                   0      5,428 K
+wininit.exe                    576 Services                   0      6,800 K
+csrss.exe                      584 Console                    1      4,808 K
+winlogon.exe                   640 Console                    1      8,784 K
+services.exe                   708 Services                   0      8,384 K
+lsass.exe                      736 Services                   0     15,344 K
+svchost.exe                    848 Services                   0      3,780 K
+svchost.exe                    868 Services                   0      9,044 K
+fontdrvhost.exe                876 Services                   0      3,484 K
+fontdrvhost.exe                884 Console                    1      3,864 K
+svchost.exe                    980 Services                   0     10,176 K
+svchost.exe                   1020 Services                   0      8,076 K
+LogonUI.exe                    524 Console                    1     13,164 K
+svchost.exe                    800 Services                   0     12,920 K
+svchost.exe                   1032 Services                   0      7,440 K
+svchost.exe                   1056 Services                   0      6,068 K
+svchost.exe                   1072 Services                   0      7,508 K
+svchost.exe                   1084 Services                   0      5,908 K
+conhost.exe                   1156 Console                    1     15,740 K
+svchost.exe                   1248 Services                   0      6,772 K
+svchost.exe                   1280 Services                   0      6,004 K
+svchost.exe                   1300 Services                   0     16,168 K
+svchost.exe                   1372 Services                   0      7,300 K
+svchost.exe                   1384 Services                   0      9,408 K
+svchost.exe                   1392 Services                   0      7,588 K
+VSSVC.exe                     1516 Services                   0      9,112 K
+svchost.exe                   1548 Services                   0      7,496 K
+svchost.exe                   1588 Services                   0     12,960 K
+svchost.exe                   1616 Services                   0      7,540 K
+svchost.exe                   1652 Services                   0      8,672 K
+svchost.exe                   1660 Services                   0      7,584 K
+svchost.exe                   1732 Services                   0      6,480 K
+svchost.exe                   1840 Services                   0     17,032 K
+svchost.exe                   1900 Services                   0      5,676 K
+svchost.exe                   1916 Services                   0      7,412 K
+svchost.exe                   1752 Services                   0      6,276 K
+svchost.exe                   1708 Services                   0      8,164 K
+svchost.exe                   2056 Services                   0      9,432 K
+svchost.exe                   2184 Services                   0      8,092 K
+svchost.exe                   2192 Services                   0      7,104 K
+svchost.exe                   2272 Services                   0      5,432 K
+svchost.exe                   2280 Services                   0     12,964 K
+svchost.exe                   2312 Services                   0     28,004 K
+dockerd.exe                   2328 Services                   0     57,672 K
+svchost.exe                   2336 Services                   0      7,612 K
+svchost.exe                   2404 Services                   0     21,324 K
+svchost.exe                   2416 Services                   0     11,844 K
+svchost.exe                   2424 Services                   0      5,044 K
+svchost.exe                   2448 Services                   0     11,128 K
+sshd.exe                      2468 Services                   0      6,980 K
+svchost.exe                   2492 Services                   0      6,220 K
+WaAppAgent.exe                2516 Services                   0     86,604 K
+svchost.exe                   2564 Services                   0      7,588 K
+WindowsAzureNetAgent.exe      2640 Services                   0      8,276 K
+WindowsAzureGuestAgent.ex     2692 Services                   0     67,668 K
+MsMpEng.exe                   2720 Services                   0    232,740 K
+svchost.exe                   2744 Services                   0      9,348 K
+svchost.exe                   2804 Services                   0     10,864 K
+vmms.exe                      2876 Services                   0     36,756 K
+svchost.exe                   3160 Services                   0      8,184 K
+NisSrv.exe                    4004 Services                   0     10,220 K
+WmiPrvSE.exe                  2396 Services                   0     17,976 K
+vmcompute.exe                 1648 Services                   0     13,772 K
+taskhostw.exe                 4464 Services                   0      1,484 K
+svchost.exe                   4484 Services                   0      6,836 K
+svchost.exe                   4944 Services                   0     16,688 K
+svchost.exe                   4980 Services                   0      6,700 K
+svchost.exe                   4456 Services                   0     12,692 K
+WaSecAgentProv.exe             720 Services                   0      5,648 K
+conhost.exe                   2288 Services                   0     10,328 K
+svchost.exe                   5372 Services                   0      6,408 K
+nssm.exe                      5732 Services                   0      6,668 K
+csi-proxy.exe                 5884 Services                   0     11,200 K
+conhost.exe                   5892 Services                   0     12,436 K
+msdtc.exe                    11068 Services                   0     10,080 K
+svchost.exe                   9956 Services                   0     12,588 K
+svchost.exe                   7616 Services                   0     11,964 K
+nssm.exe                      5412 Services                   0      7,004 K
+powershell.exe                2836 Services                   0     81,864 K
+conhost.exe                   7272 Services                   0     12,668 K
+nssm.exe                      7832 Services                   0      6,692 K
+powershell.exe                9496 Services                   0     78,080 K
+conhost.exe                  11472 Services                   0     12,456 K
+kubelet.exe                   6064 Services                   0     76,168 K
+azure-vnet-telemetry.exe      4552 Services                   0     17,232 K
+kube-proxy.exe                3220 Services                   0     30,440 K
+smss.exe                      9948 Services                   0      1,160 K
+csrss.exe                      952                            2      2,192 K
+wininit.exe                   8624                            2      4,120 K
+services.exe                  9000                            2      5,248 K
+lsass.exe                      508                            2     11,740 K
+svchost.exe                   9824                            2      7,088 K
+svchost.exe                  11468                            2      6,724 K
+svchost.exe                   5532                            2     10,200 K
+svchost.exe                   8712                            2      5,080 K
+CExecSvc.exe                  9152                            2      4,396 K
+svchost.exe                  11864                            2      9,424 K
+cmd.exe                       5188                            2      3,572 K
+pauseloop.exe                 8800                            2      3,720 K
+svchost.exe                  11344                            2     12,772 K
+svchost.exe                   8536                            2     23,184 K
+smss.exe                      6984 Services                   0      1,156 K
+csrss.exe                     6996                            4      2,188 K
+wininit.exe                   6284                            4      4,152 K
+services.exe                  6324                            4      5,260 K
+lsass.exe                     6260                            4     11,616 K
+smss.exe                      1320 Services                   0      1,156 K
+svchost.exe                   3180                            4      6,752 K
+csrss.exe                     5708                            5      2,224 K
+wininit.exe                  12252                            5      4,100 K
+services.exe                 11192                            5      5,264 K
+svchost.exe                   4304                            4      7,116 K
+lsass.exe                     1508                            5     11,632 K
+svchost.exe                   1692                            4     10,360 K
+svchost.exe                   1140                            5      6,744 K
+svchost.exe                   4516                            4      5,000 K
+svchost.exe                   2980                            5      7,128 K
+CExecSvc.exe                  5228                            4      4,428 K
+svchost.exe                   5528                            5     10,272 K
+svchost.exe                  12188                            4      9,788 K
+svchost.exe                   7820                            5      5,008 K
+svchost.exe                  12208                            4     12,676 K
+livenessprobe.exe             4656                            4     12,664 K
+CExecSvc.exe                  4800                            5      4,396 K
+svchost.exe                   4788                            5      9,696 K
+svchost.exe                    184                            4     23,756 K
+cmd.exe                      11012                            5      3,596 K
+svchost.exe                  10756                            5     12,684 K
+pauseloop.exe                 4696                            5      3,716 K
+svchost.exe                   6040                            5     23,272 K
+smss.exe                      9936 Services                   0      1,160 K
+csrss.exe                     3644                            6      2,184 K
+wininit.exe                   6928                            6      4,108 K
+services.exe                  6288                            6      5,352 K
+lsass.exe                    11312                            6     11,664 K
+svchost.exe                   6208                            6      6,756 K
+svchost.exe                   5484                            6      7,180 K
+svchost.exe                   6300                            6     10,368 K
+svchost.exe                   6312                            6      5,012 K
+CExecSvc.exe                 10744                            6      4,448 K
+svchost.exe                   7312                            6      9,748 K
+svchost.exe                  11788                            6     12,924 K
+csi-node-driver-registrar     7104                            6     10,444 K
+svchost.exe                   8476                            6     23,912 K
+smss.exe                     10516 Services                   0      1,160 K
+csrss.exe                     2544                            7      2,180 K
+wininit.exe                   5676                            7      4,136 K
+services.exe                  8620                            7      5,304 K
+lsass.exe                      960                            7     11,664 K
+svchost.exe                  11104                            7      6,788 K
+svchost.exe                   1828                            7      7,216 K
+svchost.exe                  10040                            7     10,372 K
+svchost.exe                  10984                            7      5,160 K
+CExecSvc.exe                 10920                            7      4,440 K
+svchost.exe                   6380                            7      9,792 K
+azurediskplugin.exe          11308                            7     24,888 K
+svchost.exe                   6396                            7     12,712 K
+svchost.exe                   9368                            7     24,236 K
+smss.exe                      7800 Services                   0      1,148 K
+csrss.exe                      188                            8      2,188 K
+wininit.exe                   7816                            8      4,156 K
+services.exe                  8916                            8      5,172 K
+lsass.exe                     8912                            8     12,768 K
+svchost.exe                   8940                            8      7,120 K
+svchost.exe                   7872                            8      6,772 K
+svchost.exe                   9024                            8      9,968 K
+svchost.exe                   8780                            8      4,984 K
+CExecSvc.exe                 10540                            8      4,436 K
+svchost.exe                   4052                            8     10,264 K
+pwsh.exe                      3124                            8     77,344 K
+svchost.exe                   7304                            8     12,816 K
+svchost.exe                   2668                            8     23,912 K
+smss.exe                      6168 Services                   0      1,160 K
+csrss.exe                     6008                            9      2,184 K
+wininit.exe                   2732                            9      4,116 K
+services.exe                  7100                            9      5,272 K
+lsass.exe                     5152                            9     11,672 K
+svchost.exe                   8016                            9      7,168 K
+svchost.exe                    408                            9      6,760 K
+svchost.exe                   6684                            9     10,448 K
+svchost.exe                   6888                            9      4,956 K
+CExecSvc.exe                  6524                            9      4,412 K
+svchost.exe                   6204                            9      9,548 K
+svchost.exe                   6452                            9     12,892 K
+cmd.exe                       6388                            9      3,484 K
+pauseloop.exe                 5340                            9      3,720 K
+svchost.exe                  10312                            9     23,384 K
+smss.exe                      8492 Services                   0      1,148 K
+csrss.exe                    10972                           10      2,196 K
+wininit.exe                  10952                           10      4,100 K
+services.exe                  9392                           10      5,240 K
+lsass.exe                     9612                           10     11,556 K
+svchost.exe                   9972                           10      6,760 K
+svchost.exe                   2844                           10      7,096 K
+svchost.exe                   5624                           10     10,540 K
+svchost.exe                  10004                           10      4,992 K
+CExecSvc.exe                 10812                           10      4,456 K
+svchost.exe                  10600                           10      9,800 K
+livenessprobe.exe             8992                           10     12,784 K
+svchost.exe                   9312                           10     12,736 K
+svchost.exe                   1584                           10     23,760 K
+smss.exe                      7324 Services                   0      1,160 K
+csrss.exe                     7220                           11      2,200 K
+wininit.exe                   7700                           11      4,140 K
+services.exe                  6784                           11      5,256 K
+lsass.exe                    10672                           11     11,680 K
+svchost.exe                   7092                           11      7,176 K
+svchost.exe                   8852                           11      6,756 K
+svchost.exe                   9940                           11     10,396 K
+svchost.exe                  10380                           11      5,060 K
+CExecSvc.exe                  5460                           11      4,432 K
+svchost.exe                   5972                           11      9,720 K
+svchost.exe                   4648                           11     12,672 K
+csi-node-driver-registrar     7184                           11     10,360 K
+svchost.exe                  12060                           11     23,536 K
+smss.exe                      7224 Services                   0      1,160 K
+csrss.exe                     8244                           12      2,192 K
+wininit.exe                    568                           12      4,136 K
+services.exe                  9752                           12      5,304 K
+lsass.exe                    10340                           12     11,636 K
+svchost.exe                   8264                           12      6,784 K
+svchost.exe                  11624                           12      7,200 K
+svchost.exe                   8072                           12     10,464 K
+svchost.exe                   9376                           12      4,988 K
+CExecSvc.exe                 10720                           12      4,436 K
+svchost.exe                   8864                           12      9,756 K
+svchost.exe                    192                           12     12,864 K
+azurefileplugin.exe          11964                           12     21,956 K
+svchost.exe                   7772                           12     23,584 K
+svchost.exe                  10808 Services                   0     15,680 K
+conhost.exe                  13152 Services                   0      4,920 K
+cmd.exe                      13172 Services                   0      3,928 K
+HealthService.exe            12612 Services                   0     19,204 K
+MMAExtensionHeartbeatServ     7712 Services                   0     31,072 K
+MonitoringHost.exe            9860 Services                   0     93,396 K
+sshd.exe                     12924 Services                   0      7,440 K
+conhost.exe                   7996 Services                   0     12,420 K
+sshd.exe                      7008 Services                   0      7,264 K
+conhost.exe                  11992 Services                   0      5,160 K
+cmd.exe                       5584 Services                   0      4,064 K
+tasklist.exe                 13076 Services                   0      7,476 K
+more.com                      8820 Services                   0      2,364 K
+
