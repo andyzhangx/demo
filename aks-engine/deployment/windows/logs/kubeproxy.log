@@ -1,0 +1,7 @@
+WARNING: The names of some imported commands from the module 'hns' include unapproved verbs that might make them less 
+discoverable. To find the commands with unapproved verbs, run the Import-Module command again with the Verbose 
+parameter. For a list of approved verbs, type Get-Verb.
+2020-06-03T07:20:41.6650105+00:00 Waiting for Network [azure] to be created . . .
+WARNING: The names of some imported commands from the module 'hns' include unapproved verbs that might make them less 
+discoverable. To find the commands with unapproved verbs, run the Import-Module command again with the Verbose 
+parameter. For a list of approved verbs, type Get-Verb.

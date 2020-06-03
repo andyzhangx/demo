@@ -1,0 +1,982 @@
+I0603 07:20:33.073022    9700 flags.go:59] FLAG: --add-dir-header="false"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --alsologtostderr="false"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --bind-address="0.0.0.0"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --bind-address-hard-fail="false"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --cleanup="false"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --cleanup-ipvs="true"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --cluster-cidr=""
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --config=""
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --config-sync-period="15m0s"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --conntrack-max-per-core="32768"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --conntrack-min="131072"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --conntrack-tcp-timeout-close-wait="1h0m0s"
+I0603 07:20:33.108022    9700 flags.go:59] FLAG: --conntrack-tcp-timeout-established="24h0m0s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --detect-local-mode=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --enable-dsr="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --feature-gates=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --healthz-bind-address="0.0.0.0:10256"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --healthz-port="10256"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --help="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --hostname-override="1520k8s001"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --iptables-masquerade-bit="14"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --iptables-min-sync-period="0s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --iptables-sync-period="30s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --ipvs-exclude-cidrs="[]"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --ipvs-min-sync-period="0s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --ipvs-scheduler=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --ipvs-strict-arp="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --ipvs-sync-period="30s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --ipvs-tcp-timeout="0s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --ipvs-tcpfin-timeout="0s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --ipvs-udp-timeout="0s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --kube-api-burst="10"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --kube-api-content-type="application/vnd.kubernetes.protobuf"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --kube-api-qps="5"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --kubeconfig="c:\\k\\config"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --log-backtrace-at=":0"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --log-dir=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --log-file=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --log-file-max-size="1800"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --log-flush-frequency="5s"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --logtostderr="true"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --masquerade-all="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --master=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --metrics-bind-address="127.0.0.1:10249"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --metrics-port="10249"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --network-name=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --nodeport-addresses="[]"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --oom-score-adj="-999"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --profiling="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --proxy-mode="kernelspace"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --proxy-port-range=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --show-hidden-metrics-for-version=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --skip-headers="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --skip-log-headers="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --source-vip=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --stderrthreshold="2"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --udp-timeout="250ms"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --v="3"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --version="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --vmodule=""
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --windows-service="false"
+I0603 07:20:33.109032    9700 flags.go:59] FLAG: --write-config-to=""
+W0603 07:20:33.109032    9700 server.go:226] WARNING: all flags other than --config, --write-config-to, and --cleanup are deprecated. Please begin using a config file ASAP.
+I0603 07:20:33.109032    9700 feature_gate.go:243] feature gates: &{map[]}
+I0603 07:20:33.109032    9700 feature_gate.go:243] feature gates: &{map[]}
+I0603 07:20:33.153546    9700 server_windows.go:104] Using Kernelspace Proxier.
+I0603 07:20:33.218382    9700 node.go:136] Successfully retrieved node IP: 10.240.0.4
+W0603 07:20:33.218382    9700 proxier.go:551] clusterCIDR not specified, unable to distinguish between internal and external traffic
+I0603 07:20:33.225001    9700 proxier.go:564] network-name flag not set. Checking environment variable
+I0603 07:20:33.225001    9700 proxier.go:571] Cleaning up old HNS policy lists
+I0603 07:20:33.229997    9700 proxier.go:592] Hns Network loaded with info = &{azure 09f27a4c-2724-4019-946a-1fe8652e1a49 L2Bridge []}
+I0603 07:20:33.233997    9700 proxier.go:655] minSyncPeriod: 0s, syncPeriod: 30s, burstSyncs: 2
+I0603 07:20:33.234161    9700 server.go:645] Version: v1.19.0-beta.0
+I0603 07:20:33.234161    9700 server.go:652] setting OOM scores is unsupported in this build
+I0603 07:20:33.234161    9700 bounded_frequency_runner.go:192] sync-runner Loop running
+I0603 07:20:33.234161    9700 config.go:133] Starting endpoints config controller
+I0603 07:20:33.234161    9700 shared_informer.go:240] Waiting for caches to sync for endpoints config
+I0603 07:20:33.235163    9700 config.go:315] Starting service config controller
+I0603 07:20:33.235163    9700 shared_informer.go:240] Waiting for caches to sync for service config
+I0603 07:20:33.235163    9700 reflector.go:207] Starting reflector *v1.Service (15m0s) from k8s.io/client-go/informers/factory.go:135
+I0603 07:20:33.235163    9700 reflector.go:243] Listing and watching *v1.Service from k8s.io/client-go/informers/factory.go:135
+I0603 07:20:33.235163    9700 reflector.go:207] Starting reflector *v1.Endpoints (15m0s) from k8s.io/client-go/informers/factory.go:135
+I0603 07:20:33.235163    9700 reflector.go:243] Listing and watching *v1.Endpoints from k8s.io/client-go/informers/factory.go:135
+I0603 07:20:33.247175    9700 proxier_health.go:107] starting healthz on 0.0.0.0:10256
+I0603 07:20:33.248162    9700 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns-tcp" to [0xc0001a5800]
+I0603 07:20:33.248162    9700 proxier.go:992] Setting endpoints for "kube-system/kube-dns:metrics" to [0xc0001a5860]
+I0603 07:20:33.248162    9700 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns" to [0xc0001a58c0]
+I0603 07:20:33.248162    9700 proxier.go:992] Setting endpoints for "kube-system/metrics-server" to [0xc0001a5920]
+I0603 07:20:33.248162    9700 proxier.go:992] Setting endpoints for "default/kubernetes:https" to [0xc0001a5980]
+I0603 07:20:33.252162    9700 proxier.go:231] Service "default/kubernetes" preserve-destination: 
+I0603 07:20:33.256766    9700 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:20:33.260768    9700 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:20:33.262766    9700 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:20:33.264767    9700 proxier.go:231] Service "kube-system/metrics-server" preserve-destination: 
+I0603 07:20:33.348662    9700 shared_informer.go:247] Caches are synced for endpoints config 
+I0603 07:20:33.348662    9700 config.go:140] Calling handler.OnEndpointsSynced()
+I0603 07:20:33.348662    9700 proxier.go:1033] Not syncing hns until Services and Endpoints have been received from master
+I0603 07:20:33.348662    9700 shared_informer.go:247] Caches are synced for service config 
+I0603 07:20:33.348662    9700 config.go:322] Calling handler.OnServiceSynced()
+I0603 07:20:33.352656    9700 proxier.go:368] Adding new service port "default/kubernetes:https" at 10.0.0.1:443/TCP
+I0603 07:20:33.352656    9700 proxier.go:368] Adding new service port "kube-system/kube-dns:dns" at 10.0.0.10:53/UDP
+I0603 07:20:33.352656    9700 proxier.go:368] Adding new service port "kube-system/kube-dns:dns-tcp" at 10.0.0.10:53/TCP
+I0603 07:20:33.352656    9700 proxier.go:368] Adding new service port "kube-system/kube-dns:metrics" at 10.0.0.10:9153/TCP
+I0603 07:20:33.352656    9700 proxier.go:368] Adding new service port "kube-system/metrics-server" at 10.0.52.195:443/TCP
+I0603 07:20:33.352656    9700 proxier.go:1077] Syncing Policies
+I0603 07:20:33.365680    9700 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:33.365680    9700 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0001a5980)({
+ ip: (string) (len=12) "10.255.255.5",
+ port: (uint16) 443,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-ff-ff-05",
+ hnsID: (string) (len=36) "7017b387-3997-473f-b6c7-02f4486ad30c",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:33.365680    9700 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=12) "10.255.255.5",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-ff-ff-05",
+  hnsID: (string) (len=36) "7017b387-3997-473f-b6c7-02f4486ad30c",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [default/kubernetes:https]
+I0603 07:20:33.385663    9700 proxier.go:149] Hns loadbalancer policy resource, {"ID":"581644a2-3900-4abd-8a1d-271ac9e5ec82","HostComputeEndpoints":["7017b387-3997-473f-b6c7-02f4486ad30c"],"FrontendVIPs":["10.0.0.1"],"PortMappings":[{"Protocol":6,"InternalPort":443,"ExternalPort":443}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:33.385663    9700 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.0.1, Id [581644a2-3900-4abd-8a1d-271ac9e5ec82]
+I0603 07:20:33.386654    9700 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0000ca6c0)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.0.1,
+ port: (int) 443,
+ protocol: (v1.Protocol) (len=3) "TCP",
+ nodePort: (int) 0,
+ targetPort: (int) 443,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "581644a2-3900-4abd-8a1d-271ac9e5ec82",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:20:33.388656    9700 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:33.388656    9700 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0001a58c0)({
+ ip: (string) (len=11) "10.240.0.55",
+ port: (uint16) 53,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+ hnsID: (string) (len=36) "2cad28dc-07d7-4544-80b6-b6685fc72161",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:33.388656    9700 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=11) "10.240.0.55",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+  hnsID: (string) (len=36) "2cad28dc-07d7-4544-80b6-b6685fc72161",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [kube-system/kube-dns:dns]
+I0603 07:20:33.395654    9700 proxier.go:149] Hns loadbalancer policy resource, {"ID":"9f953ad7-574f-4080-9cdb-71f276254274","HostComputeEndpoints":["2cad28dc-07d7-4544-80b6-b6685fc72161"],"FrontendVIPs":["10.0.0.10"],"PortMappings":[{"Protocol":17,"InternalPort":53,"ExternalPort":53}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:33.395654    9700 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.0.10, Id [9f953ad7-574f-4080-9cdb-71f276254274]
+I0603 07:20:33.395654    9700 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0000cb9e0)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.0.10,
+ port: (int) 53,
+ protocol: (v1.Protocol) (len=3) "UDP",
+ nodePort: (int) 0,
+ targetPort: (int) 53,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "9f953ad7-574f-4080-9cdb-71f276254274",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:20:33.397654    9700 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:33.397654    9700 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0001a5800)({
+ ip: (string) (len=11) "10.240.0.55",
+ port: (uint16) 53,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+ hnsID: (string) (len=36) "2cad28dc-07d7-4544-80b6-b6685fc72161",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:33.397654    9700 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=11) "10.240.0.55",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+  hnsID: (string) (len=36) "2cad28dc-07d7-4544-80b6-b6685fc72161",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [kube-system/kube-dns:dns-tcp]
+I0603 07:20:33.404654    9700 proxier.go:149] Hns loadbalancer policy resource, {"ID":"4180f611-5b42-4198-af6d-bcd646866aa2","HostComputeEndpoints":["2cad28dc-07d7-4544-80b6-b6685fc72161"],"FrontendVIPs":["10.0.0.10"],"PortMappings":[{"Protocol":6,"InternalPort":53,"ExternalPort":53}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:33.404654    9700 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.0.10, Id [4180f611-5b42-4198-af6d-bcd646866aa2]
+I0603 07:20:33.404654    9700 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0000cbe60)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.0.10,
+ port: (int) 53,
+ protocol: (v1.Protocol) (len=3) "TCP",
+ nodePort: (int) 0,
+ targetPort: (int) 53,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "4180f611-5b42-4198-af6d-bcd646866aa2",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:20:33.406654    9700 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:33.406654    9700 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0001a5860)({
+ ip: (string) (len=11) "10.240.0.55",
+ port: (uint16) 9153,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+ hnsID: (string) (len=36) "2cad28dc-07d7-4544-80b6-b6685fc72161",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:33.406654    9700 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=11) "10.240.0.55",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+  hnsID: (string) (len=36) "2cad28dc-07d7-4544-80b6-b6685fc72161",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [kube-system/kube-dns:metrics]
+I0603 07:20:33.414655    9700 proxier.go:149] Hns loadbalancer policy resource, {"ID":"cf37ca8e-c7b2-444e-8291-5c7a9a0289c3","HostComputeEndpoints":["2cad28dc-07d7-4544-80b6-b6685fc72161"],"FrontendVIPs":["10.0.0.10"],"PortMappings":[{"Protocol":6,"InternalPort":9153,"ExternalPort":9153}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:33.414655    9700 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.0.10, Id [cf37ca8e-c7b2-444e-8291-5c7a9a0289c3]
+I0603 07:20:33.415655    9700 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0003de000)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.0.10,
+ port: (int) 9153,
+ protocol: (v1.Protocol) (len=3) "TCP",
+ nodePort: (int) 0,
+ targetPort: (int) 9153,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "cf37ca8e-c7b2-444e-8291-5c7a9a0289c3",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:20:33.417655    9700 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:33.417655    9700 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0001a5920)({
+ ip: (string) (len=11) "10.240.0.64",
+ port: (uint16) 443,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-f0-00-40",
+ hnsID: (string) (len=36) "b3513eda-f4f6-4e35-aa9c-4dc0afb38520",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:33.417655    9700 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=11) "10.240.0.64",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-f0-00-40",
+  hnsID: (string) (len=36) "b3513eda-f4f6-4e35-aa9c-4dc0afb38520",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [kube-system/metrics-server]
+I0603 07:20:33.423653    9700 proxier.go:149] Hns loadbalancer policy resource, {"ID":"17419661-705f-4312-9e3b-8052b9583184","HostComputeEndpoints":["b3513eda-f4f6-4e35-aa9c-4dc0afb38520"],"FrontendVIPs":["10.0.52.195"],"PortMappings":[{"Protocol":6,"InternalPort":443,"ExternalPort":443}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:33.423653    9700 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.52.195, Id [17419661-705f-4312-9e3b-8052b9583184]
+I0603 07:20:33.423653    9700 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0003de360)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.52.195,
+ port: (int) 443,
+ protocol: (v1.Protocol) (len=3) "TCP",
+ nodePort: (int) 0,
+ targetPort: (int) 443,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "17419661-705f-4312-9e3b-8052b9583184",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+W0603 07:20:38.550312    9700 reflector.go:423] k8s.io/client-go/informers/factory.go:135: watch of *v1.Service ended with: an error on the server ("unable to decode an event from the watch stream: read tcp 10.240.0.4:18501->10.255.255.5:443: wsarecv: An established connection was aborted by the software in your host machine.") has prevented the request from succeeding
+W0603 07:20:38.550312    9700 reflector.go:423] k8s.io/client-go/informers/factory.go:135: watch of *v1.Endpoints ended with: an error on the server ("unable to decode an event from the watch stream: read tcp 10.240.0.4:18501->10.255.255.5:443: wsarecv: An established connection was aborted by the software in your host machine.") has prevented the request from succeeding
+I0603 07:20:39.770902    9700 reflector.go:243] Listing and watching *v1.Service from k8s.io/client-go/informers/factory.go:135
+E0603 07:20:39.771905    9700 reflector.go:127] k8s.io/client-go/informers/factory.go:135: Failed to watch *v1.Service: failed to list *v1.Service: Get https://10.255.255.5:443/api/v1/services?labelSelector=%21service.kubernetes.io%2Fheadless%2C%21service.kubernetes.io%2Fservice-proxy-name&resourceVersion=294211: dial tcp 10.255.255.5:443: connectex: A socket operation was attempted to an unreachable network.
+I0603 07:20:39.888387    9700 reflector.go:243] Listing and watching *v1.Endpoints from k8s.io/client-go/informers/factory.go:135
+E0603 07:20:39.888892    9700 reflector.go:127] k8s.io/client-go/informers/factory.go:135: Failed to watch *v1.Endpoints: failed to list *v1.Endpoints: Get https://10.255.255.5:443/api/v1/endpoints?labelSelector=%21service.kubernetes.io%2Fheadless%2C%21service.kubernetes.io%2Fservice-proxy-name&resourceVersion=639431: dial tcp 10.255.255.5:443: connectex: A socket operation was attempted to an unreachable network.
+I0603 07:20:51.963875    3220 flags.go:59] FLAG: --add-dir-header="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --alsologtostderr="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --bind-address="0.0.0.0"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --bind-address-hard-fail="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --cleanup="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --cleanup-ipvs="true"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --cluster-cidr=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --config=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --config-sync-period="15m0s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --conntrack-max-per-core="32768"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --conntrack-min="131072"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --conntrack-tcp-timeout-close-wait="1h0m0s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --conntrack-tcp-timeout-established="24h0m0s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --detect-local-mode=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --enable-dsr="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --feature-gates=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --healthz-bind-address="0.0.0.0:10256"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --healthz-port="10256"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --help="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --hostname-override="1520k8s001"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --iptables-masquerade-bit="14"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --iptables-min-sync-period="0s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --iptables-sync-period="30s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --ipvs-exclude-cidrs="[]"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --ipvs-min-sync-period="0s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --ipvs-scheduler=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --ipvs-strict-arp="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --ipvs-sync-period="30s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --ipvs-tcp-timeout="0s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --ipvs-tcpfin-timeout="0s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --ipvs-udp-timeout="0s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --kube-api-burst="10"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --kube-api-content-type="application/vnd.kubernetes.protobuf"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --kube-api-qps="5"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --kubeconfig="c:\\k\\config"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --log-backtrace-at=":0"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --log-dir=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --log-file=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --log-file-max-size="1800"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --log-flush-frequency="5s"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --logtostderr="true"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --masquerade-all="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --master=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --metrics-bind-address="127.0.0.1:10249"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --metrics-port="10249"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --network-name=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --nodeport-addresses="[]"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --oom-score-adj="-999"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --profiling="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --proxy-mode="kernelspace"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --proxy-port-range=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --show-hidden-metrics-for-version=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --skip-headers="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --skip-log-headers="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --source-vip=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --stderrthreshold="2"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --udp-timeout="250ms"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --v="3"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --version="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --vmodule=""
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --windows-service="false"
+I0603 07:20:52.007908    3220 flags.go:59] FLAG: --write-config-to=""
+W0603 07:20:52.007908    3220 server.go:226] WARNING: all flags other than --config, --write-config-to, and --cleanup are deprecated. Please begin using a config file ASAP.
+I0603 07:20:52.007908    3220 feature_gate.go:243] feature gates: &{map[]}
+I0603 07:20:52.007908    3220 feature_gate.go:243] feature gates: &{map[]}
+I0603 07:20:52.023403    3220 server_windows.go:104] Using Kernelspace Proxier.
+I0603 07:20:52.055626    3220 node.go:136] Successfully retrieved node IP: 10.240.0.4
+W0603 07:20:52.055626    3220 proxier.go:551] clusterCIDR not specified, unable to distinguish between internal and external traffic
+I0603 07:20:52.061131    3220 proxier.go:564] network-name flag not set. Checking environment variable
+I0603 07:20:52.061131    3220 proxier.go:571] Cleaning up old HNS policy lists
+I0603 07:20:52.064131    3220 proxier.go:592] Hns Network loaded with info = &{azure 5195b6f3-fba6-43a7-8bc3-7bd0f1501069 L2Bridge []}
+I0603 07:20:52.066130    3220 proxier.go:655] minSyncPeriod: 0s, syncPeriod: 30s, burstSyncs: 2
+I0603 07:20:52.066130    3220 server.go:645] Version: v1.19.0-beta.0
+I0603 07:20:52.066130    3220 server.go:652] setting OOM scores is unsupported in this build
+I0603 07:20:52.066130    3220 bounded_frequency_runner.go:192] sync-runner Loop running
+I0603 07:20:52.067132    3220 proxier_health.go:107] starting healthz on 0.0.0.0:10256
+I0603 07:20:52.067132    3220 config.go:315] Starting service config controller
+I0603 07:20:52.067132    3220 shared_informer.go:240] Waiting for caches to sync for service config
+I0603 07:20:52.067132    3220 config.go:133] Starting endpoints config controller
+I0603 07:20:52.067132    3220 reflector.go:207] Starting reflector *v1.Service (15m0s) from k8s.io/client-go/informers/factory.go:135
+I0603 07:20:52.067132    3220 reflector.go:243] Listing and watching *v1.Service from k8s.io/client-go/informers/factory.go:135
+I0603 07:20:52.067132    3220 reflector.go:207] Starting reflector *v1.Endpoints (15m0s) from k8s.io/client-go/informers/factory.go:135
+I0603 07:20:52.067132    3220 reflector.go:243] Listing and watching *v1.Endpoints from k8s.io/client-go/informers/factory.go:135
+I0603 07:20:52.067132    3220 shared_informer.go:240] Waiting for caches to sync for endpoints config
+I0603 07:20:52.071142    3220 proxier.go:992] Setting endpoints for "default/kubernetes:https" to [0xc0003fccc0]
+I0603 07:20:52.071142    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns-tcp" to [0xc0003fcd20]
+I0603 07:20:52.071142    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:metrics" to [0xc0003fcde0]
+I0603 07:20:52.071142    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns" to [0xc0003fce40]
+I0603 07:20:52.071142    3220 proxier.go:992] Setting endpoints for "kube-system/metrics-server" to [0xc0003fcea0]
+I0603 07:20:52.071142    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:20:52.074177    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:20:52.076151    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:20:52.078178    3220 proxier.go:231] Service "kube-system/metrics-server" preserve-destination: 
+I0603 07:20:52.080145    3220 proxier.go:231] Service "default/kubernetes" preserve-destination: 
+I0603 07:20:52.167196    3220 shared_informer.go:247] Caches are synced for endpoints config 
+I0603 07:20:52.167196    3220 config.go:140] Calling handler.OnEndpointsSynced()
+I0603 07:20:52.167196    3220 shared_informer.go:247] Caches are synced for service config 
+I0603 07:20:52.167196    3220 config.go:322] Calling handler.OnServiceSynced()
+I0603 07:20:52.167196    3220 proxier.go:1033] Not syncing hns until Services and Endpoints have been received from master
+I0603 07:20:52.167196    3220 proxier.go:368] Adding new service port "kube-system/kube-dns:metrics" at 10.0.0.10:9153/TCP
+I0603 07:20:52.167196    3220 proxier.go:368] Adding new service port "kube-system/kube-dns:dns" at 10.0.0.10:53/UDP
+I0603 07:20:52.167196    3220 proxier.go:368] Adding new service port "kube-system/kube-dns:dns-tcp" at 10.0.0.10:53/TCP
+I0603 07:20:52.167196    3220 proxier.go:368] Adding new service port "kube-system/metrics-server" at 10.0.52.195:443/TCP
+I0603 07:20:52.167196    3220 proxier.go:368] Adding new service port "default/kubernetes:https" at 10.0.0.1:443/TCP
+I0603 07:20:52.167196    3220 proxier.go:1077] Syncing Policies
+I0603 07:20:52.177192    3220 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:52.177192    3220 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0003fce40)({
+ ip: (string) (len=11) "10.240.0.55",
+ port: (uint16) 53,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+ hnsID: (string) (len=36) "31cd0963-59f6-45e1-a71e-4e4113715ff5",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:52.177192    3220 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=11) "10.240.0.55",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+  hnsID: (string) (len=36) "31cd0963-59f6-45e1-a71e-4e4113715ff5",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [kube-system/kube-dns:dns]
+I0603 07:20:52.183134    3220 proxier.go:149] Hns loadbalancer policy resource, {"ID":"ade5809c-ff8a-447c-aeeb-21eb4475119b","HostComputeEndpoints":["31cd0963-59f6-45e1-a71e-4e4113715ff5"],"FrontendVIPs":["10.0.0.10"],"PortMappings":[{"Protocol":17,"InternalPort":53,"ExternalPort":53}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:52.183134    3220 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.0.10, Id [ade5809c-ff8a-447c-aeeb-21eb4475119b]
+I0603 07:20:52.183134    3220 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0005ae6c0)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.0.10,
+ port: (int) 53,
+ protocol: (v1.Protocol) (len=3) "UDP",
+ nodePort: (int) 0,
+ targetPort: (int) 53,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "ade5809c-ff8a-447c-aeeb-21eb4475119b",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:20:52.184151    3220 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:52.184151    3220 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0003fcd20)({
+ ip: (string) (len=11) "10.240.0.55",
+ port: (uint16) 53,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+ hnsID: (string) (len=36) "31cd0963-59f6-45e1-a71e-4e4113715ff5",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:52.184151    3220 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=11) "10.240.0.55",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+  hnsID: (string) (len=36) "31cd0963-59f6-45e1-a71e-4e4113715ff5",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [kube-system/kube-dns:dns-tcp]
+I0603 07:20:52.189280    3220 proxier.go:149] Hns loadbalancer policy resource, {"ID":"18dc75e3-de4c-411a-8642-109ae789c07f","HostComputeEndpoints":["31cd0963-59f6-45e1-a71e-4e4113715ff5"],"FrontendVIPs":["10.0.0.10"],"PortMappings":[{"Protocol":6,"InternalPort":53,"ExternalPort":53}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:52.189280    3220 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.0.10, Id [18dc75e3-de4c-411a-8642-109ae789c07f]
+I0603 07:20:52.189280    3220 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0005ae7e0)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.0.10,
+ port: (int) 53,
+ protocol: (v1.Protocol) (len=3) "TCP",
+ nodePort: (int) 0,
+ targetPort: (int) 53,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "18dc75e3-de4c-411a-8642-109ae789c07f",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:20:52.195288    3220 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:52.195288    3220 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0003fcea0)({
+ ip: (string) (len=11) "10.240.0.64",
+ port: (uint16) 443,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-f0-00-40",
+ hnsID: (string) (len=36) "043ad95b-0c26-4e7b-bb64-ff80bb84a6a7",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:52.195288    3220 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=11) "10.240.0.64",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-f0-00-40",
+  hnsID: (string) (len=36) "043ad95b-0c26-4e7b-bb64-ff80bb84a6a7",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [kube-system/metrics-server]
+I0603 07:20:52.201522    3220 proxier.go:149] Hns loadbalancer policy resource, {"ID":"dc364c28-cf97-4425-be02-bd20788000d0","HostComputeEndpoints":["043ad95b-0c26-4e7b-bb64-ff80bb84a6a7"],"FrontendVIPs":["10.0.52.195"],"PortMappings":[{"Protocol":6,"InternalPort":443,"ExternalPort":443}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:52.201522    3220 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.52.195, Id [dc364c28-cf97-4425-be02-bd20788000d0]
+I0603 07:20:52.201522    3220 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0005aea20)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.52.195,
+ port: (int) 443,
+ protocol: (v1.Protocol) (len=3) "TCP",
+ nodePort: (int) 0,
+ targetPort: (int) 443,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "dc364c28-cf97-4425-be02-bd20788000d0",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:20:52.208447    3220 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:52.208447    3220 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0003fccc0)({
+ ip: (string) (len=12) "10.255.255.5",
+ port: (uint16) 443,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-ff-ff-05",
+ hnsID: (string) (len=36) "1c1f5c1d-c61e-46cb-9d93-81bd3c155468",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:52.208447    3220 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=12) "10.255.255.5",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-ff-ff-05",
+  hnsID: (string) (len=36) "1c1f5c1d-c61e-46cb-9d93-81bd3c155468",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [default/kubernetes:https]
+I0603 07:20:52.214450    3220 proxier.go:149] Hns loadbalancer policy resource, {"ID":"16f317c5-468b-4d90-a256-e5c9553b6336","HostComputeEndpoints":["1c1f5c1d-c61e-46cb-9d93-81bd3c155468"],"FrontendVIPs":["10.0.0.1"],"PortMappings":[{"Protocol":6,"InternalPort":443,"ExternalPort":443}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:52.214450    3220 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.0.1, Id [16f317c5-468b-4d90-a256-e5c9553b6336]
+I0603 07:20:52.214450    3220 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0005aeb40)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.0.1,
+ port: (int) 443,
+ protocol: (v1.Protocol) (len=3) "TCP",
+ nodePort: (int) 0,
+ targetPort: (int) 443,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "16f317c5-468b-4d90-a256-e5c9553b6336",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:20:52.235441    3220 proxier.go:149] Hns Endpoint resource, {}
+I0603 07:20:52.235441    3220 proxier.go:143] Endpoint resource found, (*winkernel.endpointsInfo)(0xc0003fcde0)({
+ ip: (string) (len=11) "10.240.0.55",
+ port: (uint16) 9153,
+ isLocal: (bool) false,
+ macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+ hnsID: (string) (len=36) "31cd0963-59f6-45e1-a71e-4e4113715ff5",
+ refCount: (uint16) 1,
+ providerAddress: (string) "",
+ hns: (winkernel.hnsV2) {
+ }
+})
+I0603 07:20:52.235441    3220 proxier.go:1211] Associated endpoints [([]winkernel.endpointsInfo) (len=1 cap=1) {
+ (winkernel.endpointsInfo) {
+  ip: (string) (len=11) "10.240.0.55",
+  port: (uint16) 0,
+  isLocal: (bool) false,
+  macAddress: (string) (len=17) "02-11-0a-f0-00-37",
+  hnsID: (string) (len=36) "31cd0963-59f6-45e1-a71e-4e4113715ff5",
+  refCount: (uint16) 0,
+  providerAddress: (string) "",
+  hns: (winkernel.hnsV2) {
+  }
+ }
+}
+] for service [kube-system/kube-dns:metrics]
+I0603 07:20:52.267461    3220 proxier.go:149] Hns loadbalancer policy resource, {"ID":"d5d8124f-dbd8-4f09-aec2-78d3252dc49a","HostComputeEndpoints":["31cd0963-59f6-45e1-a71e-4e4113715ff5"],"FrontendVIPs":["10.0.0.10"],"PortMappings":[{"Protocol":6,"InternalPort":9153,"ExternalPort":9153}],"SchemaVersion":{"Major":2,"Minor":0}}
+I0603 07:20:52.267461    3220 proxier.go:1244] Hns LoadBalancer resource created for cluster ip resources 10.0.0.10, Id [d5d8124f-dbd8-4f09-aec2-78d3252dc49a]
+I0603 07:20:52.267461    3220 proxier.go:143] +++Policy Successfully applied for service +++, (*winkernel.serviceInfo)(0xc0005ae900)({
+ clusterIP: (net.IP) (len=16 cap=16) 10.0.0.10,
+ port: (int) 9153,
+ protocol: (v1.Protocol) (len=3) "TCP",
+ nodePort: (int) 0,
+ targetPort: (int) 9153,
+ loadBalancerStatus: (v1.LoadBalancerStatus) &LoadBalancerStatus{Ingress:[]LoadBalancerIngress{},},
+ sessionAffinityType: (v1.ServiceAffinity) (len=4) "None",
+ stickyMaxAgeSeconds: (int) 10800,
+ externalIPs: ([]*winkernel.externalIPInfo) <nil>,
+ loadBalancerIngressIPs: ([]*winkernel.loadBalancerIngressInfo) <nil>,
+ loadBalancerSourceRanges: ([]string) {
+ },
+ onlyNodeLocalEndpoints: (bool) false,
+ healthCheckNodePort: (int) 0,
+ hnsID: (string) (len=36) "d5d8124f-dbd8-4f09-aec2-78d3252dc49a",
+ nodePorthnsID: (string) "",
+ policyApplied: (bool) true,
+ remoteEndpoint: (*winkernel.endpointsInfo)(<nil>),
+ hns: (winkernel.hnsV2) {
+ },
+ preserveDIP: (bool) false
+})
+I0603 07:21:22.068501    3220 proxier.go:1077] Syncing Policies
+I0603 07:21:22.069501    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:21:52.075840    3220 proxier.go:1077] Syncing Policies
+I0603 07:21:52.075840    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:22:22.089563    3220 proxier.go:1077] Syncing Policies
+I0603 07:22:22.090563    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:22:52.094045    3220 proxier.go:1077] Syncing Policies
+I0603 07:22:52.094045    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:23:22.097088    3220 proxier.go:1077] Syncing Policies
+I0603 07:23:22.097088    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:23:52.097560    3220 proxier.go:1077] Syncing Policies
+I0603 07:23:52.098517    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:24:22.099905    3220 proxier.go:1077] Syncing Policies
+I0603 07:24:22.099905    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:24:52.100502    3220 proxier.go:1077] Syncing Policies
+I0603 07:24:52.100502    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:25:22.113652    3220 proxier.go:1077] Syncing Policies
+I0603 07:25:22.113652    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:25:52.113730    3220 proxier.go:1077] Syncing Policies
+I0603 07:25:52.113730    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:26:22.119010    3220 proxier.go:1077] Syncing Policies
+I0603 07:26:22.119010    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:26:52.120668    3220 proxier.go:1077] Syncing Policies
+I0603 07:26:52.120668    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:27:22.134240    3220 proxier.go:1077] Syncing Policies
+I0603 07:27:22.134240    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:27:52.134974    3220 proxier.go:1077] Syncing Policies
+I0603 07:27:52.134974    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:28:22.406408    3220 proxier.go:1077] Syncing Policies
+I0603 07:28:22.406408    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:28:52.406820    3220 proxier.go:1077] Syncing Policies
+I0603 07:28:52.407742    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:29:22.408180    3220 proxier.go:1077] Syncing Policies
+I0603 07:29:22.409115    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:29:52.423187    3220 proxier.go:1077] Syncing Policies
+I0603 07:29:52.423187    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:30:22.424471    3220 proxier.go:1077] Syncing Policies
+I0603 07:30:22.424471    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:30:52.424645    3220 proxier.go:1077] Syncing Policies
+I0603 07:30:52.424645    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:31:22.440151    3220 proxier.go:1077] Syncing Policies
+I0603 07:31:22.440151    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:31:52.447877    3220 proxier.go:1077] Syncing Policies
+I0603 07:31:52.447877    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:32:22.451960    3220 proxier.go:1077] Syncing Policies
+I0603 07:32:22.452961    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:32:52.454859    3220 proxier.go:1077] Syncing Policies
+I0603 07:32:52.455840    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:33:22.457327    3220 proxier.go:1077] Syncing Policies
+I0603 07:33:22.457327    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:33:52.457966    3220 proxier.go:1077] Syncing Policies
+I0603 07:33:52.457966    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:34:22.463353    3220 proxier.go:1077] Syncing Policies
+I0603 07:34:22.464353    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:34:52.480085    3220 proxier.go:1077] Syncing Policies
+I0603 07:34:52.480085    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:35:22.484992    3220 proxier.go:1077] Syncing Policies
+I0603 07:35:22.484992    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:35:52.075535    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns-tcp" to [0xc0000bf3e0]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:metrics" to [0xc0000bf440]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns" to [0xc0000bf4a0]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns-tcp" to [0xc0000bf500]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:metrics" to [0xc0000bf560]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns" to [0xc0000bf5c0]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "kube-system/metrics-server" to [0xc0000bf860]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "kube-system/metrics-server" to [0xc0003fc780]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "default/kubernetes:https" to [0xc0003fca80]
+I0603 07:35:52.075535    3220 proxier.go:992] Setting endpoints for "default/kubernetes:https" to [0xc0003fcb40]
+I0603 07:35:52.078465    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:35:52.081465    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:35:52.083464    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:35:52.085465    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:35:52.089464    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:35:52.092482    3220 proxier.go:231] Service "kube-system/metrics-server" preserve-destination: 
+I0603 07:35:52.094465    3220 proxier.go:231] Service "kube-system/metrics-server" preserve-destination: 
+I0603 07:35:52.097465    3220 proxier.go:231] Service "default/kubernetes" preserve-destination: 
+I0603 07:35:52.100464    3220 proxier.go:231] Service "default/kubernetes" preserve-destination: 
+I0603 07:35:52.493154    3220 proxier.go:1077] Syncing Policies
+I0603 07:35:52.493154    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:36:22.495525    3220 proxier.go:1077] Syncing Policies
+I0603 07:36:22.495525    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:36:52.496546    3220 proxier.go:1077] Syncing Policies
+I0603 07:36:52.497505    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:37:22.497703    3220 proxier.go:1077] Syncing Policies
+I0603 07:37:22.497703    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:37:52.497942    3220 proxier.go:1077] Syncing Policies
+I0603 07:37:52.498955    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:38:22.501485    3220 proxier.go:1077] Syncing Policies
+I0603 07:38:22.502207    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:38:52.502496    3220 proxier.go:1077] Syncing Policies
+I0603 07:38:52.502496    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:39:22.505334    3220 proxier.go:1077] Syncing Policies
+I0603 07:39:22.506337    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:39:52.507774    3220 proxier.go:1077] Syncing Policies
+I0603 07:39:52.507774    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:40:22.525601    3220 proxier.go:1077] Syncing Policies
+I0603 07:40:22.526593    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:40:52.527511    3220 proxier.go:1077] Syncing Policies
+I0603 07:40:52.527511    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:41:22.528275    3220 proxier.go:1077] Syncing Policies
+I0603 07:41:22.528275    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:41:52.529013    3220 proxier.go:1077] Syncing Policies
+I0603 07:41:52.529013    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:42:22.530469    3220 proxier.go:1077] Syncing Policies
+I0603 07:42:22.530469    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:42:52.530846    3220 proxier.go:1077] Syncing Policies
+I0603 07:42:52.531792    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:43:22.532263    3220 proxier.go:1077] Syncing Policies
+I0603 07:43:22.532263    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:43:52.532676    3220 proxier.go:1077] Syncing Policies
+I0603 07:43:52.532676    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:44:22.534910    3220 proxier.go:1077] Syncing Policies
+I0603 07:44:22.534910    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:44:52.536458    3220 proxier.go:1077] Syncing Policies
+I0603 07:44:52.536458    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:45:22.536785    3220 proxier.go:1077] Syncing Policies
+I0603 07:45:22.537812    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:45:52.539568    3220 proxier.go:1077] Syncing Policies
+I0603 07:45:52.539568    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:46:22.540871    3220 proxier.go:1077] Syncing Policies
+I0603 07:46:22.540871    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:46:52.542374    3220 proxier.go:1077] Syncing Policies
+I0603 07:46:52.542374    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:47:22.542906    3220 proxier.go:1077] Syncing Policies
+I0603 07:47:22.543846    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:47:52.549853    3220 proxier.go:1077] Syncing Policies
+I0603 07:47:52.549853    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:48:22.558692    3220 proxier.go:1077] Syncing Policies
+I0603 07:48:22.558692    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:48:52.573857    3220 proxier.go:1077] Syncing Policies
+I0603 07:48:52.573857    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:49:22.574156    3220 proxier.go:1077] Syncing Policies
+I0603 07:49:22.574156    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:49:52.584551    3220 proxier.go:1077] Syncing Policies
+I0603 07:49:52.584551    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:50:22.586130    3220 proxier.go:1077] Syncing Policies
+I0603 07:50:22.586130    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:50:52.096337    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "kube-system/metrics-server" to [0xc0000c3c80]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "kube-system/metrics-server" to [0xc0000c3ce0]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "default/kubernetes:https" to [0xc0000c3ec0]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "default/kubernetes:https" to [0xc0000c3f20]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns-tcp" to [0xc0000be600]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:metrics" to [0xc0000be780]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns" to [0xc0000be7e0]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns-tcp" to [0xc0000be840]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:metrics" to [0xc0000be8a0]
+I0603 07:50:52.096337    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns" to [0xc0000be900]
+I0603 07:50:52.100344    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:50:52.102377    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:50:52.105391    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:50:52.107348    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:50:52.109372    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 07:50:52.111381    3220 proxier.go:231] Service "kube-system/metrics-server" preserve-destination: 
+I0603 07:50:52.113379    3220 proxier.go:231] Service "kube-system/metrics-server" preserve-destination: 
+I0603 07:50:52.116376    3220 proxier.go:231] Service "default/kubernetes" preserve-destination: 
+I0603 07:50:52.118345    3220 proxier.go:231] Service "default/kubernetes" preserve-destination: 
+I0603 07:50:52.599156    3220 proxier.go:1077] Syncing Policies
+I0603 07:50:52.599156    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:51:22.613524    3220 proxier.go:1077] Syncing Policies
+I0603 07:51:22.613524    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:51:52.618167    3220 proxier.go:1077] Syncing Policies
+I0603 07:51:52.618167    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:52:22.619941    3220 proxier.go:1077] Syncing Policies
+I0603 07:52:22.619941    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:52:52.620389    3220 proxier.go:1077] Syncing Policies
+I0603 07:52:52.620389    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:53:22.621468    3220 proxier.go:1077] Syncing Policies
+I0603 07:53:22.622461    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:53:52.623303    3220 proxier.go:1077] Syncing Policies
+I0603 07:53:52.623303    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:54:22.626313    3220 proxier.go:1077] Syncing Policies
+I0603 07:54:22.626656    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:54:52.636907    3220 proxier.go:1077] Syncing Policies
+I0603 07:54:52.637908    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:55:22.638636    3220 proxier.go:1077] Syncing Policies
+I0603 07:55:22.638636    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:55:52.643167    3220 proxier.go:1077] Syncing Policies
+I0603 07:55:52.643167    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:56:22.658285    3220 proxier.go:1077] Syncing Policies
+I0603 07:56:22.658285    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:56:52.667486    3220 proxier.go:1077] Syncing Policies
+I0603 07:56:52.667486    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:57:22.668245    3220 proxier.go:1077] Syncing Policies
+I0603 07:57:22.668245    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:57:52.670149    3220 proxier.go:1077] Syncing Policies
+I0603 07:57:52.670149    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:58:22.672382    3220 proxier.go:1077] Syncing Policies
+I0603 07:58:22.673381    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:58:52.674313    3220 proxier.go:1077] Syncing Policies
+I0603 07:58:52.675273    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:59:22.675917    3220 proxier.go:1077] Syncing Policies
+I0603 07:59:22.676877    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 07:59:52.677534    3220 proxier.go:1077] Syncing Policies
+I0603 07:59:52.677534    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:00:22.679488    3220 proxier.go:1077] Syncing Policies
+I0603 08:00:22.679488    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:00:52.686140    3220 proxier.go:1077] Syncing Policies
+I0603 08:00:52.687140    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:01:22.692846    3220 proxier.go:1077] Syncing Policies
+I0603 08:01:22.692846    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:01:52.695932    3220 proxier.go:1077] Syncing Policies
+I0603 08:01:52.695932    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:02:22.709940    3220 proxier.go:1077] Syncing Policies
+I0603 08:02:22.710940    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:02:52.712049    3220 proxier.go:1077] Syncing Policies
+I0603 08:02:52.712049    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:03:22.712364    3220 proxier.go:1077] Syncing Policies
+I0603 08:03:22.712364    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:03:52.713809    3220 proxier.go:1077] Syncing Policies
+I0603 08:03:52.714747    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:04:22.730001    3220 proxier.go:1077] Syncing Policies
+I0603 08:04:22.730001    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:04:52.730402    3220 proxier.go:1077] Syncing Policies
+I0603 08:04:52.730402    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:05:22.745224    3220 proxier.go:1077] Syncing Policies
+I0603 08:05:22.745224    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:05:52.100490    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns-tcp" to [0xc0000c3c80]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:metrics" to [0xc0000c3ce0]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns" to [0xc0000c3e60]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns-tcp" to [0xc0000c3ec0]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:metrics" to [0xc0000c3f20]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "kube-system/kube-dns:dns" to [0xc0000c3f80]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "kube-system/metrics-server" to [0xc00010e5a0]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "kube-system/metrics-server" to [0xc00010e600]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "default/kubernetes:https" to [0xc00010e6c0]
+I0603 08:05:52.100490    3220 proxier.go:992] Setting endpoints for "default/kubernetes:https" to [0xc00010e720]
+I0603 08:05:52.104494    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 08:05:52.107496    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 08:05:52.110480    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 08:05:52.112480    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 08:05:52.114480    3220 proxier.go:231] Service "kube-system/kube-dns" preserve-destination: 
+I0603 08:05:52.117483    3220 proxier.go:231] Service "kube-system/metrics-server" preserve-destination: 
+I0603 08:05:52.119490    3220 proxier.go:231] Service "kube-system/metrics-server" preserve-destination: 
+I0603 08:05:52.121482    3220 proxier.go:231] Service "default/kubernetes" preserve-destination: 
+I0603 08:05:52.123482    3220 proxier.go:231] Service "default/kubernetes" preserve-destination: 
+I0603 08:05:52.747201    3220 proxier.go:1077] Syncing Policies
+I0603 08:05:52.747201    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:06:22.748581    3220 proxier.go:1077] Syncing Policies
+I0603 08:06:22.748581    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:06:52.748981    3220 proxier.go:1077] Syncing Policies
+I0603 08:06:52.748981    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:07:22.749796    3220 proxier.go:1077] Syncing Policies
+I0603 08:07:22.749796    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:07:52.750068    3220 proxier.go:1077] Syncing Policies
+I0603 08:07:52.750068    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:08:22.751662    3220 proxier.go:1077] Syncing Policies
+I0603 08:08:22.751662    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:08:52.752198    3220 proxier.go:1077] Syncing Policies
+I0603 08:08:52.752198    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:09:22.752419    3220 proxier.go:1077] Syncing Policies
+I0603 08:09:22.752419    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
+I0603 08:09:52.755253    3220 proxier.go:1077] Syncing Policies
+I0603 08:09:52.756252    3220 bounded_frequency_runner.go:296] sync-runner: ran, next possible in 0s, periodic in 30s
