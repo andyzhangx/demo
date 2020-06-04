@@ -76,3 +76,9 @@ When a node is shutdown the control plane do not distinguish between a kubelet o
 
 ### Tips:
  - [Postpone deletion of a PV or a PVC when they are being used](https://github.com/kubernetes/kubernetes/blob/f170ef66340f6355d331ed90902574ff0532a20a/pkg/features/kube_features.go#L207-L208) reaches BETA in k8s v1.10
+
+### 4. Extremely slow detach/attach via controller-manager (csi_attacher)
+
+**Issue details**:
+
+happened on 1.17+ cluster with 100+ volumes in the cluster for CSI driver, details: [Extremely slow detach/attach via controller-manager (csi_attacher)](https://github.com/kubernetes/kubernetes/issues/86281)
