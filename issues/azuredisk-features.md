@@ -73,13 +73,26 @@ This PR would also fix a "disk not found" issue when detach azure disk due to di
 ```
 azure_controller_standard.go:134] detach azure disk: disk  not found, diskURI: /subscriptions/xxx/resourceGroups/andy-mg1160alpha3/providers/Microsoft.Compute/disks/xxx-dynamic-pvc-41a31580-f5b9-4f08-b0ea-0adcba15b6db
 ```
- - [fix: detach azure disk issue using dangling error](https://github.com/kubernetes/kubernetes/pull/81266)
- - [fix: azure disk name matching issue](https://github.com/kubernetes/kubernetes/pull/81720)
- - [fix: azure disk dangling attach issue on VMSS which would cause API throttling](https://github.com/kubernetes/kubernetes/pull/90749)
+
+ - Fix on VMAS
+   - [fix: detach azure disk issue using dangling error](https://github.com/kubernetes/kubernetes/pull/81266)
+   - [fix: azure disk name matching issue](https://github.com/kubernetes/kubernetes/pull/81720)
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.16 | 1.16.10 |
+| v1.12 | no fix |
+| v1.13 | 1.13.11 |
+| v1.14 | 1.14.7 |
+| v1.15 | 1.15.4 |
+| v1.15 | 1.16.0 |
+
+ - Fix on VMSS
+   - [fix: azure disk dangling attach issue on VMSS which would cause API throttling](https://github.com/kubernetes/kubernetes/pull/90749)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.15 | no fix |
+| v1.16 | 1.16.9 |
 | v1.17 | 1.17.6 |
 | v1.18 | 1.18.3 |
 | v1.19 | 1.19.0 |
