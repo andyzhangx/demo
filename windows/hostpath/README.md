@@ -1,17 +1,17 @@
 ## 1. create a pod with hostpath mount(C: disk) on windows
-```
-kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/hostpath/aspnet-hostpath.yaml
+```console
+kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/hostpath/busybox-hostpath.yaml
 ```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
-```
-watch kubectl describe po aspnet-hostpath
+```console
+watch kubectl describe po busybox-hostpath
 ```
 
 ## 2. enter the pod container to do validation
-kubectl exec -it aspnet-hostpath -- cmd
+```console
+kubectl exec -it busybox-hostpath -- cmd
 
-```
 C:\>d:
 
 D:\>dir
@@ -22,6 +22,11 @@ D:\>dir
 09/25/2017  06:29 AM    <DIR>          ..
                0 File(s)              0 bytes
                2 Dir(s)  97,325,273,088 bytes free
+```
+
+## 3. copy some files from pod
+```console
+kubectl cp busybox-hostpath:/k/kubeletstart.ps1 /tmp/kubeletstart.ps1
 ```
 
 #### hostPath issues
