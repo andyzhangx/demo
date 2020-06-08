@@ -91,8 +91,9 @@ azure_controller_standard.go:134] detach azure disk: disk  not found, diskURI: /
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.15 | no fix |
-| v1.16 | 1.16.9 |
+| v1.14 | only hotfixed with image `mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.8-hotfix.20200529.1` |
+| v1.15 | only hotfixed with image `mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200529.1`, `mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.12-hotfix.20200603` |
+| v1.16 | 1.16.10 (also hotfixed with image `mcr.microsoft.com/oss/kubernetes/hyperkube:v1.16.9-hotfix.20200529.1`) |
 | v1.17 | 1.17.6 |
 | v1.18 | 1.18.3 |
 | v1.19 | 1.19.0 |
