@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: sysctl-patch
+  name: sysctl-patch
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: sysctl-patch
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: sysctl-patch
+        tier: node
+    spec:
+      containers:
+      - command:
+        - nsenter
+        - --target
+        - "1"
+        - --mount
+        - --uts
+        - --ipc
+        - --net
+        - --pid
+        - --
+        - sh
+        - -c
+        - |
+          sed -i 's/--node-status-update-frequency=5m/--node-status-update-frequency=10s/g' /etc/default/kubelet
+          systemctl daemon-reload
+          systemctl restart kubelet
+          sleep 600000000s
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        name: sysctl-patch
+        resources:
+          requests:
+            cpu: 10m
+        securityContext:
+          privileged: true
+      dnsPolicy: ClusterFirst
+      hostPID: true
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
