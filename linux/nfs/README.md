@@ -1,4 +1,8 @@
-# Use NFS Server Provisioner on AKS
+# This page is not maintained, pls refer to https://github.com/Azure/kubernetes-volume-drivers/tree/master/nfs for official doc.
+
+
+## Use NFS Server Provisioner on AKS
+
 [NFS Server Provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs) is an out-of-tree dynamic provisioner for Kubernetes. You can use it to quickly & easily deploy shared storage that works almost anywhere. This doc shows how to set up NFS Server Provisioner on AKS using [NFS Server Provisioner helm chart](https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner), the NFS server data is stored on single Azure managed disk. To get high availability, you may use [Rook](https://github.com/rook/rook), step-by-step doc: [Using Rook / Ceph with PVCs on Azure Kubernetes Service](https://partlycloudy.blog/2019/12/08/using-rook-ceph-with-pvcs-on-azure-kubernetes-service/).
  
 ### 1. Install nfs-server-provisioner helm chart
