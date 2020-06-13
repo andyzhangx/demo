@@ -10,9 +10,14 @@ spec:
     volumeMounts:
     - name: test-volume
       mountPath: /mnt/hostpath
+    - name: etc-k8s-dir
+      mountPath: /etc/kubernetes/    
   volumes:
   - name: test-volume
     hostPath:
       path: /mnt
       type: Directory
-
+  - name: etc-k8s-dir     
+    hostPath:
+      path: /etc/kubernetes/
+      type: Directory
