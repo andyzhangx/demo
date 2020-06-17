@@ -65,3 +65,9 @@ Events:
 
 **Workaround**
  - Remove `type` field in `hostPath`
+
+#### copy file using hostpath
+```console
+kubectl create -f  https://raw.githubusercontent.com/andyzhangx/demo/master/linux/hostpath/nginx-hostpath-daemonset.yaml
+kubectl cp nginx-hostpath-7pdjc:/etc/kubernetes/certs/ca.crt ~/tmp/ca1.crt
+```

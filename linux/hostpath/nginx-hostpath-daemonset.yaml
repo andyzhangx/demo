@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-hostpath
+  labels:
+    k8s-app: hostpath
+spec:
+  selector:
+    matchLabels:
+      name: hostpath
+  template:
+    metadata:
+      labels:
+        name: hostpath
+    spec:
+      containers:
+        - name: nginx-hostpath
+          image: nginx
+          command:
+          - "/bin/sh"
+          - "-c"
+          - while true; do echo $(date) >> /tmp/out; sleep 1; done
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: etc-k8s-dir
+              mountPath: /etc/kubernetes/
+            - name: varlog
+              mountPath: /var/log/
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log/
+        - name: etc-k8s-dir
+          hostPath:
+            path: /etc/kubernetes/
+            type: Directory			
+      nodeSelector:
+        beta.kubernetes.io/os: linux
