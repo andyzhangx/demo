@@ -851,8 +851,9 @@ The above issue is upstream issue([detailed error code](https://github.com/kuber
  - one node is in Shutdown(deallocated) state, there is by design now and there is on-going upstream work to fix this issue
    - [Propose to taint node "shutdown" condition](https://github.com/kubernetes/kubernetes/issues/58635)
    - [add node shutdown KEP](https://github.com/kubernetes/enhancements/pull/1116)   
- > user should use `kubectl delete pod PODNAME --grace-period=0 --force` to delete pod on the deallocated node
- 
+ >  - user should use `kubectl delete pod PODNAME --grace-period=0 --force` to delete pod on the deallocated node
+ >  - delete shutdown node(in `InstanceExistsByProviderID`) could be a solution, while it would lead to other problem, see details: [Common handling of stopped instances across cloud providers
+](https://github.com/kubernetes/kubernetes/issues/46442) 
 
 since azure disk PVC could not be attached to one node.
 
