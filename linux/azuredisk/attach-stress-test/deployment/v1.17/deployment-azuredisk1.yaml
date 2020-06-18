@@ -42,3 +42,8 @@ spec:
       - name: azuredisk
         persistentVolumeClaim:
           claimName: pvc-azuredisk1
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
