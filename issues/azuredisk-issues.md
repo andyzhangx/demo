@@ -848,7 +848,7 @@ Warning  FailedMount         42s (x4 over 7m)  kubelet, aks-nodepool1-15915763-v
 
 The above issue is upstream issue([detailed error code](https://github.com/kubernetes/kubernetes/blob/20c265fef0741dd71a66480e35bd69f18351daea/pkg/controller/volume/attachdetach/reconciler/reconciler.go#L351)), it could be due to following reasons:
  - two pods are using same disk PVC, this issue could happen even using `Deployment` with one replica(see below workaround)
- - one node is in Shutdown(deallocated) state, there is by design now and there is on-going upstream work to fix this issue
+ - one node is in Shutdown(deallocated) state, this is by design now and there is on-going upstream work to fix this issue
    - [Propose to taint node "shutdown" condition](https://github.com/kubernetes/kubernetes/issues/58635)
    - [add node shutdown KEP](https://github.com/kubernetes/enhancements/pull/1116)   
  >  - workaround: user should use `kubectl delete pod PODNAME --grace-period=0 --force` to delete pod on the deallocated node
