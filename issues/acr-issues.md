@@ -124,3 +124,6 @@ az acr list
  az aks show -n <ASK-CLUSTER-NAME> -g <RESOURCE_GROUP_NAME> | grep clientId
  ```
  > Make sure this service principal could access your ACR, you could set from azure portal "Container Registry"\"Access Control"\"Add Role Assignment", input the `clientId` value and add as `Reader` role
+
+#### Code
+ - [kubelet pull image](https://github.com/kubernetes/kubernetes/blob/49c50720e4e36f8b6d736feadb926b6dfa8421e6/pkg/kubelet/kuberuntime/kuberuntime_image.go#L59)
