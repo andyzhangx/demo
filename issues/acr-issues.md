@@ -89,6 +89,27 @@ PR [Fix ACR MSI cross-subscription authentication error](https://github.com/kube
 | v1.15 | 1.15.0 |
 | v1.16 | 1.16.0 |
 
+### 4. pull private ACR image failed randomly on a MSI enabled cluster
+
+**Issue details**:
+On a MSI enabled cluster, when non-ACR docker image is pulled first, the cache credential will only cache anonymous access credential, managed identity credential won't be fetched in the next 5min until cache expired.
+
+**Related issues**
+- [Pulling Azure Container Registry image using Managed Service Identity may fail
+](https://github.com/kubernetes/kubernetes/issues/92326)
+
+**Fix**
+
+PR [fix: don't use docker config cache if it's empty](https://github.com/kubernetes/kubernetes/pull/92330) fixed this issue 
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.15 | no fix |
+| v1.16 | 1.16.x |
+| v1.17 | 1.17.x |
+| v1.18 | 1.18.x |
+| v1.19 | 1.19.0 |
+
 ### Tips
 #### How to check whether current service principal could access ACR?
 
