@@ -147,6 +147,22 @@ spec:
 ```
  - details: [feat: support Azure shared disk](https://github.com/kubernetes/kubernetes/pull/89328)
 
+#### 9. tag support
+
+- available from `v1.19.0`
+- added a new field(`tags`) in azure disk storage class to support:
+```yaml
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: ssd
+provisioner: kubernetes.io/azure-disk
+parameters:
+  skuname: StandardSSD_LRS
+  tags: "key1=val1,key2=val2"
+```
+- details: [add tags support for azure disk driver](https://github.com/kubernetes/kubernetes/pull/92356)
+
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
 Error would be like following:
