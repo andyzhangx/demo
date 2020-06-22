@@ -31,13 +31,14 @@ az provider register --namespace Microsoft.ContainerService
 ```
 
 ### 1. Create an AKS cluster with EncryptionAtHost enabled
+> make sure `node-vm-size` is in the supported EncryptionAtHost SKU list
 ```console
 RESOURCE_GROUP_NAME=
 CLUSTER_NAME=
 LOCATION=
 
 az group create -n $RESOURCE_GROUP_NAME -l $LOCATION
-az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 2 --generate-ssh-keys --kubernetes-version 1.17.5 --aks-custom-headers EncryptionAtHost=true
+az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 2 --node-vm-size Standard_DS2_v2 --generate-ssh-keys --kubernetes-version 1.17.5 --aks-custom-headers EncryptionAtHost=true
 
 az aks get-credentials -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --overwrite-existing
 kubectl get nodes
@@ -55,3 +56,7 @@ az aks nodepool add --name nodepool2 --cluster-name $CLUSTER_NAME --resource-gro
                         "encryptionAtHost": "true"
                     },
 ```
+
+### Limitations
+ - EncryptionAtHost is only supported on VMSS
+ - EncryptionAtHost is only supported on new cluster creation or new node pool creation
