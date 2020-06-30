@@ -7,7 +7,7 @@ EncryptionAtHost could encrypt temp disk, cache of OS and data disk at rest.
 Refer to [End to end encryption of VM/VMSS disks in preview](https://github.com/ramankumarlive/manageddisksendtoendencryptionpreview) for more details about EncryptionAtHost feature
 
 ### Current EncryptionAtHost supported regions
-`uksouth`, `eastus2euap`, `centraluseuap`, etc.
+`westus2`, `eastus2euap`, `centraluseuap`, etc.
 
 ### Prerequisite
  - install [azure cli extension](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest)
@@ -35,7 +35,7 @@ az provider register --namespace Microsoft.ContainerService
 ```console
 RESOURCE_GROUP_NAME=
 CLUSTER_NAME=
-LOCATION=
+LOCATION=westus2
 
 az group create -n $RESOURCE_GROUP_NAME -l $LOCATION
 az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 2 --node-vm-size Standard_DS2_v2 --generate-ssh-keys --kubernetes-version 1.17.5 --aks-custom-headers EncryptionAtHost=true
