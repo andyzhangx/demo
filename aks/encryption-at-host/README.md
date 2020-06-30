@@ -38,7 +38,7 @@ CLUSTER_NAME=
 LOCATION=westus2
 
 az group create -n $RESOURCE_GROUP_NAME -l $LOCATION
-az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 2 --node-vm-size Standard_DS2_v2 --generate-ssh-keys --kubernetes-version 1.17.5 --aks-custom-headers EncryptionAtHost=true
+az aks create -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --node-count 2 --node-vm-size Standard_DS2_v2 --generate-ssh-keys --kubernetes-version 1.17.5 --aks-custom-headers EnableEncryptionAtHost=true
 
 az aks get-credentials -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME --overwrite-existing
 kubectl get nodes
@@ -46,7 +46,7 @@ kubectl get nodes
 
 ### 2. Add a new node pool with EncryptionAtHost enabled
 ```console
-az aks nodepool add --name nodepool2 --cluster-name $CLUSTER_NAME --resource-group $RESOURCE_GROUP_NAME --aks-custom-headers EncryptionAtHost=true
+az aks nodepool add --name nodepool2 --cluster-name $CLUSTER_NAME --resource-group $RESOURCE_GROUP_NAME --aks-custom-headers EnableEncryptionAtHost=true
 ```
 
 #### Verification
