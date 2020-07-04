@@ -6,4 +6,7 @@ provisioner: kubernetes.io/azure-disk
 volumeBindingMode: WaitForFirstConsumer
 parameters:
   skuname: UltraSSD_LRS
-  zoned: true  # zone: "1"
+  kind: managed
+  cachingmode: None
+  diskIopsReadWrite: "2000"  # minimum value: 2 IOPS/GiB 
+  diskMbpsReadWrite: "320"   # minimum value: 0.032/GiB
