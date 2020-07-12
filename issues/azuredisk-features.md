@@ -119,7 +119,6 @@ parameters:
  - details: [add azure disk WriteAccelerator support](https://github.com/kubernetes/kubernetes/pull/87945)
 
 #### 8. Shared disk
-
 - available from `v1.19.0`
 - added a new field(`maxShares`) in azure disk storage class to support [Azure shared disk](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-shared-enable):
 ```yaml
@@ -147,8 +146,7 @@ spec:
 ```
  - details: [feat: support Azure shared disk](https://github.com/kubernetes/kubernetes/pull/89328)
 
-#### 9. tag support
-
+#### 9. tags support
 - available from `v1.19.0`
 - added a new field(`tags`) in azure disk storage class to support:
 ```yaml
@@ -162,6 +160,20 @@ parameters:
   tags: "key1=val1,key2=val2"
 ```
 - details: [add tags support for azure disk driver](https://github.com/kubernetes/kubernetes/pull/92356)
+
+#### 10. force detach
+- available from `v1.19.0`
+
+use `toBeDetached=true` to detach a disk, we could permanently fix [VMSS detach disk issue](https://docs.microsoft.com/en-us/azure/virtual-machines/troubleshooting/troubleshoot-vm-deployment-detached)
+
+   - [fix: use force detach for azure disk](https://github.com/kubernetes/kubernetes/pull/91948)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.16 | 1.16.13 |
+| v1.17 | 1.17.9 |
+| v1.18 | 1.18.6 |
+| v1.19 | 1.19.0 |
 
 ## Azure disk restrictions
 ### 1. cannot attach an azure disk from another subscription
