@@ -1,14 +1,12 @@
 # Azure file new features and restrictions
 ## Azure file new features
 #### 1. Azure file size grow
-
-available from `v1.11.0`
+ - available from `v1.11.0`
 
 only supported in dynamic provision, `allowVolumeExpansion: true` must be specified in azure file storage class, example: [azurefile storage class with size grow configuration](https://github.com/andyzhangx/demo/blob/master/pv/storageclass-azurefile-sizegrow.yaml)
 
 #### 2. Azure Premium file dynamic provision support
-
-available from `v1.13.0`
+ - available from `v1.13.0`
 
 details: [support Azure premium file dynamic provision in azure file plugin](https://github.com/kubernetes/kubernetes/pull/69718)
 
@@ -68,3 +66,18 @@ parameters:
  - Tips
  
  For lower kubernetes versions, user could use azure storage account key as `secret` to mount existing file share, find detailed steps [here](https://docs.microsoft.com/en-us/azure/aks/azure-files-volume)
+
+#### 5. tags support
+- available from `v1.19.0`
+- added a new field(`tags`) in storage class to support:
+```yaml
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: azurefile
+provisioner: kubernetes.io/azure-file
+parameters:
+  skuname: Standard_LRS
+  tags: "key1=val1,key2=val2"
+```
+- details: [Add tags support for Azure File Driver](https://github.com/kubernetes/kubernetes/pull/92825)
