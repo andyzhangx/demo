@@ -100,15 +100,17 @@ On a MSI enabled cluster, when non-ACR docker image is pulled first, the cache c
 
 **Fix**
 
-PR [fix: don't use docker config cache if it's empty](https://github.com/kubernetes/kubernetes/pull/92330) fixed this issue 
+ - PR [fix: don't use docker config cache if it's empty](https://github.com/kubernetes/kubernetes/pull/92330) partially fixed this issue(solve most of the issues)
+ - Another WIP PR to fix it permanantly: [fix: pull image error with azure managed identity](https://github.com/kubernetes/kubernetes/pull/92818)
 
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.15 | no fix |
-| v1.16 | 1.16.x |
-| v1.17 | 1.17.x |
+| v1.16 | no fix |
+| v1.17 | no fix |
 | v1.18 | 1.18.x |
 | v1.19 | 1.19.0 |
+
 
 ### Tips
 #### How to check whether current service principal could access ACR?
