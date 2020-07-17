@@ -19,6 +19,7 @@
     - [11. azure file remount on Windows in same node would fail](#11-azure-file-remount-on-windows-in-same-node-would-fail)
     - [12. update azure file secret if azure storage account key changed](#12-update-azure-file-secret-if-azure-storage-account-key-changed)
     - [13. Create Azure Files PV AuthorizationFailure when using advanced networking](#13-create-azure-files-pv-authorizationfailure-when-using-advanced-networking)
+    - [14. initial delay(5s) in mounting azure file](#13-initial-delay-5s-in-mounting-azure-file)
 <!-- /TOC -->
 
 ## Recommended stable version for azure file
@@ -348,15 +349,34 @@ Before api-version `2019-06-01`, create file share action is considered as data-
 
  **Fix**
 
-- PR [upgrade api-version to fix azure file AuthorizationFailure](https://github.com/kubernetes/kubernetes/pull/85475)
+- PR [Switch to use AzureFile management SDK](https://github.com/kubernetes/kubernetes/pull/90350)
 
 | k8s version | fixed version |
 | ---- | ---- |
-| v1.17 | no fix |
-| v1.18 | 1.18.0 |
+| v1.18 | no fix |
+| v1.19 | 1.19.0 |
 
 **Workaround**:
 
 Shut down the advanced networking when create azure file PV.
  
+## 14. initial delay(5s) in mounting azure file
 
+**Issue details**: 
+
+When starting pods with AFS volumes, there is an initial delay of five seconds until the pod is transitioning from the "Scheduled" state. The reason for this is that currently the volume mounting happens inside a wait.Poll which will initially wait a specified interval(currently 5 seconds) before execution. This issue is introduced by PR [fix: azure file mount timeout issue](https://github.com/kubernetes/kubernetes/pull/88610) with v1.15.11+, v1.16.8+, v1.17.4+, v1.18.0+
+
+ **Fix**
+ - [initial delay(5s) when starting Pods with Azure File volumes](https://github.com/kubernetes/kubernetes/issues/93025)
+
+ **Fix**
+
+- PR [fix: initial delay in mounting azure disk & file](https://github.com/kubernetes/kubernetes/pull/93052)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.15 | no fix |
+| v1.16 | in cherry-pick |
+| v1.17 | in cherry-pick |
+| v1.18 | in cherry-pick |
+| v1.19 | 1.19.0 |
