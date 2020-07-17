@@ -19,7 +19,7 @@
     - [11. azure file remount on Windows in same node would fail](#11-azure-file-remount-on-windows-in-same-node-would-fail)
     - [12. update azure file secret if azure storage account key changed](#12-update-azure-file-secret-if-azure-storage-account-key-changed)
     - [13. Create Azure Files PV AuthorizationFailure when using advanced networking](#13-create-azure-files-pv-authorizationfailure-when-using-advanced-networking)
-    - [14. initial delay(5s) in mounting azure file](#13-initial-delay-5s-in-mounting-azure-file)
+    - [14. initial delay(5s) in mounting azure file](#14-initial-delay5s-in-mounting-azure-file)
 <!-- /TOC -->
 
 ## Recommended stable version for azure file
