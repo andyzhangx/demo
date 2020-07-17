@@ -162,7 +162,6 @@ parameters:
 - details: [add tags support for azure disk driver](https://github.com/kubernetes/kubernetes/pull/92356)
 
 #### 10. force detach
-- available from `v1.19.0`
 
 use `toBeDetached=true` to detach a disk, we could permanently fix [VMSS detach disk issue](https://docs.microsoft.com/en-us/azure/virtual-machines/troubleshooting/troubleshoot-vm-deployment-detached)
 
