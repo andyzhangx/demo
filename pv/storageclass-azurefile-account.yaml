@@ -5,5 +5,6 @@ metadata:
   name: azurefile
 provisioner: kubernetes.io/azure-file
 parameters:
+  resourceGroup: EXISTING_RESOURCE_GROUP_NAME
   storageAccount: EXISTING_STORAGE_ACCOUNT
   skuName: Standard_LRS  #available values: Standard_LRS, Standard_GRS, Standard_RAGRS, (and Premium_LRS are supported from k8s v1.13.0)
