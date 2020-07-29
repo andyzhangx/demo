@@ -5,6 +5,9 @@ metadata:
     name: clean-up
   name: clean-up
 spec:
+  selector:
+    matchLabels:
+      app: clean-up
   template:
     metadata:
       labels:
