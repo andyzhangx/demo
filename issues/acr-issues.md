@@ -106,8 +106,8 @@ On a MSI enabled cluster, when non-ACR docker image is pulled first, the cache c
 | k8s version | fixed version |
 | ---- | ---- |
 | v1.15 | no fix |
-| v1.16 | no fix |
-| v1.17 | no fix |
+| v1.16 | 1.16.14 |
+| v1.17 | 1.17.10 |
 | v1.18 | 1.18.6 |
 | v1.19 | 1.19.0 |
 
