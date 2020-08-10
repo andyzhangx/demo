@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: servercore-hostpath
+spec:
+  containers:
+  - image: mcr.microsoft.com/windows/servercore:1809
+    name: servercore-hostpath
+    command:
+      - "powershell.exe"
+      - "-Command"
+      - "while (1) { Add-Content -Encoding Ascii C:\\tmp\\test.txt $(Get-Date -Format u); sleep 1 }"
+    volumeMounts:
+    - name: k-dir
+      mountPath: 'c:\k'
+    - name: var-dir
+      mountPath: 'c:\var'
+    - name: c-dir
+      mountPath: 'd:'
+  nodeSelector:
+    beta.kubernetes.io/os: windows
+  volumes:
+  - name: k-dir
+    hostPath:
+      path: 'c:\k'
+  - name: var-dir
+    hostPath:
+      path: 'c:\var'
+  - name: c-dir
+    hostPath:
+      path: 'c:\'
