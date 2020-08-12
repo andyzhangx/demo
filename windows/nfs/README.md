@@ -1,39 +1,39 @@
 # Attention: nfs mount on windows does not work now, this feature is working in progress
 ## 1. download `pv-nfs.yaml`, change `nfs` config and then create a nfs persistent volume (pv)
-```
+```console
 wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pv-nfs.yaml
 vi pv-nfs.yaml
 kubectl create -f pv-nfs.yaml
 ```
 
 make sure pv is in `Available` status
-```
+```console
 kubectl describe pv pv-nfs
 ```
 
 ## 2. create a nfs persistent volume claim (pvc)
-```
+```console
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-nfs.yaml
 ```
 
 make sure pvc is in `Bound` status
-```
+```console
 kubectl describe pvc pvc-nfs
 ```
 
 ## 3. create a pod with nfs mount
-```
+```console
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/windows/nfs/aspnet-nfs.yaml
 ```
 
 #### watch the status of pod until its Status changed from `Pending` to `Running`
+```console
 watch kubectl describe po aspnet-nfs
-
-## 4. enter the pod container to do validation
-kubectl exec -it aspnet-nfs -- cmd
-
 ```
 
+## 4. enter the pod container to do validation
+```console
+kubectl exec -it aspnet-nfs -- cmd
 ```
 
 ### Instructions for using NFS on Windows Server
@@ -48,7 +48,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 PS C:\Users\azureuser> Install-WindowsFeature NFS-Client
 PS C:\Users\azureuser> exit
 ```
- - `net use` command
+ - [`net use`](https://www.windowscommandline.com/net-use/) command
 ```
 azureuser@4820k8s000 C:\Users\azureuser>net use /PERSISTENT:YES \\accountname.blob.core.windows.net\andyblobnfs\pvc-80e0b096-a126-4a05-a100-b957c2335e2e
 The command completed successfully.
