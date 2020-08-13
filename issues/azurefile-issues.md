@@ -321,14 +321,10 @@ There would be azure file mount failure if azure storage account key changed
 
 **Workaround**:
 User needs to update `azurestorageaccountkey` field manually in azure file secret(secret name format: `azure-storage-account-{storage-account-name}-secret` in `default` namespace):
- - copy azure storage account key and do `base64` encoding, e.g.
-```console
-echo X+ALAAUgMhWHL7QmQ87E1kSfIqLKfgC03Guy7/xk9MyIg2w4Jzqeu60CVw2r/dm6v6E0DWHTnJUEJGVQAoPaBc== | base64
 ```
- - edit `azurestorageaccountkey` field in in azure file secret with base64 encoded storage account key
- ```console 
- kubectl edit secret azure-storage-account-{storage-account-name}-secret
- ```
+kubectl delete secret azure-storage-account-{storage-account-name}-secret
+kubectl create secret generic azure-storage-account-{storage-account-name}-secret --from-literal azurestorageaccountname=... --from-literal azurestorageaccountkey="..." --type=Opaque
+```
  
  - wait a few minutes for agent node retry azure file mount
  
