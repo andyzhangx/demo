@@ -46,17 +46,24 @@ Windows PowerShell
 Copyright (C) Microsoft Corporation. All rights reserved.
 
 PS C:\Users\azureuser> Install-WindowsFeature NFS-Client
+PS C:\Users\azureuser> New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default\" -Name AnonymousUid -Value 0 -PropertyType DWORD
+PS C:\Users\azureuser> New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default\" -Name AnonymousGid -Value 0 -PropertyType DWORD
+PS C:\Users\azureuser> nfsadmin client stop
+PS C:\Users\azureuser> nfsadmin client start
 PS C:\Users\azureuser> exit
 ```
  - [`net use`](https://www.windowscommandline.com/net-use/) command
 ```
-azureuser@4820k8s000 C:\Users\azureuser>net use /PERSISTENT:YES \\accountname.blob.core.windows.net\andyblobnfs\pvc-80e0b096-a126-4a05-a100-b957c2335e2e
+# net use /PERSISTENT:YES \\accountname.blob.core.windows.net\andyblobnfs\pvc-80e0b096-a126-4a05-a100-b957c2335e2e
 The command completed successfully.
 
-azureuser@4820k8s000 C:\Users\azureuser>mklink /D blobnfs \\accountname.blob.core.windows.net\andyblobnfs\pvc-80e0b096-a126-4a05-a100-b957c2335e2e
+# mklink /D blobnfs \\accountname.blob.core.windows.net\andyblobnfs\pvc-80e0b096-a126-4a05-a100-b957c2335e2e
 symbolic link created for blobnfs <<===>> \\andyblobnfs.blob.core.windows.net\andyblobnfs\pvc-80e0b096-a126-4a05-a100-b957c2335e2e
 
-docker run -d -v C:\Users\azureuser\blobnfs:C:\mnt --name busybox e2eteam/busybox:1.29
+# docker run -v C:\Users\azureuser\blobnfs:C:\mnt --name busybox e2eteam/busybox:1.29 "mkdir C:\mnt\test2"
+# docker rm busybox
+
+# dir blobnfs
 ```
 
  - `mount` command
