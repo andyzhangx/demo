@@ -326,7 +326,7 @@ kubectl delete secret azure-storage-account-{storage-account-name}-secret
 kubectl create secret generic azure-storage-account-{storage-account-name}-secret --from-literal azurestorageaccountname=... --from-literal azurestorageaccountkey="..." --type=Opaque
 ```
  
- - wait a few minutes for agent node retry azure file mount
+ - delete original pod(may use `--force --grace-period=0`) and wait a few minutes for new pod retry azure file mount
  
 ## 13. Create Azure Files PV AuthorizationFailure when using advanced networking
 
