@@ -6,7 +6,6 @@ metadata:
 provisioner: kubernetes.io/azure-file
 reclaimPolicy: Retain
 parameters:
-  skuName: Standard_LRS
   resourceGroup: EXISTING_RESOURCE_GROUP_NAME
   storageAccount: EXISTING_STORAGE_ACCOUNT_NAME
   shareName: SHARE_NAME
