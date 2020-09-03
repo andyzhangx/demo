@@ -325,7 +325,7 @@ User needs to update `azurestorageaccountkey` field manually in azure file secre
 kubectl delete secret azure-storage-account-{storage-account-name}-secret
 kubectl create secret generic azure-storage-account-{storage-account-name}-secret --from-literal azurestorageaccountname=... --from-literal azurestorageaccountkey="..." --type=Opaque
 ```
- 
+ > make sure there is no `\r` in the account name and key, here is a [failed case](https://github.com/MicrosoftDocs/azure-docs/issues/61650#issuecomment-683274588)
  - delete original pod(may use `--force --grace-period=0`) and wait a few minutes for new pod retry azure file mount
  
 ## 13. Create Azure Files PV AuthorizationFailure when using advanced networking
