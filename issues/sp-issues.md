@@ -12,14 +12,19 @@ Please refer to https://docs.microsoft.com/en-us/azure/aks/update-credentials
 
 #### [Deprecated] Option# Manual way: create a new SP password and then replace the password in `/etc/kubernetes/azure.json`
  - check whether current Service Principal `aadClientId` has expired
-```
+```console
 aadClientId=$(az aks show --resource-group <RG_NAME> --name <CLUSTER_NAME> --query "servicePrincipalProfile.clientId" --output tsv)
 echo $aadClientId
 az ad sp credential list --id $aadClientId
 ```
 
+ - get `appDisplayName` of Service Principal 
+ ```console
+ az ad sp show --id --id $aadClientId --query "appDisplayName"
+ ```
+
  - paste my practice about how to update service principal secret in an existing k8s cluster:
-```
+```console
 # update service principle (aadClientSecret)
 sudo vi /etc/kubernetes/azure.json
 
