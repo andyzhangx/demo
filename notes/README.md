@@ -68,6 +68,10 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
   - [arrays-and-slices](https://blog.csdn.net/u011304970/article/details/74938457)
   - [sync](https://mp.weixin.qq.com/s/UpYbmFTowjCPU83W3DxP6Q)
   - [goroutine](https://blog.csdn.net/nuli888/article/details/63331156)
+  - Coding on Windows
+    - always use `filepath.Join` since `path.Join` may not work on Windows
+  - Nil pointer check
+    - check `nil` of `ptr`, or use `to.String(ptr)` to replace `*ptr`
 
 #### Docker
   - [Understanding Docker Container Exit Codes](https://medium.com/better-programming/understanding-docker-container-exit-codes-5ee79a1d58f6)
