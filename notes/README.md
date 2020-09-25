@@ -72,6 +72,11 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
     - always use `filepath.Join` since `path.Join` may not work on Windows
   - Nil pointer check
     - check `nil` of `ptr`, or use `to.String(ptr)` to replace `*ptr`
+  - panic: assignment to entry in nil map
+  ```
+  m := req.GetParameters()
+  m["a"] = "b"  // if m is nil, then panic
+  ```
 
 #### Docker
   - [Understanding Docker Container Exit Codes](https://medium.com/better-programming/understanding-docker-container-exit-codes-5ee79a1d58f6)
