@@ -13,5 +13,6 @@ mountOptions:
   - mfsymlinks
   - cache=strict  # https://github.com/piastry/cifs-utils/blob/master/mount.cifs.rst
   - nosharesock  # reduce probability of reconnect races
+  - actimeo=30 # https://docs.microsoft.com/en-us/azure/storage/files/storage-troubleshooting-files-performance#workaround-3
 parameters:
   skuName: Premium_LRS  # available values: Standard_LRS, Standard_GRS, Standard_ZRS, Standard_RAGRS, Premium_LRS, Premium_ZRS
