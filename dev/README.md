@@ -222,7 +222,14 @@ sudo chmod a+x ./kubectl-enter
 
 ### nonroot image
 ```
-andyzhangx/ubuntu1604:nonroot
+COPY ./_output/blobplugin /blobplugin
+ENTRYPOINT ["/blobplugin"]
+
+FROM mcr.microsoft.com/aks/fundamental/base-ubuntu:v0.0.5
+RUN useradd -u 10001 nonroot
+USER nonroot
+
+docker build --no-cache -t andyzhangx/ubuntu1604:nonroot -f ~/test2/Dockerfile .
 ```
 
 #### Links
