@@ -209,15 +209,20 @@ Sep 27 10:25:08 operation_generator.go:557] MountVolume.SetUp succeeded for volu
 ```
 
 ### Clean disk space on Windows
-```
+```console
 rm -Recurse -Force C:\Windows\Temp\*
 ```
 
 ### kubectl-enter
-```
+```console
 sudo wget https://raw.githubusercontent.com/andyzhangx/demo/master/dev/kubectl-enter
 sudo chmod a+x ./kubectl-enter
 ./kubectl-enter <node-name>
+```
+
+### nonroot image
+```
+andyzhangx/ubuntu1604:nonroot
 ```
 
 #### Links
