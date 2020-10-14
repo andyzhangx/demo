@@ -1,0 +1,16 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+  labels:
+    addonmanager.kubernetes.io/mode: EnsureExists
+    kubernetes.io/cluster-service: "true"
+  name: default
+parameters:
+  storageaccounttype: Premium_LRS
+provisioner: kubernetes.io/azure-disk
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
