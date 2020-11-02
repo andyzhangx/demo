@@ -2,18 +2,18 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   labels:
-    component: sysctl-patch
-  name: sysctl-patch
+    component: update-sp
+  name: update-sp
   namespace: kube-system
 spec:
   selector:
     matchLabels:
-      component: sysctl-patch
+      component: update-sp
       tier: node
   template:
     metadata:
       labels:
-        component: sysctl-patch
+        component: update-sp
         tier: node
     spec:
       containers:
@@ -38,7 +38,7 @@ spec:
           sleep 600000000s
         image: alpine
         imagePullPolicy: IfNotPresent
-        name: sysctl-patch
+        name: update-sp
         resources:
           requests:
             cpu: 10m
