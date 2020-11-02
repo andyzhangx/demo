@@ -81,3 +81,7 @@ parameters:
   tags: "key1=val1,key2=val2"
 ```
 - details: [Add tags support for Azure File Driver](https://github.com/kubernetes/kubernetes/pull/92825)
+
+
+#### Other
+ - [Statefulset use pre-existing storage resources](https://github.com/Azure/AKS/issues/1906#issuecomment-720480827)
