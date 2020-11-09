@@ -44,6 +44,17 @@ KUBE_BUILD_PLATFORMS=windows/amd64 make
 KUBE_BUILD_PLATFORMS=darwin/amd64 make
 ```
 
+#### Replace `kubelet` binary on Linux Agent node
+ - upload `kubelet` binary to azure storage account
+```console
+az storage blob upload --account-name andydevdiag --account-key xxx --container-name public --file kubelet --name kubelet
+```
+ - `kubectl-enter` agent node
+```
+wget -O /tmp/kubelet https://andydevdiag.blob.core.windows.net/public/kubelet
+sudo systemctl stop kubelet && cp /tmp/kubelet /usr/local/bin/kubelet && sudo systemctl start kubelet
+```
+
 ### debug kubernetes windows node
 
 #### Replace `kubelet.exe` binary on Windows Agent node
