@@ -338,6 +338,8 @@ initContainers:
     mountPath: /data
 ```
 
+ - new upstream feature to address this: [Allow volume ownership to be only set after fs formatting](https://github.com/kubernetes/kubernetes/issues/69699)
+
 ## 8. `Addition of a blob based disk to VM with managed disks is not supported`
 
 **Issue details**:
