@@ -6,8 +6,7 @@ This doc shows how to set up an EncryptionAtHost supported AKS cluster.
 EncryptionAtHost could encrypt temp disk, cache of OS and data disk at rest. 
 Refer to [End to end encryption of VM/VMSS disks in preview](https://github.com/ramankumarlive/manageddisksendtoendencryptionpreview) for more details about EncryptionAtHost feature
 
-### Current EncryptionAtHost supported regions
-`westus2`, `eastus2euap`, `centraluseuap`, etc.
+### [EncryptionAtHost supported regions](https://docs.microsoft.com/en-us/azure/virtual-machines/disk-encryption#supported-regions-1)
 
 ### Prerequisite
  - install [azure cli extension](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest)
@@ -57,6 +56,7 @@ az aks nodepool add --name nodepool2 --cluster-name $CLUSTER_NAME --resource-gro
                     },
 ```
 you could also check by Azure cli:
+ - EncryptionAtHost is enabled on VMSS cluster
 ```console
 rgName=
 vmssName=
@@ -65,6 +65,14 @@ az vmss show -n $vmssName -g $rgName --query "[virtualMachineProfile.securityPro
   true
 ]
 ```
+ - EncryptionAtHost is not enabled on VMSS cluster
+```console
+az vmss show -n $vmssName -g $rgName --query "[virtualMachineProfile.securityProfile.encryptionAtHost]"
+[
+  null
+]
+```
+
 
 ### Limitations
  - EncryptionAtHost is only supported on VMSS
