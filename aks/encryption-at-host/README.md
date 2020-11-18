@@ -56,7 +56,16 @@ az aks nodepool add --name nodepool2 --cluster-name $CLUSTER_NAME --resource-gro
                         "encryptionAtHost": "true"
                     },
 ```
+you could also check by Azure cli:
+```console
+rgName=
+vmssName=
+az vmss show -n $vmssName -g $rgName --query "[virtualMachineProfile.securityProfile.encryptionAtHost]"
+[
+  true
+]
+```
 
 ### Limitations
  - EncryptionAtHost is only supported on VMSS
- - EncryptionAtHost is only supported on new cluster creation or new node pool creation
+ - EncryptionAtHost is only supported on new cluster creation
