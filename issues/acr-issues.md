@@ -111,6 +111,22 @@ On a MSI enabled cluster, when non-ACR docker image is pulled first, the cache c
 | v1.18 | 1.18.6 |
 | v1.19 | 1.19.0 |
 
+### 5. random failure when pulling image from multiple ACRs using Azure managed identity
+
+**Related issues**
+- [Pulling Azure Container Registry image using Managed Service Identity may fail](https://github.com/kubernetes/kubernetes/issues/92326)
+
+**Fix**
+
+ - PR [fix pull image error from multiple ACRs using azure managed identityy](https://github.com/kubernetes/kubernetes/pull/96355)
+
+| k8s version | fixed version |
+| ---- | ---- |
+| v1.16 | no fix |
+| v1.17 | 1.17.14 |
+| v1.18 | 1.18.12 |
+| v1.19 | 1.19.4 |
+| v1.20 | 1.20.0 |
 
 ### Tips
 #### How to check whether current service principal could access ACR?
