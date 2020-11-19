@@ -27,13 +27,19 @@ spec:
               mountPath: /etc/kubernetes/
             - name: varlog
               mountPath: /var/log/
+            - name: usr
+              mountPath: /usr
       volumes:
         - name: varlog
           hostPath:
             path: /var/log/
+        - name: usr
+          hostPath:
+            path: /usr
+            type: Directory
         - name: etc-k8s-dir
           hostPath:
             path: /etc/kubernetes/
-            type: Directory			
+            type: Directory
       nodeSelector:
         beta.kubernetes.io/os: linux

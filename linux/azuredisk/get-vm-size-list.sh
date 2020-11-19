@@ -1,6 +1,6 @@
 #!/bin/bash
 
-az account list-locations -o tsv | awk -F '\t' '{print $5}' > locations
+az account list-locations -o tsv | awk -F '\t' '{print $4}' > locations
 for location in `cat ./locations`
 do
 	echo "get vm list-sizes on $location region ..."
