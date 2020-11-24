@@ -297,13 +297,13 @@
       "value": "16.04.201802220"
     },
     "servicePrincipalClientId": {
-      "value": "..."
+      "value": "$CREDENTIAL_PLACEHOLDER$"
     },
     "servicePrincipalClientSecret": {
-      "value": "..."
+      "value": "$CREDENTIAL_PLACEHOLDER$"
     },
     "sshRSAPublicKey": {
-      "value": "ssh-rsa ... azureuser@andy-dev"
+      "value": "$CREDENTIAL_PLACEHOLDER$"
     },
     "targetEnvironment": {
       "value": "AzurePublicCloud"

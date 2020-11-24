@@ -22,21 +22,21 @@
     ],
     "windowsProfile": {
       "adminUsername": "azureuser",
-      "adminPassword": "abcUser@123"
+      "adminPassword": "$CREDENTIAL_PLACEHOLDER$"
     },
     "linuxProfile": {
       "adminUsername": "azureuser",
       "ssh": {
         "publicKeys": [
           {
-            "keyData": "ssh-rsa ... azureuser@andy-dev"
+            "keyData": "$CREDENTIAL_PLACEHOLDER$"
           }
         ]
       }
     },
     "servicePrincipalProfile": {
-      "ClientID": "91fe9b3f-d35a-4f9b-8c92-...",
-      "Secret": "ed0a7cc2-070e-416c-b42c-..."
+      "ClientID": "$CREDENTIAL_PLACEHOLDER$",
+      "Secret": "$CREDENTIAL_PLACEHOLDER$"
     }
   }
 }

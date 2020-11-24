@@ -1,9 +1,9 @@
 {
     "cloud":"AzurePublicCloud",
-    "tenantId": "xxx",
-    "subscriptionId": "xxx",
-    "aadClientId": "xxx",
-    "aadClientSecret": "xxx",
+    "tenantId": "$CREDENTIAL_PLACEHOLDER$",
+    "subscriptionId": "$CREDENTIAL_PLACEHOLDER$",
+    "aadClientId": "$CREDENTIAL_PLACEHOLDER$",
+    "aadClientSecret": "$CREDENTIAL_PLACEHOLDER$",
     "resourceGroup": "xxx",
     "location": "westus2",
     "subnetName": "k8s-subnet",

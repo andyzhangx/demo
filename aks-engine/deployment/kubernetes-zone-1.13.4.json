@@ -30,14 +30,14 @@
       "ssh": {
         "publicKeys": [
           {
-            "keyData": "ssh-rsa ... azureuser@andy-dev"
+            "keyData": "$CREDENTIAL_PLACEHOLDER$"
           }
         ]
       }
     },
     "servicePrincipalProfile": {
-      "ClientID": "df7269f2-801b-4a8b-bb2b-...",
-      "Secret": "8c416dc5-b276-4998-946f-..."
+      "ClientID": "$CREDENTIAL_PLACEHOLDER$",
+      "Secret": "$CREDENTIAL_PLACEHOLDER$"
     }
   }
 }
