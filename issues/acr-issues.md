@@ -89,7 +89,7 @@ PR [Fix ACR MSI cross-subscription authentication error](https://github.com/kube
 | v1.15 | 1.15.0 |
 | v1.16 | 1.16.0 |
 
-### 4. pull private ACR image failed randomly on a MSI enabled cluster
+### 4. pull private ACR image failed randomly on a managed identity enabled cluster
 
 **Issue details**:
 On a MSI enabled cluster, when non-ACR docker image is pulled first, the cache credential will only cache anonymous access credential, managed identity credential won't be fetched in the next 1min until cache expired.
@@ -111,10 +111,11 @@ On a MSI enabled cluster, when non-ACR docker image is pulled first, the cache c
 | v1.18 | 1.18.6 |
 | v1.19 | 1.19.0 |
 
-### 5. random authentication failure when pulling image from multiple ACRs using Azure managed identity
+### 5. random authentication failure when pulling image from multiple container registries using Azure managed identity
 
 **Issue details**:
-On an Azure managed identity enabled cluster, user may hit random authentication failure when pulling image from multiple(>1) ACRs
+
+On an Azure managed identity enabled cluster, user may hit random authentication failure when pulling images from two different registries simultaneously, e.g. pulling images from multiple ACRs, or pulling one image from ACR and pulling another image from dockerhub in parallel.
 
 **Related issues**
 - [Pulling Azure Container Registry image using Managed Service Identity may fail](https://github.com/kubernetes/kubernetes/issues/92326)
