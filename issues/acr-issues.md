@@ -115,7 +115,7 @@ On a MSI enabled cluster, when non-ACR docker image is pulled first, the cache c
 
 **Issue details**:
 
-On an Azure managed identity enabled cluster, user may hit random authentication failure when pulling images from multiple different registries simultaneously, e.g. pulling images from multiple ACRs, or pulling one image from ACR and pulling another image from dockerhub in parallel.
+On an Azure managed identity enabled cluster, user may hit random authentication failure when pulling images from multiple container registries simultaneously, e.g. pulling images from multiple ACRs, or pulling one image from ACR and pulling another image from dockerhub in parallel.
 
 **Related issues**
 - [Pulling Azure Container Registry image using Managed Service Identity may fail](https://github.com/kubernetes/kubernetes/issues/92326)
