@@ -133,7 +133,7 @@ On an Azure managed identity enabled cluster, user may hit random authentication
 | v1.20 | 1.20.0 |
 
 **Work around**:
-wait for a few more tries or using single ACR
+wait for a few more tries or using single container registry
 
 ### Tips
 #### How to check whether current service principal could access ACR?
