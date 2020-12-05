@@ -119,6 +119,7 @@ On an Azure managed identity enabled cluster, user may hit random authentication
 
 **Related issues**
 - [Pulling Azure Container Registry image using Managed Service Identity may fail](https://github.com/kubernetes/kubernetes/issues/92326)
+- [ACR Image Pull Errors](https://github.com/Azure/acr/issues/451)
 
 **Fix**
 
