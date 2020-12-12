@@ -153,3 +153,4 @@ az acr list
 
 #### Code
  - [kubelet pull image](https://github.com/kubernetes/kubernetes/blob/49c50720e4e36f8b6d736feadb926b6dfa8421e6/pkg/kubelet/kuberuntime/kuberuntime_image.go#L59)
+ - [dockershim pull image error](https://github.com/kubernetes/kubernetes/blob/49c50720e4e36f8b6d736feadb926b6dfa8421e6/pkg/kubelet/dockershim/docker_image.go#L113)
