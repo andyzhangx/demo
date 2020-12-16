@@ -77,6 +77,26 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
   m := req.GetParameters()
   m["a"] = "b"  // if m is nil, then panic
   ```
+  - Using reference to loop iterator variable
+  ```
+  func main() {
+    var outKey []*int
+    var outValue []*string
+ 
+    m := map[int]string{
+        1: "a",
+        2: "b",
+        3: "c",
+    }
+ 
+    for k, v := range m {
+        outKey = append(outKey, &k)
+        outValue = append(outValue, &v)
+    }
+    fmt.Println("Keys:", *outKey[0], *outKey[1], *outKey[2])
+    fmt.Println("Values:", *outValue[0], *outValue[1], *outValue[2])
+  }
+  ```
 
 #### Docker
   - [Understanding Docker Container Exit Codes](https://medium.com/better-programming/understanding-docker-container-exit-codes-5ee79a1d58f6)
