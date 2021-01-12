@@ -1,6 +1,23 @@
 # kubernetes developing practices
-### 1. build hyperkube image
+### build kube-controller-manager image
+```console
+cd ~/go/src/k8s.io/kubernetes/cmd/kube-controller-manager
+go build
+wget https://raw.githubusercontent.com/andyzhangx/demo/master/dev/build-kube-controller-manager/Dockerfile
+docker build --no-cache -t andyzhangx/kube-controller-manager:v1.20.0 -f ./Dockerfile .
 ```
+
+### build kube-apiserver image
+```console
+cd ~/go/src/k8s.io/kubernetes/cmd/kube-apiserver
+go build
+wget https://raw.githubusercontent.com/andyzhangx/demo/master/dev/build-kube-apiserver/Dockerfile
+docker build --no-cache -t andyzhangx/kube-apiserver:v1.20.0 -f ./Dockerfile .
+```
+About how to change api-server built-in version, refer to https://github.com/andyzhangx/kubernetes/commit/37349b38f76d684468102d379b5c9abe5f9fee81
+
+### build hyperkube image
+```console
 # Run the following from the top level kubernetes directory, to build the binaries necessary for creating hyperkube image.
 $ KUBE_BUILD_PLATFORMS=linux/amd64 make kube-apiserver kube-controller-manager kube-proxy kube-scheduler kubectl kubelet
 
