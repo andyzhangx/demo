@@ -5,23 +5,8 @@
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-managed.yaml
 ```
 
- > - if k8s agent pool is based on blob based(unmanaged) disk VM
- > ```
- > kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk.yaml
- > ```
-
 ###### Note: 
- - managed disk mount feature is only supported from v1.7.2
  - AKS cluster use managed disk by default, there are already `managed-standard`, `managed-premium` built-in azure disk storage classes.
-
- > #### for k8s version < 1.7.2
- > download `storageclass-azuredisk-old.yaml` and modify `skuName`, `location` values
- > ```
- > wget https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/storageclass-azuredisk-old.yaml
- > vi storageclass-azuredisk-old.yaml
- > kubectl create -f storageclass-azuredisk-old.yaml
- > ```
-> Note: for `storageclass-azuredisk-old.yaml`, k8s will find a suitable storage account that matches ```skuName``` and ```location``` in same resource group when provisioning azure disk
 
 ## 2. create an azure disk pvc
 ```kubectl create -f https://raw.githubusercontent.com/andyzhangx/Demo/master/pv/pvc-azuredisk.yaml```
@@ -55,15 +40,6 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
 ```sh
 wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-mgrdisk.yaml
 vi nginx-pod-azuredisk.yaml
-```
-
- > - blob based(unmanaged) disk 
- > ```sh
- > wget -O nginx-pod-azuredisk.yaml https://raw.githubusercontent.com/andyzhangx/Demo/master/linux/azuredisk/nginx-pod-azuredisk-static-blobdisk.yaml
- > vi nginx-pod-azuredisk.yaml
- > ```
-
-```sh
 kubectl create -f nginx-pod-azuredisk.yaml
 ```
 
