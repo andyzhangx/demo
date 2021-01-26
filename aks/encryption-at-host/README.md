@@ -9,11 +9,21 @@ Refer to [End to end encryption of VM/VMSS disks in preview](https://github.com/
 ### [EncryptionAtHost supported regions](https://docs.microsoft.com/en-us/azure/virtual-machines/disk-encryption#supported-regions-1)
 
 ### Prerequisite
- - install [azure cli extension](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest)
+ - install [azure cli extension](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest) `0.4.73` or later version
 
 ```console
 az extension remove --name aks-preview
-az extension add --source https://andydevdiag.blob.core.windows.net/public/aks_preview-0.4.73-py2.py3-none-any.whl -y
+az extension add -y -n aks-preview
+az version
+{
+  "azure-cli": "2.18.0",
+  "azure-cli-core": "2.18.0",
+  "azure-cli-telemetry": "1.0.6",
+  "extensions": {
+    "aks-preview": "0.4.73",
+    "hack": "0.1.0"
+  }
+}
 ```
 
  - register `EncryptionAtHost` feature under `Microsoft.Compute`
