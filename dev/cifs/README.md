@@ -1,5 +1,5 @@
-## Patch cifs module
-This page shows how to install cifs patch driver(with following fixes) on Kubernetes nodes with Linux kernel 5.4.x, `sysctl-install-cifs-module` daemonset will download the source code, build and then install cifs driver on every agent node.
+## install cifs patch driver on Kubernetes agent node
+This page shows how to install cifs patch driver(with following fixes) on Kubernetes agent nodes with Linux kernel 5.4.x, `sysctl-install-cifs-module` daemonset will download the source code, build and then install cifs driver on every agent node.
 
  - details
 
