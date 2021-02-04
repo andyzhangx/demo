@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+date
 echo "downloading cifs-5.4.0-1039.41.patched.tar.gz ..."
 wget -O /tmp/cifs-5.4.0-1039.41.patched.tar.gz https://raw.githubusercontent.com/andyzhangx/demo/master/dev/cifs/cifs-5.4.0-1039.41.patched.tar.gz
 cd /tmp/
