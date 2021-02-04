@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: sysctl-install-cifs-module
+  name: sysctl-install-cifs-module
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: sysctl-install-cifs-module
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: sysctl-install-cifs-module
+        tier: node
+    spec:
+      containers:
+      - command:
+        - nsenter
+        - --target
+        - "1"
+        - --mount
+        - --uts
+        - --ipc
+        - --net
+        - --pid
+        - --
+        - sh
+        - -c
+        - |
+          curl -skSL https://raw.githubusercontent.com/andyzhangx/demo/master/dev/cifs/install-cifs-module.sh | bash -s -- 2>&1 > /tmp/install-cifs-module.log
+          sleep 600000000s
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        name: sysctl-install-cifs-module
+        resources:
+          requests:
+            cpu: 10m
+        securityContext:
+          privileged: true
+      dnsPolicy: ClusterFirst
+      hostPID: true
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
