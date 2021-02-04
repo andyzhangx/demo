@@ -1,5 +1,5 @@
 ## Patch cifs module
-This page shows how to install cifs patch on Linux kernel 5.4.x
+This page shows how to install cifs patch driver(with following fixes) on Linux kernel 5.4.x
 
  - details
 
