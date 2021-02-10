@@ -9,5 +9,6 @@ spec:
     - ReadWriteMany
   azureFile:
     secretName: azure-secret
+    secretNamespace: default
     shareName: k8stest
     readOnly: false
