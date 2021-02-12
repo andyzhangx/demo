@@ -33,3 +33,27 @@ sudo systemctl daemon-reload
 sudo systemctl restart kubelet
 ```
  - Delete failing deployments first, and redeploy pods
+
+### 3. failed to delete service due to LinkedAuthorizationFailed
+**Error logs**:
+```
+  Code="LinkedAuthorizationFailed" Message="The client
+  '6244dd6c-640f-4a87-9781-ef828ac2e4a6' with object id
+  '6244dd6c-640f-4a87-9781-ef828ac2e4a6' has permission to perform action
+  'Microsoft.Network/loadBalancers/write' on scope
+  '/subscriptions/xxx/resourceGroups/mc_rg_eu2_c001_aks_dev_01_akseu2c010aksdev01_eastus2/providers/Microsoft.Network/loadBalancers/kubernetes';
+  however, it does not have permission to perform action
+  'Microsoft.Network/publicIPAddresses/join/action' on the linked scope(s)
+  '/subscriptions/xxx/resourceGroups/RG_EU2_C011_INTE_DEV_01/providers/Microsoft.Network/publicIPAddresses/ipconfig2borrar'
+  or the linked scope(s) are invalid."
+```
+
+**Mitigation**:
+ - get `appDisplayName` of cluster identity using object id
+```console
+az ad sp show --id 6244dd6c-640f-4a87-9781-ef828ac2e4a6
+```
+
+ - assign permission to cluster identity
+   - go to page `/subscriptions/xxx/resourceGroups/RG_EU2_C011_INTE_DEV_01/providers/Microsoft.Network/publicIPAddresses/ipconfig2borrar` on Azure portal
+   - under `Access Control`, click `Role Assignment`, add `Contributor` role to cluster identity using `appDisplayName`
