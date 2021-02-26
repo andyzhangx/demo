@@ -9,7 +9,7 @@ Refer to [End to end encryption of VM/VMSS disks in preview](https://github.com/
 ### [EncryptionAtHost supported regions](https://docs.microsoft.com/en-us/azure/virtual-machines/disk-encryption#supported-regions-1)
 
 ### Prerequisite
- - install [azure cli extension](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest) `0.4.73` or later version
+ - option#1: install [azure cli extension](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest) `0.4.73` or later version
 
 ```console
 az extension remove --name aks-preview
@@ -26,11 +26,9 @@ az version
 }
 ```
 
- - register `EncryptionAtHost` feature under `Microsoft.Compute`
+ - option#2: run azure-cli container
 ```console
-az feature register --name EncryptionAtHost --namespace Microsoft.Compute
-az feature list -o table --query "[?contains(name, 'Microsoft.Compute/EncryptionAtHost')].{Name:name,State:properties.state}"
-az provider register --namespace Microsoft.Compute
+docker run -u $(id -u):$(id -g) -v ${HOME}:/home/az -e HOME=/home/az --rm -it andyzhangx/azure-cli:v2.19.1-2
 ```
 
 ### 1. Create an AKS cluster with EncryptionAtHost enabled
