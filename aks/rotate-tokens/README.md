@@ -15,5 +15,12 @@ CLUSTER_NAME=
 az aks rotate-cluster-tokens -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME
 ```
 
+### rotate control plane certs on an AKS cluster
+```console
+RESOURCE_GROUP_NAME=
+CLUSTER_NAME=
+az aks reconcile-control-plane-certs -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME
+```
+
 #### Notes
 - [commit: rotate cluster tokens](https://github.com/andyzhangx/azure-cli-extensions/commit/be645a7406fdc66772845f160d04d44db927119a)
