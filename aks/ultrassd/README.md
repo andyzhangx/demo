@@ -8,7 +8,7 @@ Azure ultra disks offer high throughput, high IOPS, and consistent low latency d
 ### [UltraSSD supported regions and vm skus](https://docs.microsoft.com/en-us/azure/virtual-machines/disks-enable-ultra-ssd?tabs=azure-portal#ga-scope-and-limitations)
 
 ### Prerequisite
- - install [azure cli extension](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest) `0.5.15` or later version
+ - install [azure cli extension](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest) `0.5.17` or later version
 
 ```console
 az extension remove --name aks-preview
@@ -19,7 +19,7 @@ az version
   "azure-cli-core": "2.18.0",
   "azure-cli-telemetry": "1.0.6",
   "extensions": {
-    "aks-preview": "0.5.15",
+    "aks-preview": "0.5.17",
     "hack": "0.1.0"
   }
 }
