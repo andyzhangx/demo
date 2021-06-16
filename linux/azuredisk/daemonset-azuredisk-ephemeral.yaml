@@ -1,0 +1,38 @@
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: daemonset-azuredisk
+spec:
+  selector:
+    matchLabels:
+      app: daemonset-azuredisk
+  template:
+    metadata:
+      labels:
+        app: daemonset-azuredisk
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: nginx
+          image: mcr.microsoft.com/oss/nginx/nginx:1.19.5
+          command:
+            - "/bin/bash"
+            - "-c"
+            - set -euo pipefail; while true; do echo $(date) >> /mnt/azuredisk/outfile; sleep 1; done
+          volumeMounts:
+            - name: azuredisk
+              mountPath: "/mnt/azuredisk"
+              readOnly: false
+      volumes:
+        - name: azuredisk
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 10Gi
+                storageClassName: default
