@@ -153,6 +153,24 @@ az acr list
 
  - [How to use ACR in AKS from different tenant](https://github.com/Azure/acr/issues/427#issuecomment-704131500)
 
+#### [Create a Pod that uses your Secret](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-pod-that-uses-your-secret)
+```console
+kubectl create secret docker-registry regcred --docker-server=acrname.azurecr.io --docker-username=username --docker-password=password --docker-email=test
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: private-reg
+spec:
+  containers:
+  - name: private-reg-container
+    image: acrname.azurecr.io/esp/infra/argo-git-clone-base:v1.0.1
+  imagePullSecrets:
+  - name: regcred
+```
+
 #### Code
  - [kubelet pull image](https://github.com/kubernetes/kubernetes/blob/49c50720e4e36f8b6d736feadb926b6dfa8421e6/pkg/kubelet/kuberuntime/kuberuntime_image.go#L59)
  - [dockershim pull image error](https://github.com/kubernetes/kubernetes/blob/49c50720e4e36f8b6d736feadb926b6dfa8421e6/pkg/kubelet/dockershim/docker_image.go#L113)
