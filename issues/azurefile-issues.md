@@ -320,7 +320,7 @@ E0118 08:15:52.041014    2112 nestedpendingoperations.go:267] Operation for "\"k
 There would be azure file mount failure if azure storage account key changed
 
 **Workaround**:
-User needs to update `azurestorageaccountkey` field manually in azure file secret(secret name format: `azure-storage-account-{storage-account-name}-secret` in `default` namespace):
+User needs to update `azurestorageaccountkey` field manually in azure file secret(secret name format: `azure-storage-account-{storage-account-name}-secret` in `default`  or pod's namespace):
 ```
 kubectl delete secret azure-storage-account-{storage-account-name}-secret
 kubectl create secret generic azure-storage-account-{storage-account-name}-secret --from-literal azurestorageaccountname=... --from-literal azurestorageaccountkey="..." --type=Opaque
