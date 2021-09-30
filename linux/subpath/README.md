@@ -30,6 +30,8 @@ drwx------ 2 root root    4096 Nov 20 08:12 events
  
  - [CVE-2017-1002101 - subpath volume mount handling allows arbitrary file access in host filesystem](https://github.com/kubernetes/kubernetes/issues/60813)
 
+ - [CVE-2021-25741: Symlink Exchange Can Allow Host Filesystem Access](https://github.com/Azure/AKS/issues/2547)
+
 **Attack case on Linux node**
  ```
  kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/windows/subpath/secbypass-subpath.yaml

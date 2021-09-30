@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: statefulset-azuredisk-5disks
+  labels:
+    app: nginx
+spec:
+  serviceName: statefulset-azuredisk-5disks
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: statefulset-azuredisk1
+        image: mcr.microsoft.com/oss/nginx/nginx:1.19.5
+        command:
+          - "/bin/bash"
+          - "-c"
+          - set -euo pipefail; while true; do echo $(date) >> /mnt/azurefile/outfile; sleep 1; done
+        volumeMounts:
+        - name: persistent-storage
+          mountPath: /mnt/azuredisk
+        - name: persistent-storage2
+          mountPath: /mnt/azuredisk2
+        - name: persistent-storage3
+          mountPath: /mnt/azuredisk
+        - name: persistent-storage4
+          mountPath: /mnt/azuredisk
+        - name: persistent-storage5
+          mountPath: /mnt/azuredisk5
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: nginx
+  volumeClaimTemplates:
+  - metadata:
+      name: persistent-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: managed-csi
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+  - metadata:
+      name: persistent-storage2
+      annotations:
+        volume.beta.kubernetes.io/storage-class: managed-csi
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+  - metadata:
+      name: persistent-storage3
+      annotations:
+        volume.beta.kubernetes.io/storage-class: managed-csi
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+  - metadata:
+      name: persistent-storage4
+      annotations:
+        volume.beta.kubernetes.io/storage-class: managed-csi
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+  - metadata:
+      name: persistent-storage5
+      annotations:
+        volume.beta.kubernetes.io/storage-class: managed-csi
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
