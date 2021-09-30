@@ -1,0 +1,31 @@
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: daemonset-csi-proxy-download
+spec:
+  selector:
+    matchLabels:
+      app: daemonset-csi-proxy-download
+  template:
+    metadata:
+      labels:
+        app: daemonset-csi-proxy-download
+    spec:
+      nodeSelector:
+        kubernetes.io/os: windows
+      containers:
+        - name: nginx
+          image: mcr.microsoft.com/windows/servercore:ltsc2019
+          command:
+            - "powershell.exe"
+            - "-Command"
+            - "$webclient = New-Object System.Net.WebClient; $url = \"https://acs-mirror.azureedge.net/csi-proxy/v0.2.2/binaries/csi-proxy-v0.2.2.tar.gz\"; $webclient.DownloadFile($url,\"c:\\k\\csi-proxy2.exe\")"
+          volumeMounts:
+          - name: k-dir
+            mountPath: 'c:\k'
+      volumes:
+      - name: k-dir
+        hostPath:
+          path: 'c:\k'
+
