@@ -31,7 +31,10 @@ spec:
             - sh
             - -c
             - |
+              echo "before change kubelet flags:"
+              cat /etc/default/kubelet
               sed -i 's/=DynamicKubeletConfig=/=CSIMigration=true,CSIMigrationAzureDisk=true,CSIMigrationAzureFile=true,DelegateFSGroupToCSIDriver=true,DynamicKubeletConfig=/g' /etc/default/kubelet
+              echo "after changing kubelet flags:"
               cat /etc/default/kubelet
               systemctl daemon-reload
               systemctl restart kubelet			  
