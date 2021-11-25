@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: set-csi-migration-flag
+  name: set-csi-migration-flag
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: set-csi-migration-flag
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: set-csi-migration-flag
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              sed -i 's/=DynamicKubeletConfig=/=CSIMigration=true,CSIMigrationAzureDisk=true,CSIMigrationAzureFile=true,DelegateFSGroupToCSIDriver=true,DynamicKubeletConfig=/g' /etc/default/kubelet
+              cat /etc/default/kubelet
+              systemctl daemon-reload
+              systemctl restart kubelet			  
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: set-csi-migration-flag
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
