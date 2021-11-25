@@ -31,13 +31,20 @@ spec:
             - sh
             - -c
             - |
-              echo "before change kubelet flags:"
-              cat /etc/default/kubelet
-              sed -i 's/=DynamicKubeletConfig=/=CSIMigration=true,CSIMigrationAzureDisk=true,CSIMigrationAzureFile=true,DelegateFSGroupToCSIDriver=true,DynamicKubeletConfig=/g' /etc/default/kubelet
-              echo "after changing kubelet flags:"
-              cat /etc/default/kubelet
-              systemctl daemon-reload
-              systemctl restart kubelet			  
+              res=`grep 'CSIMigration' /etc/default/kubelet` 
+              if [[ -z $res ]]
+              then
+                echo "change required"
+                echo "before change kubelet flags:"
+                cat /etc/default/kubelet
+                sed -i 's/=DynamicKubeletConfig=/=CSIMigration=true,CSIMigrationAzureDisk=true,CSIMigrationAzureFile=true,DelegateFSGroupToCSIDriver=true,DynamicKubeletConfig=/g' /etc/default/kubelet
+                echo "after changing kubelet flags:"
+                cat /etc/default/kubelet
+                systemctl daemon-reload
+                systemctl restart kubelet		
+              else
+                echo "No change required" && tail -f /dev/null
+              fi		  
               sleep 600000000s
           image: alpine
           imagePullPolicy: IfNotPresent
@@ -53,6 +60,6 @@ spec:
       tolerations:
         - effect: NoSchedule
           operator: Exists
-      restartPolicy: Always
+      restartPolicy: Never
   updateStrategy:
     type: OnDelete
