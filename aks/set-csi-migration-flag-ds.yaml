@@ -60,6 +60,6 @@ spec:
       tolerations:
         - effect: NoSchedule
           operator: Exists
-      restartPolicy: OnFailure
+      restartPolicy: Always
   updateStrategy:
     type: OnDelete
