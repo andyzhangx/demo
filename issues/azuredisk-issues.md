@@ -310,8 +310,13 @@ That's because azureDisk use ext4,xfs file system by default, mountOptions like 
 - [Allow volume ownership to be only set after fs formatting](https://github.com/kubernetes/kubernetes/issues/69699#issuecomment-558861917)
 
 **Solution**:
+ - option#1: set `fsGroupChangePolicy: "OnRootMismatch"` in pod `securityContext`:
 
- - option#1: Set uid in `runAsUser` and gid in `fsGroup` for pod: [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+OnRootMismatch: Only change permissions and ownership if permission and ownership of root directory does not match with expected permissions of the volume. This could help shorten the time it takes to change ownership and permission of a volume.
+
+refer to [Configure volume permission and ownership change policy for Pods](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#configure-volume-permission-and-ownership-change-policy-for-pods)
+
+ - option#2: Set uid in `runAsUser` and gid in `fsGroup` for pod: [security context for a Pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 
 e.g. Following setting will set pod run as root, make it accessible to any file:
 ```yaml
@@ -327,7 +332,7 @@ spec:
 
 > Note: Since gid & uid is mounted as 0(root) by default, if set as non-root(e.g. 1000), k8s will use chown to change all dir/files under that disk, this is a time consuming job, which would make mount device very slow, in this issue: [Timeout expired waiting for volumes to attach](https://github.com/kubernetes/kubernetes/issues/67014#issuecomment-413546283), it costs about 10 min for chown operation complete.
 
- - option#2: use `chown` in `initContainers`
+ - option#3: use `chown` in `initContainers`
 ```
 initContainers:
 - name: volume-mount
