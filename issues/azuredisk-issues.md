@@ -310,7 +310,7 @@ That's because azureDisk use ext4,xfs file system by default, mountOptions like 
 - [Allow volume ownership to be only set after fs formatting](https://github.com/kubernetes/kubernetes/issues/69699#issuecomment-558861917)
 
 **Solution**:
- - option#1: set `fsGroupChangePolicy: "OnRootMismatch"` in pod `securityContext`:
+ - option#1: set `fsGroupChangePolicy: "OnRootMismatch"` in pod `securityContext`(supported from k8s 1.20):
 
 OnRootMismatch: Only change permissions and ownership if permission and ownership of root directory does not match with expected permissions of the volume. This could help shorten the time it takes to change ownership and permission of a volume.
 
