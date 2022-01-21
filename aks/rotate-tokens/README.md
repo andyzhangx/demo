@@ -16,6 +16,7 @@ az aks rotate-cluster-tokens -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME
 ```
 
 ### reconcile control plane certs on an AKS cluster
+> This command will only rotate control plane certs, it **won't** rotate certs on agent nodes.
 ```console
 RESOURCE_GROUP_NAME=
 CLUSTER_NAME=
