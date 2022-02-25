@@ -249,7 +249,7 @@ sudo chmod a+x ./kubectl-enter
 ```
 
 ### nonroot image
-```
+```console
 COPY ./_output/blobplugin /blobplugin
 ENTRYPOINT ["/blobplugin"]
 
@@ -258,6 +258,11 @@ RUN useradd -u 10001 nonroot
 USER nonroot
 
 docker build --no-cache -t andyzhangx/ubuntu1604:nonroot -f ~/test2/Dockerfile .
+```
+
+### Get node metics
+```console
+kubectl get --raw /api/v1/nodes/aks-agentpool-21757482-vmss000000:10250/proxy/metrics
 ```
 
 #### Links
