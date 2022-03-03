@@ -38,4 +38,4 @@ EOT
 )"
 
 echo "spawning \"$POD\" on \"$NODE\""
-kubectl run --namespace "$NAMESPACE" --rm --image alpine --overrides="$OVERRIDES" --generator=run-pod/v1 -ti "$POD"
+kubectl run --namespace "$NAMESPACE" --rm --image alpine --overrides="$OVERRIDES" -ti "$POD"
