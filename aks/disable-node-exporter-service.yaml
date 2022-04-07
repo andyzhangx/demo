@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: disable-node-exporter-service
+  name: disable-node-exporter-service
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: disable-node-exporter-service
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: disable-node-exporter-service
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              service node-exporter status
+              service node-exporter stop
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: disable-node-exporter-service
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
