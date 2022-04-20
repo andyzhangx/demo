@@ -1,5 +1,5 @@
 ### check all statfs calls on fuse file system on Linux node
-
+ - run following command to collect statefs calls on fuse file systems
 ```console
 wget https://raw.githubusercontent.com/andyzhangx/demo/master/aks/fuse/statfs_count.bt
 bpftrace statfs_count.bt
@@ -10,3 +10,8 @@ Top 10 vfs_statfs process:
 @counter[14652, node-exporter]: 35
 ```
 
+### mitigation
+ - if it's `node-exporter` issue, you could run following command to disable `node-exporter` service on every agent node
+```console
+kubectl apply -f https://raw.githubusercontent.com/andyzhangx/demo/master/aks/disable-node-exporter-service.yaml
+```
