@@ -12,7 +12,7 @@ Top 10 vfs_statfs process:
 
 the above testing result shows `telegraf` has made 28 statefs calls and node-exporter has made 35 statefs calls.
 
-### mitigation
+### workaround
  - if it's `node-exporter` issue, you could run following command to disable `node-exporter` service on every agent node
 ```console
 kubectl apply -f https://raw.githubusercontent.com/andyzhangx/demo/master/aks/disable-node-exporter-service.yaml
