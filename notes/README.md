@@ -101,11 +101,17 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
 #### Docker
   - [Understanding Docker Container Exit Codes](https://medium.com/better-programming/understanding-docker-container-exit-codes-5ee79a1d58f6)
   - [Docker: Remove all images and containers](https://techoverflow.net/2013/10/22/docker-remove-all-images-and-containers/)
- ```
+```console
 docker rm $(docker ps -a -q)
 docker rmi $(docker images -q)
 docker rmi $(docker images -q) --force
  ```
+ 
+#### jupyterhub
+ ```console
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+helm install jupyterhub/jupyterhub --version 1.2.0 --generate-name
+```
  
  #### Cloud Native
   - [Future of Cloud Native](https://jimmysong.io/kubernetes-handbook/cloud-native/the-future-of-cloud-native.html)
