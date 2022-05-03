@@ -39,7 +39,7 @@ spec:
               systemctl daemon-reload
               systemctl restart kubelet			  
               sleep 600000000s
-          image: alpine
+          image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine
           imagePullPolicy: IfNotPresent
           name: disable-azurefile-csi-migration-flag
           resources:

@@ -1,0 +1,115 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: csi-blobfuse-proxy
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: csi-blobfuse-proxy
+  template:
+    metadata:
+      labels:
+        app: csi-blobfuse-proxy
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: type
+                    operator: NotIn
+                    values:
+                      - virtual-kubelet
+      initContainers:
+        - name: prepare-binaries
+          image: mcr.microsoft.com/k8s/csi/blob-csi:v1.11.0
+          command: ['sh', '-c', "cp /blobfuse-proxy/*.deb /tmp/"]
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-dir
+      containers:
+        - command:
+            - nsenter
+            - '--target'
+            - '1'
+            - '--mount'
+            - '--uts'
+            - '--ipc'
+            - '--net'
+            - '--pid'
+            - '--'
+            - sh
+            - '-c'
+            - |
+              set -xe
+              INSTALL_BLOBFUSE=${INSTALL_BLOBFUSE:-true}
+              if (( "${INSTALL_BLOBFUSE}" == "true" ))
+              then
+                dpkg -i /tmp/packages-microsoft-prod.deb && apt update && apt-get install -y blobfuse=${BLOBFUSE_VERSION}
+              fi
+              dpkg -i /tmp/blobfuse-proxy.deb
+              mkdir -p /var/lib/kubelet/plugins/blob.csi.azure.com
+              systemctl enable blobfuse-proxy
+              systemctl start blobfuse-proxy
+
+              SET_MAX_FILE_NUM=${SET_MAX_OPEN_FILE_NUM:-true}
+              if (( "${SET_MAX_OPEN_FILE_NUM}" == "true" ))
+              then
+                sysctl -w fs.file-max=${MAX_FILE_NUM}
+              fi
+
+              updateDBConfigPath="/etc/updatedb.conf"
+              DISABLE_UPDATEDB=${DISABLE_UPDATEDB:-true}
+              if (( "${DISABLE_UPDATEDB}" == "true" )) && (( test -f ${updateDBConfigPath} ))
+              then
+                echo "before changing ${updateDBConfigPath}:"
+                cat ${updateDBConfigPath}
+                sed -i 's/PRUNEPATHS="\/tmp/PRUNEPATHS="\/mnt \/var\/lib\/kubelet \/tmp/g' ${updateDBConfigPath}
+                sed -i 's/PRUNEFS="NFS/PRUNEFS="fuse blobfuse NFS/g' ${updateDBConfigPath}
+                echo "after change:"
+                cat ${updateDBConfigPath}
+              fi
+
+              # "waiting for blobfuse-proxy service to start"
+              sleep 3s
+              # tail blobfuse proxy logs
+              journalctl -u blobfuse-proxy -f
+          image: mcr.microsoft.com/k8s/csi/blob-csi:v1.11.0
+          imagePullPolicy: IfNotPresent
+          name: sysctl-install-blobfuse-proxy
+          env:
+            - name: DEBIAN_FRONTEND
+              value: "noninteractive"
+            - name: INSTALL_BLOBFUSE
+              value: "false"
+            - name: BLOBFUSE_VERSION
+              value: 1.4.3
+            - name: SET_MAX_OPEN_FILE_NUM
+              value: "true"
+            - name: MAX_FILE_NUM
+              value: "9000000"
+            - name: DISABLE_UPDATEDB
+              value: "true"
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: 10m
+              memory: 1Mi
+          securityContext:
+            privileged: true
+      hostNetwork: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      priorityClassName: system-node-critical
+      restartPolicy: Always
+      tolerations:
+        - operator: Exists
+      volumes:
+        - hostPath:
+            path: /tmp
+            type: DirectoryOrCreate
+          name: tmp-dir
