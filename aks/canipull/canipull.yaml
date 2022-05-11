@@ -1,0 +1,48 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: canipull
+spec:
+  restartPolicy: Never
+  hostNetwork: true
+  nodeSelector:
+    kubernetes.io/os: linux
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - effect: NoExecute
+      operator: Exists
+  containers:
+    - image: mcr.microsoft.com/aks/canipull:0.0.4-alpha
+      name: canipull
+      args:
+        - -v6
+        - ACRNAME.azurecr.io
+      securityContext:
+        runAsUser: 0
+      stdin: true
+      stdinOnce: true
+      tty: true
+      volumeMounts:
+        - name: azurejson
+          mountPath: /etc/kubernetes
+        - name: sslcerts
+          mountPath: /etc/ssl/certs
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - aks-agentpool-28728528-vmss000000
+  volumes:
+    - name: azurejson
+      hostPath:
+        path: /etc/kubernetes
+    - name: sslcerts
+      hostPath:
+        path: /etc/ssl/certs
+
