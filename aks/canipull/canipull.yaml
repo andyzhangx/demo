@@ -37,7 +37,7 @@ spec:
           - key: kubernetes.io/hostname
             operator: In
             values:
-            - aks-agentpool-28728528-vmss000000
+            - NODE-NAME
   volumes:
     - name: azurejson
       hostPath:
