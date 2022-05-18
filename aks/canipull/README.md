@@ -63,3 +63,8 @@ apt install docker.io -y
 docker login acrname.azurecr.io -u acrname -p password
 docker pull acrname.azurecr.io/image:version
  ```
+ 
+  - if `docker pull` image succeeded, try restart kubelet and then try pod image pull again on the node
+```console
+systemctl restart kubelet
+```
