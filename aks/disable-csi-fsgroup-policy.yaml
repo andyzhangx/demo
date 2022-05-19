@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: disable-csi-fsgroup-policy
+  name: disable-csi-fsgroup-policy
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: disable-csi-fsgroup-policy
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: disable-csi-fsgroup-policy
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              kubeletPath="/etc/default/kubelet"
+              echo "`date` before change kubelet flags:"
+              cat ${kubeletPath}
+              if !(( grep CSIVolumeFSGroupPolicy ${kubeletPath} ))
+              then
+                sed -i 's/feature-gates=CSIMigration=true/feature-gates=CSIVolumeFSGroupPolicy=false,CSIMigration=true/g' ${kubeletPath}
+                echo "`date` after changing kubelet flags:"
+                cat ${kubeletPath}
+                systemctl daemon-reload
+                systemctl restart kubelet
+              fi
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: disable-csi-fsgroup-policy
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
