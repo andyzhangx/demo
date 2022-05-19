@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: disable-azurefile-delegate-fsgroup-flag
+  name: disable-azurefile-delegate-fsgroup-flag
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: disable-azurefile-delegate-fsgroup-flag
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: disable-azurefile-delegate-fsgroup-flag
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              echo "before change kubelet flags:"
+              cat /etc/default/kubelet
+              sed -i 's/DelegateFSGroupToCSIDriver=true/DelegateFSGroupToCSIDriver=false/g' /etc/default/kubelet
+              echo "after changing kubelet flags:"
+              cat /etc/default/kubelet
+              systemctl daemon-reload
+              systemctl restart kubelet			  
+              sleep 600000000s
+          image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine
+          imagePullPolicy: IfNotPresent
+          name: disable-azurefile-delegate-fsgroup-flag
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
