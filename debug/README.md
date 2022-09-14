@@ -58,7 +58,7 @@ docker logs $id > $id.log 2>&1
 vi $id.log
 ```
 
-### Q: How to get k8s kubelet logs on linux agent?
+### Q: How to get k8s kubelet logs on linux agent node?
 Prerequisite:
 [assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use ssh client to connect to that agent. (only for debugging purpose)
 
@@ -87,7 +87,18 @@ vi $id.log
 
 
 
-### Q: How to get k8s kubelet logs on Windows agent?
+### Q: How to get k8s kubelet logs on Windows agent node?
+- option#1
+```console
+kubectl exec -it csi-azuredisk-node-win-x9md5 -n kube-system -c azuredisk -- cmd
+C:\>dir c:\k
+08/04/2022  09:16 AM        10,485,566 kubelet.err-20220804T091606.948.log
+08/06/2022  10:54 AM        10,485,592 kubelet.err-20220806T105439.978.log
+kubectl cp csi-azuredisk-node-win-x9md5:/k/kubelet.err-20220804T091606.948.log /tmp/kubelet.err-20220804T091606.948.log -n kube-system -c azuredisk
+```
+
+- option#2
+
 Prerequisite:
 [assign a public ip to the agent in azure portal](https://github.com/andyzhangx/Demo/blob/master/debug/README.md#assign-a-public-ip-to-a-vm-in-azure-portal) and use RDP to connect to that agent. (only for debugging purpose)
 
