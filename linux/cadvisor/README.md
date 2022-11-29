@@ -1,22 +1,52 @@
-## Get monitoring metrics from kubelet
-#### 1. Get node name by `kubectl get no`
-```
-NAME                        STATUS    AGE       VERSION
-k8s-agentpool1-55859097-0   Ready     29d       v1.7.9-dirty
-k8s-master-55859097-0       Ready     29d       v1.7.9
+## Get monitoring metrics on AKS node
+#### 1. Get agent node IP
+```console
+kubectl get node -o wide
 ```
 
-#### 2. Get agent metrics from kubelet
-```
-curl http://k8s-agentpool1-55859097-0:10255/stats/summary
-# curl http://127.0.0.1:10255/stats/summary
+#### 2. Get `ama-logs-rs`
+```console
+# kubectl get po -n kube-system | grep ama-logs-rs
+ama-logs-rs-644ccc4bf5-qknls          1/1     Running            0                  19d
 ```
 
-#### 3. Get metrics from cAdvisor Web UI
-Log on to node `k8s-agentpool1-55859097-0`, run following command:
+#### 3. kubectl exec into the `ama-logs-rs` pod
+```console
+kubectl exec -it ama-logs-rs-644ccc4bf5-qknls -n kube-system -- sh
 ```
-curl http://localhost:4194/containers/
+
+#### 4. Get metrics from AKS node
+```console
+# against Linux node on which containers using the `persistent-storage` PVC
+curl -s -k -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://<LinuxNodeIP>:10250/stats/summary  | grep "persistent-storage"  -B 10
+
+# against Windows node on which containers using the `persistent-storage` PVC
+curl -s -k -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://<WindowsNodeIP>:10250/stats/summary  | grep "persistent-storage"  -B 10
 ```
+
+<details>
+<summary> example output </summary>
+
+```
+   "volume": [
+    {
+     "time": "2022-11-28T09:00:35Z",
+     "availableBytes": 107171033088,
+     "capacityBytes": 107271557120,
+     "usedBytes": 100524032,
+     "inodesFree": 0,
+     "inodes": 0,
+     "inodesUsed": 0,
+     "name": "persistent-storage",
+     "pvcRef": {
+      "name": "persistent-storage-statefulset-azuredisk-win-0",
+      "namespace": "default"
+     }
+    }
+   ],
+```
+
+</details>
 
 #### Notes
 ```
