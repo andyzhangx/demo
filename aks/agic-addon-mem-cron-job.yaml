@@ -1,0 +1,82 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: agic-addon-mem-cron-job
+  labels:
+    app: agic-addon-mem-cron-job
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: agic-addon-mem-cron-job
+        spec:
+          serviceAccountName: agic-addon-mem-cron-job
+          containers:
+          - name: agic-addon-mem-cron-job
+            image: bitnami/kubectl:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - /etc/script/increase-mem.sh
+            volumeMounts:
+            - mountPath: /etc/script
+              name: configmap-volume
+          restartPolicy: OnFailure
+          volumes:
+          - name: configmap-volume
+            configMap:
+              name: agic-addon-mem-cron-job
+              defaultMode: 0777
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agic-addon-mem-cron-job
+  namespace: default
+  labels:
+    app: agic-addon-mem-cron-job
+data:
+  increase-mem.sh: |
+    kubectl patch deploy ingress-appgw-deployment \
+      -n kube-system \
+      --type json \
+      -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/resources/limits/memory", "value":"600Mi"}]'
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: agic-addon-mem-cron-job
+  namespace: default
+  labels:
+    app: agic-addon-mem-cron-job
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: agic-addon-mem-cron-job
+  labels:
+    app: agic-addon-mem-cron-job
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "patch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: agic-addon-mem-cron-job
+subjects:
+  - kind: ServiceAccount
+    name: agic-addon-mem-cron-job
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: agic-addon-mem-cron-job
+  apiGroup: rbac.authorization.k8s.io
