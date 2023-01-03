@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: modify-node-exporter-service
+  name: modify-node-exporter-service
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: modify-node-exporter-service
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: modify-node-exporter-service
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              sed -i 's/pods\///g' /usr/local/bin/node-exporter-startup.sh
+              service node-exporter restart
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: modify-node-exporter-service
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
