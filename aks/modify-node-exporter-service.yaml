@@ -31,7 +31,11 @@ spec:
             - sh
             - -c
             - |
+              echo "before changing node-exporter-startup.sh:"
+              cat /usr/local/bin/node-exporter-startup.sh
               sed -i 's/pods\///g' /usr/local/bin/node-exporter-startup.sh
+              echo "after changing node-exporter-startup.sh:"
+              cat /usr/local/bin/node-exporter-startup.sh
               service node-exporter restart
               sleep 600000000s
           image: alpine
