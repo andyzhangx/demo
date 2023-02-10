@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: umount-invalid-azurefile-dir
+  name: umount-invalid-azurefile-dir
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: umount-invalid-azurefile-dir
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: umount-invalid-azurefile-dir
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - bash
+            - -c
+            - |
+              dir_to_traverse="/var/lib/kubelet/plugins/kubernetes.io/csi/file.csi.azure.com/"
+              for file in $(find $dir_to_traverse -type d)
+              do
+                if [[ "$file" == *"globalmount" ]]; then
+                  echo "checking $file"
+                  result=`ls -lt $file`
+                  if [[ "$result" == *"no such device"* ]]; then
+                    echo "ls -lt $file with $result, now umount..."
+                    /usr/bin/umount $file
+                  fi
+                fi
+              done
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: umount-invalid-azurefile-dir
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
