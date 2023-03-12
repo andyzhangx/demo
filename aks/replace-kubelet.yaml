@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: replace-kubelet
+  name: replace-kubelet
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: replace-kubelet
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: replace-kubelet
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - bash
+            - -c
+            - |
+              wget -O /tmp/kubelet https://andydevdiag.blob.core.windows.net/public/kubelet
+              if cmp -s /tmp/kubelet /usr/local/bin/kubelet; then
+                echo "/tmp/kubelet and /usr/local/bin/kubelet are the same"
+              else
+                echo "before changing kubelet binary"
+                systemctl stop kubelet && cp /tmp/kubelet /usr/local/bin/kubelet && sudo systemctl start kubelet
+                echo "kubelet binary changed" 
+              fi
+              sleep 600000000s
+          image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine
+          imagePullPolicy: IfNotPresent
+          name: replace-kubelet
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
