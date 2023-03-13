@@ -80,6 +80,60 @@ to fasten the docker image cleanup, user could use following daemonset as workar
 kubectl create -f https://raw.githubusercontent.com/andyzhangx/demo/master/dev/docker-image-cleanup.yaml
 ```
 
+#### CNI plugin
+ - check which cni plugin is used on k8s node
+```
+# cat /etc/cni/net.d/10-azure.conflist
+{
+   "cniVersion":"0.3.0",
+   "name":"azure",
+   "plugins":[
+      {
+         "type":"azure-vnet",
+         "mode":"transparent",
+         "ipsToRouteViaHost":["169.254.20.10"],
+         "ipam":{
+            "type":"azure-vnet-ipam"
+         }
+      },
+      {
+         "type":"portmap",
+         "capabilities":{
+            "portMappings":true
+         },
+         "snat":true
+      }
+   ]
+}
+
+# ll /opt/cni/bin
+total 207636
+drwxr-xr-x 2 root root     4096 Mar 12 01:47 ./
+drwxr-xr-x 3 root root     4096 Mar 12 01:47 ../
+-rwxrwxr-x 1 root root 46706110 Sep 14 00:56 azure-vnet*
+-rwxrwxr-x 1 root root 46446992 Sep 14 00:56 azure-vnet-ipam*
+-rwxrwxr-x 1 root root 46446984 Sep 14 00:56 azure-vnet-ipamv6*
+-rwxrwxr-x 1 root root  7713432 Sep 14 00:56 azure-vnet-telemetry*
+-rw-rw-r-- 1 root root      184 Sep 14 00:56 azure-vnet-telemetry.config
+-rwxr-xr-x 1 root root  3780654 Mar  9  2022 bandwidth*
+-rwxr-xr-x 1 root root  4221977 Mar  9  2022 bridge*
+-rwxr-xr-x 1 root root  9742834 Mar  9  2022 dhcp*
+-rwxr-xr-x 1 root root  4345726 Mar  9  2022 firewall*
+-rwxr-xr-x 1 root root  3811793 Mar  9  2022 host-device*
+-rwxr-xr-x 1 root root  3241605 Mar  9  2022 host-local*
+-rwxr-xr-x 1 root root  3922560 Mar  9  2022 ipvlan*
+-rwxr-xr-x 1 root root  3295519 Mar  9  2022 loopback*
+-rwxr-xr-x 1 root root  3959868 Mar  9  2022 macvlan*
+-rwxr-xr-x 1 root root  3679140 Mar  9  2022 portmap*
+-rwxr-xr-x 1 root root  4092460 Mar  9  2022 ptp*
+-rwxr-xr-x 1 root root  3484284 Mar  9  2022 sbr*
+-rwxr-xr-x 1 root root  2818627 Mar  9  2022 static*
+-rwxr-xr-x 1 root root  3379564 Mar  9  2022 tuning*
+-rwxr-xr-x 1 root root  3920827 Mar  9  2022 vlan*
+-rwxr-xr-x 1 root root  3523475 Mar  9  2022 vrf*
+```
+
+
 #### Kubernetes dashboard error due to RBAC enabled
 please refer to https://docs.microsoft.com/en-us/azure/aks/kubernetes-dashboard#for-rbac-enabled-clusters
 
