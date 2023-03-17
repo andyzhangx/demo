@@ -10,5 +10,5 @@ spec:
   mountOptions:
     - sec=sys,vers=3,nolock
   nfs:
-    server: nfs5b41c063c1b14eb896b7.blob.core.windows.net
-    path: /nfs5b41c063c1b14eb896b7/pvc-fa4bc65b-7141-42b3-968b-6877b0e22a88
+    server: accountname.blob.core.windows.net
+    path: /accountname/container-name
