@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-tbc-anf-secret
+type: Opaque
+stringData:
+  clientID:
+  clientSecret:
+---
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: backend-tbc-anf
+spec:
+  version: 1
+  storageDriverName: azure-netapp-files
+  subscriptionID:
+  tenantID:
+  location: eastus2
+  serviceLevel: Premium
+  credentials:
+    name: backend-tbc-anf-secret
