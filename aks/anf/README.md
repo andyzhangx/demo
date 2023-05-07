@@ -1,5 +1,32 @@
 # [Azure NetApp File on AKS](https://learn.microsoft.com/en-us/azure/aks/azure-netapp-files)
 
+### Troubleshooting
+ - check whether Azure credentials are correct in backend configuration setting
+```console
+kubectl describe tridentbackendconfig.trident.netapp.io/backend-tbc-anf -n trident
+```
+
+### Get driver logs
+ - get driver pod names on the cluster
+```console
+# kubectl get po -n trident -o wide
+NAME                                  READY   STATUS    RESTARTS   AGE     IP             NODE                                NOMINATED NODE   READINESS GATES
+trident-controller-5985b99b95-qnqq5   6/6     Running   0          4h59m   10.224.0.25    aks-agentpool-20657377-vmss000003   <none>           <none>
+trident-node-linux-d2p7c              2/2     Running   0          4h59m   10.224.0.222   aks-agentpool-20657377-vmss000002   <none>           <none>
+trident-node-linux-k4f77              2/2     Running   0          4h59m   10.224.0.4     aks-agentpool-20657377-vmss000003   <none>           <none>
+trident-operator-86696fb84f-8q9mv     1/1     Running   0          4h59m   10.224.0.110   aks-agentpool-20657377-vmss000003   <none>           <none>
+```
+
+ - get driver controller logs
+```console
+# kubectl logs -n trident trident-controller-5985b99b95-qnqq5 -c trident-main > /tmp/trident-controller-5985b99b95-qnqq5
+```
+
+ - get driver node logs
+```console
+# kubectl logs -n trident trident-node-linux-d2p7c -c trident-main > /tmp/trident-node-linux-d2p7c
+```
+
 ### common issues
 #### incorrect `clientID` specified in `backend-tbc-anf-secret`
 
