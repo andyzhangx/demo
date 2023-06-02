@@ -1,3 +1,19 @@
+# deprecation: please use `az aks check-acr` command to throubleshoot ACR connection issue on specific AKS node
+```console
+# az aks check-acr -h
+
+Command
+    az aks check-acr : Validate an ACR is accessible from an AKS cluster.
+
+Arguments
+    --acr               [Required] : The FQDN of the ACR.
+    --name -n           [Required] : Name of the managed cluster.
+    --resource-group -g [Required] : Name of resource group. You can configure the default group
+                                     using `az configure --defaults group=<name>`.
+    --node-name                    : The name of a specific node to perform acr pull test checks. If
+                                     not specified, it will be checked on a random node.
+```
+
 ## throubleshoot ACR connection issue on specific AKS node
 
  - download `canipull.yaml` and edit `ACRNAME`, `NODE-NAME` in the config
