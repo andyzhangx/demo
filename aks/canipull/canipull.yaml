@@ -14,7 +14,7 @@ spec:
     - effect: NoExecute
       operator: Exists
   containers:
-    - image: mcr.microsoft.com/aks/canipull:0.0.4-alpha
+    - image: mcr.microsoft.com/aks/canipull:v0.1.0
       name: canipull
       args:
         - -v6
