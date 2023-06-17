@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: support-cifs-aes-256-gcm
+  name: support-cifs-aes-256-gcm
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: support-cifs-aes-256-gcm
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: support-cifs-aes-256-gcm
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              cifsConfPath="/etc/modprobe.d/cifs.conf:"
+              echo "`date` before change ${cifsConfPath}:"
+              cat ${cifsConfPath}
+              if !(( grep require_gcm_256 ${cifsConfPath} ))
+              then
+                echo "options cifs require_gcm_256=1" > ${cifsConfPath}
+                echo "`date` after changing ${cifsConfPath}:"
+                cat ${cifsConfPath}
+              fi
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: support-cifs-aes-256-gcm
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
