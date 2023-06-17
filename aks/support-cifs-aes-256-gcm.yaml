@@ -31,11 +31,13 @@ spec:
             - sh
             - -c
             - |
-              cifsConfPath="/etc/modprobe.d/cifs.conf:"
+              cifsConfPath="/etc/modprobe.d/cifs.conf"
               echo "`date` before change ${cifsConfPath}:"
               cat ${cifsConfPath}
               if !(( grep require_gcm_256 ${cifsConfPath} ))
               then
+                #mkdir -p /sys/module/cifs/parameters/
+                #echo 1 > /sys/module/cifs/parameters/require_gcm_256
                 echo "options cifs require_gcm_256=1" > ${cifsConfPath}
                 echo "`date` after changing ${cifsConfPath}:"
                 cat ${cifsConfPath}
