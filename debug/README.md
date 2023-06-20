@@ -32,6 +32,8 @@ start-service kubelet
 ### Q: There is no k8s component container running on master, how to do troubleshooting?
 run `journalctl -u kubelet` to get the kubelet related logs
 
+refer to [details](https://learn.microsoft.com/en-us/azure/aks/kubelet-logs)
+
 ### Q: How to get k8s component logs on master?
 run `docker ps -a` to get all containers, if there is any stopped container, using following command to get that container logs.
 `docker ps CONTAINER-ID > CONTAINER-ID.log 2>&1 &`
