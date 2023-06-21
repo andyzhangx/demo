@@ -1,8 +1,4 @@
 # containerd tips
-
- - containerd config file
-
-
  - set `image_pull_progress_timeout` in containerd config file
 
  `vi /etc/containerd/config.toml`
