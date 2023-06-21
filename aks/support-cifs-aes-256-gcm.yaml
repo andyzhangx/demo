@@ -36,8 +36,8 @@ spec:
               cat ${cifsConfPath}
               if !(( grep require_gcm_256 ${cifsConfPath} ))
               then
-                #mkdir -p /sys/module/cifs/parameters/
-                #echo 1 > /sys/module/cifs/parameters/require_gcm_256
+                modprobe cifs
+                echo 1 > /sys/module/cifs/parameters/require_gcm_256
                 echo "options cifs require_gcm_256=1" > ${cifsConfPath}
                 echo "`date` after changing ${cifsConfPath}:"
                 cat ${cifsConfPath}
