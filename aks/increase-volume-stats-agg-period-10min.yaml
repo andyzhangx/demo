@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: increase-volume-stats-agg-period
+  name: increase-volume-stats-agg-period
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: increase-volume-stats-agg-period
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: increase-volume-stats-agg-period
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              kubeletPath="/etc/default/kubelet"
+              echo "`date` before change kubelet flags:"
+              cat ${kubeletPath}
+              if !(( grep volume-stats-agg-period ${kubeletPath} ))
+              then
+                sed -i 's/KUBELET_FLAGS=/KUBELET_FLAGS=--volume-stats-agg-period=10m /g' ${kubeletPath}
+                echo "`date` after changing kubelet flags:"
+                cat ${kubeletPath}
+                systemctl daemon-reload
+                systemctl restart kubelet
+              fi
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: increase-volume-stats-agg-period
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete

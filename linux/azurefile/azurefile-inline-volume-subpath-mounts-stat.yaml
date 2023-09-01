@@ -21,10 +21,6 @@ spec:
       containers:
         - name: deployment-azurefile
           image: mcr.microsoft.com/oss/nginx/nginx:1.19.5
-          command:
-            - "/bin/bash"
-            - "-c"
-            - set -euo pipefail; while true; do echo $(date) >> /mnt/test1/outfile; stat -f /mnt/test1; stat -f /mnt/test2; stat -f /mnt/test3; stat -f /mnt/test4; stat -f /mnt/test5; done
           volumeMounts:
             - name: test1
               mountPath: /mnt/test1
@@ -39,23 +35,23 @@ spec:
       volumes:
       - name: test1
         azureFile:
-          secretName: azure-storage-account-andyaccount2-secret
+          secretName: azure-storage-account-andyaccount-secret
           shareName: abc/test1
       - name: test2
         azureFile:
-          secretName: azure-storage-account-andyaccount2-secret
+          secretName: azure-storage-account-andyaccount-secret
           shareName: abc/test2
       - name: test3
         azureFile:
-          secretName: azure-storage-account-andyaccount2-secret
+          secretName: azure-storage-account-andyaccount-secret
           shareName: abc/test3
       - name: test4
         azureFile:
-          secretName: azure-storage-account-andyaccount2-secret
+          secretName: azure-storage-account-andyaccount-secret
           shareName: abc/test4
       - name: test5
         azureFile:
-          secretName: azure-storage-account-andyaccount2-secret
+          secretName: azure-storage-account-andyaccount-secret
           shareName: abc/test5
   strategy:
     rollingUpdate:
