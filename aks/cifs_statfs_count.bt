@@ -1,17 +1,17 @@
 #!/usr/bin/env bpftrace
-#include <linux/fs.h>
+
 BEGIN
 {
-  printf("Counting vfs_statfs for cifs... Hit Ctrl-C to end.\n");
+  printf("Tracing stat syscalls... Hit Ctrl-C to end.\n");
 }
 
-kprobe:vfs_statfs /strncmp(str(((struct path *)arg0)->dentry->d_sb->s_type->name), "cifs", 4) == 0/ {
-  @counter[pid, comm] = count();
-}
-
-END
+tracepoint:syscalls:sys_enter_statfs
 {
-        printf("\nTop 10 vfs_statfs process:\n");
-        print(@counter, 10);
-        clear(@counter);
+  @count[comm] = count();
+}
+
+interval:s:60
+{
+  print(@count);
+  clear(@count);
 }
