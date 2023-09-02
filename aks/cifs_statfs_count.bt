@@ -2,16 +2,20 @@
 
 BEGIN
 {
-  printf("Tracing stat syscalls... Hit Ctrl-C to end.\n");
+	printf("Tracing cifs smb3_query_info calls... Hit Ctrl-C to end.\n");
 }
 
-tracepoint:syscalls:sys_enter_statfs
+tracepoint:cifs:smb3_query_info_compound_enter
 {
-  @count[comm] = count();
+	@count[comm] = count();
 }
 
 interval:s:60
 {
-  print(@count);
-  clear(@count);
+	print(@count);
+}
+
+END
+{
+	clear(@count);
 }
