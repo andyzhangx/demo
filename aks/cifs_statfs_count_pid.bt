@@ -1,0 +1,21 @@
+#!/usr/bin/env bpftrace
+
+BEGIN
+{
+	printf("Tracing cifs smb3_query_info calls... Hit Ctrl-C to end.\n");
+}
+
+tracepoint:cifs:smb3_query_info_compound_enter
+{
+	@count[pid, comm] = count();
+}
+
+interval:s:60
+{
+	print(@count);
+}
+
+END
+{
+	clear(@count);
+}
