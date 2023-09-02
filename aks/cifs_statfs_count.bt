@@ -7,7 +7,7 @@ BEGIN
 
 tracepoint:cifs:smb3_query_info_compound_enter
 {
-	@count[comm] = count();
+	@count[pid, comm] = count();
 }
 
 interval:s:60
