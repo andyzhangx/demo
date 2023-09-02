@@ -21,6 +21,10 @@ spec:
       containers:
         - name: deployment-azurefile
           image: mcr.microsoft.com/oss/nginx/nginx:1.19.5
+          command:
+            - "/bin/bash"
+            - "-c"
+            - set -euo pipefail; while true; do stat -f /mnt/test1; stat -f /mnt/test2; stat -f /mnt/test3; stat -f /mnt/test4; stat -f /mnt/test5; done
           volumeMounts:
             - name: test1
               mountPath: /mnt/test1
