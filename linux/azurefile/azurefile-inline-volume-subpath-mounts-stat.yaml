@@ -24,7 +24,7 @@ spec:
           command:
             - "/bin/bash"
             - "-c"
-            - set -euo pipefail; while true; do stat -f /mnt/test1; stat -f /mnt/test2; stat -f /mnt/test3; stat -f /mnt/test4; stat -f /mnt/test5; done
+            - set -euo pipefail; while true; do date; stat -f /mnt/test1; stat -f /mnt/test2; stat -f /mnt/test3; stat -f /mnt/test4; stat -f /mnt/test5; date; done
           volumeMounts:
             - name: test1
               mountPath: /mnt/test1
