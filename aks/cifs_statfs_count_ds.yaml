@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cifs-statfs-count
+  namespace: kube-system
+  labels:
+    app: cifs-statfs-count
+spec:
+  selector:
+    matchLabels:
+      app: cifs-statfs-count
+  template:
+    metadata:
+      labels:
+        app: cifs-statfs-count
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+      - command:
+        - nsenter
+        - --target
+        - "1"
+        - --mount
+        - --uts
+        - --ipc
+        - --net
+        - --pid
+        - bash
+        - -c
+        - "[ -f /sys/kernel/debug/tracing/events/cifs/smb3_query_info_compound_enter/id ] && bpftrace -e 'tracepoint:cifs:smb3_query_info_compound_enter { @count[comm] = count(); } interval:s:60 { print(@count); clear(@count); }' || echo 'nothing to do sleeping...'; sleep 1d;"
+        image: docker.io/library/alpine
+        imagePullPolicy: Always
+        name: nsenter
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        securityContext:
+          privileged: true
+      hostNetwork: true
+      hostPID: true
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        key: node.kubernetes.io/memory-pressure
+        operator: Exists
+      - effect: NoSchedule
+        key: appType
+        operator: Exists
