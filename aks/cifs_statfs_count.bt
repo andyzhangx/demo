@@ -1,21 +1,22 @@
 #!/usr/bin/env bpftrace
-
+#include <linux/fs.h>
 BEGIN
 {
-	printf("Tracing cifs smb3_query_info calls... Hit Ctrl-C to end.\n");
+   printf("Counting cifs_statfs for cifs... Hit Ctrl-C to end.\n");
 }
 
-tracepoint:cifs:smb3_query_info_compound_enter
-{
-	@count[comm] = count();
+kprobe:cifs_statfs {
+   @counter[comm] = count();
 }
 
 interval:s:60
 {
-	print(@count);
+  print(@counter);
 }
 
 END
 {
-	clear(@count);
+  printf("\nTop 10 cifs_statfs process:\n");
+  print(@counter, 10);
+  clear(@counter);
 }
