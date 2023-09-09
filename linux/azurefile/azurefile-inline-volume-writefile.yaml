@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: deployment-azurefile-write
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+      name: deployment-azurefile-write
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+        - name: deployment-azurefile-write
+          image: mcr.microsoft.com/oss/nginx/nginx:1.19.5
+          command:
+            - "/bin/bash"
+            - "-c"
+            - set -euo pipefail; while true; do echo "This is an infinite file" > "/mnt/test1/file_$(date +%s).txt"; done
+          volumeMounts:
+            - name: test1
+              mountPath: /mnt/test1
+            - name: test2
+              mountPath: /mnt/test2
+            - name: test3
+              mountPath: /mnt/test3
+            - name: test4
+              mountPath: /mnt/test4
+            - name: test5
+              mountPath: /mnt/test5
+      volumes:
+      - name: test1
+        azureFile:
+          secretName: azure-storage-account-andyaccount-secret
+          shareName: abc/test1
+      - name: test2
+        azureFile:
+          secretName: azure-storage-account-andyaccount-secret
+          shareName: abc/test2
+      - name: test3
+        azureFile:
+          secretName: azure-storage-account-andyaccount-secret
+          shareName: abc/test3
+      - name: test4
+        azureFile:
+          secretName: azure-storage-account-andyaccount-secret
+          shareName: abc/test4
+      - name: test5
+        azureFile:
+          secretName: azure-storage-account-andyaccount-secret
+          shareName: abc/test5
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+

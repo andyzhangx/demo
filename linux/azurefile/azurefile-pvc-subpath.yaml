@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: deployment-azurefile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+      name: deployment-azurefile
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+        - name: deployment-azurefile
+          image: mcr.microsoft.com/oss/nginx/nginx:1.19.5
+          volumeMounts:
+            - name: azurefile
+              mountPath: /mnt/test1
+              subPath: test1
+            - name: azurefile
+              mountPath: /mnt/test2
+              subPath: test2
+            - name: azurefile
+              mountPath: /mnt/test3
+              subPath: test3
+            - name: azurefile
+              mountPath: /mnt/test4
+              subPath: test4
+            - name: azurefile
+              mountPath: /mnt/test5
+              subPath: test5
+      volumes:
+        - name: azurefile
+          persistentVolumeClaim:
+            claimName: pvc-azurefile
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
