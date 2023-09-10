@@ -1,21 +1,19 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: cifs-statfs-count
+  name: bpftrace-ds
   namespace: kube-system
   labels:
-    app: cifs-statfs-count
+    app: bpftrace-ds
 spec:
   selector:
     matchLabels:
-      app: cifs-statfs-count
+      app: bpftrace-ds
   template:
     metadata:
       labels:
-        app: cifs-statfs-count
+        app: bpftrace-ds
     spec:
-      nodeSelector:
-        kubernetes.io/os: linux
       containers:
       - command:
         - nsenter
@@ -28,7 +26,7 @@ spec:
         - --pid
         - bash
         - -c
-        - "[ -f /sys/kernel/debug/tracing/events/cifs/smb3_query_info_compound_enter/id ] && bpftrace -e 'tracepoint:cifs:smb3_query_info_compound_enter { @count[comm] = count(); } interval:s:60 { print(@count); clear(@count); }' || echo 'nothing to do sleeping...'; sleep 1d;"
+        - "bpftrace -e 'kprobe:cifs_statfs { time(\"%H:%M:%S \"); printf(\"%-6d %-16s\\n\", pid, comm); }' || echo 'no probe, sleeping...'; sleep 10000"
         image: docker.io/library/alpine
         imagePullPolicy: Always
         name: nsenter
