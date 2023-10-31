@@ -36,7 +36,7 @@ spec:
               cat ${containerdConfigPath}
               if !(( grep image_pull_progress_timeout ${containerdConfigPath} ))
               then
-                sed -i '/sandbox_image.*/a \ \ image_pull_progress_timeout = "20m0s"' ${containerdConfigPath}
+                sed -i '/sandbox_image.*/a \ \ image_pull_progress_timeout = "5m0s"' ${containerdConfigPath}
                 echo "`date` after changing containerd config:"
                 cat ${containerdConfigPath}
                 systemctl daemon-reload
