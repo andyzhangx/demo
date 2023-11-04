@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: apt-install-1015-kernel-version
+  name: apt-install-1015-kernel-version
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: apt-install-1015-kernel-version
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: apt-install-1015-kernel-version
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              apt update && apt install linux-image-6.2.0-1015-azure -y
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: apt-install-1015-kernel-version
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
