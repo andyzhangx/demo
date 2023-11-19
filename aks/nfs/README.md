@@ -19,3 +19,9 @@ Counting nfs_statfs for nfs... Hit Ctrl-C to end.
 @counter[du]: 3
 @counter[df]: 9
 ```
+
+#### Tips
+ - use `bpftrace -l` to get all bpftrace probes:
+```console
+bpftrace -l | grep nfs | grep stat
+```
