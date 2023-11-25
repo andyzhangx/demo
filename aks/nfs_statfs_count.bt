@@ -1,0 +1,22 @@
+#!/usr/bin/env bpftrace
+#include <linux/fs.h>
+BEGIN
+{
+   printf("Counting nfs_statfs for nfs... Hit Ctrl-C to end.\n");
+}
+
+kprobe:nfs_statfs {
+   @counter[comm] = count();
+}
+
+interval:s:60
+{
+  print(@counter);
+}
+
+END
+{
+  printf("\nTop 10 nfs_statfs process:\n");
+  print(@counter, 10);
+  clear(@counter);
+}

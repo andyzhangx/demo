@@ -11,3 +11,9 @@ Counting cifs_statfs for cifs... Hit Ctrl-C to end.
 @counter[azurefileplugin]: 260
 @counter[azurefileplugin]: 705
 ```
+
+#### Tips
+ - use `bpftrace -l` to get all bpftrace probes:
+```console
+bpftrace -l | grep smb | grep stat
+```
