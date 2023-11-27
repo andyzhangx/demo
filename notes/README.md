@@ -17,7 +17,9 @@ Redhat Openshift provides a good [example](https://people.redhat.com/aweiteka/do
 ```
 At present, we allow two approaches to set PVC's ReadOnly attribute: specified by Pod.Spec.Volumes.PersistentVolumeClaim.ReadOnly, or specified by PersistentVolume.Spec.<PersistentVolumeSource>.ReadOnly, but when we try to get the ReadOnly attribute from volume.Spec for a PVC volume, we only consider volume.Spec.ReadOnly, which only comes from Pod.Spec.Volumes.PersistentVolumeClaim.ReadOnly, see AWS as an example.
 ```
-details: https://github.com/kubernetes/kubernetes/issues/61758#issuecomment-376506621
+details: 
+ - https://github.com/kubernetes/kubernetes/issues/61758#issuecomment-376506621
+ - [CSI: readOnly field is not passed to CSI NodePublish RPC call](https://github.com/kubernetes/kubernetes/issues/69843)
 
 - namespace can not be deleted
 
