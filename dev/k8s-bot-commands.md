@@ -45,3 +45,8 @@ Command | Implemented By | Who can run it | Description
 ```release-note
 Some release note with action required.
 ```
+
+## other commands
+```
+/label tide/merge-method-squash
+```
