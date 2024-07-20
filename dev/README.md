@@ -1,4 +1,16 @@
 # kubernetes developing practices
+### cherrypick PR
+```console
+git checkout cherry_pick
+export GITHUB_USER=andyzhangx
+hack/cherry_pick_pull.sh upstream/release-1.30 126174
+
+/kind bug
+/priority important-soon
+/sig storage
+/triage accepted
+```
+
 ### build kube-controller-manager image
 ```console
 cd ~/go/src/k8s.io/kubernetes/cmd/kube-controller-manager
