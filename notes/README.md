@@ -36,6 +36,17 @@ curl -k -H "Content-Type: application/json" -X PUT --data-binary @/tmp/ns.json h
 ```
  - [Namespaces stuck in Terminating state](https://github.com/Azure/AKS/issues/733#issuecomment-583714454)
 
+ - finding out right pseudo-version (vX.Y.Z-<timestamp>-<commit>) of required package
+```
+TZ=UTC 
+git --no-pager show \
+  --quiet \
+  --abbrev=12 \
+  --date='format-local:%Y%m%d%H%M%S' \
+  --format="%cd-%h"
+```
+
+
 ### Links
  - [Common Kubernetes Ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports)
  - [All Kubernetes Ports in code](https://github.com/kubernetes/kubernetes/blob/99e61466ab694b3652db2c063b9996a5d324a57a/pkg/master/ports/ports.go#L43)
