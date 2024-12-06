@@ -34,7 +34,7 @@ module test
 
 go 1.23
 
-godebug winreadlinkvolume=1
+godebug winreadlinkvolume=0
 
 godebug winsymlink=0
 ```
