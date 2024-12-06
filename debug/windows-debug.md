@@ -47,6 +47,6 @@ CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o osreadlink.exe
 
 ### kubectl cp `osreadlink.exe` to Windows node under C:\ dir
 ```
-kubectl cp osreadlink3.exe kube-system/csi-azuredisk-node-win-m2gn5:osreadlink.exe -c azuredisk
+kubectl cp osreadlink.exe kube-system/csi-azuredisk-node-win-m2gn5:osreadlink.exe -c azuredisk
 ```
 
