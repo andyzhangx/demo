@@ -31,6 +31,7 @@ spec:
             - sh
             - -c
             - |
+              set -e
               echo "downloading 80-azure-disk.rules file to /etc/udev/rules.d/80-azure-disk.rules ..."
               wget -O /etc/udev/rules.d/80-azure-disk.rules https://raw.githubusercontent.com/Azure/azure-vm-utils/refs/heads/main/udev/80-azure-disk.rules
               udevadm control --reload-rules && udevadm trigger
@@ -52,4 +53,4 @@ spec:
           operator: Exists
       restartPolicy: Always
   updateStrategy:
-    type: OnDelete
+    type: RollingUpdate
