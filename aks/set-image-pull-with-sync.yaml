@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: set-image-pull-with-sync
+  name: set-image-pull-with-sync
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: set-image-pull-with-sync
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: set-image-pull-with-sync
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              containerdConfigPath="/etc/containerd/config.toml"
+              echo "`date` before change containerd config:"
+              cat ${containerdConfigPath}
+              if !(( grep image_pull_progress_timeout ${containerdConfigPath} ))
+              then
+                sed -i '/sandbox_image.*/a \ \ image_pull_with_sync_fs = true' ${containerdConfigPath}
+                echo "`date` after changing containerd config:"
+                cat ${containerdConfigPath}
+                systemctl daemon-reload
+                systemctl restart containerd
+              fi
+              sleep 600000000s
+          image: alpine
+          imagePullPolicy: IfNotPresent
+          name: set-image-pull-with-sync
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
