@@ -51,7 +51,6 @@ git --no-pager show \
  - [Common Kubernetes Ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports)
  - [All Kubernetes Ports in code](https://github.com/kubernetes/kubernetes/blob/99e61466ab694b3652db2c063b9996a5d324a57a/pkg/master/ports/ports.go#L43)
  - [Feature Gates](https://github.com/kubernetes/kubernetes/blob/master/pkg/features/kube_features.go)
- - [New Feature Gates](https://github.com/kubernetes/kubernetes/blob/master/pkg/features/versioned_kube_features.go)
  - [Kubelet parameters](https://github.com/kubernetes/kubernetes/blob/d39214ade1d60cb7120957a4dcff13fed82c01d5/cmd/kubelet/app/options/options.go#L403)
  - [Debug Services](https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/)
  - [Improving Kubernetes reliability: quicker detection of a Node down](https://fatalfailure.wordpress.com/2016/06/10/improving-kubernetes-reliability-quicker-detection-of-a-node-down/), [Kubernetes recreate pod if node becomes offline timeout](https://stackoverflow.com/questions/53641252/kubernetes-recreate-pod-if-node-becomes-offline-timeout)
