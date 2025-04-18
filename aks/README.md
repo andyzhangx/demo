@@ -133,6 +133,18 @@ drwxr-xr-x 3 root root     4096 Mar 12 01:47 ../
 -rwxr-xr-x 1 root root  3523475 Mar  9  2022 vrf*
 ```
 
+#### aznfs - turbo mount
+```console
+curl -Ls https://packages.microsoft.com/ubuntu/24.04/prod/pool/main/a/aznfs/aznfs_2.1.0_amd64.deb > /tmp/aznfs_2.1.0_amd64.deb
+cd /
+ar p /tmp/aznfs_2.1.0_amd64.deb data.tar.gz | tar xvzf - -C / --keep-directory-symlink
+cp /opt/microsoft/aznfs/sample-turbo-config.yaml /opt/microsoft/aznfs/data/sample-turbo-config.yaml
+chmod a+x /opt/microsoft/aznfs/*.sh
+
+dpkg-deb -x /tmp/aznfs_2.1.0_amd64.deb /tmp/aznfs_2.1.0_amd64
+cd /tmp/
+tar -czvf aznfs_2.1.0_amd64.tar.gz aznfs_2.1.0_amd64
+```
 
 #### Kubernetes dashboard error due to RBAC enabled
 please refer to https://docs.microsoft.com/en-us/azure/aks/kubernetes-dashboard#for-rbac-enabled-clusters
