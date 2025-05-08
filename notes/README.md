@@ -46,6 +46,10 @@ git --no-pager show \
   --format="%cd-%h"
 ```
 
+ - get diff from a pull request
+```
+git fetch upstream pull/3039/head:3039
+```
 
 ### Links
  - [Common Kubernetes Ports](https://kubernetes.io/docs/setup/independent/install-kubeadm/#check-required-ports)
