@@ -189,3 +189,10 @@ export dalec=~/go/src/github.com/Azure/dalec-build-defs
 export lws=~/go/src/sigs.k8s.io/lws
 alias k="kubectl"
 ```
+
+#### git command
+  - fetch a specific pull request
+```
+git fetch upstream pull/3141/head:3141
+git checkout 3141
+```
