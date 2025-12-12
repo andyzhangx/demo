@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    component: install-aznfs
+  name: install-aznfs
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      component: install-aznfs
+      tier: node
+  template:
+    metadata:
+      labels:
+        component: install-aznfs
+        tier: node
+    spec:
+      containers:
+        - command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - sh
+            - -c
+            - |
+              echo "`date` begin to install aznfs..."
+              apt-get update && apt-get install -y aznfs
+              echo "`date` install aznfs successfully..."
+              sleep 600000000s
+          image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine
+          imagePullPolicy: IfNotPresent
+          name: install-aznfs
+          resources:
+            requests:
+              cpu: 10m
+          securityContext:
+            privileged: true
+      hostPID: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      restartPolicy: Always
+  updateStrategy:
+    type: OnDelete
