@@ -32,10 +32,10 @@ spec:
             - -c
             - |
               echo "`date` begin to install aznfs..."
-              apt-get update && apt-get install -y aznfs
+              apt-get update && env AZNFS_NONINTERACTIVE_INSTALL=1 apt-get install -y aznfs
               echo "`date` install aznfs successfully..."
               sleep 600000000s
-          image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine
+          image: alpine
           imagePullPolicy: IfNotPresent
           name: install-aznfs
           resources:
