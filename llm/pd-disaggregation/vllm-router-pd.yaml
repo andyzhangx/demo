@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-router-pd
+  labels:
+    app: vllm-router
+    mode: pd-disaggregation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-router
+      mode: pd-disaggregation
+  template:
+    metadata:
+      labels:
+        app: vllm-router
+        mode: pd-disaggregation
+    spec:
+      containers:
+      - name: router
+        image: andyzhangx/router:v0.1.12
+        command:
+          - vllm-router
+          - --pd-disaggregation
+          - --prefill
+          - http://qwen306b-0.qwen306b-headless.default.svc.cluster.local:5000
+          - --decode
+          - http://qwen306b-1.qwen306b-headless.default.svc.cluster.local:5000
+          - --host
+          - "0.0.0.0"
+          - --port
+          - "10001"
+          - --log-level
+          - info
+        ports:
+        - containerPort: 10001
+          name: router
+          protocol: TCP
+        - containerPort: 29000
+          name: metrics
+          protocol: TCP
+        resources:
+          requests:
+            cpu: "1"
+            memory: "4Gi"
+          limits:
+            cpu: "4"
+            memory: "8Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 10001
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 10001
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-router-pd
+  labels:
+    app: vllm-router
+    mode: pd-disaggregation
+spec:
+  selector:
+    app: vllm-router
+    mode: pd-disaggregation
+  ports:
+  - name: router
+    port: 10001
+    targetPort: 10001
+    protocol: TCP
+  - name: metrics
+    port: 29000
+    targetPort: 29000
+    protocol: TCP
+  type: LoadBalancer
