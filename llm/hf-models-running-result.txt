@@ -1,0 +1,205 @@
+//Text Generation models
+#ApertusForCausalLM swiss-ai/Apertus-8B-2509
+#AquilaForCausalLM BAAI/Aquila-7B
+#ArceeForCausalLM arcee-ai/AFM-4.5B-Base
+ArcticForCausalLM Snowflake/snowflake-arctic-instruct
+#BaiChuanForCausalLM baichuan-inc/Baichuan-7B
+#BailingMoeForCausalLM inclusionAI/Ling-lite-1.5
+#BailingMoeV2ForCausalLM inclusionAI/Ling-mini-2.0
+#BambaForCausalLM ibm-ai-platform/Bamba-9B-fp8
+#BloomForCausalLM bigscience/bloom
+#ChatGLMModel zai-org/chatglm2-6b
+#CohereForCausalLM CohereLabs/c4ai-command-r-v01
+//DbrxForCausalLM databricks/dbrx-base // repo not found
+#DeciLMForCausalLM nvidia/Llama-3_3-Nemotron-Super-49B-v1
+#DeepseekForCausalLM deepseek-ai/deepseek-llm-7b-chat
+DeepseekV2ForCausalLM deepseek-ai/DeepSeek-V2
+DeepseekV3ForCausalLM deepseek-ai/DeepSeek-V3.1
+DeepseekV32ForCausalLM deepseek-ai/DeepSeek-V3.2
+#Dots1ForCausalLM rednote-hilab/dots.llm1.base
+#DotsOCRForCausalLM rednote-hilab/dots.ocr
+#Ernie4_5ForCausalLM baidu/ERNIE-4.5-0.3B-PT
+#Ernie4_5_MoeForCausalLM baidu/ERNIE-4.5-21B-A3B-PT
+#ExaoneForCausalLM LGAI-EXAONE/EXAONE-3.0-7.8B-Instruct
+#Exaone4ForCausalLM LGAI-EXAONE/EXAONE-4.0-32B
+//Fairseq2LlamaForCausalLM mgleize/fairseq2-dummy-Llama-3.2-1B // failed to get model preset: no .safetensors or .bin files found
+#GemmaForCausalLM google/gemma-1.1-2b-it
+#Gemma2ForCausalLM google/gemma-2-9b
+#Gemma3ForCausalLM google/gemma-3-1b-it
+#Gemma3nForCausalLM google/gemma-3n-E2B-it
+#GlmForCausalLM zai-org/glm-4-9b-chat-hf
+#Glm4ForCausalLM zai-org/GLM-4-32B-0414
+Glm4MoeForCausalLM zai-org/GLM-4.5
+#GPT2LMHeadModel openai-community/gpt2
+#GPTBigCodeForCausalLM bigcode/starcoder
+#GPTJForCausalLM EleutherAI/gpt-j-6b
+#GPTNeoXForCausalLM EleutherAI/gpt-neox-20b
+#GptOssForCausalLM openai/gpt-oss-20b
+#GptOssForCausalLM openai/gpt-oss-safeguard-20b
+#GraniteForCausalLM ibm-granite/granite-3.0-2b-base
+#GraniteMoeForCausalLM ibm-granite/granite-3.0-1b-a400m-base
+#GraniteMoeHybridForCausalLM ibm-granite/granite-4.0-h-tiny
+#GraniteMoeSharedForCausalLM ibm-research/moe-7b-1b-active-shared-experts
+#GritLM parasail-ai/GritLM-7B-vllm
+Grok1ModelForCausalLM hpcai-tech/grok-1
+#HunYuanDenseV1ForCausalLM tencent/Hunyuan-7B-Instruct
+#HunYuanMoEV1ForCausalLM tencent/Hunyuan-A13B-Instruct
+#HCXVisionForCausalLM naver-hyperclovax/HyperCLOVAX-SEED-Vision-Instruct-3B
+#InternLMForCausalLM internlm/internlm-7b
+#InternLM2ForCausalLM internlm/internlm2-7b
+#InternLM3ForCausalLM internlm/internlm3-8b-instruct
+#JAISLMHeadModel inceptionai/jais-13b
+#JambaForCausalLM ai21labs/AI21-Jamba-1.5-Mini // disable cpu cache offload
+KimiLinearForCausalLM moonshotai/Kimi-Linear-48B-A3B-Instruct
+#Lfm2ForCausalLM LiquidAI/LFM2-350M
+#Lfm2MoeForCausalLM LiquidAI/LFM2-8B-A1B
+#LlamaForCausalLM meta-llama/Meta-Llama-3-70B-Instruct
+#MambaForCausalLM state-spaces/mamba-130m-hf
+//Mamba2ForCausalLM mistralai/Mamba-Codestral-7B-v0.1  // mamba_ssm install failed
+#MiMoForCausalLM XiaomiMiMo/MiMo-7B-RL
+MiniCPMForCausalLM openbmb/MiniCPM-S-1B-sft
+#MiniCPM3ForCausalLM openbmb/MiniCPM3-4B
+#MiniMaxM2ForCausalLM MiniMaxAI/MiniMax-M2
+#MistralForCausalLM mistralai/Ministral-3-3B-Instruct-2512
+MistralLarge3ForCausalLM mistralai/Mistral-Large-3-675B-Base-2512  // no GPU quota
+#MixtralForCausalLM mistralai/Mixtral-8x7B-v0.1
+//MPTForCausalLM mosaicml/mpt-7b // repo not found
+#NemotronForCausalLM nvidia/Minitron-8B-Base
+#NemotronHForCausalLM nvidia/Nemotron-H-8B-Base-8K
+#OLMoForCausalLM allenai/OLMo-1B-hf
+#OLMo2ForCausalLM allenai/OLMo-2-0425-1B
+#OLMo3ForCausalLM allenai/Olmo-3-7B-Instruct
+#OLMoEForCausalLM allenai/OLMoE-1B-7B-0924
+#OPTForCausalLM facebook/opt-66b
+#OrionForCausalLM OrionStarAI/Orion-14B-Base
+#OuroForCausalLM ByteDance/Ouro-1.4B
+#PanguEmbeddedForCausalLM FreedomIntelligence/openPangu-Embedded-7B-V1.1
+//PanguUltraMoEForCausalLM FreedomIntelligence/openPangu-Ultra-MoE-718B-V1.1 // no model file
+#PhiForCausalLM microsoft/phi-1_5
+#Phi3ForCausalLM microsoft/Phi-4-mini-instruct
+#PhiMoEForCausalLM microsoft/Phi-3.5-MoE-instruct
+#PersimmonForCausalLM adept/persimmon-8b-base
+#Plamo2ForCausalLM pfnet/plamo-2-1b
+#Plamo3ForCausalLM pfnet/plamo-3-nict-2b-base
+//QWenLMHeadModel Qwen/Qwen-7B-Chat  // not compatible with vLLM v0.12.0
+#Qwen2ForCausalLM Qwen/Qwen2-7B
+#Qwen2MoeForCausalLM Qwen/Qwen1.5-MoE-A2.7B
+#Qwen3ForCausalLM Qwen/Qwen3-8B
+#Qwen3MoeForCausalLM Qwen/Qwen3-30B-A3B
+#Qwen3NextForCausalLM Qwen/Qwen3-Next-80B-A3B-Instruct
+#SeedOssForCausalLM ByteDance-Seed/Seed-OSS-36B-Instruct
+#StableLmForCausalLM stabilityai/stablelm-3b-4e1t
+#Starcoder2ForCausalLM bigcode/starcoder2-3b
+#SolarForCausalLM upstage/solar-pro-preview-instruct
+#TeleChat2ForCausalLM Tele-AI/TeleChat2-3B
+#TeleFLMForCausalLM CofeAI/FLM-2-52B-Instruct-2407
+XverseForCausalLM xverse/XVERSE-7B-Chat
+MiniMaxM1ForCausalLM MiniMaxAI/MiniMax-M1-40k
+MiniMaxText01ForCausalLM MiniMaxAI/MiniMax-Text-01
+#Zamba2ForCausalLM Zyphra/Zamba2-7B-instruct
+LongcatFlashForCausalLM meituan-longcat/LongCat-Flash-Chat-FP8
+//Embedding models
+#BertModel BAAI/bge-base-en-v1.5
+BertForMaskedLM naver/splade-v3
+#Gemma2Model BAAI/bge-multilingual-gemma2
+#Gemma3TextModel google/embeddinggemma-300m
+#GritLM parasail-ai/GritLM-7B-vllm
+#GteModel Snowflake/snowflake-arctic-embed-m-v2.0
+//GteNewModel Alibaba-NLP/gte-multilingual-base  // model not supported by vllm 0.12.0
+#ModernBertModel Alibaba-NLP/gte-modernbert-base
+#NomicBertModel nomic-ai/nomic-embed-text-v1
+#MistralModel intfloat/e5-mistral-7b-instruct
+#Qwen2ForCausalLM Alibaba-NLP/gte-Qwen2-7B-instruct
+#RobertaForMaskedLM sentence-transformers/all-roberta-large-v1
+//Cross-encoder / Reranker models
+#BertForSequenceClassification cross-encoder/ms-marco-MiniLM-L-6-v2		
+#GemmaForSequenceClassification BAAI/bge-reranker-v2-gemma
+//GteNewForSequenceClassification Alibaba-NLP/gte-multilingual-reranker-base // model not supported by vllm 0.12.0
+#Qwen2ForSequenceClassification mixedbread-ai/mxbai-rerank-base-v2
+#Qwen3ForSequenceClassification tomaarsen/Qwen3-Reranker-0.6B-seq-cls
+#RobertaForSequenceClassification cross-encoder/quora-roberta-base	
+#XLMRobertaForSequenceClassification BAAI/bge-reranker-v2-m3
+//Reward models
+#InternLM2ForRewardModel internlm/internlm2-1_8b-reward
+#LlamaForCausalLM peiyi9979/math-shepherd-mistral-7b-prm
+#Qwen2ForRewardModel Qwen/Qwen2.5-Math-RM-72B
+#Qwen2ForProcessRewardModel Qwen/Qwen2.5-Math-PRM-7B
+//Token Classification models
+#BertForTokenClassification boltuix/NeuroBERT-NER	
+#ModernBertForTokenClassification disham993/electrical-ner-ModernBERT-base
+//Generative models
+#AriaForConditionalGeneration rhymes-ai/Aria
+#AyaVisionForConditionalGeneration CohereForAI/aya-vision-8b
+#BeeForConditionalGeneration Open-Bee/Bee-8B-RL
+#Blip2ForConditionalGeneration Salesforce/blip2-opt-2.7b
+#ChameleonForConditionalGeneration facebook/chameleon-7b
+Cohere2VisionForConditionalGeneration CohereLabs/command-a-vision-07-2025
+//DeepseekVLV2ForCausalLM deepseek-ai/deepseek-vl2-tiny  // model arch missing
+#DeepseekOCRForCausalLM deepseek-ai/DeepSeek-OCR
+#Ernie4_5_VLMoeForConditionalGeneration baidu/ERNIE-4.5-VL-28B-A3B-PT
+#FuyuForCausalLM adept/fuyu-8b
+#Gemma3ForConditionalGeneration google/gemma-3-4b-it
+#GLM4VForCausalLM zai-org/glm-4v-9b // --hf-overrides='{"architectures":["GLM4VForCausalLM"]}'
+#Glm4vForConditionalGeneration zai-org/GLM-4.1V-9B-Thinking
+Glm4vMoeForConditionalGeneration zai-org/GLM-4.5V
+#GraniteSpeechForConditionalGeneration ibm-granite/granite-speech-3.3-8b
+#H2OVLChatModel h2oai/h2ovl-mississippi-800m
+#HunYuanVLForConditionalGeneration tencent/HunyuanOCR
+#Idefics3ForConditionalGeneration HuggingFaceM4/Idefics3-8B-Llama3
+#InternS1ForConditionalGeneration internlm/Intern-S1-mini
+#InternVLChatModel OpenGVLab/InternVideo2_5_Chat_8B
+#InternVLForConditionalGeneration OpenGVLab/InternVL3-1B-hf
+#KeyeForConditionalGeneration Kwai-Keye/Keye-VL-8B-Preview
+#KeyeVL1_5ForConditionalGeneration Kwai-Keye/Keye-VL-1_5-8B
+#KimiVLForConditionalGeneration moonshotai/Kimi-VL-A3B-Instruct
+#LightOnOCRForConditionalGeneration lightonai/LightOnOCR-2-1B
+#Llama4ForConditionalGeneration meta-llama/Llama-4-Scout-17B-16E-Instruct
+//Llama_Nemotron_Nano_VL nvidia/Llama-3.1-Nemotron-Nano-VL-8B-V1 // open_clip install failed
+#LlavaForConditionalGeneration llava-hf/llava-1.5-7b-hf
+#LlavaNextForConditionalGeneration llava-hf/llava-v1.6-mistral-7b-hf
+#LlavaNextVideoForConditionalGeneration llava-hf/LLaVA-NeXT-Video-7B-hf
+#LlavaOnevisionForConditionalGeneration llava-hf/llava-onevision-qwen2-0.5b-ov-hf
+#MiDashengLMModel mispeech/midashenglm-7b
+#MiniCPMO openbmb/MiniCPM-o-2_6
+//MiniCPMV HwwwH/MiniCPM-V-2 // type object 'MiniCPMV2_0' has no attribute 'packed_modules_mapping'
+MiniMaxVL01ForConditionalGeneration MiniMaxAI/MiniMax-VL-01
+#Mistral3ForConditionalGeneration mistralai/Mistral-Small-3.1-24B-Instruct-2503
+#MolmoForCausalLM allenai/Molmo-7B-D-0924
+#NVLM_D_Model nvidia/NVLM-D-72B
+#OpenCUAForConditionalGeneration xlangai/OpenCUA-7B
+#Ovis AIDC-AI/Ovis2-1B
+#Ovis2_5 AIDC-AI/Ovis2.5-9B
+#PaddleOCRVLForConditionalGeneration PaddlePaddle/PaddleOCR-VL
+#PaliGemmaForConditionalGeneration google/paligemma-3b-pt-224
+#Phi3VForCausalLM microsoft/Phi-3-vision-128k-instruct
+#Phi4MMForCausalLM microsoft/Phi-4-multimodal-instruct
+#Phi4MultimodalForCausalLM microsoft/Phi-4-multimodal-instruct
+#PixtralForConditionalGeneration mistralai/Ministral-3-3B-Instruct-2512
+QwenVLForConditionalGeneration Qwen/Qwen-VL
+#Qwen2AudioForConditionalGeneration Qwen/Qwen2-Audio-7B-Instruct
+#Qwen2VLForConditionalGeneration Qwen/Qwen2-VL-7B-Instruct
+#Qwen2_5_VLForConditionalGeneration Qwen/Qwen2.5-VL-3B-Instruct
+#Qwen2_5OmniThinkerForConditionalGeneration Qwen/Qwen2.5-Omni-3B
+#Qwen3VLForConditionalGeneration Qwen/Qwen3-VL-4B-Instruct
+#Qwen3VLMoeForConditionalGeneration Qwen/Qwen3-VL-30B-A3B-Instruct
+#Qwen3OmniMoeThinkerForConditionalGeneration Qwen/Qwen3-Omni-30B-A3B-Instruct
+#RForConditionalGeneration YannQi/R-4B
+#SkyworkR1VChatModel Skywork/Skywork-R1V-38B
+#SmolVLMForConditionalGeneration HuggingFaceTB/SmolVLM2-2.2B-Instruct
+Step3VLForConditionalGeneration stepfun-ai/step3 // OOM
+#TarsierForConditionalGeneration omni-research/Tarsier-7b
+//Tarsier2ForConditionalGeneration omni-research/Tarsier2-Recap-7b // unsupported on vllm v0.12.0
+#UltravoxModel fixie-ai/ultravox-v0_5-llama-3_2-1b
+#Emu3ForConditionalGeneration BAAI/Emu3-Chat-hf
+//Transcription models
+#WhisperForConditionalGeneration openai/whisper-small
+#VoxtralForConditionalGeneration mistralai/Voxtral-Mini-3B-2507
+#Gemma3nForConditionalGeneration google/gemma-3n-E2B-it
+#GraniteSpeechForConditionalGeneration ibm-granite/granite-speech-3.3-2b
+//Pooling models
+#CLIPModel openai/clip-vit-base-patch32
+#LlavaNextForConditionalGenerationC royokong/e5-v
+#Phi3VForCausalLMC TIGER-Lab/VLM2Vec-Full
+#SiglipModel google/siglip-base-patch16-224
+//Cross-encoder/Reranker models
+#JinaVLForSequenceClassification jinaai/jina-reranker-m0
