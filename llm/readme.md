@@ -3,7 +3,7 @@
  - multimodal generation support
    - https://github.com/vllm-project/vllm-omni
    - https://github.com/ai-dynamo/dynamo/blob/main/docs/backends/vllm/vllm-omni.md
-
+ - Quantization support
 
 ### issues
  - how to disable think during vllm startup for https://huggingface.co/tencent/Hunyuan-A13B-Instruct?
