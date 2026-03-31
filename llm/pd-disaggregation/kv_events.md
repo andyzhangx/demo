@@ -65,3 +65,35 @@ vLLM Workers ──ZMQ PUB──→ KVEventPool ──→ KVBlockIndex (hash →
 ```
 
 **In short: KV events = workers tell the router "what I have cached", and the router uses this to send similar requests to the same worker, maximizing KV cache hit rate.**
+
+## Understanding `remote_block_ids` in KV Transfer
+
+When a prefill request completes, the response includes `kv_transfer_params` with a `remote_block_ids` field:
+
+```json
+"kv_transfer_params": {
+  "do_remote_prefill": true,
+  "remote_block_ids": [3],
+  "remote_engine_id": "90416045-3658-4d9b-b989-a6b4809ad9ff",
+  "remote_host": "10.244.8.146",
+  "remote_port": 5600
+}
+```
+
+### What are `remote_block_ids`?
+
+vLLM uses [paged attention](https://arxiv.org/abs/2309.06180) to manage GPU memory — KV cache is split into fixed-size **blocks** (default: 16 tokens per block). `remote_block_ids` are the **GPU memory block numbers** on the prefill worker where this request's KV cache is stored.
+
+In the example above, `remote_block_ids: [3]` means the prompt "what is kubernetes?" (~5-6 tokens) fits in a single block (#3) on the prefill worker's GPU.
+
+### How the Decode Worker Uses Them
+
+The decode worker receives these block IDs and uses **NIXL** (a high-performance network transport, often RDMA-capable) to pull the KV cache data directly from the prefill worker's GPU memory at those specific block locations — no recomputation needed.
+
+### Block Count Scales with Prompt Length
+
+| Prompt Length | Approx Blocks (16 tokens/block) | Example `remote_block_ids` |
+|---|---|---|
+| ~16 tokens | 1 | `[3]` |
+| ~200 tokens | ~13 | `[3, 7, 12, 15, 22, ...]` |
+| ~2000 tokens | ~125 | `[3, 7, 12, 45, 67, ...]` (125 entries) |
