@@ -43,3 +43,37 @@
 ## 参考
 
 - [vllm-router load balancing docs](https://github.com/vllm-project/router/tree/main/docs/load_balancing)
+
+---
+
+## `power_of_two` — Power of Two Choices 算法
+
+**Power of Two Choices** 是一个经典的负载均衡算法，源自论文 *"The Power of Two Choices in Randomized Load Balancing"* (1996, Mitzenmacher)。
+
+### 原理
+
+每次路由时：
+1. **随机挑 2 个** healthy worker
+2. 查询这两个的当前负载（pending requests）
+3. **选负载低的那个**
+
+### 为什么不直接选全局最空闲的？
+
+| 策略 | 问题 |
+|---|---|
+| Round Robin | 完全不看负载，请求处理时间不均时会堆积 |
+| 最短队列（全局） | 需要实时查所有 worker 状态，高并发下有 **thundering herd** 问题 — 大量请求同时涌向同一个"最空闲"节点 |
+| **Power of Two** | 只查 2 个，开销极低，但数学上已经能 **指数级降低最大负载** |
+
+### 数学直觉
+
+- 纯随机：最繁忙 worker 的负载是 O(log n / log log n)
+- 随机选 2 个取较优：最繁忙 worker 的负载降到 O(log log n)
+
+仅仅多看一个选择，效果就从 log n 级别降到了 log log n 级别 — 这就是 "two choices" 的威力。选 3 个、4 个的边际收益则很小。
+
+### 适用场景
+
+- 请求处理时间差异大（比如短 prompt 和长 prompt 混合）
+- 想要负载感知但不想维护全局状态
+- Worker 数量较多时效果尤其好
