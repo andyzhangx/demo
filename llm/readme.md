@@ -4,6 +4,7 @@
    - https://github.com/vllm-project/vllm-omni
    - https://github.com/ai-dynamo/dynamo/blob/main/docs/backends/vllm/vllm-omni.md
  - Quantization support
+ - https://vllm.ai/blog/kv-offloading-connector
 
 ### issues
  - how to disable think during vllm startup for https://huggingface.co/tencent/Hunyuan-A13B-Instruct?
