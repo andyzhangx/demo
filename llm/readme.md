@@ -1,3 +1,6 @@
+## Knowledge
+ - [vLLM Router: A High-Performance and Prefill/Decode Aware Load Balancer for Large-scale Serving](https://vllm.ai/blog/vllm-router-release)
+
 ## Backlog
 
  - multimodal generation support
