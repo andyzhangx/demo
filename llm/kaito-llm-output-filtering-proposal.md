@@ -95,6 +95,62 @@ This allows users to enable/disable scanners and customize rules through the Con
 
 For streaming responses (`stream=true`), the scanner needs to operate on accumulated chunks or use a sliding window approach. LLM Guard supports scanning partial text, but latency tradeoffs should be documented.
 
+## Configuration Explained
+
+```yaml
+guardrails:
+  enabled: true                    # Master switch — set to true to enable output filtering
+  output_scanners:                 # List of scanners to apply (executed in order)
+
+    - name: MaliciousURLs          # Scanner 1: Malicious URL detection
+      threshold: 0.5               # Confidence threshold (0~1). Scores >= 0.5 are flagged as malicious.
+                                   # Lower = stricter (more URLs blocked), higher = more permissive.
+
+    - name: Regex                  # Scanner 2: Custom regex pattern matching
+      patterns:
+        - "\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b"
+          # Matches raw IP addresses like 192.168.1.1 or 10.0.0.5
+          # \\b = word boundary (prevents matching version strings like "v1.2.3.4xxx")
+          # \\d{1,3} = 1-3 digit number
+          # Any match triggers a block.
+
+    - name: BanTopics              # Scanner 3: Topic-based content blocking
+      topics: ["violence"]         # Block responses discussing "violence"
+                                   # Extensible: ["violence", "drugs", "weapons"]
+```
+
+### Execution Flow
+
+```
+vLLM generates response
+  │
+  ├─ Scanner 1: MaliciousURLs → finds http://evil.com       → ❌ BLOCKED
+  ├─ Scanner 2: Regex         → finds 192.168.1.100         → ❌ BLOCKED
+  ├─ Scanner 3: BanTopics     → detects violent content      → ❌ BLOCKED
+  │
+  └─ All scanners pass                                       → ✅ Response returned to user
+```
+
+### MaliciousURLs Threshold Behavior
+
+| Threshold | Effect |
+|-----------|--------|
+| `0.1` | Very strict — almost all URLs are blocked |
+| `0.5` | Balanced — reasonable tradeoff between false positives and missed detections |
+| `0.9` | Very permissive — only highly suspicious URLs are blocked |
+
+The MaliciousURLs scanner scores URLs across multiple dimensions (domain reputation, path patterns, known malicious domain lists, etc.). URLs scoring at or above the threshold are blocked.
+
+### Examples
+
+| LLM Output | Triggered Scanner | Result |
+|------------|-------------------|--------|
+| `"Visit http://malware-site.xyz/payload"` | MaliciousURLs | ❌ Blocked |
+| `"Server address is 10.0.0.5"` | Regex (IP match) | ❌ Blocked |
+| `"Here's how to build a weapon..."` | BanTopics (violence) | ❌ Blocked |
+| `"Python version is 3.12"` | None (`3.12` has only 2 segments, doesn't match IP regex) | ✅ Passed |
+| `"See docs at https://docs.python.org"` | MaliciousURLs (legitimate domain, score < 0.5) | ✅ Passed |
+
 ## References
 
 - Issue: https://github.com/kaito-project/kaito/issues/1310
