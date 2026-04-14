@@ -4,10 +4,10 @@
 
 - **Dynamo**:
    - https://github.com/ai-dynamo/dynamo
-   - architecture: https://github.com/ai-dynamo/dynamo/blob/main/docs/design-docs/architecture.md
+   - **architecture**: https://github.com/ai-dynamo/dynamo/blob/main/docs/design-docs/architecture.md
 - **llm-d**:
    - https://github.com/llm-d/llm-d
-   - architecture: https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/architecture.md
+   - **architecture**: https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/architecture.md
 
 ## 整体对比
 
