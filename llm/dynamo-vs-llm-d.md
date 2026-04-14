@@ -2,7 +2,9 @@
 
 两者都是 LLM 推理的**编排层（orchestration layer）**，位于推理引擎（vLLM/SGLang/TRT-LLM）之上，解决多 GPU/多节点分布式服务问题。核心能力高度重叠，但设计哲学和实现路径不同。
 
-- **Dynamo**: https://github.com/ai-dynamo/dynamo
+- **Dynamo**:
+   - https://github.com/ai-dynamo/dynamo
+   - architecture: https://github.com/ai-dynamo/dynamo/blob/main/docs/design-docs/architecture.md
 - **llm-d**:
    - https://github.com/llm-d/llm-d
    - architecture: https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/architecture.md
