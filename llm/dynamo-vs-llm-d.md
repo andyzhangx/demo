@@ -177,6 +177,43 @@ KAITO Workspace CRD（扩展 P/D 模式声明）
 - llm-d EPP 作为路由层，通过 InferencePool CRD 对接
 - llm-d sidecar 注入到 decode Pod 处理 KV 传输
 
-### 何时考虑 Dynamo
+### Dynamo 深入评估后的额外发现
 
-如果 KAITO 未来需要**极致性能优化**（实时事件驱动的 KV cache 路由、全局 RadixTree、ModelExpress 冷启动加速），且目标用户限定为纯 NVIDIA GPU 集群，Dynamo 的性能天花板更高——但代价是放弃 K8s 原生的简洁性和硬件中立性。
+经过实际 walkthrough，Dynamo 暴露出更多实际问题：
+
+#### 1. Dynamo 本质是 NVIDIA 全栈软件的展示平台
+
+Dynamo 不只是一个推理编排层，而是 NVIDIA 全栈 OSS 软件的集成展示平台。类比 Python Web 框架：**Dynamo 像 Django（全家桶，重量级），llm-d 像 Flask（轻量、灵活、易集成）**。对于 KAITO 这样需要嵌入现有 K8s 平台的项目，轻量集成远优于引入全栈框架。
+
+#### 2. Runtime Wrapper 复杂度超预期
+
+Dynamo 的 runtime wrapper 不只做推理转发，还内置了 reasoning 和 tool parsing 逻辑，这意味着：
+- **KAITO 现有 preset 模型会失败**——Dynamo wrapper 对模型输入输出有自己的假设
+- **版本依赖链加长**：每次新模型发布，需要等 ① vLLM 发版 ② Dynamo 发版，才能支持
+- Wrapper 用 **Python + Rust** 混合编写，调试和维护难度大
+
+#### 3. Dynamo 的两种部署模式分析
+
+**传统部署模式（Central Router）**：
+- Frontend 作为中心路由，转发请求到 Worker Pod
+- 依赖 **NATS + etcd** 作为基础设施
+
+**EPP 部署模式**：
+- Dynamo EPP 仅支持带 KV-cache aware 的 P/D 分离
+- Frontend 作为 sidecar 转发 prompt 请求到 prefill/decode 实例
+- 依赖 **NATS** 获取 KV-events 信息
+
+**关键结论**：Dynamo EPP 模式的功能与 llm-d 几乎相同，但额外依赖 NATS 做 KV 事件传输。而且 EPP 用 **Go + Rust** 混合编写，维护和排障困难。相比之下，llm-d 的 EPP 是纯 Go 实现，与 K8s 生态工具链一致，可维护性更好。
+
+### 最终结论
+
+综合架构评估和实际 walkthrough，**llm-d 是 KAITO 实现 P/D 分离的明确选择**：
+
+| 维度 | Dynamo | llm-d |
+|---|---|---|
+| 集成复杂度 | 高（全栈框架，NATS/etcd 依赖） | 低（K8s 原生，无额外依赖） |
+| 版本依赖链 | vLLM → Dynamo → KAITO（三级） | vLLM → KAITO（两级） |
+| 代码可维护性 | Python + Rust + Go 混合 | 纯 Go（EPP）+ Python（vLLM） |
+| P/D 分离能力 | EPP 模式 ≈ llm-d，但多一层 NATS | 原生支持，sidecar 模式 |
+| KAITO preset 兼容 | 需适配 Dynamo wrapper | 直接兼容 |
+| 排障难度 | 高（多语言混合，NVIDIA 私有组件） | 低（标准 K8s 工具链） |
