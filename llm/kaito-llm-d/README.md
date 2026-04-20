@@ -255,6 +255,98 @@ kubectl get pod -l inferencepool=phi-4-mini-inferencepool-epp \
 # Expected: ghcr.io/llm-d/llm-d-inference-scheduler:v0.7.1
 ```
 
+## BBR and EPP: How They Work Together
+
+```
+                          Client Request
+                    POST /v1/chat/completions
+                    {"model": "phi-4-mini-instruct", ...}
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │      Gateway      │
+                    │  (Envoy / Istio)  │
+                    └────────┬──────────┘
+                             │
+                   ┌─────────▼──────────┐
+                   │   BBR (ext-proc)   │   ◄── Step 1: Body-Based Routing
+                   │                    │       Reads request body, extracts
+                   │ Extracts "model"   │       model name, injects header:
+                   │ from JSON body     │       X-Gateway-Model-Name: phi-4-mini-instruct
+                   │                    │
+                   │ Chart: GWIE        │
+                   │ (independent)      │
+                   └─────────┬──────────┘
+                             │
+                             │  X-Gateway-Model-Name: phi-4-mini-instruct
+                             ▼
+                   ┌────────────────────┐
+                   │    HTTPRoute       │   ◄── Step 2: Header-Based Matching
+                   │                    │       Routes to correct InferencePool
+                   │ Match header →     │       based on model name header
+                   │ route to pool      │
+                   └──────┬─────────┬───┘
+                          │         │
+            ┌─────────────▼─┐   ┌───▼───────────────┐
+            │ InferencePool │   │  InferencePool     │
+            │ phi-4-mini    │   │  mistral-7b        │
+            └───────┬───────┘   └────────┬───────────┘
+                    │                    │
+          ┌─────────▼──────────┐  ┌──────▼─────────────┐
+          │  EPP (ext-proc)    │  │  EPP (ext-proc)    │  ◄── Step 3: Endpoint Picking
+          │                    │  │                    │       Selects optimal pod based
+          │  llm-d inference   │  │  llm-d inference   │       on scheduling plugins
+          │  scheduler         │  │  scheduler         │
+          │                    │  │                    │
+          │  Plugins:          │  │  Plugins:          │
+          │  - queue-scorer    │  │  - queue-scorer    │
+          │  - kv-cache-scorer │  │  - kv-cache-scorer │
+          │  - prefix-cache    │  │  - prefix-cache    │
+          └──┬──┬──┬───────────┘  └──┬──┬──┬───────────┘
+             │  │  │                 │  │  │
+             ▼  ▼  ▼                 ▼  ▼  ▼
+          ┌────┐┌────┐┌────┐     ┌────┐┌────┐┌────┐
+          │Pod ││Pod ││Pod │     │Pod ││Pod ││Pod │
+          │ 0  ││ 1  ││ 2  │     │ 0  ││ 1  ││ 2  │
+          └────┘└────┘└────┘     └────┘└────┘└────┘
+           phi-4-mini pods        mistral-7b pods
+```
+
+### Request Flow Summary
+
+| Step | Component | Function | Managed By |
+|------|-----------|----------|------------|
+| 1 | **BBR** | Extract model name from request body → inject `X-Gateway-Model-Name` header | Standalone Helm chart (GWIE) |
+| 2 | **HTTPRoute** | Match header → route to correct InferencePool | User-created K8s resource |
+| 3 | **EPP** | Pick optimal pod within the pool (queue depth, KV cache, prefix cache) | KAITO controller (llm-d image) |
+
+### Key Differences
+
+| | BBR | EPP |
+|---|---|---|
+| **What it does** | Model name extraction (body → header) | Endpoint selection (pick best pod) |
+| **Protocol** | Envoy ext-proc | Envoy ext-proc |
+| **Scope** | One per cluster (shared across all pools) | One per InferencePool |
+| **Managed by** | User (standalone Helm install) | KAITO controller (via Flux HelmRelease) |
+| **Image source** | GWIE (`registry.k8s.io/...`) | llm-d (`ghcr.io/llm-d/...`) |
+| **Required?** | Optional (only for multi-model routing) | Always (created automatically by KAITO) |
+
+### Single Model (No BBR needed)
+
+```
+Client → Gateway → EPP → Pod
+```
+
+HTTPRoute directly targets the InferencePool. No model name extraction needed.
+
+### Multi-Model (BBR required)
+
+```
+Client → Gateway → BBR → HTTPRoute (header match) → EPP → Pod
+```
+
+BBR extracts model name so the Gateway can route to the correct InferencePool.
+
 ## BBR (Body-Based Routing) — No Changes Needed
 
 BBR is **completely unaffected** by the EPP migration. It is an independent component with its own Helm chart, not managed by the KAITO controller.
