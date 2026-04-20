@@ -255,7 +255,18 @@ kubectl get pod -l inferencepool=phi-4-mini-inferencepool-epp \
 # Expected: ghcr.io/llm-d/llm-d-inference-scheduler:v0.7.1
 ```
 
-## BBR and EPP: How They Work Together
+## BBR, HTTPRoute, DestinationRule, and EPP: How They Work Together
+
+### Component Roles
+
+| Component | Type | Role | Created By |
+|---|---|---|---|
+| **BBR** | Envoy ext-proc filter | Extract model name from request body → inject `X-Gateway-Model-Name` header | User (standalone Helm chart) |
+| **HTTPRoute** | Gateway API CRD | **Routing rules**: match path/header → route to correct InferencePool | User (kubectl apply) |
+| **DestinationRule** | Istio CRD | **TLS policy**: Gateway → EPP connection config (skip self-signed cert verification) | User (kubectl apply) |
+| **EPP** | Envoy ext-proc filter | **Endpoint selection**: pick optimal pod within a pool | KAITO controller (via Flux) |
+
+### Single Model Request Flow
 
 ```
                           Client Request
@@ -269,83 +280,128 @@ kubectl get pod -l inferencepool=phi-4-mini-inferencepool-epp \
                     └────────┬──────────┘
                              │
                    ┌─────────▼──────────┐
-                   │   BBR (ext-proc)   │   ◄── Step 1: Body-Based Routing
-                   │                    │       Reads request body, extracts
-                   │ Extracts "model"   │       model name, injects header:
-                   │ from JSON body     │       X-Gateway-Model-Name: phi-4-mini-instruct
+                   │     HTTPRoute      │   ◄── Routing: path "/" → InferencePool
                    │                    │
-                   │ Chart: GWIE        │
-                   │ (independent)      │
-                   └─────────┬──────────┘
-                             │
-                             │  X-Gateway-Model-Name: phi-4-mini-instruct
+                   │  rules:            │       apiVersion: gateway.networking.k8s.io/v1
+                   │  - match: /        │       kind: HTTPRoute
+                   │    backend:        │       spec:
+                   │    phi-4-mini-pool │         rules:
+                   └─────────┬──────────┘         - matches: [{path: /}]
+                             │                      backendRefs: [phi-4-mini-inferencepool]
                              ▼
                    ┌────────────────────┐
-                   │    HTTPRoute       │   ◄── Step 2: Header-Based Matching
-                   │                    │       Routes to correct InferencePool
-                   │ Match header →     │       based on model name header
-                   │ route to pool      │
+                   │  DestinationRule   │   ◄── TLS Policy: Gateway → EPP
+                   │                    │
+                   │  host: phi-4-mini- │       apiVersion: networking.istio.io/v1
+                   │  inferencepool-epp │       kind: DestinationRule
+                   │  tls:              │       spec:
+                   │    insecureSkip    │         host: phi-4-mini-inferencepool-epp
+                   │    Verify: true    │         trafficPolicy:
+                   └─────────┬──────────┘           tls: {mode: SIMPLE, insecureSkipVerify: true}
+                             │
+                   ┌─────────▼──────────┐
+                   │   EPP (ext-proc)   │   ◄── Endpoint Selection: pick best pod
+                   │                    │
+                   │  llm-d inference   │       Scores pods by:
+                   │  scheduler         │       - queue depth
+                   │                    │       - KV cache utilization
+                   │  ghcr.io/llm-d/    │       - prefix cache hit rate
+                   │  llm-d-inference-  │
+                   │  scheduler:v0.7.1  │
+                   └──┬──┬──┬───────────┘
+                      │  │  │
+                      ▼  ▼  ▼
+                   ┌────┐┌────┐┌────┐
+                   │Pod ││Pod ││Pod │
+                   │ 0  ││ 1  ││ 2  │
+                   └────┘└────┘└────┘
+                    phi-4-mini pods
+```
+
+### Multi-Model Request Flow (with BBR)
+
+```
+                          Client Request
+                    POST /v1/chat/completions
+                    {"model": "mistral-7b-instruct", ...}
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │      Gateway      │
+                    │  (Envoy / Istio)  │
+                    └────────┬──────────┘
+                             │
+                   ┌─────────▼──────────┐
+                   │   BBR (ext-proc)   │   ◄── Step 1: Extract model name
+                   │                    │       from JSON body, inject header:
+                   │ body → header      │       X-Gateway-Model-Name: mistral-7b-instruct
+                   │                    │
+                   │ (one per cluster)  │
+                   └─────────┬──────────┘
+                             │  + header: X-Gateway-Model-Name: mistral-7b-instruct
+                             ▼
+                   ┌────────────────────┐
+                   │     HTTPRoute      │   ◄── Step 2: Match header → route
+                   │                    │
+                   │ rules:             │       rules:
+                   │ - header:          │       - match: X-Gateway-Model-Name=phi-4-mini-instruct
+                   │   phi-4-mini →     │         → phi-4-mini-inferencepool
+                   │   phi-4-pool       │       - match: X-Gateway-Model-Name=mistral-7b-instruct
+                   │ - header:          │         → mistral-7b-inferencepool
+                   │   mistral-7b →     │
+                   │   mistral-pool     │
                    └──────┬─────────┬───┘
                           │         │
-            ┌─────────────▼─┐   ┌───▼───────────────┐
-            │ InferencePool │   │  InferencePool     │
-            │ phi-4-mini    │   │  mistral-7b        │
-            └───────┬───────┘   └────────┬───────────┘
-                    │                    │
-          ┌─────────▼──────────┐  ┌──────▼─────────────┐
-          │  EPP (ext-proc)    │  │  EPP (ext-proc)    │  ◄── Step 3: Endpoint Picking
-          │                    │  │                    │       Selects optimal pod based
-          │  llm-d inference   │  │  llm-d inference   │       on scheduling plugins
-          │  scheduler         │  │  scheduler         │
-          │                    │  │                    │
-          │  Plugins:          │  │  Plugins:          │
-          │  - queue-scorer    │  │  - queue-scorer    │
-          │  - kv-cache-scorer │  │  - kv-cache-scorer │
-          │  - prefix-cache    │  │  - prefix-cache    │
-          └──┬──┬──┬───────────┘  └──┬──┬──┬───────────┘
-             │  │  │                 │  │  │
-             ▼  ▼  ▼                 ▼  ▼  ▼
-          ┌────┐┌────┐┌────┐     ┌────┐┌────┐┌────┐
-          │Pod ││Pod ││Pod │     │Pod ││Pod ││Pod │
-          │ 0  ││ 1  ││ 2  │     │ 0  ││ 1  ││ 2  │
-          └────┘└────┘└────┘     └────┘└────┘└────┘
-           phi-4-mini pods        mistral-7b pods
+            ┌─────────────┘         └──────────────┐
+            ▼                                      ▼
+  ┌────────────────────┐              ┌────────────────────┐
+  │  DestinationRule   │              │  DestinationRule   │  ◄── Step 3: TLS policy
+  │  phi-4-mini-epp    │              │  mistral-7b-epp    │      per EPP service
+  │  (skip TLS verify) │              │  (skip TLS verify) │
+  └─────────┬──────────┘              └─────────┬──────────┘
+            ▼                                   ▼
+  ┌────────────────────┐              ┌────────────────────┐
+  │  EPP (ext-proc)    │              │  EPP (ext-proc)    │  ◄── Step 4: Pick best pod
+  │  llm-d scheduler   │              │  llm-d scheduler   │
+  └──┬──┬──┬───────────┘              └──┬──┬──┬───────────┘
+     │  │  │                             │  │  │
+     ▼  ▼  ▼                             ▼  ▼  ▼
+  ┌────┐┌────┐┌────┐                 ┌────┐┌────┐┌────┐
+  │Pod ││Pod ││Pod │                 │Pod ││Pod ││Pod │
+  │ 0  ││ 1  ││ 2  │                 │ 0  ││ 1  ││ 2  │
+  └────┘└────┘└────┘                 └────┘└────┘└────┘
+   phi-4-mini pods                    mistral-7b pods
 ```
 
-### Request Flow Summary
+### Why DestinationRule Is Needed
 
-| Step | Component | Function | Managed By |
-|------|-----------|----------|------------|
-| 1 | **BBR** | Extract model name from request body → inject `X-Gateway-Model-Name` header | Standalone Helm chart (GWIE) |
-| 2 | **HTTPRoute** | Match header → route to correct InferencePool | User-created K8s resource |
-| 3 | **EPP** | Pick optimal pod within the pool (queue depth, KV cache, prefix cache) | KAITO controller (llm-d image) |
+EPP runs with `--secure-serving=true` by default, generating a self-signed TLS certificate. Istio's sidecar proxy doesn't trust self-signed certs, so without the DestinationRule, the Gateway → EPP ext-proc connection **fails with TLS errors**.
 
-### Key Differences
+The DestinationRule is a **workaround** that tells Istio to skip certificate verification:
 
-| | BBR | EPP |
-|---|---|---|
-| **What it does** | Model name extraction (body → header) | Endpoint selection (pick best pod) |
-| **Protocol** | Envoy ext-proc | Envoy ext-proc |
-| **Scope** | One per cluster (shared across all pools) | One per InferencePool |
-| **Managed by** | User (standalone Helm install) | KAITO controller (via Flux HelmRelease) |
-| **Image source** | GWIE (`registry.k8s.io/...`) | llm-d (`ghcr.io/llm-d/...`) |
-| **Required?** | Optional (only for multi-model routing) | Always (created automatically by KAITO) |
-
-### Single Model (No BBR needed)
-
-```
-Client → Gateway → EPP → Pod
+```yaml
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: phi-4-mini-inferencepool-epp    # Must match EPP service name
+spec:
+  host: phi-4-mini-inferencepool-epp    # EPP service DNS name
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+      insecureSkipVerify: true          # Skip self-signed cert verification
 ```
 
-HTTPRoute directly targets the InferencePool. No model name extraction needed.
+**You need one DestinationRule per InferencePool/EPP service.**
 
-### Multi-Model (BBR required)
+### Summary: What Each Resource Does
 
 ```
-Client → Gateway → BBR → HTTPRoute (header match) → EPP → Pod
+HTTPRoute       = WHERE to send the request     (which InferencePool)
+DestinationRule = HOW to connect to EPP          (TLS policy)
+BBR             = WHAT model is being requested  (body → header extraction)
+EPP             = WHICH pod serves the request   (optimal endpoint selection)
 ```
-
-BBR extracts model name so the Gateway can route to the correct InferencePool.
 
 ## BBR (Body-Based Routing) — No Changes Needed
 
