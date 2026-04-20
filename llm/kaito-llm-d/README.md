@@ -255,6 +255,40 @@ kubectl get pod -l inferencepool=phi-4-mini-inferencepool-epp \
 # Expected: ghcr.io/llm-d/llm-d-inference-scheduler:v0.7.1
 ```
 
+## BBR (Body-Based Routing) — No Changes Needed
+
+BBR is **completely unaffected** by the EPP migration. It is an independent component with its own Helm chart, not managed by the KAITO controller.
+
+### Why BBR doesn't change
+
+1. **Separate chart**: BBR installs from `registry.k8s.io/gateway-api-inference-extension/charts/body-based-routing`, not through KAITO controller
+2. **Independent function**: BBR only does body → header conversion (extracts model name from request body, injects `X-Gateway-Model-Name` header) — it doesn't interact with the EPP implementation
+3. **Our change scope**: We only replaced the EPP image; the InferencePool chart and BBR chart are untouched
+
+### Deploy BBR (same as before)
+
+```bash
+# Install BBR chart directly from GWIE
+helm upgrade --install body-based-router \
+  oci://registry.k8s.io/gateway-api-inference-extension/charts/body-based-routing \
+  --version v1.3.0 \
+  --set provider.name=istio \
+  --wait
+```
+
+### Multi-model routing with BBR
+
+1. Deploy a second InferenceSet (e.g., `mistral-7b-instruct`)
+2. Deploy its DestinationRule
+3. Install BBR chart (command above)
+4. Apply the BBR-enabled HTTPRoute (`httproute-bbr.yaml`)
+
+Everything works exactly as before — BBR routes by model name header, each InferencePool's llm-d EPP handles endpoint selection independently.
+
+### Future Note
+
+Per the [GIE to llm-d migration plan](https://github.com/kubernetes-sigs/gateway-api-inference-extension/issues/2430) (Workstream 2), BBR will eventually move to a new repo `llm-d/llm-d-body-based-routing` with its own release infrastructure. At that point the chart URL and image will change, but for now v1.3.0 remains in the GWIE repo.
+
 ## References
 
 - [llm-d inference scheduler](https://github.com/llm-d/llm-d-inference-scheduler)
