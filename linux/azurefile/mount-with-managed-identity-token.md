@@ -62,9 +62,6 @@ spec:
       mountwithmanagedidentitytoken: "true"
       secretname: "azure-mi-token-secret"
       secretnamespace: "default"
-    nodeStageSecretRef:
-      name: azure-mi-token-secret
-      namespace: default
 ```
 
 ## Implementation
