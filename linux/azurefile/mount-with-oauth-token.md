@@ -45,7 +45,7 @@ kubectl create secret generic azure-oauth-token-secret --from-literal=oauthtoken
 
 The user is responsible for keeping `oauthtoken` up-to-date (e.g., via a sidecar, CronJob, or external controller that refreshes the OAuth token before expiry).
 
-### PV Example
+### PV Example (Static Provisioning)
 
 ```yaml
 apiVersion: v1
@@ -64,9 +64,45 @@ spec:
     volumeAttributes:
       storageaccount: "mystorageaccount"
       sharename: "myshare"
-      mountWithOAuthToken: "true"
+      mountwithoauthtoken: "true"
       secretname: "azure-oauth-token-secret"
       secretnamespace: "default"
+```
+
+### StorageClass Example (Dynamic Provisioning)
+
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: azurefile-oauth-token-sc
+provisioner: file.csi.azure.com
+parameters:
+  skuName: Premium_LRS
+  mountwithoauthtoken: "true"
+  secretname: "azure-oauth-token-secret"
+  secretnamespace: "default"
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+```
+
+Then create a PVC referencing the StorageClass:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azurefile-oauth-token-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile-oauth-token-sc
+  resources:
+    requests:
+      storage: 100Gi
 ```
 
 ## Implementation
