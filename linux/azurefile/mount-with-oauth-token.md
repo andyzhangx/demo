@@ -41,9 +41,6 @@ Create the secret using `kubectl`:
 
 ```bash
 kubectl create secret generic azure-oauth-token-secret --from-literal=oauthtoken="<oauth-token>"
-kubectl create secret generic azure-oauth-token-secret \
-  --from-literal=azurestorageaccountname=mystorageaccount \
-  --from-literal=oauthtoken="<oauth-token>"
 ```
 
 The user is responsible for keeping `oauthtoken` up-to-date (e.g., via a sidecar, CronJob, or external controller that refreshes the OAuth token before expiry).
