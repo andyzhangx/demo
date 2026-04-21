@@ -60,8 +60,6 @@ spec:
       storageaccount: "mystorageaccount"
       sharename: "myshare"
       mountwithmanagedidentitytoken: "true"
-      clientid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-      tenantid: "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
       secretname: "azure-mi-token-secret"
       secretnamespace: "default"
     nodeStageSecretRef:
@@ -89,17 +87,15 @@ Following the same pattern as `mountWithWorkloadIdentityToken`, the MI token ref
 │    │                                                          │
 │    ├─ if mountWithManagedIdentityToken && SA token present:   │
 │    │    ├─ Read MI token from Secret (via kubeClient)         │
-│    │    ├─ Write token to temp file                           │
-│    │    ├─ Call setCredentialCache(server, clientID,           │
-│    │    │                          tenantID, tokenFile)       │
-│    │    ├─ Delete temp file                                   │
+│    │    ├─ Call setCredentialCache(server, token)              │
+│    │    │   (pass token string directly, no temp file)        │
 │    │    └─ Call NodeStageVolume (mount if not already mounted) │
 │    │                                                          │
 │  NodeStageVolume                                              │
 │    │                                                          │
 │    ├─ if mountWithManagedIdentityToken:                       │
 │    │    ├─ Read MI token from Secret                          │
-│    │    ├─ setCredentialCache()                               │
+│    │    ├─ setCredentialCache(server, token)                   │
 │    │    ├─ Mount with sec=krb5,cruid=0,upcall_target=mount   │
 │    │    └─ (skip if already mounted)                          │
 │    │                                                          │
@@ -126,10 +122,8 @@ For `mountWithManagedIdentityToken`, we follow the **exact same flow**, except:
 ```
 1. Check volumeContext: mountWithManagedIdentityToken=true && SA token present
 2. Read MI token from secret (secretName/secretNamespace) via kubeClient
-3. Write token to temp file
-4. Call setCredentialCache(server, clientID, tenantID, tokenFile)
-5. Delete temp file
-6. Call NodeStageVolume → mount with sec=krb5 (if not already mounted)
+3. Call setCredentialCache(server, token) — pass token string directly
+4. Call NodeStageVolume → mount with sec=krb5 (if not already mounted)
 ```
 
 #### NodeStageVolume (first mount)
@@ -137,11 +131,9 @@ For `mountWithManagedIdentityToken`, we follow the **exact same flow**, except:
 ```
 1. Parse volumeContext: mountWithManagedIdentityToken=true
 2. Read MI token from secret via kubeClient
-3. Write token to temp file
-4. sensitiveMountOptions = ["sec=krb5,cruid=0,upcall_target=mount"]
-5. Call setCredentialCache(server, clientID, tenantID, tokenFile) inside execFunc
-6. Mount SMB share
-7. Delete temp file
+3. sensitiveMountOptions = ["sec=krb5,cruid=0,upcall_target=mount"]
+4. Call setCredentialCache(server, token) inside execFunc — pass token string directly
+5. Mount SMB share
 ```
 
 #### NodeUnstageVolume (unmount)
@@ -171,7 +163,59 @@ mountWithManagedIdentityTokenField = "mountwithmanagedidentitytoken"
 defaultSecretManagedIdentityToken  = "azurestoragemanagedidentitytoken"
 ```
 
-#### 2. NodePublishVolume Changes (`pkg/azurefile/nodeserver.go`)
+#### 2. Extend `setCredentialCache` (`pkg/azurefile/utils.go`)
+
+Add a new code path for direct token passing (no temp file needed):
+
+```go
+func setCredentialCache(server, clientID, tenantID, tokenFile string) ([]byte, error) {
+    if server == "" {
+        return nil, fmt.Errorf("server must be provided")
+    }
+
+    var args []string
+    if tokenFile != "" {
+        // Existing: workload identity with token file
+        if clientID == "" {
+            return nil, fmt.Errorf("clientID must be provided")
+        }
+        if tenantID == "" {
+            return nil, fmt.Errorf("tenantID must be provided when tokenFile is provided")
+        }
+        args = []string{"set", "https://" + server, "--workload-identity",
+            "--tenant-id", tenantID, "--client-id", clientID, "--token-file", tokenFile}
+    } else if clientID != "" {
+        // Existing: managed identity via IMDS
+        args = []string{"set", "https://" + server, "--imds-client-id", clientID}
+    } else {
+        return nil, fmt.Errorf("clientID must be provided")
+    }
+
+    cmd := exec.Command("azfilesauthmanager", args...)
+    cmd.Env = append(os.Environ(), cmd.Env...)
+    klog.V(2).Infof("Executing command: %q", cmd.String())
+    return cmd.CombinedOutput()
+}
+
+// setCredentialCacheWithToken sets credential cache by passing OAuth token directly
+// Uses: azfilesauthmanager set https://<server> <access_token>
+func setCredentialCacheWithToken(server, token string) ([]byte, error) {
+    if server == "" {
+        return nil, fmt.Errorf("server must be provided")
+    }
+    if token == "" {
+        return nil, fmt.Errorf("token must be provided")
+    }
+
+    args := []string{"set", "https://" + server, token}
+    cmd := exec.Command("azfilesauthmanager", args...)
+    cmd.Env = append(os.Environ(), cmd.Env...)
+    klog.V(2).Infof("Executing command: azfilesauthmanager set https://%s <token-redacted>", server)
+    return cmd.CombinedOutput()
+}
+```
+
+#### 3. NodePublishVolume Changes (`pkg/azurefile/nodeserver.go`)
 
 Add MI token refresh in the existing SA token check block (alongside workload identity):
 
@@ -199,14 +243,12 @@ if context != nil {
 }
 ```
 
-#### 3. New Helper Function
+#### 4. New Helper Function
 
 ```go
 func (d *Driver) refreshMITokenCredentialCache(ctx context.Context, context map[string]string, volumeID string) error {
     secretName := getValueInMap(context, secretNameField)
     secretNamespace := getValueInMap(context, secretNamespaceField)
-    clientID := getValueInMap(context, clientIDField)
-    tenantID := getValueInMap(context, tenantIDField)
     server := getValueInMap(context, serverField)
 
     secret, err := d.kubeClient.CoreV1().Secrets(secretNamespace).Get(ctx, secretName, metav1.GetOptions{})
@@ -221,15 +263,10 @@ func (d *Driver) refreshMITokenCredentialCache(ctx context.Context, context map[
             defaultSecretManagedIdentityToken, secretNamespace, secretName)
     }
 
-    tokenFile, err := writeMITokenToTempFile(miToken)
-    if err != nil {
-        return status.Errorf(codes.Internal, "failed to write MI token: %v", err)
-    }
-    defer os.Remove(tokenFile)
-
-    if out, err := setCredentialCache(server, clientID, tenantID, tokenFile); err != nil {
+    // Pass token directly to azfilesauthmanager — no temp file needed
+    if out, err := setCredentialCacheWithToken(server, miToken); err != nil {
         return status.Errorf(codes.Internal,
-            "setCredentialCache failed for volume %s: %v, output: %s", volumeID, err, out)
+            "setCredentialCacheWithToken failed for volume %s: %v, output: %s", volumeID, err, out)
     }
 
     klog.V(2).Infof("NodePublishVolume: refreshed MI token credential cache for volume %s", volumeID)
@@ -237,7 +274,7 @@ func (d *Driver) refreshMITokenCredentialCache(ctx context.Context, context map[
 }
 ```
 
-#### 4. NodeStageVolume Changes
+#### 5. NodeStageVolume Changes
 
 Add new mount branch after `mountWithWIToken`:
 
@@ -254,8 +291,8 @@ And in the `execFunc` for mount:
 ```go
 execFunc := func() error {
     if (mountWithManagedIdentity || mountWithManagedIdentityToken) && protocol != nfs && runtime.GOOS != "windows" {
-        // Read MI token from secret and refresh credential cache
         if mountWithManagedIdentityToken {
+            // Pass token directly — no temp file
             if err := d.refreshMITokenCredentialCache(ctx, context, volumeID); err != nil {
                 return fmt.Errorf("refreshMITokenCredentialCache: %v", err)
             }
@@ -269,7 +306,7 @@ execFunc := func() error {
 }
 ```
 
-#### 5. Mutual Exclusion Check
+#### 6. Mutual Exclusion Check
 
 ```go
 if (mountWithManagedIdentity && mountWithWIToken) ||
@@ -295,9 +332,10 @@ if (mountWithManagedIdentity && mountWithWIToken) ||
 ## Security Considerations
 
 1. **Token in secret** — Standard Kubernetes RBAC controls access; no broader than existing `nodeStageSecretRef` pattern
-2. **Temp file** — Token written to temp file, immediately deleted after `setCredentialCache`; file permission 0600
-3. **No persist file** — Unlike the background manager approach, no state file on disk
-4. **RBAC** — CSI node plugin needs `get` permission on secrets in relevant namespaces (already required for existing secret-based flows)
+2. **No temp file** — Token passed directly to `azfilesauthmanager` as CLI argument; no file written to disk
+3. **No persist file** — No state file on disk (unlike background manager approach)
+4. **Token in process args** — Token briefly visible in `/proc/<pid>/cmdline`; same exposure as existing `--imds-client-id` flow. For hardened environments, consider piping via stdin in a future enhancement.
+5. **RBAC** — CSI node plugin needs `get` permission on secrets in relevant namespaces (already required for existing secret-based flows)
 
 ## Limitations
 
@@ -311,6 +349,7 @@ if (mountWithManagedIdentity && mountWithWIToken) ||
 | File | Lines |
 |------|-------|
 | `pkg/azurefile/azurefile.go` (constants) | ~5 |
-| `pkg/azurefile/nodeserver.go` (NodePublishVolume + NodeStageVolume + helper) | ~60 |
+| `pkg/azurefile/utils.go` (`setCredentialCacheWithToken`) | ~15 |
+| `pkg/azurefile/nodeserver.go` (NodePublishVolume + NodeStageVolume + helper) | ~50 |
 | `pkg/azurefile/nodeserver_test.go` (additions) | ~80 |
-| **Total** | **~145 lines** |
+| **Total** | **~150 lines** |
