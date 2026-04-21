@@ -34,7 +34,6 @@ metadata:
   namespace: default
 type: Opaque
 data:
-  azurestorageaccountname: <base64-encoded-account-name>
   azurestorageauthtoken: <base64-encoded-oauth-token>
 ```
 
