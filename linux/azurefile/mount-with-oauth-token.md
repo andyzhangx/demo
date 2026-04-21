@@ -64,7 +64,7 @@ spec:
     volumeAttributes:
       storageaccount: "mystorageaccount"
       sharename: "myshare"
-      mountwithoauthtoken: "true"
+      mountWithOAuthToken: "true"
       secretname: "azure-oauth-token-secret"
       secretnamespace: "default"
 ```
