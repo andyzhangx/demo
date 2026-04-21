@@ -34,16 +34,19 @@ metadata:
   namespace: default
 type: Opaque
 data:
-  azurestorageauthtoken: <base64-encoded-oauth-token>
+  oauthtoken: <base64-encoded-oauth-token>
 ```
 
 Create the secret using `kubectl`:
 
 ```bash
-kubectl create secret generic azure-oauth-token-secret --from-literal=azurestorageauthtoken="<oauth-token>"
+kubectl create secret generic azure-oauth-token-secret --from-literal=oauthtoken="<oauth-token>"
+kubectl create secret generic azure-oauth-token-secret \
+  --from-literal=azurestorageaccountname=mystorageaccount \
+  --from-literal=oauthtoken="<oauth-token>"
 ```
 
-The user is responsible for keeping `azurestorageauthtoken` up-to-date (e.g., via a sidecar, CronJob, or external controller that refreshes the OAuth token before expiry).
+The user is responsible for keeping `oauthtoken` up-to-date (e.g., via a sidecar, CronJob, or external controller that refreshes the OAuth token before expiry).
 
 ### PV Example
 
@@ -162,7 +165,7 @@ For `mountWithOAuthToken`, we follow the **exact same flow**, except:
 
 ```go
 mountWithOAuthTokenField = "mountwithoauthtoken"
-defaultSecretOAuthToken  = "azurestorageauthtoken"
+defaultSecretOAuthToken  = "oauthtoken"
 ```
 
 #### 2. Extend `setCredentialCache` (`pkg/azurefile/utils.go`)
