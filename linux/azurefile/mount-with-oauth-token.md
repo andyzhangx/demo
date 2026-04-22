@@ -69,42 +69,6 @@ spec:
       secretNamespace: "default"
 ```
 
-### StorageClass Example (Dynamic Provisioning)
-
-```yaml
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: azurefile-oauth-token-sc
-provisioner: file.csi.azure.com
-parameters:
-  skuName: Premium_LRS
-  mountWithOAuthToken: "true"
-  secretName: "azure-oauth-token-secret"
-  secretNamespace: "default"
-reclaimPolicy: Delete
-volumeBindingMode: Immediate
-mountOptions:
-  - dir_mode=0777
-  - file_mode=0777
-```
-
-Then create a PVC referencing the StorageClass:
-
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: azurefile-oauth-token-pvc
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: azurefile-oauth-token-sc
-  resources:
-    requests:
-      storage: 100Gi
-```
-
 ## Implementation
 
 ### Architecture — NodePublishVolume Token Refresh Pattern
