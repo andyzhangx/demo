@@ -123,52 +123,100 @@ metadata:
 
 The llm-d EPP binary is fully compatible with this config format (same `EndpointPickerConfig` API).
 
-## Advanced: llm-d-Specific Plugins
+## Advanced: Custom EPP Plugin Configuration
+
+### Overview
+
+KAITO uses the default llm-d plugins (queue-scorer, kv-cache-utilization-scorer, prefix-cache-scorer) out of the box. For advanced plugins like `precise-prefix-cache-scorer` or P/D disaggregation, you can provide a custom `EndpointPickerConfig` via a **ConfigMap reference** in the InferenceSet spec.
+
+This keeps the InferenceSet clean — the large plugin YAML lives in a separate ConfigMap:
+
+```yaml
+apiVersion: kaito.sh/v1alpha1
+kind: InferenceSet
+metadata:
+  name: phi-4-mini
+spec:
+  eppPluginsConfigRef:
+    name: phi-4-mini-epp-plugins   # references a ConfigMap in the same namespace
+  # ...other fields...
+```
+
+The KAITO controller reads the ConfigMap and injects the content into the InferencePool Helm values as `pluginsCustomConfig`.
 
 ### Precise Prefix Cache Scorer
 
-More accurate KV cache matching with token-level prefix indexing:
+Token-level KV cache matching using KV events from the routing sidecar. More accurate than the default approximate prefix-cache-scorer.
+
+**Step 1: Create the plugins ConfigMap**
 
 ```yaml
-inferenceExtension:
-  pluginsCustomConfig:
-    custom-plugins.yaml: |
-      apiVersion: inference.networking.x-k8s.io/v1alpha1
-      kind: EndpointPickerConfig
-      plugins:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: phi-4-mini-epp-plugins
+data:
+  config.yaml: |
+    apiVersion: inference.networking.x-k8s.io/v1alpha1
+    kind: EndpointPickerConfig
+    plugins:
+      - type: single-profile-handler
+      - type: decode-filter
       - type: precise-prefix-cache-scorer
         parameters:
+          tokenProcessorConfig:
+            blockSize: 64                 # must match vLLM block size
+            hashSeed: "42"                # must match vLLM PYTHONHASHSEED env var
           indexerConfig:
-            tokenProcessorConfig:
-              blockSize: 5
             kvBlockIndexConfig:
-              maxPrefixBlocksToMatch: 256
-      - type: decode-filter
+              enableMetrics: true
+      - type: kv-cache-utilization-scorer
+      - type: queue-scorer
       - type: max-score-picker
-      - type: single-profile-handler
-      schedulingProfiles:
+    schedulingProfiles:
       - name: default
         plugins:
-        - pluginRef: decode-filter
-        - pluginRef: max-score-picker
-        - pluginRef: precise-prefix-cache-scorer
-          weight: 50
-  pluginsConfigFile: "custom-plugins.yaml"
+          - pluginRef: decode-filter
+          - pluginRef: precise-prefix-cache-scorer
+            weight: 2.0
+          - pluginRef: kv-cache-utilization-scorer
+            weight: 1.0
+          - pluginRef: queue-scorer
+            weight: 1.0
+          - pluginRef: max-score-picker
 ```
+
+**Step 2: Create InferenceSet with reference**
+
+```yaml
+apiVersion: kaito.sh/v1alpha1
+kind: InferenceSet
+metadata:
+  name: phi-4-mini
+spec:
+  eppPluginsConfigRef:
+    name: phi-4-mini-epp-plugins
+  # ...other fields same as before...
+```
+
+> **Note**: `precise-prefix-cache-scorer` requires the `llm-d-routing-sidecar` to provide KV events via UDS socket. The sidecar must be deployed alongside vLLM pods.
 
 ### Prefill/Decode (P/D) Disaggregation
 
 Separate prefill and decode phases to different pods for better GPU utilization:
 
 ```yaml
-inferenceExtension:
-  pluginsCustomConfig:
-    custom-plugins.yaml: |
-      apiVersion: inference.networking.x-k8s.io/v1alpha1
-      kind: EndpointPickerConfig
-      featureGates:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pd-disagg-epp-plugins
+data:
+  config.yaml: |
+    apiVersion: inference.networking.x-k8s.io/v1alpha1
+    kind: EndpointPickerConfig
+    featureGates:
       - prepareDataPlugins
-      plugins:
+    plugins:
       - type: prefix-based-pd-decider
         parameters:
           nonCachedTokens: 4
@@ -188,20 +236,19 @@ inferenceExtension:
             inference-role: decode
       - type: precise-prefix-cache-scorer
       - type: max-score-picker
-      schedulingProfiles:
+    schedulingProfiles:
       - name: prefill
         plugins:
-        - pluginRef: prefill-filter
-        - pluginRef: precise-prefix-cache-scorer
-          weight: 50
+          - pluginRef: prefill-filter
+          - pluginRef: precise-prefix-cache-scorer
+            weight: 50
       - name: decode
         plugins:
-        - pluginRef: decode-filter
-        - pluginRef: max-score-picker
-  pluginsConfigFile: "custom-plugins.yaml"
+          - pluginRef: decode-filter
+          - pluginRef: max-score-picker
 ```
 
-**Note**: P/D disaggregation requires prefill and decode pods deployed separately with appropriate labels (`inference-role: prefill` / `inference-role: decode`).
+> **Note**: P/D disaggregation requires prefill and decode pods deployed separately with appropriate labels (`inference-role: prefill` / `inference-role: decode`).
 
 ### Label-Based Filtering
 
@@ -209,11 +256,26 @@ Route requests only to pods matching specific labels (e.g., GPU type):
 
 ```yaml
 plugins:
-- type: by-label-selector
-  parameters:
-    matchLabels:
-      hardware-type: H100
+  - type: by-label-selector
+    parameters:
+      matchLabels:
+        hardware-type: H100
 ```
+
+### How It Works Internally
+
+When `eppPluginsConfigRef` is set on an InferenceSet:
+
+1. KAITO controller reads the referenced ConfigMap's `config.yaml` key
+2. Injects the content into the InferencePool HelmRelease values:
+   ```yaml
+   inferenceExtension:
+     pluginsConfigFile: "custom-plugins.yaml"
+     pluginsCustomConfig:
+       custom-plugins.yaml: <content from ConfigMap>
+   ```
+3. Flux reconciles the HelmRelease → EPP deployment picks up the custom config
+4. Updating the ConfigMap triggers re-reconciliation (controller watches ConfigMap changes)
 
 ## Feature Matrix
 
