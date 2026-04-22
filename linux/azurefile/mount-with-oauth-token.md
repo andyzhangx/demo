@@ -78,7 +78,8 @@ metadata:
   name: azurefile-oauth-token-sc
 provisioner: file.csi.azure.com
 parameters:
-  skuName: Premium_LRS
+  storageaccount: "mystorageaccount"
+  sharename: "myshare"
   mountwithoauthtoken: "true"
   secretname: "azure-oauth-token-secret"
   secretnamespace: "default"
