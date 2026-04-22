@@ -62,11 +62,11 @@ spec:
     driver: file.csi.azure.com
     volumeHandle: "unique-volume-id"
     volumeAttributes:
-      storageaccount: "mystorageaccount"
-      sharename: "myshare"
-      mountwithoauthtoken: "true"
-      secretname: "azure-oauth-token-secret"
-      secretnamespace: "default"
+      storageAccount: "mystorageaccount"
+      shareName: "myshare"
+      mountWithOAuthToken: "true"
+      secretName: "azure-oauth-token-secret"
+      secretNamespace: "default"
 ```
 
 ### StorageClass Example (Dynamic Provisioning)
@@ -78,11 +78,10 @@ metadata:
   name: azurefile-oauth-token-sc
 provisioner: file.csi.azure.com
 parameters:
-  storageaccount: "mystorageaccount"
-  sharename: "myshare"
-  mountwithoauthtoken: "true"
-  secretname: "azure-oauth-token-secret"
-  secretnamespace: "default"
+  skuName: Premium_LRS
+  mountWithOAuthToken: "true"
+  secretName: "azure-oauth-token-secret"
+  secretNamespace: "default"
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 mountOptions:
