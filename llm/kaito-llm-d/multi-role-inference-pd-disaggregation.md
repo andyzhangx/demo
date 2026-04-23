@@ -101,11 +101,11 @@ spec:
   eppPluginsConfigRef:
     name: deepseek-v32-epp-plugins
   roles:
-    - name: prefill
+    - type: prefill
       replicas: 2
       instanceType: Standard_NC24ads_A100_v4
       config: prefill-params        # optional ConfigMap for role-specific vLLM args
-    - name: decode
+    - type: decode
       replicas: 3
       instanceType: Standard_NC24ads_A100_v4
       config: decode-params         # optional ConfigMap for role-specific vLLM args
@@ -114,11 +114,11 @@ spec:
 ### API Types
 
 ```go
-type MultiRoleInferenceRoleName string
+type MultiRoleInferenceRoleType string
 
 const (
-    MultiRoleInferenceRolePrefill MultiRoleInferenceRoleName = "prefill"
-    MultiRoleInferenceRoleDecode  MultiRoleInferenceRoleName = "decode"
+    MultiRoleInferenceRolePrefill MultiRoleInferenceRoleType = "prefill"
+    MultiRoleInferenceRoleDecode  MultiRoleInferenceRoleType = "decode"
 )
 
 type MultiRoleInferencePresetSpec struct {
@@ -131,9 +131,9 @@ type MultiRoleInferenceSharedInferenceSpec struct {
 }
 
 type MultiRoleInferenceRoleSpec struct {
-    // Name is the role name. Supported values: prefill, decode.
+    // Type is the role type. Supported values: prefill, decode.
     // +kubebuilder:validation:Enum=prefill;decode
-    Name MultiRoleInferenceRoleName `json:"name"`
+    Type MultiRoleInferenceRoleType `json:"type"`
 
     // Replicas is the number of workspaces to create for this role.
     // Maps directly to the child InferenceSet's spec.replicas.
@@ -600,10 +600,10 @@ metadata:
     scaledobject.kaito.sh/decode-max-replicas: "6"
 spec:
   roles:
-    - name: prefill
+    - type: prefill
       replicas: 2
       instanceType: Standard_NC24ads_A100_v4
-    - name: decode
+    - type: decode
       replicas: 3
       instanceType: Standard_NC24ads_A100_v4
 ```
@@ -692,10 +692,10 @@ spec:
       presetOptions:
         modelAccessSecret: hf-token
   roles:
-    - name: prefill
+    - type: prefill
       replicas: 2
       instanceType: Standard_NC24ads_A100_v4
-    - name: decode
+    - type: decode
       replicas: 3
       instanceType: Standard_NC24ads_A100_v4
 EOF
