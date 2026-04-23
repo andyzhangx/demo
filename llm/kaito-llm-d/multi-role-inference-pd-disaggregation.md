@@ -425,6 +425,8 @@ spec:
 
 ### 7. DestinationRule (TLS bypass for EPP)
 
+> **Note**: The DestinationRule is a temporary workaround. It will be removed once [kaito-project/kaito#1983](https://github.com/kaito-project/kaito/pull/1983) lands, which disables EPP secure serving (`--secure-serving=false`) so that the Gateway → EPP connection no longer requires TLS bypass.
+
 ```yaml
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
