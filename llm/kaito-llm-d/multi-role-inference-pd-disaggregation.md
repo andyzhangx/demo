@@ -56,10 +56,10 @@ llm-d EPP (ext-proc)                    ◄── P/D disaggregation scheduling
 │ -prefill     │   │ -decode      │   │                            │
 │ replicas: 2  │   │ replicas: 3  │   │ selector:                  │
 │              │   │              │   │   apps: deepseek-v32       │
-│ pods:        │   │ pods:        │   │                            │
-│  prefill-0   │   │  decode-0    │   │ ┌────────────────────────┐ │
-│  prefill-1   │   │  decode-1    │   │ │ llm-d EPP              │ │
-│              │   │  decode-2    │   │ │ disagg-profile-handler │ │
+│ workspaces:  │   │ workspaces:  │   │                            │
+│  ws-0        │   │  ws-0        │   │ ┌────────────────────────┐ │
+│  ws-1        │   │  ws-1        │   │ │ llm-d EPP              │ │
+│              │   │  ws-2        │   │ │ disagg-profile-handler │ │
 │ pod labels:  │   │ pod labels:  │   │ │ prefill-filter         │ │
 │  apps:       │   │  apps:       │   │ │ decode-filter          │ │
 │   deepseek-  │   │   deepseek-  │   │ └────────────────────────┘ │
@@ -135,7 +135,7 @@ type MultiRoleInferenceRoleSpec struct {
     // +kubebuilder:validation:Enum=prefill;decode
     Name MultiRoleInferenceRoleName `json:"name"`
 
-    // Replicas is the number of pods (workspaces) to create for this role.
+    // Replicas is the number of workspaces to create for this role.
     // Maps directly to the child InferenceSet's spec.replicas.
     // +kubebuilder:validation:Minimum=1
     // +optional
@@ -192,7 +192,7 @@ The MultiRoleInference controller reconciles one CR into the following 6 types o
 
 ### 1. Prefill InferenceSet
 
-The controller creates **one** prefill InferenceSet with `spec.replicas` set from `roles[prefill].replicas`. For the example MRI with `prefill.replicas: 2`, the generated InferenceSet has `spec.replicas: 2` (2 prefill pods):
+The controller creates **one** prefill InferenceSet with `spec.replicas` set from `roles[prefill].replicas`. For the example MRI with `prefill.replicas: 2`, the generated InferenceSet has `spec.replicas: 2` (2 prefill workspaces):
 
 ```yaml
 apiVersion: kaito.sh/v1alpha1
@@ -232,7 +232,7 @@ spec:
 
 ### 2. Decode InferenceSet with Sidecar Container
 
-The controller creates **one** decode InferenceSet with `spec.replicas` set from `roles[decode].replicas`. For the example MRI with `decode.replicas: 3`, the generated InferenceSet has `spec.replicas: 3` (3 decode pods). Each decode pod has `inference-role: decode` label and decode vLLM config. **Critically, decode pods require a sidecar container** for P/D coordination.
+The controller creates **one** decode InferenceSet with `spec.replicas` set from `roles[decode].replicas`. For the example MRI with `decode.replicas: 3`, the generated InferenceSet has `spec.replicas: 3` (3 decode workspaces). Each decode workspace has `inference-role: decode` label and decode vLLM config. **Critically, decode workspaces require a sidecar container** for P/D coordination.
 
 #### Why Decode Pods Need a Sidecar
 
@@ -662,9 +662,9 @@ Users can also create ScaledObject resources targeting child InferenceSets direc
      │ spec.replicas: 2 │◄── KEDA   │ spec.replicas: 3 │◄── KEDA
      │ (/scale)         │   scales  │ (/scale)         │   scales
      │                  │            │                  │
-     │ prefill-pod-0    │            │ decode-pod-0     │
-     │ prefill-pod-1    │            │ decode-pod-1     │
-     │                  │            │ decode-pod-2     │
+     │ workspace-0      │            │ workspace-0      │
+     │ workspace-1      │            │ workspace-1      │
+     │                  │            │ workspace-2      │
      └──────────────────┘            └──────────────────┘
 ```
 
