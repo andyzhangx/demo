@@ -373,15 +373,15 @@ metadata:
   name: deepseek-v32
   namespace: default
 spec:
-  targetPortNumber: 5000
+  targetPortNumber: 8080
   selector:
     matchLabels:
       apps: deepseek-v32
 ```
 
-The EPP inside this pool sees all workspaces and uses `by-label-selector` plugin to filter by `inference-role`.
-
-> **Port Note**: In P/D disaggregation, prefill workspaces serve vLLM directly on port 5000, while decode workspaces have the routing sidecar on port 8080 (which forwards to vLLM on port 5000). Since the InferencePool has a single `targetPortNumber`, the EPP routes requests to the **sidecar port (8080)** on decode workspaces. Prefill workspaces are not directly accessed through the InferencePool — the decode sidecar communicates with prefill workspaces directly using the `x-prefiller-host-port` header set by EPP.
+In P/D mode, **all requests go to decode pods first** (through the routing sidecar on port 8080). The sidecar handles prefill orchestration internally — prefill pods are not accessed via the InferencePool. The `targetPortNumber: 8080` ensures the Gateway routes to the decode sidecar, which then:
+- Contacts the selected prefill pod directly (via `x-prefiller-host-port` header from EPP) if disaggregation is triggered
+- Falls back to local prefill+decode if not disaggregated
 
 ### 4. EPP Plugin ConfigMap (auto-generated if not provided)
 
@@ -403,6 +403,11 @@ data:
     featureGates:
       - prepareDataPlugins
     plugins:
+      # Required for P/D: sets x-prefiller-host-port header so decode sidecar
+      # knows which prefill pod to contact.
+      - type: disagg-headers-handler
+      # PD decider: decides whether to disaggregate based on prefix cache hit ratio.
+      # NOTE: disagg-profile-handler + P/D requires a PrefixCachePlugin in both profiles.
       - type: prefix-based-pd-decider
         parameters:
           nonCachedTokens: 4
@@ -410,6 +415,19 @@ data:
         parameters:
           deciders:
             prefill: prefix-based-pd-decider
+      # Precise prefix cache scorer: tracks real-time KV cache state across vLLM pods.
+      # Required by disagg-profile-handler for accurate P/D decisions.
+      - type: precise-prefix-cache-scorer
+        parameters:
+          tokenProcessorConfig:
+            blockSize: 64            # must match vLLM block size
+          indexerConfig:
+            kvBlockIndexConfig:
+              enableMetrics: true
+            tokenizersPoolConfig:
+              modelName: deepseek-ai/DeepSeek-V3.2
+      # Pod role filters: use by-label-selector with KAITO's inference-role label
+      # (not llm-d's built-in prefill-filter/decode-filter which look for llm-d.ai/role).
       - type: by-label-selector
         name: prefill-filter
         parameters:
@@ -420,20 +438,26 @@ data:
         parameters:
           matchLabels:
             inference-role: decode
-      - type: kv-cache-utilization-scorer
-      - type: queue-scorer
+      - type: load-aware-scorer
+        parameters:
+          threshold: 10
       - type: max-score-picker
     schedulingProfiles:
       - name: prefill
         plugins:
           - pluginRef: prefill-filter
-          - pluginRef: kv-cache-utilization-scorer
-            weight: 2
-          - pluginRef: queue-scorer
-            weight: 1
+          - pluginRef: precise-prefix-cache-scorer
+            weight: 50
+          - pluginRef: load-aware-scorer
+            weight: 10
+          - pluginRef: max-score-picker
       - name: decode
         plugins:
           - pluginRef: decode-filter
+          - pluginRef: precise-prefix-cache-scorer
+            weight: 50
+          - pluginRef: load-aware-scorer
+            weight: 10
           - pluginRef: max-score-picker
 ```
 
@@ -485,7 +509,7 @@ spec:
           ...
     inferencePool:
       name: deepseek-v32
-      targetPortNumber: 5000
+      targetPortNumber: 8080
       selector:
         apps: deepseek-v32
 ```
@@ -520,6 +544,12 @@ Incoming Request
       │
       ▼
 ┌─────────────────────────┐
+│ disagg-headers-handler  │  Step 0: Set P/D coordination headers
+│                         │  (x-prefiller-host-port for decode sidecar)
+└──────────┬──────────────┘
+           │
+           ▼
+┌─────────────────────────┐
 │ disagg-profile-handler  │  Step 1: Decide prefill or decode
 │                         │
 │  Uses prefix-based-     │  - New prompt with uncached tokens → "prefill" profile
@@ -543,17 +573,19 @@ Incoming Request
 ┌─────────────────────────┐
 │ scorer plugins          │  Step 3: Rank candidate pods
 │                         │
-│  prefill profile:       │  - kv-cache-utilization-scorer (weight: 2)
-│    kv-cache + queue     │  - queue-scorer (weight: 1)
-│                         │
-│  decode profile:        │  - max-score-picker (pick best)
-│    max-score-picker     │
+│  Both profiles:         │  - precise-prefix-cache-scorer (weight: 50)
+│    prefix-cache +       │    tracks real-time KV cache state
+│    load-aware +         │  - load-aware-scorer (weight: 10)
+│    max-score-picker     │  - max-score-picker (pick best)
 └──────────┬──────────────┘
            │
            │  selected pod
            ▼
      Envoy forwards request to selected pod
 ```
+
+> **Why `by-label-selector` instead of llm-d's built-in `prefill-filter`/`decode-filter`?**
+> llm-d's built-in filters look for the `llm-d.ai/role` label. KAITO uses `inference-role` as the pod label convention. Using `by-label-selector` with `matchLabels: {inference-role: prefill/decode}` achieves the same filtering without requiring pods to carry llm-d-specific labels.
 
 ### KV Cache Transfer Between Prefill and Decode
 
@@ -718,7 +750,7 @@ spec:
         - group: inference.networking.x-k8s.io
           kind: InferencePool
           name: deepseek-v32
-          port: 5000
+          port: 8080
 EOF
 ```
 
@@ -783,6 +815,7 @@ curl -s http://<gateway-ip>/v1/chat/completions \
 
 ## References
 
+- [llm-d Inference Scheduler Architecture](https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/architecture.md)
 - [MultiRoleInference proposal (PR #1846)](https://github.com/kaito-project/kaito/pull/1846)
 - [llm-d EPP migration proposal](https://github.com/kaito-project/kaito/blob/main/docs/proposals/20260421-migrate-epp-to-llm-d-inference-scheduler.md)
 - [llm-d inference scheduler](https://github.com/llm-d/llm-d-inference-scheduler)
