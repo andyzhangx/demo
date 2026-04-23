@@ -225,9 +225,43 @@ spec:
       config: deepseek-v32-prefill-vllm-config
 ```
 
-### 2. Decode InferenceSet(s)
+### 2. Decode InferenceSet(s) with Sidecar Container
 
-Same structure, with `inference-role: decode` label and decode vLLM config.
+Same structure as prefill, with `inference-role: decode` label and decode vLLM config. **Critically, decode pods require a sidecar container** for P/D coordination.
+
+#### Why Decode Pods Need a Sidecar
+
+In the llm-d P/D architecture ([disaggregation docs](https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/disaggregation.md)), all requests are routed to the **decode worker first**. The decode worker's sidecar is responsible for:
+
+1. Receiving EPP metadata (selected decode pod + optional prefill pod via `x-prefiller-host-port` header)
+2. If prefill is disaggregated → forwarding the prefill request to the selected prefill worker and waiting for KV cache parameters
+3. Sending the decode request to the local vLLM engine with `remote_prefill=true` and the KV cache block IDs
+4. Returning the final response through the inference gateway
+
+> **Note**: No sidecar or coordination logic is needed on prefill pods. Prefill pods are stateless workers that process prompts and produce KV cache.
+
+#### P/D Request Sequence
+
+```
+1. Client → Inference Gateway (Envoy + EPP)
+2. EPP runs disagg-profile-handler:
+   a. Decode stage: select a decode pod (always runs first)
+   b. Prefill stage: PD decider evaluates prompt length + prefix cache hit
+      - High cache hit or short prompt → skip prefill, decode handles everything
+      - Low cache hit + long prompt → select a prefill pod
+3. Request lands on Decode Worker Sidecar
+   a. If x-prefiller-host-port header exists:
+      - Sidecar → Prefill Worker: send prompt (max_tokens=1)
+      - Prefill Worker: run prefill, produce KV cache
+      - Prefill Worker → Sidecar: return KV cache parameters (prefill ID + memory block IDs)
+      - Sidecar → local vLLM: decode with remote_prefill=true
+      - local vLLM → Prefill Worker: read KV cache via NixlConnector
+      - local vLLM: run decode, generate tokens
+   b. If no prefill header → run both prefill + decode locally
+4. Decode Worker → Sidecar → Gateway → Client
+```
+
+#### Generated Decode InferenceSet
 
 ```yaml
 apiVersion: kaito.sh/v1alpha1
@@ -264,6 +298,39 @@ spec:
           modelAccessSecret: hf-token
       config: deepseek-v32-decode-vllm-config
 ```
+
+#### Sidecar Injection
+
+The MultiRoleInference controller must inject a sidecar container into the decode InferenceSet's pod template. The sidecar is the [llm-d routing sidecar](https://github.com/llm-d/llm-d-routing-sidecar), which handles P/D coordination:
+
+```yaml
+# Injected into decode pod spec by the controller
+containers:
+  - name: vllm                          # main inference container (existing)
+    # ...
+  - name: llm-d-routing-sidecar         # sidecar (injected by controller)
+    image: mcr.microsoft.com/oss/v2/llm-d/llm-d-routing-sidecar:latest
+    ports:
+      - containerPort: 8080             # sidecar listens for incoming requests
+        name: sidecar
+    env:
+      - name: BACKEND_URL
+        value: "http://localhost:5000"  # local vLLM engine
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.podIP
+```
+
+The sidecar sits in front of the vLLM engine on decode pods:
+- Incoming requests hit the sidecar (port 8080)
+- Sidecar orchestrates prefill (if needed) and then forwards to local vLLM (port 5000)
+- The InferencePool `targetPortNumber` should point to the sidecar port (8080) for decode pods
+
+> **Implementation Note**: The exact sidecar injection mechanism needs to be designed. Options include:
+> 1. Controller directly patches the StatefulSet pod template after InferenceSet creates it
+> 2. InferenceSet API supports additional containers in the pod template
+> 3. Use a mutating webhook to inject the sidecar based on `inference-role: decode` label
 
 ### 3. InferencePool
 
