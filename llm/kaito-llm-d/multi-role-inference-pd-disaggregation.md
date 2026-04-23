@@ -768,7 +768,7 @@ curl -s http://<gateway-ip>/v1/chat/completions \
 | | 4 | Controller: create InferencePool (selector matches all prefill + decode pods) | None |
 | | 5 | Controller: auto-generate P/D EPP plugin ConfigMap | llm-d disagg-profile-handler |
 | | 6 | Controller: create OCI Repository + HelmRelease (llm-d EPP image) | llm-d image in MCR |
-| | 7 | Controller: create DestinationRule (TLS bypass) | Istio |
+| | 7 | Controller: create DestinationRule (TLS bypass) — **temporary, will be removed after [kaito#1983](https://github.com/kaito-project/kaito/pull/1983)** | Istio |
 | | 8 | Controller: status aggregation from child InferenceSets + InferencePool | None |
 | | 9 | Webhook: validation + defaulting | None |
 | **Phase 2: Autoscaling** | 10 | Controller: propagate KEDA annotations from MRI to child InferenceSets | keda-kaito-scaler |
