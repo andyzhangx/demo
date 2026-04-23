@@ -11,7 +11,7 @@ Client
   │  POST /v1/chat/completions
   │  {"model": "deepseek-v32", "messages": [...]}
   ▼
-Gateway (Envoy + Istio)
+Gateway (Envoy-based: Istio Gateway or Envoy Gateway)
   │
   ▼
 BBR (ext-proc)                          ◄── Extract model name from body
@@ -666,7 +666,7 @@ Scale the number of InferenceSet instances per role (e.g., add a 3rd prefill Inf
 ### Deploy
 
 ```bash
-# 1. Prerequisites: Istio, Gateway, BBR (same as standard KAITO GWIE setup)
+# 1. Prerequisites: Gateway API implementation (Istio Gateway or Envoy Gateway), BBR (same as standard KAITO GWIE setup)
 
 # 2. Create MultiRoleInference
 kubectl apply -f - <<EOF
