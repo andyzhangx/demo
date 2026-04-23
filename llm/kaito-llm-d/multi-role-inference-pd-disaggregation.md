@@ -309,7 +309,7 @@ containers:
   - name: vllm                          # main inference container (existing)
     # ...
   - name: llm-d-routing-sidecar         # sidecar (injected by controller)
-    image: mcr.microsoft.com/oss/v2/llm-d/llm-d-routing-sidecar:latest
+    image: mcr.microsoft.com/oss/v2/llm-d/llm-d-routing-sidecar:v0.7.0
     ports:
       - containerPort: 8080             # sidecar listens for incoming requests
         name: sidecar
