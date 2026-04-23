@@ -342,17 +342,18 @@ In the standard (non-disaggregated) flow, each InferenceSet creates its own Infe
 | **InferencePool created by** | InferenceSet controller | MultiRoleInference controller |
 | **EPP sees** | All pods from 1 InferenceSet | All prefill + decode pods (filtered by `by-label-selector` plugin) |
 
-Child InferenceSets must **skip** the GWIE logic to avoid creating redundant InferencePool/EPP resources:
+Child InferenceSets must **skip** the GWIE logic to avoid creating redundant InferencePool/EPP resources. Standalone InferenceSets (not created by MultiRoleInference) continue to create their own InferencePool/EPP as before — this is an additive change, not a breaking one:
 
 ```go
 // In InferenceSet controller's ensureGatewayAPIInferenceExtension()
 func (c *InferenceSetReconciler) ensureGatewayAPIInferenceExtension(ctx context.Context, iObj *kaitov1alpha1.InferenceSet) error {
     // Skip GWIE for child InferenceSets managed by MultiRoleInference.
     // The parent MultiRoleInference controller owns the shared InferencePool and EPP.
+    // Standalone InferenceSets (no parent label) continue to create their own InferencePool/EPP.
     if iObj.Labels["kaito.sh/parent"] != "" {
         return nil
     }
-    // ... existing logic for standalone InferenceSets ...
+    // ... existing logic for standalone InferenceSets (unchanged) ...
 }
 ```
 
