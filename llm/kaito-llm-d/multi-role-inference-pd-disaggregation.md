@@ -187,7 +187,7 @@ The MultiRoleInference controller reconciles one CR into the following 6 types o
 
 ### 1. Prefill InferenceSet(s)
 
-For each prefill replica, the controller creates one InferenceSet:
+The controller creates `roles[prefill].replicas` InferenceSets. For the example MRI with `prefill.replicas: 2`, two InferenceSets are generated: `deepseek-v32-prefill-0` and `deepseek-v32-prefill-1`. Showing `prefill-0` below:
 
 ```yaml
 apiVersion: kaito.sh/v1alpha1
@@ -227,7 +227,7 @@ spec:
 
 ### 2. Decode InferenceSet(s) with Sidecar Container
 
-Same structure as prefill, with `inference-role: decode` label and decode vLLM config. **Critically, decode pods require a sidecar container** for P/D coordination.
+Similar to prefill, the controller creates `roles[decode].replicas` InferenceSets. For the example MRI with `decode.replicas: 3`, three InferenceSets are generated: `deepseek-v32-decode-0`, `deepseek-v32-decode-1`, and `deepseek-v32-decode-2`. Each decode pod has `inference-role: decode` label and decode vLLM config. **Critically, decode pods require a sidecar container** for P/D coordination.
 
 #### Why Decode Pods Need a Sidecar
 
