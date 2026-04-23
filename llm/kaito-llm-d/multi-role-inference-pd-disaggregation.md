@@ -185,15 +185,15 @@ type MultiRoleInference struct {
 
 The MultiRoleInference controller reconciles one CR into the following 6 types of resources:
 
-### 1. Prefill InferenceSet(s)
+### 1. Prefill InferenceSet
 
-The controller creates `roles[prefill].replicas` InferenceSets. For the example MRI with `prefill.replicas: 2`, two InferenceSets are generated: `deepseek-v32-prefill-0` and `deepseek-v32-prefill-1`. Showing `prefill-0` below:
+The controller creates **one** prefill InferenceSet with `spec.replicas` set from `roles[prefill].replicas`. For the example MRI with `prefill.replicas: 2`, the generated InferenceSet has `spec.replicas: 2` (2 prefill pods):
 
 ```yaml
 apiVersion: kaito.sh/v1alpha1
 kind: InferenceSet
 metadata:
-  name: deepseek-v32-prefill-0
+  name: deepseek-v32-prefill
   namespace: default
   labels:
     kaito.sh/parent: deepseek-v32
@@ -205,7 +205,7 @@ metadata:
       controller: true
       blockOwnerDeletion: true
 spec:
-  replicas: 1
+  replicas: 2
   labelSelector:
     matchLabels:
       apps: deepseek-v32
@@ -225,9 +225,9 @@ spec:
       config: deepseek-v32-prefill-vllm-config
 ```
 
-### 2. Decode InferenceSet(s) with Sidecar Container
+### 2. Decode InferenceSet with Sidecar Container
 
-Similar to prefill, the controller creates `roles[decode].replicas` InferenceSets. For the example MRI with `decode.replicas: 3`, three InferenceSets are generated: `deepseek-v32-decode-0`, `deepseek-v32-decode-1`, and `deepseek-v32-decode-2`. Each decode pod has `inference-role: decode` label and decode vLLM config. **Critically, decode pods require a sidecar container** for P/D coordination.
+The controller creates **one** decode InferenceSet with `spec.replicas` set from `roles[decode].replicas`. For the example MRI with `decode.replicas: 3`, the generated InferenceSet has `spec.replicas: 3` (3 decode pods). Each decode pod has `inference-role: decode` label and decode vLLM config. **Critically, decode pods require a sidecar container** for P/D coordination.
 
 #### Why Decode Pods Need a Sidecar
 
@@ -267,7 +267,7 @@ In the llm-d P/D architecture ([disaggregation docs](https://github.com/llm-d/ll
 apiVersion: kaito.sh/v1alpha1
 kind: InferenceSet
 metadata:
-  name: deepseek-v32-decode-0
+  name: deepseek-v32-decode
   namespace: default
   labels:
     kaito.sh/parent: deepseek-v32
@@ -279,7 +279,7 @@ metadata:
       controller: true
       blockOwnerDeletion: true
 spec:
-  replicas: 1
+  replicas: 3
   labelSelector:
     matchLabels:
       apps: deepseek-v32
@@ -604,11 +604,11 @@ spec:
 Controller translates to per-InferenceSet annotations:
 
 ```yaml
-# Generated: deepseek-v32-prefill-0
+# Generated: deepseek-v32-prefill
 apiVersion: kaito.sh/v1alpha1
 kind: InferenceSet
 metadata:
-  name: deepseek-v32-prefill-0
+  name: deepseek-v32-prefill
   annotations:
     scaledobject.kaito.sh/auto-provision: "true"
     scaledobject.kaito.sh/metricName: "vllm:num_requests_waiting"
@@ -616,11 +616,11 @@ metadata:
     scaledobject.kaito.sh/max-replicas: "4"
 # ...
 
-# Generated: deepseek-v32-decode-0
+# Generated: deepseek-v32-decode
 apiVersion: kaito.sh/v1alpha1
 kind: InferenceSet
 metadata:
-  name: deepseek-v32-decode-0
+  name: deepseek-v32-decode
   annotations:
     scaledobject.kaito.sh/auto-provision: "true"
     scaledobject.kaito.sh/metricName: "vllm:gpu_cache_usage_perc"
@@ -633,32 +633,32 @@ keda-kaito-scaler sees standard InferenceSet annotations → creates ScaledObjec
 
 ### Option B: Scale MultiRoleInference Roles (Future)
 
-Scale the number of InferenceSet instances per role (e.g., add a 3rd prefill InferenceSet). This requires keda-kaito-scaler to understand MultiRoleInference and patch `roles[].replicas`.
+Scale the pod count of each role's InferenceSet via `spec.replicas`. KEDA ScaledObject targets the InferenceSet's `/scale` subresource directly — no changes needed.
 
-### Scaling Dimensions
+### Scaling Diagram
 
 ```
                     ┌──────────────────────────────────┐
                     │     MultiRoleInference            │
                     │                                    │
-                    │  prefill.replicas: 2  ◄─── Dimension 1: Number of InferenceSets
-                    │  decode.replicas: 3       (future: KEDA patches MRI CR)
+                    │  prefill.replicas: 2               │
+                    │  decode.replicas: 3                │
                     └──────────┬───────────────────────┘
-                               │
-              ┌────────────────┼────────────────┐
-              ▼                ▼                ▼
-     ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-     │ InferenceSet │  │ InferenceSet │  │ InferenceSet │
-     │ prefill-0    │  │ decode-0     │  │ decode-1     │ ...
-     │              │  │              │  │              │
-     │ replicas: 1  │  │ replicas: 1  │  │ replicas: 1  │
-     │      ▲       │  │      ▲       │  │      ▲       │
-     │      │       │  │      │       │  │      │       │
-     │ Dimension 2  │  │ Dimension 2  │  │ Dimension 2  │
-     │ Workspace    │  │ Workspace    │  │ Workspace    │
-     │ count per IS │  │ count per IS │  │ count per IS │
-     │ (KEDA today) │  │ (KEDA today) │  │ (KEDA today) │
-     └──────────────┘  └──────────────┘  └──────────────┘
+                               │ controller creates
+              ┌────────────────┴────────────────┐
+              ▼                                 ▼
+     ┌──────────────────┐            ┌──────────────────┐
+     │ InferenceSet     │            │ InferenceSet     │
+     │ deepseek-v32-    │            │ deepseek-v32-    │
+     │ prefill          │            │ decode           │
+     │                  │            │                  │
+     │ spec.replicas: 2 │◄── KEDA   │ spec.replicas: 3 │◄── KEDA
+     │ (/scale)         │   scales  │ (/scale)         │   scales
+     │                  │            │                  │
+     │ prefill-pod-0    │            │ decode-pod-0     │
+     │ prefill-pod-1    │            │ decode-pod-1     │
+     │                  │            │ decode-pod-2     │
+     └──────────────────┘            └──────────────────┘
 ```
 
 ## User Experience
@@ -726,11 +726,8 @@ kubectl get mri deepseek-v32
 # Check child InferenceSets
 kubectl get is -l kaito.sh/parent=deepseek-v32
 # NAME                      REPLICAS   READYREPLICAS   AGE
-# deepseek-v32-prefill-0    1          1               10m
-# deepseek-v32-prefill-1    1          1               10m
-# deepseek-v32-decode-0     1          1               10m
-# deepseek-v32-decode-1     1          1               10m
-# deepseek-v32-decode-2     1          1               10m
+# deepseek-v32-prefill      2          2               10m
+# deepseek-v32-decode       3          3               10m
 
 # Check InferencePool and EPP
 kubectl get inferencepool deepseek-v32
@@ -739,11 +736,11 @@ kubectl get pod -l inferencepool=deepseek-v32-inferencepool-epp
 # Verify pod labels
 kubectl get pods -l apps=deepseek-v32 --show-labels
 # NAME                                    LABELS
-# deepseek-v32-prefill-0-ws-xxx           apps=deepseek-v32,inference-role=prefill
-# deepseek-v32-prefill-1-ws-xxx           apps=deepseek-v32,inference-role=prefill
-# deepseek-v32-decode-0-ws-xxx            apps=deepseek-v32,inference-role=decode
-# deepseek-v32-decode-1-ws-xxx            apps=deepseek-v32,inference-role=decode
-# deepseek-v32-decode-2-ws-xxx            apps=deepseek-v32,inference-role=decode
+# deepseek-v32-prefill-ws-0               apps=deepseek-v32,inference-role=prefill
+# deepseek-v32-prefill-ws-1               apps=deepseek-v32,inference-role=prefill
+# deepseek-v32-decode-ws-0                apps=deepseek-v32,inference-role=decode
+# deepseek-v32-decode-ws-1                apps=deepseek-v32,inference-role=decode
+# deepseek-v32-decode-ws-2                apps=deepseek-v32,inference-role=decode
 ```
 
 ### Test
