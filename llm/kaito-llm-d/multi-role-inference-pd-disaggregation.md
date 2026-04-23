@@ -52,17 +52,21 @@ llm-d EPP (ext-proc)                    ◄── P/D disaggregation scheduling
        ▼                   ▼                           ▼
 ┌──────────────┐   ┌──────────────┐   ┌────────────────────────────┐
 │ InferenceSet │   │ InferenceSet │   │ InferencePool              │
-│              │   │              │   │ deepseek-v32               │
-│ prefill-0    │   │ decode-0     │   │                            │
-│ prefill-1    │   │ decode-1     │   │ selector:                  │
-│              │   │ decode-2     │   │   apps: deepseek-v32       │
-│ pod labels:  │   │ pod labels:  │   │                            │
-│  apps:       │   │  apps:       │   │ ┌────────────────────────┐ │
-│   deepseek-  │   │   deepseek-  │   │ │ llm-d EPP              │ │
-│   v32        │   │   v32        │   │ │ disagg-profile-handler │ │
-│  inference-  │   │  inference-  │   │ │ prefill-filter         │ │
-│   role:      │   │   role:      │   │ │ decode-filter          │ │
-│   prefill    │   │   decode     │   │ └────────────────────────┘ │
+│ deepseek-v32 │   │ deepseek-v32 │   │ deepseek-v32               │
+│ -prefill     │   │ -decode      │   │                            │
+│ replicas: 2  │   │ replicas: 3  │   │ selector:                  │
+│              │   │              │   │   apps: deepseek-v32       │
+│ pods:        │   │ pods:        │   │                            │
+│  prefill-0   │   │  decode-0    │   │ ┌────────────────────────┐ │
+│  prefill-1   │   │  decode-1    │   │ │ llm-d EPP              │ │
+│              │   │  decode-2    │   │ │ disagg-profile-handler │ │
+│ pod labels:  │   │ pod labels:  │   │ │ prefill-filter         │ │
+│  apps:       │   │  apps:       │   │ │ decode-filter          │ │
+│   deepseek-  │   │   deepseek-  │   │ └────────────────────────┘ │
+│   v32        │   │   v32        │   │                            │
+│  inference-  │   │  inference-  │   │                            │
+│   role:      │   │   role:      │   │                            │
+│   prefill    │   │   decode     │   │                            │
 └──────────────┘   └──────────────┘   └────────────────────────────┘
                                                 ▲
                                                 │ ext-proc
@@ -131,7 +135,8 @@ type MultiRoleInferenceRoleSpec struct {
     // +kubebuilder:validation:Enum=prefill;decode
     Name MultiRoleInferenceRoleName `json:"name"`
 
-    // Replicas is the number of InferenceSet resources to create for this role.
+    // Replicas is the number of pods (workspaces) to create for this role.
+    // Maps directly to the child InferenceSet's spec.replicas.
     // +kubebuilder:validation:Minimum=1
     // +optional
     Replicas *int32 `json:"replicas,omitempty"`
@@ -375,6 +380,8 @@ spec:
 ```
 
 The EPP inside this pool sees all pods and uses `by-label-selector` plugin to filter by `inference-role`.
+
+> **Port Note**: In P/D disaggregation, prefill pods serve vLLM directly on port 5000, while decode pods have the routing sidecar on port 8080 (which forwards to vLLM on port 5000). Since the InferencePool has a single `targetPortNumber`, the EPP routes requests to the **sidecar port (8080)** on decode pods. Prefill pods are not directly accessed through the InferencePool — the decode sidecar communicates with prefill pods directly using the `x-prefiller-host-port` header set by EPP.
 
 ### 4. EPP Plugin ConfigMap (auto-generated if not provided)
 
@@ -631,9 +638,9 @@ metadata:
 
 keda-kaito-scaler sees standard InferenceSet annotations → creates ScaledObject → KEDA scales `spec.replicas` (workspace count) via `/scale` subresource.
 
-### Option B: Scale MultiRoleInference Roles (Future)
+### Option B: Direct KEDA ScaledObject on Child InferenceSets (Future)
 
-Scale the pod count of each role's InferenceSet via `spec.replicas`. KEDA ScaledObject targets the InferenceSet's `/scale` subresource directly — no changes needed.
+Users can also create ScaledObject resources targeting child InferenceSets directly, bypassing MRI annotations entirely. This gives full flexibility over KEDA configuration but requires users to know the child InferenceSet names.
 
 ### Scaling Diagram
 
@@ -772,7 +779,7 @@ curl -s http://<gateway-ip>/v1/chat/completions \
 | | 11 | keda-kaito-scaler: understand role-specific metrics (prefill vs decode) | keda-kaito-scaler changes |
 | **Phase 3: Advanced** | 12 | Support custom `eppPluginsConfigRef` for user-defined EPP plugins | None |
 | | 13 | Support llm-d routing sidecar for precise prefix cache scoring | llm-d-routing-sidecar |
-| | 14 | Scale MRI roles[].replicas (add/remove InferenceSet instances) | keda-kaito-scaler MRI support |
+| | 14 | Support MRI `roles[].replicas` sync: controller watches MRI spec changes and updates child InferenceSet `spec.replicas` | None |
 
 ## References
 
