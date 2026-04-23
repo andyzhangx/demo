@@ -332,6 +332,30 @@ The sidecar sits in front of the vLLM engine on decode pods:
 > 2. InferenceSet API supports additional containers in the pod template
 > 3. Use a mutating webhook to inject the sidecar based on `inference-role: decode` label
 
+### InferencePool and EPP Ownership
+
+In the standard (non-disaggregated) flow, each InferenceSet creates its own InferencePool and EPP via `ensureGatewayAPIInferenceExtension()`. With MultiRoleInference, this changes:
+
+| | Standard InferenceSet | MultiRoleInference |
+|---|---|---|
+| **Mapping** | 1 InferenceSet → 1 InferencePool → 1 EPP | 1 MRI → N child InferenceSets → **1 shared InferencePool** → 1 EPP |
+| **InferencePool created by** | InferenceSet controller | MultiRoleInference controller |
+| **EPP sees** | All pods from 1 InferenceSet | All prefill + decode pods (filtered by `by-label-selector` plugin) |
+
+Child InferenceSets must **skip** the GWIE logic to avoid creating redundant InferencePool/EPP resources:
+
+```go
+// In InferenceSet controller's ensureGatewayAPIInferenceExtension()
+func (c *InferenceSetReconciler) ensureGatewayAPIInferenceExtension(ctx context.Context, iObj *kaitov1alpha1.InferenceSet) error {
+    // Skip GWIE for child InferenceSets managed by MultiRoleInference.
+    // The parent MultiRoleInference controller owns the shared InferencePool and EPP.
+    if iObj.Labels["kaito.sh/parent"] != "" {
+        return nil
+    }
+    // ... existing logic for standalone InferenceSets ...
+}
+```
+
 ### 3. InferencePool
 
 One InferencePool per MultiRoleInference, selecting ALL prefill + decode pods:
