@@ -183,7 +183,7 @@ type MultiRoleInference struct {
 
 ## Controller-Generated Resources
 
-The MultiRoleInference controller reconciles one CR into the following resources:
+The MultiRoleInference controller reconciles one CR into the following 6 types of resources:
 
 ### 1. Prefill InferenceSet(s)
 
@@ -265,39 +265,7 @@ spec:
       config: deepseek-v32-decode-vllm-config
 ```
 
-### 3. vLLM P/D ConfigMaps (auto-generated)
-
-The controller generates role-specific vLLM configuration for NixlConnector:
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: deepseek-v32-prefill-vllm-config
-  namespace: default
-  ownerReferences:
-    - kind: MultiRoleInference
-      name: deepseek-v32
-data:
-  VLLM_DISAGGREGATED_PREFILL_ROLE: "prefill"
-  VLLM_KV_CONNECTOR: "NixlConnector"
-  VLLM_KV_ROLE: "kv_producer"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: deepseek-v32-decode-vllm-config
-  namespace: default
-  ownerReferences:
-    - kind: MultiRoleInference
-      name: deepseek-v32
-data:
-  VLLM_DISAGGREGATED_PREFILL_ROLE: "decode"
-  VLLM_KV_CONNECTOR: "NixlConnector"
-  VLLM_KV_ROLE: "kv_consumer"
-```
-
-### 4. InferencePool
+### 3. InferencePool
 
 One InferencePool per MultiRoleInference, selecting ALL prefill + decode pods:
 
@@ -316,7 +284,7 @@ spec:
 
 The EPP inside this pool sees all pods and uses `by-label-selector` plugin to filter by `inference-role`.
 
-### 5. EPP Plugin ConfigMap (auto-generated if not provided)
+### 4. EPP Plugin ConfigMap (auto-generated if not provided)
 
 When `eppPluginsConfigRef` is not set, the controller generates a default P/D disaggregation config:
 
@@ -370,7 +338,7 @@ data:
           - pluginRef: max-score-picker
 ```
 
-### 6. OCI Repository + HelmRelease (InferencePool chart with llm-d EPP)
+### 5. OCI Repository + HelmRelease (InferencePool chart with llm-d EPP)
 
 Reuses the existing GWIE InferencePool chart, overriding the EPP image to llm-d:
 
@@ -423,7 +391,7 @@ spec:
         apps: deepseek-v32
 ```
 
-### 7. DestinationRule (TLS bypass for EPP)
+### 6. DestinationRule (TLS bypass for EPP)
 
 > **Note**: The DestinationRule is a temporary workaround. It will be removed once [kaito-project/kaito#1983](https://github.com/kaito-project/kaito/pull/1983) lands, which disables EPP secure serving (`--secure-serving=false`) so that the Gateway → EPP connection no longer requires TLS bypass.
 
@@ -489,6 +457,8 @@ Incoming Request
 ```
 
 ### KV Cache Transfer Between Prefill and Decode
+
+The current P/D disaggregation design uses [NixlConnector](https://github.com/ai-dynamo/nixl) as the default KV cache transfer mechanism. NixlConnector enables high-performance KV cache transfer between prefill and decode pods via RDMA (when available) or TCP fallback. The controller automatically injects the required vLLM environment variables (`VLLM_KV_CONNECTOR=NixlConnector`, `VLLM_KV_ROLE=kv_producer/kv_consumer`) into the prefill and decode pods respectively.
 
 ```
 Prefill Pod                              Decode Pod
