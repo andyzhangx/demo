@@ -30,10 +30,10 @@ llm-d EPP (ext-proc)                    ◄── P/D disaggregation scheduling
   │  3. scorer ranks candidates
   │  4. picker selects best pod
   │
-  ├──► prefill pod (inference-role=prefill)
-  │      KV cache produced → NixlConnector → decode pod
+  ├──► prefill workspace (inference-role=prefill)
+  │      KV cache produced → NixlConnector → decode workspace
   │
-  └──► decode pod (inference-role=decode)
+  └──► decode workspace (inference-role=decode)
          KV cache consumed → generate tokens → response
 ```
 
@@ -60,7 +60,7 @@ llm-d EPP (ext-proc)                    ◄── P/D disaggregation scheduling
 │  ws-0        │   │  ws-0        │   │ ┌────────────────────────┐ │
 │  ws-1        │   │  ws-1        │   │ │ llm-d EPP              │ │
 │              │   │  ws-2        │   │ │ disagg-profile-handler │ │
-│ pod labels:  │   │ pod labels:  │   │ │ prefill-filter         │ │
+│ ws labels:   │   │ ws labels:   │   │ │ prefill-filter         │ │
 │  apps:       │   │  apps:       │   │ │ decode-filter          │ │
 │   deepseek-  │   │   deepseek-  │   │ └────────────────────────┘ │
 │   v32        │   │   v32        │   │                            │
@@ -238,12 +238,12 @@ The controller creates **one** decode InferenceSet with `spec.replicas` set from
 
 In the llm-d P/D architecture ([disaggregation docs](https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/disaggregation.md)), all requests are routed to the **decode worker first**. The decode worker's sidecar is responsible for:
 
-1. Receiving EPP metadata (selected decode pod + optional prefill pod via `x-prefiller-host-port` header)
+1. Receiving EPP metadata (selected decode workspace + optional prefill workspace via `x-prefiller-host-port` header)
 2. If prefill is disaggregated → forwarding the prefill request to the selected prefill worker and waiting for KV cache parameters
 3. Sending the decode request to the local vLLM engine with `remote_prefill=true` and the KV cache block IDs
 4. Returning the final response through the inference gateway
 
-> **Note**: No sidecar or coordination logic is needed on prefill pods. Prefill pods are stateless workers that process prompts and produce KV cache.
+> **Note**: No sidecar or coordination logic is needed on prefill workspaces. Prefill workspaces are stateless workers that process prompts and produce KV cache.
 
 #### P/D Request Sequence
 
@@ -327,10 +327,10 @@ containers:
             fieldPath: status.podIP
 ```
 
-The sidecar sits in front of the vLLM engine on decode pods:
+The sidecar sits in front of the vLLM engine on decode workspaces:
 - Incoming requests hit the sidecar (port 8080)
 - Sidecar orchestrates prefill (if needed) and then forwards to local vLLM (port 5000)
-- The InferencePool `targetPortNumber` should point to the sidecar port (8080) for decode pods
+- The InferencePool `targetPortNumber` should point to the sidecar port (8080) for decode workspaces
 
 > **Implementation Note**: The exact sidecar injection mechanism needs to be designed. Options include:
 > 1. Controller directly patches the StatefulSet pod template after InferenceSet creates it
@@ -345,7 +345,7 @@ In the standard (non-disaggregated) flow, each InferenceSet creates its own Infe
 |---|---|---|
 | **Mapping** | 1 InferenceSet → 1 InferencePool → 1 EPP | 1 MRI → N child InferenceSets → **1 shared InferencePool** → 1 EPP |
 | **InferencePool created by** | InferenceSet controller | MultiRoleInference controller |
-| **EPP sees** | All pods from 1 InferenceSet | All prefill + decode pods (filtered by `by-label-selector` plugin) |
+| **EPP sees** | All workspaces from 1 InferenceSet | All prefill + decode workspaces (filtered by `by-label-selector` plugin) |
 
 Child InferenceSets must **skip** the GWIE logic to avoid creating redundant InferencePool/EPP resources. Standalone InferenceSets (not created by MultiRoleInference) continue to create their own InferencePool/EPP as before — this is an additive change, not a breaking one:
 
@@ -364,7 +364,7 @@ func (c *InferenceSetReconciler) ensureGatewayAPIInferenceExtension(ctx context.
 
 ### 3. InferencePool
 
-One InferencePool per MultiRoleInference, selecting ALL prefill + decode pods:
+One InferencePool per MultiRoleInference, selecting ALL prefill + decode workspaces:
 
 ```yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha1
@@ -379,9 +379,9 @@ spec:
       apps: deepseek-v32
 ```
 
-The EPP inside this pool sees all pods and uses `by-label-selector` plugin to filter by `inference-role`.
+The EPP inside this pool sees all workspaces and uses `by-label-selector` plugin to filter by `inference-role`.
 
-> **Port Note**: In P/D disaggregation, prefill pods serve vLLM directly on port 5000, while decode pods have the routing sidecar on port 8080 (which forwards to vLLM on port 5000). Since the InferencePool has a single `targetPortNumber`, the EPP routes requests to the **sidecar port (8080)** on decode pods. Prefill pods are not directly accessed through the InferencePool — the decode sidecar communicates with prefill pods directly using the `x-prefiller-host-port` header set by EPP.
+> **Port Note**: In P/D disaggregation, prefill workspaces serve vLLM directly on port 5000, while decode workspaces have the routing sidecar on port 8080 (which forwards to vLLM on port 5000). Since the InferencePool has a single `targetPortNumber`, the EPP routes requests to the **sidecar port (8080)** on decode workspaces. Prefill workspaces are not directly accessed through the InferencePool — the decode sidecar communicates with prefill workspaces directly using the `x-prefiller-host-port` header set by EPP.
 
 ### 4. EPP Plugin ConfigMap (auto-generated if not provided)
 
@@ -557,7 +557,7 @@ Incoming Request
 
 ### KV Cache Transfer Between Prefill and Decode
 
-The current P/D disaggregation design uses [NixlConnector](https://github.com/ai-dynamo/nixl) as the default KV cache transfer mechanism. NixlConnector enables high-performance KV cache transfer between prefill and decode pods via RDMA (when available) or TCP fallback. The controller automatically injects the required vLLM environment variables (`VLLM_KV_CONNECTOR=NixlConnector`, `VLLM_KV_ROLE=kv_producer/kv_consumer`) into the prefill and decode pods respectively.
+The current P/D disaggregation design uses [NixlConnector](https://github.com/ai-dynamo/nixl) as the default KV cache transfer mechanism. NixlConnector enables high-performance KV cache transfer between prefill and decode workspaces via RDMA (when available) or TCP fallback. The controller automatically injects the required vLLM environment variables (`VLLM_KV_CONNECTOR=NixlConnector`, `VLLM_KV_ROLE=kv_producer/kv_consumer`) into the prefill and decode workspaces respectively.
 
 ```
 Prefill Pod                              Decode Pod
@@ -740,7 +740,7 @@ kubectl get is -l kaito.sh/parent=deepseek-v32
 kubectl get inferencepool deepseek-v32
 kubectl get pod -l inferencepool=deepseek-v32-inferencepool-epp
 
-# Verify pod labels
+# Verify workspace labels
 kubectl get pods -l apps=deepseek-v32 --show-labels
 # NAME                                    LABELS
 # deepseek-v32-prefill-ws-0               apps=deepseek-v32,inference-role=prefill
@@ -769,7 +769,7 @@ curl -s http://<gateway-ip>/v1/chat/completions \
 | **Phase 1: Core** | 1 | MultiRoleInference CRD types (prefill + decode roles, no router) | None |
 | | 2 | Controller: create prefill/decode child InferenceSets with `inference-role` label | None |
 | | 3 | Controller: generate vLLM NixlConnector ConfigMaps (kv_producer / kv_consumer) | vLLM disagg support |
-| | 4 | Controller: create InferencePool (selector matches all prefill + decode pods) | None |
+| | 4 | Controller: create InferencePool (selector matches all prefill + decode workspaces) | None |
 | | 5 | Controller: auto-generate P/D EPP plugin ConfigMap | llm-d disagg-profile-handler |
 | | 6 | Controller: create OCI Repository + HelmRelease (llm-d EPP image) | llm-d image in MCR |
 | | 7 | Controller: create DestinationRule (TLS bypass) — **temporary, will be removed after [kaito#1983](https://github.com/kaito-project/kaito/pull/1983)** | Istio |
