@@ -227,7 +227,23 @@ spec:
         name: deepseek-ai/DeepSeek-V3.2
         presetOptions:
           modelAccessSecret: hf-token
-      config: deepseek-v32-prefill-vllm-config
+      config: prefill-params    # from MRI roles[prefill].config
+```
+
+The `config` field references a ConfigMap with role-specific vLLM arguments. Example:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prefill-params
+data:
+  # vLLM args specific to prefill workers
+  VLLM_DISAGGREGATED_PREFILL_ROLE: "prefill"
+  VLLM_KV_CONNECTOR: "NixlConnector"
+  VLLM_KV_ROLE: "kv_producer"
+  # Optional: prefill-specific tuning
+  VLLM_MAX_NUM_SEQS: "32"
 ```
 
 ### 2. Decode InferenceSet with Sidecar Container
@@ -301,7 +317,21 @@ spec:
         name: deepseek-ai/DeepSeek-V3.2
         presetOptions:
           modelAccessSecret: hf-token
-      config: deepseek-v32-decode-vllm-config
+      config: decode-params     # from MRI roles[decode].config
+```
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: decode-params
+data:
+  # vLLM args specific to decode workers
+  VLLM_DISAGGREGATED_PREFILL_ROLE: "decode"
+  VLLM_KV_CONNECTOR: "NixlConnector"
+  VLLM_KV_ROLE: "kv_consumer"
+  # Optional: decode-specific tuning
+  VLLM_MAX_NUM_SEQS: "64"
 ```
 
 #### Sidecar Injection
