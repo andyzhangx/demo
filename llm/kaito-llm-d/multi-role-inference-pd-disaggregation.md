@@ -885,22 +885,23 @@ curl -s http://<gateway-ip>/v1/chat/completions \
 
 ## Implementation Checklist
 
-| Phase | Step | Description | Dependencies |
-|-------|------|-------------|-------------|
-| **Phase 1: Core** | 1 | MultiRoleInference CRD types (prefill + decode roles, no router) | None |
-| | 2 | Controller: create prefill/decode child InferenceSets with `inference-role` label | None |
-| | 3 | Controller: inject default vLLM NixlConnector kv-transfer-config (kv_both) | vLLM disagg support |
-| | 4 | Controller: create InferencePool (selector matches all prefill + decode workspaces) | None |
-| | 5 | Controller: auto-generate P/D EPP plugin ConfigMap | llm-d disagg-profile-handler |
+| Phase | Step | Description | Status / Dependencies |
+|-------|------|-------------|----------------------|
+| **Phase 1: Core** | 1 | MultiRoleInference CRD types (prefill + decode roles, `additionalContainers` in InferenceSet) | TODO |
+| | 2 | Controller: create prefill/decode child InferenceSets with `inference-role` label and `kaito.sh/parent` label | TODO |
+| | 3 | Controller: inject default vLLM NixlConnector kv-transfer-config (`kv_both`) into child InferenceSet config | TODO |
+| | 4 | Controller: create InferencePool (selector: `apps.kubernetes.io/pod-index: "0"` for Ray cluster support) | TODO |
+| | 5 | Controller: auto-generate P/D EPP plugin ConfigMap (`disagg-profile-handler` + `by-label-selector`) | TODO |
 | | 6 | Controller: create OCI Repository + HelmRelease (llm-d EPP image) | ✅ Done ([PR #1975](https://github.com/kaito-project/kaito/pull/1975)) |
-| | 7 | Controller: create DestinationRule (TLS bypass) — **temporary, will be removed after [kaito#1983](https://github.com/kaito-project/kaito/pull/1983)** | Istio |
-| | 8 | Controller: status aggregation from child InferenceSets + InferencePool | None |
-| | 9 | Webhook: validation + defaulting | None |
-| **Phase 2: Autoscaling** | 10 | Controller: propagate KEDA annotations from MRI to child InferenceSets | keda-kaito-scaler |
-| | 11 | keda-kaito-scaler: understand role-specific metrics (prefill vs decode) | keda-kaito-scaler changes |
-| **Phase 3: Advanced** | 12 | Support custom `eppPluginsConfigRef` for user-defined EPP plugins | None |
-| | 13 | Support llm-d routing sidecar for precise prefix cache scoring | llm-d-routing-sidecar |
-| | 14 | Support MRI `roles[].replicas` sync: controller watches MRI spec changes and updates child InferenceSet `spec.replicas` | None |
+| | 7 | Controller: create DestinationRule (TLS bypass) — **temporary, remove after [kaito#1983](https://github.com/kaito-project/kaito/pull/1983)** | TODO (skip if #1983 merges first) |
+| | 8 | Controller: inject llm-d routing sidecar into decode InferenceSet via `additionalContainers` | TODO |
+| | 9 | Controller: status aggregation from child InferenceSets + InferencePool → MRI status | TODO |
+| | 10 | Webhook: validation + defaulting | TODO |
+| **Phase 2: Advanced** | 11 | Support custom `eppPluginsConfigRef` for user-defined EPP plugins | TODO |
+| | 12 | Support MRI `roles[].replicas` sync: controller watches MRI spec changes and updates child InferenceSet `spec.replicas` | TODO |
+| | 13 | E2E tests | TODO |
+| **Phase 3: Autoscaling** ([keda-kaito-scaler](https://github.com/kaito-project/keda-kaito-scaler)) | 14 | Controller: propagate KEDA annotations from MRI to child InferenceSets | TODO |
+| | 15 | keda-kaito-scaler: understand role-specific metrics (prefill vs decode) | TODO |
 
 ## References
 
