@@ -409,7 +409,18 @@ spec:
   selector:
     matchLabels:
       apps: deepseek-v32
+      apps.kubernetes.io/pod-index: "0"
 ```
+
+#### Multi-GPU / Ray Cluster Routing
+
+When a model uses tensor parallelism (e.g., 8-way TP), each workspace creates a **Ray cluster** — a StatefulSet where pod index 0 is the head (runs the vLLM API server) and pods 1..N are workers (GPU compute only). For example, `prefill.replicas: 2` with 8-way TP produces:
+
+- Workspace 0: pod-0 (head, vLLM API) + pod-1..7 (workers) = 8 pods
+- Workspace 1: pod-0 (head, vLLM API) + pod-1..7 (workers) = 8 pods
+- **16 total pods, but only 2 accept requests**
+
+The EPP must only route to head pods. Kubernetes StatefulSet pods have a built-in label `apps.kubernetes.io/pod-index`, so the InferencePool selector includes `apps.kubernetes.io/pod-index: "0"` to match only head pods. This works for both single-GPU (1 pod per workspace, always index 0) and multi-GPU Ray cluster topologies.
 
 In P/D mode, **all requests go to decode pods first** (through the routing sidecar on port 8080). The sidecar handles prefill orchestration internally — prefill pods are not accessed via the InferencePool. The `targetPortNumber: 8080` ensures the Gateway routes to the decode sidecar, which then:
 - Contacts the selected prefill pod directly (via `x-prefiller-host-port` header from EPP) if disaggregation is triggered
