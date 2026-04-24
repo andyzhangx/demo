@@ -368,6 +368,12 @@ The sidecar sits in front of the vLLM engine on decode workspaces:
 
 #### Sidecar Injection Mechanism: `additionalContainers` in InferenceSet API
 
+Three approaches were evaluated for injecting the routing sidecar into decode pods:
+
+1. **Controller patches StatefulSet directly** — rejected due to controller competition (MRI controller and InferenceSet controller both reconciling the same StatefulSet, causing override loops)
+2. **InferenceSet API `additionalContainers` field** — selected as the optimal approach (see below)
+3. **Mutating webhook** — rejected due to operational overhead (extra component to deploy/maintain, TLS certs, availability risk) and poor observability (sidecar not visible in InferenceSet spec)
+
 The InferenceSet CRD adds an `additionalContainers` field to `spec`. The MRI controller populates this field when creating the decode InferenceSet, and the InferenceSet controller merges it into the StatefulSet pod template:
 
 ```go
