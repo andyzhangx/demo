@@ -692,11 +692,18 @@ Prefill Pod                              Decode Pod
 
 ## KEDA Autoscaling Integration
 
+> **Note**: This section covers the autoscaling design for the [keda-kaito-scaler](https://github.com/kaito-project/keda-kaito-scaler) project. Implementation details will be discussed in that project's design process.
+
 Each child InferenceSet is a standard InferenceSet with `/scale` subresource, so keda-kaito-scaler works with **zero modifications**.
 
-### Option A: Annotation-Based Auto-Provision (Per InferenceSet)
+### Recommended Approach: Annotation-Based Auto-Provision (Per InferenceSet)
 
-The MultiRoleInference controller propagates KEDA annotations to child InferenceSets:
+The MultiRoleInference controller propagates KEDA annotations to child InferenceSets. This is the recommended approach because:
+- Users configure scaling in a single place (the MRI resource) without needing to know child InferenceSet names
+- Fully compatible with the existing keda-kaito-scaler — no scaler changes required
+- Prefill and decode get independent scaling metrics and thresholds
+
+> **Note**: Users can also create ScaledObject resources targeting child InferenceSets directly for full KEDA flexibility, but the annotation-based approach is the primary supported path.
 
 ```yaml
 apiVersion: kaito.sh/v1alpha1
@@ -755,10 +762,6 @@ metadata:
 ```
 
 keda-kaito-scaler sees standard InferenceSet annotations → creates ScaledObject → KEDA scales `spec.replicas` (workspace count) via `/scale` subresource.
-
-### Option B: Direct KEDA ScaledObject on Child InferenceSets (Future)
-
-Users can also create ScaledObject resources targeting child InferenceSets directly, bypassing MRI annotations entirely. This gives full flexibility over KEDA configuration but requires users to know the child InferenceSet names.
 
 ### Scaling Diagram
 
