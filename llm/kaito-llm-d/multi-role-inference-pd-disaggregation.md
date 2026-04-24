@@ -547,9 +547,9 @@ data:
           - pluginRef: max-score-picker
 ```
 
-### 5. OCI Repository + HelmRelease (InferencePool chart with llm-d EPP)
+### 5. OCI Repository + HelmRelease (InferencePool chart with llm-d EPP) — ✅ Done ([PR #1975](https://github.com/kaito-project/kaito/pull/1975))
 
-Reuses the existing GWIE InferencePool chart, overriding the EPP image to llm-d:
+Already implemented in the existing InferenceSet controller. PR #1975 migrated the default EPP from GWIE to llm-d inference scheduler. The controller reuses the existing GWIE InferencePool chart, overriding the EPP image to llm-d:
 
 ```yaml
 apiVersion: source.toolkit.fluxcd.io/v1
@@ -889,7 +889,7 @@ curl -s http://<gateway-ip>/v1/chat/completions \
 | | 3 | Controller: inject default vLLM NixlConnector kv-transfer-config (kv_both) | vLLM disagg support |
 | | 4 | Controller: create InferencePool (selector matches all prefill + decode workspaces) | None |
 | | 5 | Controller: auto-generate P/D EPP plugin ConfigMap | llm-d disagg-profile-handler |
-| | 6 | Controller: create OCI Repository + HelmRelease (llm-d EPP image) | llm-d image in MCR |
+| | 6 | Controller: create OCI Repository + HelmRelease (llm-d EPP image) | ✅ Done ([PR #1975](https://github.com/kaito-project/kaito/pull/1975)) |
 | | 7 | Controller: create DestinationRule (TLS bypass) — **temporary, will be removed after [kaito#1983](https://github.com/kaito-project/kaito/pull/1983)** | Istio |
 | | 8 | Controller: status aggregation from child InferenceSets + InferencePool | None |
 | | 9 | Webhook: validation + defaulting | None |
