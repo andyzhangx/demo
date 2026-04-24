@@ -366,10 +366,45 @@ The sidecar sits in front of the vLLM engine on decode workspaces:
 
 > **Multi-node Ray cluster**: Since the sidecar is part of the StatefulSet pod template, all decode pods (head + workers) will have the sidecar container. Only the head pod (index 0) receives traffic from the EPP, so only its sidecar is actively working. Worker pod sidecars remain idle.
 
-> **Implementation Note**: The exact sidecar injection mechanism needs to be designed. Options include:
-> 1. Controller directly patches the StatefulSet pod template after InferenceSet creates it
-> 2. InferenceSet API supports additional containers in the pod template
-> 3. Use a mutating webhook to inject the sidecar based on `inference-role: decode` label
+#### Sidecar Injection Mechanism: `additionalContainers` in InferenceSet API
+
+The InferenceSet CRD adds an `additionalContainers` field to `spec`. The MRI controller populates this field when creating the decode InferenceSet, and the InferenceSet controller merges it into the StatefulSet pod template:
+
+```go
+type InferenceSetSpec struct {
+    // ...existing fields...
+
+    // AdditionalContainers specifies extra containers to inject into the pod template.
+    // +optional
+    AdditionalContainers []corev1.Container `json:"additionalContainers,omitempty"`
+}
+```
+
+The MRI controller creates the decode InferenceSet with the sidecar in `additionalContainers`:
+
+```yaml
+apiVersion: kaito.sh/v1alpha1
+kind: InferenceSet
+metadata:
+  name: deepseek-v32-decode
+spec:
+  replicas: 3
+  additionalContainers:
+    - name: llm-d-routing-sidecar
+      image: mcr.microsoft.com/oss/v2/llm-d/llm-d-routing-sidecar:v0.7.0
+      ports:
+        - containerPort: 8080
+          name: sidecar
+      env:
+        - name: BACKEND_URL
+          value: "http://localhost:5000"
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+```
+
+This approach avoids controller competition (StatefulSet is owned solely by InferenceSet controller), is fully declarative, and provides a general-purpose sidecar injection capability for future use cases (metrics exporters, log collectors, etc.).
 
 ### InferencePool and EPP Ownership
 
