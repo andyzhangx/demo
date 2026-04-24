@@ -364,6 +364,8 @@ The sidecar sits in front of the vLLM engine on decode workspaces:
 - Sidecar orchestrates prefill (if needed) and then forwards to local vLLM (port 5000)
 - The InferencePool `targetPortNumber` should point to the sidecar port (8080) for decode workspaces
 
+> **Multi-node Ray cluster**: Since the sidecar is part of the StatefulSet pod template, all decode pods (head + workers) will have the sidecar container. Only the head pod (index 0) receives traffic from the EPP, so only its sidecar is actively working. Worker pod sidecars remain idle.
+
 > **Implementation Note**: The exact sidecar injection mechanism needs to be designed. Options include:
 > 1. Controller directly patches the StatefulSet pod template after InferenceSet creates it
 > 2. InferenceSet API supports additional containers in the pod template
