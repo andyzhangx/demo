@@ -368,13 +368,14 @@ The sidecar sits in front of the vLLM engine on decode workspaces:
 
 #### Sidecar Injection Mechanism: Controller Reconcile Injection
 
-Three approaches were evaluated for injecting the routing sidecar into decode pods:
+Four approaches were evaluated for injecting the routing sidecar into decode pods:
 
 1. **Controller patches StatefulSet directly** — rejected due to controller competition (MRI controller and InferenceSet controller both reconciling the same StatefulSet, causing override loops)
 2. **InferenceSet API `additionalContainers` field** — rejected; the sidecar configuration is fully deterministic (fixed image, port, env vars), so exposing it in the API adds unnecessary complexity without user value
 3. **Mutating webhook** — rejected due to operational overhead (extra component to deploy/maintain, TLS certs, availability risk) and poor observability (sidecar not visible in InferenceSet spec)
+4. **MRI controller embeds sidecar in InferenceSet template at creation time** ✅ — the MRI controller injects the routing sidecar into the child InferenceSet's `template.inference.template.spec.containers` when creating the decode-role InferenceSet. The sidecar flows naturally through InferenceSet → Workspace → StatefulSet → Pod with no post-hoc patching. Unlike #1, there is no controller competition because the sidecar is set at the source (InferenceSet creation), not patched onto a downstream resource. Unlike #2, the user never sees or configures it. Unlike #3, no extra infrastructure is needed.
 
-**Selected approach**: The MRI controller injects the sidecar during workspace reconciliation. When the controller detects a child InferenceSet with `inference-role: decode`, it injects the routing sidecar into the workspace's pod template before creating/updating the StatefulSet. The sidecar configuration is deterministic and pinned in `consts.go` (similar to how EPP image is managed in [PR #1975](https://github.com/kaito-project/kaito/pull/1975)):
+**Selected approach (#4)**: The MRI controller injects the sidecar during child InferenceSet creation. When the controller creates a child InferenceSet with `inference-role: decode`, it embeds the routing sidecar into the InferenceSet's pod template. The sidecar configuration is deterministic and pinned in `consts.go` (similar to how EPP image is managed in [PR #1975](https://github.com/kaito-project/kaito/pull/1975)):
 
 ```go
 const (
