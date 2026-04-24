@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the end-to-end architecture for prefill/decode (P/D) disaggregated inference in KAITO using `MultiRoleInference` CRD with llm-d EPP as the routing layer. This replaces the vllm-router approach with the Kubernetes-native Gateway API + llm-d inference scheduler stack.
+This document describes the end-to-end architecture for prefill/decode (P/D) disaggregated inference in KAITO using `MultiRoleInference` CRD with llm-d EPP as the routing layer, built on the Kubernetes-native Gateway API + llm-d inference scheduler stack.
 
 ## Request Flow
 
