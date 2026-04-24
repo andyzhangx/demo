@@ -244,7 +244,7 @@ data:
       tensor-parallel-size: 1
       max_model_len: 1024
       gpu-memory-utilization: 0.95
-      kv-transfer-config: '{"kv_connector":"NixlConnector","kv_role":"kv_producer","kv_load_failure_policy":"fail"}'
+      kv-transfer-config: '{"kv_connector":"NixlConnector","kv_role":"kv_both","kv_load_failure_policy":"fail"}'
 ```
 
 ### 2. Decode InferenceSet with Sidecar Container
@@ -333,7 +333,7 @@ data:
       tensor-parallel-size: 1
       max_model_len: 1024
       gpu-memory-utilization: 0.95
-      kv-transfer-config: '{"kv_connector":"NixlConnector","kv_role":"kv_consumer","kv_load_failure_policy":"fail"}'
+      kv-transfer-config: '{"kv_connector":"NixlConnector","kv_role":"kv_both","kv_load_failure_policy":"fail"}'
 ```
 
 #### Sidecar Injection
@@ -634,14 +634,14 @@ Incoming Request
 
 ### KV Cache Transfer Between Prefill and Decode
 
-The current P/D disaggregation design uses [NixlConnector](https://github.com/ai-dynamo/nixl) as the default KV cache transfer mechanism. NixlConnector enables high-performance KV cache transfer between prefill and decode workspaces via RDMA (when available) or TCP fallback. The controller automatically injects the required vLLM environment variables (`VLLM_KV_CONNECTOR=NixlConnector`, `VLLM_KV_ROLE=kv_producer/kv_consumer`) into the prefill and decode workspaces respectively.
+The current P/D disaggregation design uses [NixlConnector](https://github.com/ai-dynamo/nixl) as the default KV cache transfer mechanism. NixlConnector enables high-performance KV cache transfer between prefill and decode workspaces via RDMA (when available) or TCP fallback. The controller automatically injects the required vLLM kv-transfer-config (`kv_connector=NixlConnector`, `kv_role=kv_both`) into both prefill and decode workspaces.
 
 ```
 Prefill Pod                              Decode Pod
 ┌──────────────────────┐                ┌──────────────────────┐
 │ vLLM                 │                │ vLLM                 │
 │                      │                │                      │
-│ Role: kv_producer    │  NixlConnector │ Role: kv_consumer    │
+│ Role: kv_both        │  NixlConnector │ Role: kv_both        │
 │                      │ ──────────────>│                      │
 │ 1. Process prompt    │  KV cache      │ 4. Receive KV cache  │
 │ 2. Build KV cache    │  transfer      │ 5. Generate tokens   │
@@ -845,7 +845,7 @@ curl -s http://<gateway-ip>/v1/chat/completions \
 |-------|------|-------------|-------------|
 | **Phase 1: Core** | 1 | MultiRoleInference CRD types (prefill + decode roles, no router) | None |
 | | 2 | Controller: create prefill/decode child InferenceSets with `inference-role` label | None |
-| | 3 | Controller: generate vLLM NixlConnector ConfigMaps (kv_producer / kv_consumer) | vLLM disagg support |
+| | 3 | Controller: inject default vLLM NixlConnector kv-transfer-config (kv_both) | vLLM disagg support |
 | | 4 | Controller: create InferencePool (selector matches all prefill + decode workspaces) | None |
 | | 5 | Controller: auto-generate P/D EPP plugin ConfigMap | llm-d disagg-profile-handler |
 | | 6 | Controller: create OCI Repository + HelmRelease (llm-d EPP image) | llm-d image in MCR |
