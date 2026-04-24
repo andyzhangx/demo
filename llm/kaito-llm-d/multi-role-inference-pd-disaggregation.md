@@ -238,12 +238,13 @@ kind: ConfigMap
 metadata:
   name: prefill-params
 data:
-  # vLLM args specific to prefill workers
-  VLLM_DISAGGREGATED_PREFILL_ROLE: "prefill"
-  VLLM_KV_CONNECTOR: "NixlConnector"
-  VLLM_KV_ROLE: "kv_producer"
-  # Optional: prefill-specific tuning
-  VLLM_MAX_NUM_SEQS: "32"
+  inference_config.yaml: |
+    max_probe_steps: 6
+    vllm:
+      tensor-parallel-size: 1
+      max_model_len: 1024
+      gpu-memory-utilization: 0.95
+      kv-transfer-config: '{"kv_connector":"NixlConnector","kv_role":"kv_producer","kv_load_failure_policy":"fail"}'
 ```
 
 ### 2. Decode InferenceSet with Sidecar Container
@@ -326,12 +327,13 @@ kind: ConfigMap
 metadata:
   name: decode-params
 data:
-  # vLLM args specific to decode workers
-  VLLM_DISAGGREGATED_PREFILL_ROLE: "decode"
-  VLLM_KV_CONNECTOR: "NixlConnector"
-  VLLM_KV_ROLE: "kv_consumer"
-  # Optional: decode-specific tuning
-  VLLM_MAX_NUM_SEQS: "64"
+  inference_config.yaml: |
+    max_probe_steps: 6
+    vllm:
+      tensor-parallel-size: 1
+      max_model_len: 1024
+      gpu-memory-utilization: 0.95
+      kv-transfer-config: '{"kv_connector":"NixlConnector","kv_role":"kv_consumer","kv_load_failure_policy":"fail"}'
 ```
 
 #### Sidecar Injection
