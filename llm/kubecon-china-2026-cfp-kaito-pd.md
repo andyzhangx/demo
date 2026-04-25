@@ -30,38 +30,11 @@ Any
 
 ---
 
-## Description
+## Description (max 1000 characters)
 
-Deploying LLMs on Kubernetes still demands deep expertise across GPU provisioning, runtime tuning, autoscaling, and distributed serving. What if a single YAML could take any Hugging Face model from zero to a production-ready, auto-scaling — and even disaggregated — inference service?
+Deploying LLMs on Kubernetes demands expertise across GPU provisioning, runtime tuning, autoscaling, and distributed serving. KAITO (CNCF Sandbox) turns this into a single YAML.
 
-This session walks through KAITO (Kubernetes AI Toolchain Operator, CNCF Sandbox) end-to-end, from its foundational model-to-service automation to the latest advancement: prefill/decode (P/D) disaggregated inference.
-
-**Part 1: Model-Aware Inference Automation.** Specify a Hugging Face model ID, and KAITO handles GPU node provisioning via Karpenter, automated GPU memory estimation (model weights + KV-cache + activation memory) to determine optimal parallelism (single-GPU, tensor-parallel, or multi-node pipeline-parallel), runtime configuration, and inference endpoint exposure. We cover how any-model support turns thousands of weekly Hugging Face releases into deployable Kubernetes workloads without per-model engineering.
-
-**Part 2: Production Autoscaling with KEDA.** KAITO integrates with KEDA through a custom kaito-scaler that monitors vLLM serving metrics — pending queue depth, running requests, KV-cache utilization — to auto-scale inference replicas. We show how GPU-aware scaling policies handle the unique challenges of slow node provisioning and expensive cold starts.
-
-**Part 3: Prefill/Decode Disaggregated Inference (New).** Large models like DeepSeek-V3 benefit significantly from separating compute-bound prefill and memory-bound decode onto dedicated GPU pools. KAITO's new MultiRoleInference CRD, built on llm-d inference scheduler and Gateway API Inference Extension, makes this declarative:
-
-```yaml
-apiVersion: kaito.sh/v1alpha1
-kind: MultiRoleInference
-metadata:
-  name: deepseek-v32
-spec:
-  model:
-    name: deepseek-ai/DeepSeek-V3.2
-  roles:
-    - type: prefill
-      replicas: 2
-      instanceType: Standard_NC24ads_A100_v4
-    - type: decode
-      replicas: 3
-      instanceType: Standard_NC24ads_A100_v4
-```
-
-Under the hood, the controller orchestrates: separate InferenceSets per role, llm-d EPP plugin chain for P/D-aware routing (disagg-profile-handler + by-label-selector + precise-prefix-cache-scorer), NixlConnector for zero-copy KV cache transfer between prefill and decode pods, routing sidecars injected into decode StatefulSets, and independent KEDA autoscaling per role with different scaling signals for prefill vs decode.
-
-We conclude with a live demo: deploying a model, watching KAITO provision GPUs and configure everything, then enabling P/D disaggregation and showing real-time routing decisions and per-role autoscaling under load.
+This session covers KAITO end-to-end in three parts. First, model-aware automation: specify a Hugging Face model ID, and KAITO provisions GPU nodes via Karpenter, estimates GPU memory to choose optimal parallelism (tensor-parallel or multi-node pipeline-parallel), and exposes an inference endpoint. Second, production autoscaling: KEDA-based kaito-scaler monitors vLLM metrics (queue depth, KV-cache usage) to auto-scale replicas with GPU-aware policies. Third, the new frontier — prefill/decode disaggregated inference: KAITO's MultiRoleInference CRD separates compute-bound prefill and memory-bound decode onto dedicated GPU pools, using llm-d for P/D-aware routing via Gateway API Inference Extension, NixlConnector for zero-copy KV cache transfer, and per-role KEDA autoscaling. Live demo included.
 
 ---
 
