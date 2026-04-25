@@ -4,9 +4,19 @@
 
 ## Title
 
-**Scaling Disaggregated LLM Inference on Kubernetes: KAITO + llm-d + Gateway API**
+**Prefill Here, Decode There: Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d**
 
-*(alternate: "One CRD to Rule Them All: Prefill/Decode Disaggregated Inference with KAITO and llm-d")*
+<details>
+<summary>Alternate titles considered</summary>
+
+- Scaling Disaggregated LLM Inference on Kubernetes: KAITO + llm-d + Gateway API
+- One CRD, Two GPU Pools: Disaggregated LLM Inference with KAITO
+- Split the GPU, Not the YAML: P/D Disaggregated Inference on Kubernetes
+- Beyond Single-Pod Inference: Building a P/D Disaggregation Stack with Gateway API, llm-d, and KEDA
+- Your LLM Prefill Is Starving Your Decode: Fixing It with KAITO and llm-d on Kubernetes
+- KAITO + llm-d: Declarative Prefill/Decode Disaggregation on Kubernetes
+- From 20 Lines of YAML to Disaggregated DeepSeek: A KAITO + llm-d Journey
+</details>
 
 ---
 
