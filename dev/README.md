@@ -281,3 +281,13 @@ kubectl get --raw /api/v1/nodes/aks-agentpool-21757482-vmss000000:10250/proxy/me
  - [build hyperkube image and push](https://github.com/kubernetes/kubernetes/tree/master/cluster/images/hyperkube)
  - [How to update hyperkube image directly in k8s master](https://github.com/andyzhangx/Demo/blob/master/dev/update-hyperkube.md)
  - [Azure subscription and service limits, quotas, and constraints](https://docs.microsoft.com/en-us/azure/azure-subscription-service-limits)
+
+### Get Go module pseudo-version from git commit
+```console
+TZ=UTC git --no-pager show \
+  --quiet \
+  --abbrev=12 \
+  --date='format-local:%Y%m%d%H%M%S' \
+  --format="%cd-%h"
+```
+> Ref: https://stackoverflow.com/questions/52242077/go-modules-finding-out-right-pseudo-version-vx-y-z-timestamp-commit-of-re
