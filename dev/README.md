@@ -301,3 +301,19 @@ export git_push="git push origin master"
 export git_commit="git commit -a"
 export GITHUB_USER=andyzhangx
 ```
+
+### Install Go
+> Ref: https://golang.org/doc/install
+
+```console
+wget -O /tmp/go1.25.9.linux-amd64.tar.gz https://go.dev/dl/go1.25.9.linux-amd64.tar.gz
+#wget -O /tmp/go1.25.9.linux-amd64.tar.gz https://storage.googleapis.com/golang/go1.25.9.linux-amd64.tar.gz
+cd /tmp/
+tar -xvf /tmp/go1.25.9.linux-amd64.tar.gz
+
+cd /usr/local/
+mv go go-1.22.4
+
+mv /tmp/go /usr/local/
+cp /usr/local/go/bin/go /usr/bin/
+```
