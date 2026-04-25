@@ -291,3 +291,13 @@ TZ=UTC git --no-pager show \
   --format="%cd-%h"
 ```
 > Ref: https://stackoverflow.com/questions/52242077/go-modules-finding-out-right-pseudo-version-vx-y-z-timestamp-commit-of-re
+
+### Git config setup
+```console
+/usr/bin/git config --global user.email "xiazhang@microsoft.com"
+/usr/bin/git config --global user.name "andyzhangx"
+/usr/bin/git config core.editor "vim"
+export git_push="git push origin master"
+export git_commit="git commit -a"
+export GITHUB_USER=andyzhangx
+```
