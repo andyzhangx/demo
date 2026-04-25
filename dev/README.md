@@ -317,3 +317,9 @@ mv go go-1.22.4
 mv /tmp/go /usr/local/
 cp /usr/local/go/bin/go /usr/bin/
 ```
+
+### Fetch a specific pull request
+```console
+git fetch upstream pull/3141/head:3141
+git checkout 3141
+```
