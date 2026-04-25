@@ -38,9 +38,7 @@ Intermediate
 
 LLM inference has two phases with very different resource profiles: prefill is compute-bound, decode is memory-bound. Running both on the same GPU pool wastes resources and hurts latency. Prefill/Decode (P/D) disaggregation splits them onto dedicated pools — but wiring up intelligent routing, KV cache transfer, sidecar orchestration, and per-role autoscaling is complex.
 
-We'll show how KAITO's MultiRoleInference CRD and llm-d inference scheduler make this a single 20-line YAML on Kubernetes. Built entirely on Gateway API Inference Extension, the system uses llm-d's EPP plugin chain for P/D-aware routing, NixlConnector for zero-copy KV cache transfer, and KEDA for independent prefill/decode autoscaling.
-
-Live demo: deploy disaggregated inference for a large model, visualize routing decisions in real-time, and show per-role autoscaling responding to load — all Kubernetes-native, all open source.
+We'll show how KAITO's MultiRoleInference CRD and llm-d inference scheduler make this a single 20-line YAML on Kubernetes. Built entirely on Gateway API Inference Extension, the system uses llm-d's EPP plugin chain for P/D-aware routing, NixlConnector for zero-copy KV cache transfer, and KEDA for independent prefill/decode autoscaling — all Kubernetes-native, all open source.
 
 ---
 
@@ -48,9 +46,7 @@ Live demo: deploy disaggregated inference for a large model, visualize routing d
 
 LLM inference has two phases with opposite resource profiles: prefill is compute-bound, decode is memory-bound. Running both on the same GPU pool wastes resources and hurts latency. P/D disaggregation fixes this — but the infrastructure complexity is brutal.
 
-KAITO's new MultiRoleInference CRD makes it declarative: specify a model and two roles (prefill + decode), and the controller orchestrates everything. Built on llm-d and Gateway API Inference Extension, it uses llm-d's EPP plugin chain for intelligent P/D routing, NixlConnector for zero-copy KV cache transfer between pods, routing sidecars auto-included in decode StatefulSets, and KEDA per-role autoscaling — prefill scales on queue depth, decode on KV-cache utilization.
-
-Live demo: deploy disaggregated inference, visualize routing decisions, and show per-role autoscaling under load. All Kubernetes-native, all open source.
+KAITO's new MultiRoleInference CRD makes it declarative: specify a model and two roles (prefill + decode), and the controller orchestrates everything. Built on llm-d and Gateway API Inference Extension, it uses llm-d's EPP plugin chain for intelligent P/D routing, NixlConnector for zero-copy KV cache transfer between pods, routing sidecars auto-included in decode StatefulSets, and KEDA per-role autoscaling — prefill scales on queue depth, decode on KV-cache utilization. All Kubernetes-native, all open source.
 
 ---
 
