@@ -4,7 +4,7 @@
 
 ## Title
 
-**KAITO Meets llm-d: From One-Click Model Serving to Prefill/Decode Disaggregated Inference on Kubernetes**
+**KAITO Meets llm-d: From One-Click Serving to Prefill/Decode Disaggregated Inference on Kubernetes**
 
 <details>
 <summary>Alternate titles considered</summary>
