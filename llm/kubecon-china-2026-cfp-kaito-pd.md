@@ -4,12 +4,13 @@
 
 ## Title
 
-**From Model Name to Disaggregated Inference: KAITO's Journey to Production LLM Serving on Kubernetes**
+**KAITO Meets llm-d: From One-Click Model Serving to Prefill/Decode Disaggregated Inference on Kubernetes**
 
 <details>
 <summary>Alternate titles considered</summary>
 
 - One CRD to Serve Them All: Auto-Scaling and Disaggregated LLM Inference with KAITO
+- From Model Name to Disaggregated Inference: KAITO's Journey to Production LLM Serving on Kubernetes
 - KAITO: From Hugging Face Model to Prefill/Decode Disaggregated Inference on Kubernetes
 - The Full Stack of Kubernetes-Native LLM Inference: GPU Provisioning, Autoscaling, and P/D Disaggregation
 </details>
