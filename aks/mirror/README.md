@@ -16,6 +16,11 @@ There are three mirror services:
 
 ## Architecture Diagram
 
+![AKS China Mirror Architecture](architecture.png)
+
+<details>
+<summary>Mermaid source (click to expand)</summary>
+
 ```mermaid
 flowchart TB
     subgraph Users["AKS Nodes / Users in China"]
@@ -80,6 +85,8 @@ flowchart TB
     style PkgMirror fill:#f3e5f5,stroke:#7b1fa2
     style Upstream fill:#e8f5e9,stroke:#388e3c
 ```
+
+</details>
 
 ## 1. mirror.azk8s.cn (Binary Mirror)
 

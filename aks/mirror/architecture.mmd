@@ -1,0 +1,58 @@
+flowchart TB
+    subgraph Users["AKS Nodes / Users in China"]
+        AKSNode["AKS Node"]
+        Dev["Developer / CLI"]
+    end
+
+    subgraph MirrorSite["mirror.azk8s.cn<br/>(Binary Mirror - SLA Supported)"]
+        MirrorNginx["Nginx<br/>proxy_pass"]
+    end
+
+    subgraph CRProxy["*.azk8s.cn<br/>(Container Registry Proxy)"]
+        subgraph CE2LB["China East 2 LB"]
+            CE2VM1["east2mirror<br/>east2mirror2<br/>east2mirror3<br/>east2mirror4<br/>east2mirror5"]
+        end
+        subgraph CN2LB["China North 2 LB"]
+            CN2VM1["north2mirror<br/>north2mirror2<br/>north2mirror3"]
+        end
+        subgraph USVMS["US VMs<br/>(Pull-through Cache)"]
+            USVM["chinamirror<br/>chinamirror3<br/>chinamirror-secondary"]
+        end
+    end
+
+    subgraph PkgMirror["mirror.azure.cn<br/>(Package Mirror - No SLA)"]
+        subgraph PkgVMs["Mirror VMs"]
+            PkgSync["northmirror<br/>(data sync)"]
+            PkgEast["eastmirror"]
+            PkgEast2["east2mirror"]
+            PkgNorth2["north2mirror"]
+        end
+    end
+
+    subgraph Upstream["Upstream Sources"]
+        ACDNaks["acs-mirror.azureedge.net"]
+        AzBlob["kubernetesartifacts.blob<br/>.core.chinacloudapi.cn"]
+        MCR["mcr.microsoft.com"]
+        DockerHub["Docker Hub"]
+        GCR["gcr.io"]
+    end
+
+    AKSNode -->|"binary download"| MirrorNginx
+    MirrorNginx -->|"/aks/, /cni-plugins/"| ACDNaks
+    MirrorNginx -->|"/kubernetes/, /azure-cni/<br/>/csi-proxy/, /containerd/<br/>/aks-engine/, /calico-node/<br/>/ccgakvplugin/"| AzBlob
+
+    AKSNode -->|"docker pull<br/>mcr.azk8s.cn"| CE2LB
+    AKSNode -->|"docker pull<br/>mcr.azk8s.cn"| CN2LB
+    CE2LB -->|"mcr.azk8s.cn"| MCR
+    CN2LB -->|"mcr.azk8s.cn"| MCR
+    CE2LB -->|"dockerhub/gcr proxy"| USVMS
+    CN2LB -->|"dockerhub/gcr proxy"| USVMS
+    USVMS --> DockerHub
+    USVMS --> GCR
+
+    Dev -->|"kubectl/kubelogin<br/>download"| PkgVMs
+
+    style MirrorSite fill:#e1f5fe,stroke:#0288d1
+    style CRProxy fill:#fff3e0,stroke:#ef6c00
+    style PkgMirror fill:#f3e5f5,stroke:#7b1fa2
+    style Upstream fill:#e8f5e9,stroke:#388e3c
