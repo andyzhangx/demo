@@ -672,6 +672,33 @@ Prefill Pod                              Decode Pod
 └──────────────────────┘                └──────────────────────┘
 ```
 
+### Two-Layer Communication Model
+
+P/D disaggregation uses two independent communication layers. Understanding this separation is key to understanding why InferencePool only targets decode pods.
+
+**Layer 1: HTTP Routing (EPP + Sidecar)**
+
+All user HTTP requests flow through the Gateway → EPP → decode pod path. InferencePool only needs to select decode pods and expose the sidecar port (5001).
+
+| From | To | Protocol | Port |
+|------|-----|----------|------|
+| Client | Gateway | HTTP | 80/443 |
+| Gateway/EPP | Decode pod sidecar | HTTP | 5001 |
+| Sidecar | Local vLLM | HTTP | 5000 |
+
+**Layer 2: vLLM Engine Internal (KV Cache Transfer)**
+
+Prefill requests are **not** routed via HTTP. When a decode pod's vLLM engine receives a request that needs prefill, it communicates with prefill pods through the vLLM disaggregated serving protocol — not through the InferencePool or any Kubernetes Service.
+
+| From | To | Protocol | Mechanism |
+|------|-----|----------|-----------|
+| Decode vLLM | Prefill vLLM | nixl | RDMA / GPU Direct / TCP |
+| Prefill GPU | Decode GPU | nixl | KV cache block transfer |
+
+The prefill worker discovery is handled by vLLM internally (via etcd/redis registry), completely transparent to the Gateway API stack.
+
+**Why InferencePool only selects decode pods**: InferencePool manages HTTP traffic ingress. Since prefill pods are never directly accessed via HTTP (they only participate in vLLM-internal KV cache transfer), including them in the InferencePool would create endpoints pointing to a port (5001) that prefill pods don't listen on. The GWIE CRD also enforces `maxItems: 1` on `targetPorts`, so only the sidecar port is configured.
+
 ## KEDA Autoscaling Integration
 
 > **Note**: This section covers the autoscaling design for the [keda-kaito-scaler](https://github.com/kaito-project/keda-kaito-scaler) project. Implementation details will be discussed in that project's design process.
