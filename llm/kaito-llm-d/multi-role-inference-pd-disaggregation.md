@@ -421,7 +421,7 @@ func (c *InferenceSetReconciler) ensureGatewayAPIInferenceExtension(ctx context.
 
 ### 3. InferencePool
 
-One InferencePool per MultiRoleInference, selecting ALL prefill + decode workspaces:
+One InferencePool per MultiRoleInference, selecting ALL prefill + decode workspaces. EPP's internal `prefill-filter` / `decode-filter` plugins handle role-based selection within this pool.
 
 ```yaml
 apiVersion: inference.networking.x-k8s.io/v1alpha1
@@ -430,12 +430,14 @@ metadata:
   name: deepseek-v32
   namespace: default
 spec:
-  targetPortNumber: 8080
+  targetPortNumber: 5001  # routing sidecar port (only decode pods listen here)
   selector:
     matchLabels:
-      apps: deepseek-v32
+      multiroleinference.kaito.sh/created-by: deepseek-v32  # selects ALL MRI pods
       apps.kubernetes.io/pod-index: "0"
 ```
+
+> **Why select all pods when only decode pods listen on 5001?** EPP needs both prefill and decode pods in its endpoint set. The `decode-filter` ensures Envoy only routes user traffic to decode pods (which have the sidecar on 5001). Prefill pods are selected by EPP's `prefill-filter` for P/D scheduling decisions, but the sidecar communicates with them directly on port 5000, bypassing Envoy/InferencePool entirely. See [Two-Layer Communication Model](#two-layer-communication-model) for details.
 
 #### Multi-GPU / Ray Cluster Routing
 
@@ -674,30 +676,64 @@ Prefill Pod                              Decode Pod
 
 ### Two-Layer Communication Model
 
-P/D disaggregation uses two independent communication layers. Understanding this separation is key to understanding why InferencePool only targets decode pods.
+P/D disaggregation uses two independent communication layers. Understanding this separation is critical for understanding InferencePool configuration.
 
-**Layer 1: HTTP Routing (EPP + Sidecar)**
+**Layer 1: HTTP Routing (EPP + Envoy + Sidecar)**
 
-All user HTTP requests flow through the Gateway → EPP → decode pod path. InferencePool only needs to select decode pods and expose the sidecar port (5001).
+All user HTTP requests flow through the Gateway → Envoy → EPP → decode pod path:
 
 | From | To | Protocol | Port |
 |------|-----|----------|------|
 | Client | Gateway | HTTP | 80/443 |
-| Gateway/EPP | Decode pod sidecar | HTTP | 5001 |
+| Gateway/Envoy | Decode pod sidecar | HTTP | 5001 (InferencePool targetPort) |
 | Sidecar | Local vLLM | HTTP | 5000 |
+| Sidecar | Prefill pod vLLM | HTTP | 5000 (direct, bypasses InferencePool) |
 
-**Layer 2: vLLM Engine Internal (KV Cache Transfer)**
+**Layer 2: vLLM Engine-to-Engine (KV Cache Transfer)**
 
-Prefill requests are **not** routed via HTTP. When a decode pod's vLLM engine receives a request that needs prefill, it communicates with prefill pods through the vLLM disaggregated serving protocol — not through the InferencePool or any Kubernetes Service.
+After the sidecar sends a prefill request to the prefill pod and gets back KV metadata, the decode vLLM engine pulls KV cache blocks directly from the prefill vLLM engine:
 
 | From | To | Protocol | Mechanism |
 |------|-----|----------|-----------|
-| Decode vLLM | Prefill vLLM | nixl | RDMA / GPU Direct / TCP |
-| Prefill GPU | Decode GPU | nixl | KV cache block transfer |
+| Decode vLLM | Prefill vLLM | ZMQ (TCP) | NIXL handshake (exchange agent metadata) |
+| Prefill GPU | Decode GPU | nixl | KV cache block transfer (RDMA / GPU Direct / TCP) |
 
-The prefill worker discovery is handled by vLLM internally (via etcd/redis registry), completely transparent to the Gateway API stack.
+**Layer 3: Prefill Discovery (EPP → Sidecar → vLLM)**
 
-**Why InferencePool only selects decode pods**: InferencePool manages HTTP traffic ingress. Since prefill pods are never directly accessed via HTTP (they only participate in vLLM-internal KV cache transfer), including them in the InferencePool would create endpoints pointing to a port (5001) that prefill pods don't listen on. The GWIE CRD also enforces `maxItems: 1` on `targetPorts`, so only the sidecar port is configured.
+The prefill pod is **not** discovered by vLLM itself. The discovery chain is:
+
+1. **EPP** selects a prefill pod from InferencePool endpoints using `prefill-filter` plugin
+2. **EPP** sets HTTP header `x-prefiller-host-port: <prefill-pod-ip>:<port>` on the request to the decode sidecar
+3. **Decode sidecar** reads the header and sends an HTTP prefill request directly to `prefill-pod:5000` (`max_tokens=1`)
+4. **Prefill vLLM** executes prefill, returns KV cache metadata (`remote_engine_id`, `block_ids`, etc.)
+5. **Sidecar** injects KV metadata into `kv_transfer_params` and forwards to local decode vLLM:5000
+6. **Decode vLLM** uses `NixlConnector` to do ZMQ handshake + NIXL KV cache transfer from prefill vLLM
+
+### Why InferencePool Must Select ALL Pods (Prefill + Decode)
+
+> **Key insight**: InferencePool's `targetPort` only affects Envoy HTTP routing, but InferencePool's `matchLabels` determines which pods EPP can see as scheduling candidates.
+
+The InferencePool selector **must include both prefill and decode pods** because:
+
+1. **EPP needs visibility into prefill pods** — the `disagg-profile-handler` plugin runs two scheduling profiles:
+   - `decode` profile: `decode-filter` → `prefix-cache-scorer` → `max-score-picker` (selects decode pod)
+   - `prefill` profile: `prefill-filter` → `prefix-cache-scorer` → `max-score-picker` (selects prefill pod)
+   - Both filter from the **same InferencePool endpoint set**
+
+2. **targetPort mismatch is harmless** — InferencePool has `targetPort: 5001` (sidecar), but prefill pods don't listen on 5001. This is fine because:
+   - Envoy only routes user requests to pods selected by EPP's `decode-filter` → only decode pods get Envoy traffic on 5001
+   - Prefill communication goes sidecar → prefill pod:5000 directly, bypassing Envoy/InferencePool entirely
+   - The targetPort is never used for prefill pod traffic
+
+3. **If InferencePool only selects decode pods** — EPP's `prefill-filter` would find zero candidates and P/D disaggregation would never trigger. All requests would fall back to local prefill+decode on the decode pod.
+
+```
+InferencePool (matchLabels: {mri-parent: deepseek-v32})
+├── prefill-pod-0  ← EPP sees via prefill-filter, sidecar connects directly on :5000
+├── prefill-pod-1  ← EPP sees via prefill-filter, sidecar connects directly on :5000
+├── decode-pod-0   ← EPP sees via decode-filter, Envoy routes on :5001 (targetPort)
+└── decode-pod-1   ← EPP sees via decode-filter, Envoy routes on :5001 (targetPort)
+```
 
 ## KEDA Autoscaling Integration
 
