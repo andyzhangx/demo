@@ -477,7 +477,101 @@ data:
       # knows which prefill pod to contact.
       - type: disagg-headers-handler
       # PD decider: decides whether to disaggregate based on prefix cache hit ratio.
-      # NOTE: disagg-profile-handler + P/D requires a PrefixCachePlugin in both profiles.
+      - type: prefix-based-pd-decider
+        parameters:
+          nonCachedTokens: 4
+      - type: disagg-profile-handler
+        parameters:
+          deciders:
+            prefill: prefix-based-pd-decider
+      # Pod role filters: use by-label-selector with KAITO's inference-role label
+      # (not llm-d's built-in prefill-filter/decode-filter which look for llm-d.ai/role).
+      - type: by-label-selector
+        name: prefill-filter
+        parameters:
+          matchLabels:
+            kaito.sh/inference-role: prefill
+      - type: by-label-selector
+        name: decode-filter
+        parameters:
+          matchLabels:
+            kaito.sh/inference-role: decode
+      - type: load-aware-scorer
+        parameters:
+          threshold: 10
+      - type: max-score-picker
+    schedulingProfiles:
+      - name: prefill
+        plugins:
+          - pluginRef: prefill-filter
+          - pluginRef: load-aware-scorer
+            weight: 10
+          - pluginRef: max-score-picker
+      - name: decode
+        plugins:
+          - pluginRef: decode-filter
+          - pluginRef: load-aware-scorer
+            weight: 10
+          - pluginRef: max-score-picker
+```
+
+> **Note:** The default config uses `load-aware-scorer` only. For production workloads with high prefix cache reuse (e.g., system prompt caching), you can enable `precise-prefix-cache-scorer` for smarter routing — see [Advanced: Enabling precise-prefix-cache-scorer](#advanced-enabling-precise-prefix-cache-scorer) below.
+
+#### Advanced: Enabling precise-prefix-cache-scorer
+
+The [`precise-prefix-cache-scorer`](https://github.com/kubernetes-sigs/gateway-api-inference-extension/tree/main/pkg/epp/framework/plugins/scheduling/scorer/prefix) plugin tracks real-time KV cache state across vLLM pods, enabling cache-aware routing that maximizes prefix cache hit rates. This significantly improves latency for workloads with repeated system prompts or shared context.
+
+**Prerequisites:**
+
+The plugin requires a **tokenizer gRPC sidecar** running alongside the EPP pod, communicating via Unix Domain Socket at `/tmp/tokenizer/tokenizer-uds.socket`. This sidecar tokenizes incoming prompts so the scorer can compute prefix cache overlap with each pod's cached blocks.
+
+**Step 1: Deploy the tokenizer sidecar**
+
+Add a tokenizer sidecar container to the EPP deployment (via the InferencePool Helm chart values or a custom EPP deployment):
+
+```yaml
+containers:
+  - name: epp                          # existing llm-d EPP container
+    # ...
+    volumeMounts:
+      - name: tokenizer-socket
+        mountPath: /tmp/tokenizer
+  - name: tokenizer-sidecar            # NEW: tokenizer gRPC sidecar
+    image: <tokenizer-sidecar-image>   # e.g., from llm-d or custom build
+    args:
+      - --model-name=deepseek-ai/DeepSeek-V3.2
+      - --socket-path=/tmp/tokenizer/tokenizer-uds.socket
+    volumeMounts:
+      - name: tokenizer-socket
+        mountPath: /tmp/tokenizer
+    env:
+      - name: HF_TOKEN                 # if model requires authentication
+        valueFrom:
+          secretKeyRef:
+            name: hf-token
+            key: token
+volumes:
+  - name: tokenizer-socket
+    emptyDir: {}
+```
+
+**Step 2: Create a custom EPP plugins ConfigMap**
+
+Create a ConfigMap with `precise-prefix-cache-scorer` enabled and reference it via `eppPluginsConfigRef`:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deepseek-v32-epp-plugins-with-prefix-cache
+data:
+  config.yaml: |
+    apiVersion: inference.networking.x-k8s.io/v1alpha1
+    kind: EndpointPickerConfig
+    featureGates:
+      - prepareDataPlugins
+    plugins:
+      - type: disagg-headers-handler
       - type: prefix-based-pd-decider
         parameters:
           nonCachedTokens: 4
@@ -486,28 +580,26 @@ data:
           deciders:
             prefill: prefix-based-pd-decider
       # Precise prefix cache scorer: tracks real-time KV cache state across vLLM pods.
-      # Required by disagg-profile-handler for accurate P/D decisions.
+      # Requires tokenizer sidecar running at /tmp/tokenizer/tokenizer-uds.socket.
       - type: precise-prefix-cache-scorer
         parameters:
           tokenProcessorConfig:
-            blockSize: 64            # must match vLLM block size
+            blockSize: 64            # must match vLLM --block-size (default: 16)
           indexerConfig:
             kvBlockIndexConfig:
-              enableMetrics: true
+              enableMetrics: true    # expose cache hit metrics via Prometheus
             tokenizersPoolConfig:
-              modelName: deepseek-ai/DeepSeek-V3.2
-      # Pod role filters: use by-label-selector with KAITO's inference-role label
-      # (not llm-d's built-in prefill-filter/decode-filter which look for llm-d.ai/role).
+              modelName: deepseek-ai/DeepSeek-V3.2   # HuggingFace model ID
       - type: by-label-selector
         name: prefill-filter
         parameters:
           matchLabels:
-            inference-role: prefill
+            kaito.sh/inference-role: prefill
       - type: by-label-selector
         name: decode-filter
         parameters:
           matchLabels:
-            inference-role: decode
+            kaito.sh/inference-role: decode
       - type: load-aware-scorer
         parameters:
           threshold: 10
@@ -517,9 +609,9 @@ data:
         plugins:
           - pluginRef: prefill-filter
           - pluginRef: precise-prefix-cache-scorer
-            weight: 50
+            weight: 50              # prefix cache affinity dominates
           - pluginRef: load-aware-scorer
-            weight: 10
+            weight: 10              # load balancing as tiebreaker
           - pluginRef: max-score-picker
       - name: decode
         plugins:
@@ -530,6 +622,36 @@ data:
             weight: 10
           - pluginRef: max-score-picker
 ```
+
+**Step 3: Reference the custom config in the MRI CR**
+
+```yaml
+apiVersion: kaito.sh/v1alpha1
+kind: MultiRoleInference
+metadata:
+  name: deepseek-v32
+spec:
+  eppPluginsConfigRef:
+    name: deepseek-v32-epp-plugins-with-prefix-cache
+  # ... rest of spec
+```
+
+**Key parameters:**
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `tokenProcessorConfig.blockSize` | Token block size for cache indexing. Must match vLLM's `--block-size`. | `16` |
+| `indexerConfig.kvBlockIndexConfig.enableMetrics` | Expose prefix cache hit/miss metrics via Prometheus. | `false` |
+| `indexerConfig.tokenizersPoolConfig.modelName` | HuggingFace model ID for tokenizer initialization. | Required |
+| `weight` in schedulingProfiles | Higher weight = stronger preference for cache-warm pods. | `50` recommended |
+
+**When to enable:**
+
+- ✅ High prefix cache reuse (shared system prompts, RAG with common context)
+- ✅ Production workloads where latency optimization matters
+- ✅ Multi-replica deployments where cache-aware routing avoids redundant prefill
+- ❌ Not needed for simple single-replica or low-traffic deployments
+- ❌ Skip if tokenizer sidecar adds unacceptable complexity
 
 ### 5. OCI Repository + HelmRelease (InferencePool chart with llm-d EPP) — ✅ Done ([PR #1975](https://github.com/kaito-project/kaito/pull/1975))
 
@@ -643,9 +765,8 @@ Incoming Request
 ┌─────────────────────────┐
 │ scorer plugins          │  Step 3: Rank candidate pods
 │                         │
-│  Both profiles:         │  - precise-prefix-cache-scorer (weight: 50)
-│    prefix-cache +       │    tracks real-time KV cache state
-│    load-aware +         │  - load-aware-scorer (weight: 10)
+│  Both profiles:         │  - load-aware-scorer (weight: 10)
+│    load-aware +         │    balances load across pods
 │    max-score-picker     │  - max-score-picker (pick best)
 └──────────┬──────────────┘
            │
