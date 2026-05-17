@@ -515,7 +515,18 @@ data:
           - pluginRef: max-score-picker
 ```
 
-> **Note:** The default config uses `load-aware-scorer` only. For production workloads with high prefix cache reuse (e.g., system prompt caching), you can enable `precise-prefix-cache-scorer` for smarter routing — see [Advanced: Enabling precise-prefix-cache-scorer](#advanced-enabling-precise-prefix-cache-scorer) below.
+> **Why the default config does not use `precise-prefix-cache-scorer`:**
+>
+> The `precise-prefix-cache-scorer` plugin requires a **tokenizer gRPC sidecar** running alongside the EPP pod (communicating via Unix Domain Socket at `/tmp/tokenizer/tokenizer-uds.socket`). This sidecar tokenizes incoming prompts so the scorer can compute prefix cache overlap with each pod's cached KV blocks.
+>
+> Without the tokenizer sidecar, the EPP crashes on startup:
+> ```
+> failed to create UDS tokenizer: dial unix /tmp/tokenizer/tokenizer-uds.socket: no such file or directory
+> ```
+>
+> Since KAITO does not yet deploy the tokenizer sidecar as part of the InferencePool Helm chart, the default config uses `load-aware-scorer` only — which provides effective load balancing without any additional sidecar dependencies.
+>
+> For production workloads with high prefix cache reuse (e.g., shared system prompts, RAG with common context), you can enable `precise-prefix-cache-scorer` by deploying the tokenizer sidecar and providing a custom EPP plugins config — see [Advanced: Enabling precise-prefix-cache-scorer](#advanced-enabling-precise-prefix-cache-scorer) below.
 
 #### Advanced: Enabling precise-prefix-cache-scorer
 
