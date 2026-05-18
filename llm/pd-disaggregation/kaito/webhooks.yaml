@@ -1,0 +1,76 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: validation.workspace.kaito.sh
+webhooks:
+  - name: validation.workspace.kaito.sh
+    admissionReviewVersions: ["v1"]
+    clientConfig:
+      service:
+        name: kaito-workspace-svc
+        namespace: kaito-workspace
+        port: 9443
+    failurePolicy: Fail
+    sideEffects: None
+    rules:
+      - apiGroups:
+          - kaito.sh
+        apiVersions:
+          - v1alpha1
+          - v1beta1
+        resources:
+          - workspaces
+        operations:
+          - CREATE
+          - UPDATE
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: validation.inferenceset.kaito.sh
+webhooks:
+  - name: validation.inferenceset.kaito.sh
+    admissionReviewVersions: ["v1"]
+    clientConfig:
+      service:
+        name: kaito-workspace-svc
+        namespace: kaito-workspace
+        port: 9443
+    failurePolicy: Fail
+    sideEffects: None
+    rules:
+      - apiGroups:
+          - kaito.sh
+        apiVersions:
+          - v1alpha1
+        resources:
+          - inferencesets
+        operations:
+          - CREATE
+          - UPDATE
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: validation.multiroleinference.kaito.sh
+webhooks:
+  - name: validation.multiroleinference.kaito.sh
+    admissionReviewVersions: ["v1"]
+    clientConfig:
+      service:
+        name: kaito-workspace-svc
+        namespace: kaito-workspace
+        port: 9443
+    failurePolicy: Fail
+    sideEffects: None
+    rules:
+      - apiGroups:
+          - kaito.sh
+        apiVersions:
+          - v1alpha1
+        resources:
+          - multiroleinferences
+        operations:
+          - CREATE
+          - UPDATE
