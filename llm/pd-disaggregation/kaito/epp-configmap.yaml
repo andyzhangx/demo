@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: phi-4-mini-inferencepool-epp
+  namespace: default
+data:
+  config.yaml: |
+    plugins:
+      - type: disagg-headers-handler
+      - type: prefix-based-pd-decider
+        parameters:
+          nonCachedTokens: 4
+      - type: disagg-profile-handler
+        parameters:
+          deciders:
+            prefill: prefix-based-pd-decider
+      - name: prefill-filter
+        type: by-label-selector
+        parameters:
+          matchLabels:
+            kaito.sh/inference-role: prefill
+      - name: decode-filter
+        type: by-label-selector
+        parameters:
+          matchLabels:
+            kaito.sh/inference-role: decode
+      - type: load-aware-scorer
+        parameters:
+          threshold: 10
+      - type: max-score-picker
+    schedulingProfiles:
+      - name: prefill
+        plugins:
+          - pluginRef: prefill-filter
+          - pluginRef: load-aware-scorer
+            weight: 10
+          - pluginRef: max-score-picker
+      - name: decode
+        plugins:
+          - pluginRef: decode-filter
+          - pluginRef: load-aware-scorer
+            weight: 10
+          - pluginRef: max-score-picker
