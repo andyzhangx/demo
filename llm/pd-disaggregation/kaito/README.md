@@ -102,3 +102,47 @@ When `llm-d-inference-scheduler` v0.9.0 is released, re-enable:
 The `token-producer` plugin tokenizes via HTTP (`vllm launch render` sidecar),
 writes to CycleState, and `precise-prefix-cache-scorer` reads from it —
 no UDS socket needed.
+
+---
+
+## UDS Tokenizer Investigation
+
+In v0.8.0, `precise-prefix-cache-scorer` connects to a tokenizer via Unix Domain Socket
+at `/tmp/tokenizer/tokenizer-uds.socket` (gRPC). There is **no public UDS tokenizer image**
+in the llm-d project.
+
+### llm-d repos checked:
+- `llm-d/llm-d-router` — main source, contains plugin code
+- `llm-d/llm-d-routing-sidecar` — "Incubating P/D sidecar", does NOT provide UDS tokenizer
+- `llm-d/llm-d-inference-sim` — simulation only
+- No dedicated tokenizer repo exists
+
+### How UDS tokenizer was intended to work (internal/unreleased):
+The UDS tokenizer is a gRPC service implementing `InitializeTokenizer` and `Tokenize` RPCs
+over a Unix socket mounted at `/tmp/tokenizer/tokenizer-uds.socket`. It was used in internal
+testing but never shipped as a public container image.
+
+### Conclusion:
+- **v0.8.0**: Cannot use `precise-prefix-cache-scorer` without building a custom UDS tokenizer
+- **v0.9.0+**: Use `token-producer` plugin (HTTP-based) which writes to CycleState;
+  `precise-prefix-cache-scorer` reads from CycleState instead of calling tokenizer directly
+
+---
+
+## P/D Disaggregation — Is `precise-prefix-cache-scorer` Required?
+
+**No.** P/D routing works without it. The core disaggregation plugins are:
+
+| Plugin | Role | Required for P/D? |
+|--------|------|-------------------|
+| `disagg-headers-handler` | Parse disagg headers from request | ✅ Yes |
+| `disagg-profile-handler` | Route to prefill or decode profile | ✅ Yes |
+| `prefix-based-pd-decider` | Decide prefill vs decode based on prefix | ✅ Yes |
+| `by-label-selector` (prefill-filter/decode-filter) | Filter pods by role label | ✅ Yes |
+| `load-aware-scorer` | Score pods by load | ✅ Yes (or any scorer) |
+| `max-score-picker` | Pick highest-scored pod | ✅ Yes |
+| `precise-prefix-cache-scorer` | Score by KV cache hit rate | ❌ Optimization only |
+| `token-producer` | Pre-tokenize for cache scorer | ❌ Only needed with precise-prefix-cache-scorer |
+
+Without `precise-prefix-cache-scorer`, the scheduler uses `load-aware-scorer` to pick
+among prefill/decode pods by load — P/D separation still works correctly.
