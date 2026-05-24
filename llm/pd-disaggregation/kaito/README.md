@@ -17,7 +17,72 @@
 | epp error: `failed to find available decode workerspod` (InferencePoolResourceExhausted) | EPP `by-label-selector` plugin expects `kaito.sh/inference-role: prefill/decode` labels, but KAITO pods only have `inferenceset.kaito.sh/created-by: phi-4-mini-prefill/decode` | Either add labels to pods: `kubectl label pod <pod> kaito.sh/inference-role=decode`, or update EPP configmap `by-label-selector` matchLabels to use `inferenceset.kaito.sh/created-by: phi-4-mini-decode` / `phi-4-mini-prefill`, then restart EPP |
 | epp error: `metric family "vllm:lora_requests_info" not found` | EPP `core-metrics-extractor` expects LoRA metrics by default, but vLLM is not configured with LoRA | Non-fatal, can be ignored. To suppress: configure `--lora-metric=""` in EPP args |
 | epp error: `poll failed ... dial tcp <pod-ip>:5001: connect: connection refused` | EPP metrics collector uses InferencePool `targetPort` (5001, routing sidecar) to scrape vLLM `/metrics`, but vLLM metrics are on port 5000 | Add `--model-server-metrics-port=5000` to EPP args (deprecated but functional in GIE v1.5.0) |
-| epp error: `unable to read prefix cache state` | `prefix_based_pd_decider` reads `PrefixCacheMatchInfoKey` from EPP internal plugin state (not prometheus metrics). This data is produced by `approx-prefix-cache-producer` plugin. If this plugin or its dependency `token-producer` is not configured, the key is never written | Requires `token-producer` + `approx-prefix-cache-producer` plugins (available in GIE v1.5.0 / llm-d main branch). Without these, `prefix-based-pd-decider` cannot determine prefix cache hit ratio. Either: (1) configure these plugins with a working tokenizer sidecar, or (2) remove `prefix-based-pd-decider` and use simpler P/D routing |
+| epp error: `unable to read prefix cache state` | `prefix_based_pd_decider` reads `PrefixCacheMatchInfoKey` from EPP internal plugin state (not prometheus metrics). This data is produced by `approx-prefix-cache-producer` plugin. If this plugin or its dependency `token-producer` is not configured, the key is never written | Requires `token-producer` + `approx-prefix-cache-producer` plugins (available in GIE v1.5.0 / llm-d main branch). Without these, `prefix-based-pd-decider` cannot determine prefix cache hit ratio. Add `approx-prefix-cache-producer` plugin (built into GIE v1.5.0) before `prefix-based-pd-decider` in the EPP configmap. This plugin uses approximate hash-based prefix matching without needing a tokenizer sidecar. See config example below |
+
+---
+
+## Working EPP ConfigMap (v0.8.0 + GIE v1.5.0)
+
+The following `config.yaml` is confirmed working for P/D disaggregation with prefix cache-aware routing:
+
+```yaml
+apiVersion: inference.networking.x-k8s.io/v1alpha1
+kind: EndpointPickerConfig
+plugins:
+  - type: disagg-headers-handler
+  - type: approx-prefix-cache-producer
+    parameters:
+      blockSizeTokens: 64
+      autoTune: true
+  - type: prefix-based-pd-decider
+    parameters:
+      nonCachedTokens: 4
+  - type: disagg-profile-handler
+    parameters:
+      deciders:
+        prefill: prefix-based-pd-decider
+  - type: by-label-selector
+    name: prefill-filter
+    parameters:
+      matchLabels:
+        kaito.sh/inference-role: prefill
+  - type: by-label-selector
+    name: decode-filter
+    parameters:
+      matchLabels:
+        kaito.sh/inference-role: decode
+  - type: load-aware-scorer
+    parameters:
+      threshold: 10
+  - type: max-score-picker
+schedulingProfiles:
+  - name: prefill
+    plugins:
+      - pluginRef: prefill-filter
+      - pluginRef: load-aware-scorer
+        weight: 10
+      - pluginRef: max-score-picker
+  - name: decode
+    plugins:
+      - pluginRef: decode-filter
+      - pluginRef: load-aware-scorer
+        weight: 10
+      - pluginRef: max-score-picker
+```
+
+### Key: `approx-prefix-cache-producer`
+- Built into GIE v1.5.0 (no extra image needed)
+- Uses approximate hash-based prefix matching to compute `PrefixCacheMatchInfoKey` per endpoint
+- Must be listed **before** `prefix-based-pd-decider` in plugins (it produces data that the decider consumes)
+- Does NOT require a tokenizer sidecar — works with character-level approximation
+- `autoTune: true` automatically adjusts block size based on `vllm:cache_config_info` metrics
+
+### EPP args
+Also add to EPP deployment args:
+```
+--model-server-metrics-port=5000
+```
+This tells the metrics collector to scrape vLLM metrics from port 5000 (where vLLM serves `/metrics`) instead of the InferencePool targetPort 5001 (routing sidecar).
 
 ---
 
