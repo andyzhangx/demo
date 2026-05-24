@@ -13,6 +13,7 @@
 | epp crash: `modelName is required in indexerConfig.tokenizersPoolConfig` | `precise-prefix-cache-scorer` requires tokenizer config | Add `tokenizersPoolConfig.modelName` |
 | epp crash: `dial unix /tmp/tokenizer/tokenizer-uds.socket: no such file` | v0.8.0 `precise-prefix-cache-scorer` only supports UDS tokenizer, not HTTP | Remove `precise-prefix-cache-scorer` entirely (no public UDS tokenizer image exists) |
 | epp crash: `references undefined plugin 'precise-prefix-cache-scorer'` | Removed from plugins but still referenced in schedulingProfiles | Remove from both `plugins` list AND `schedulingProfiles` |
+| epp error: `no pods available in datastore` | InferencePool `spec.selector.matchLabels` requires both `apps.kubernetes.io/pod-index: "0"` and `multiroleinference.kaito.sh/created-by: phi-4-mini`, but model pods don't have matching labels (e.g., Deployment pods lack `apps.kubernetes.io/pod-index`) | Verify model pod labels match InferencePool selector: `kubectl get pods -l "multiroleinference.kaito.sh/created-by=phi-4-mini" --show-labels`. If using Deployment instead of StatefulSet, remove `apps.kubernetes.io/pod-index` from InferencePool selector or switch to StatefulSet |
 
 ---
 
