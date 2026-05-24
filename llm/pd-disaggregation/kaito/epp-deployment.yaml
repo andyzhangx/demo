@@ -17,8 +17,10 @@ spec:
       containers:
         - name: tokenizer
           image: vllm/vllm-openai-cpu:v0.21.0
-          command: ["vllm"]
+          command: ["python3"]
           args:
+            - -m
+            - vllm.entrypoints.cli.main
             - launch
             - render
             - microsoft/phi-4-mini-instruct
@@ -30,6 +32,16 @@ spec:
           env:
             - name: VLLM_TARGET_DEVICE
               value: "cpu"
+            - name: USER
+              value: "nonroot"
+            - name: TORCHINDUCTOR_CACHE_DIR
+              value: "/tmp/torch-cache"
+            - name: HF_HOME
+              value: "/tmp/hf-home"
+            - name: TRANSFORMERS_CACHE
+              value: "/tmp/hf-home"
+            - name: VLLM_CACHE_ROOT
+              value: "/tmp/vllm-cache"
           resources:
             requests:
               cpu: 500m
