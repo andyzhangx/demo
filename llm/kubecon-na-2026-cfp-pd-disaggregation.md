@@ -62,8 +62,8 @@ KAITO's new MultiRoleInference CRD makes it declarative: specify a model and two
 
 ## Speaker Bio
 
-**Andy Zhang** — AKS Engineer at Microsoft, contributor to KAITO (Kubernetes AI Toolchain Operator, CNCF Sandbox), Kubernetes CSI drivers, and Azure Kubernetes Service. Focused on making GPU-accelerated AI workloads first-class citizens in Kubernetes. Co-designer of the MultiRoleInference CRD and the KAITO/llm-d integration for P/D disaggregated inference.
-
+**Andy Zhang**
+**Linbo He**
 ---
 
 ## Tags / Keywords
