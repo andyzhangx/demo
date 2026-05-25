@@ -216,3 +216,29 @@ testing but never shipped as a public container image.
 
 Without `precise-prefix-cache-scorer`, the scheduler uses `load-aware-scorer` to pick
 among prefill/decode pods by load — P/D separation still works correctly.
+
+---
+
+## ✅ End-to-End Working P/D with NIXL KV Transfer (2026-05-25)
+
+See [`pd-working-config.md`](pd-working-config.md) for the verified working configuration.
+
+### Quick Summary of Required Changes
+
+| Component | Change | Why |
+|-----------|--------|-----|
+| Prefill pod | Remove sidecar container | Sidecar causes OOM or routing loops on prefill |
+| Prefill pod | Add `VLLM_NIXL_SIDE_CHANNEL_HOST=status.podIP` env | NIXL ZMQ handshake needs reachable IP, not "localhost" |
+| Decode pod | Sidecar: `--port=5000 --vllm-port=5001` | Sidecar receives traffic on InferencePool targetPort |
+| Decode pod | vLLM: append `--port 5001` | Move vLLM to different port than sidecar |
+| Decode pod | Add `VLLM_NIXL_SIDE_CHANNEL_HOST=status.podIP` env | Same reason as prefill |
+| InferencePool | `targetPorts: [{number: 5000}]` | Route to decode sidecar, not vLLM directly |
+
+### Patch Scripts
+- [`prefill-patch.sh`](prefill-patch.sh) — Remove sidecar + add NIXL env
+- [`decode-patch.sh`](decode-patch.sh) — Swap ports + add NIXL env + patch InferencePool
+
+### Verified Performance
+```
+NIXL KV Transfer: 4MB in 15.8ms = 252.9 MB/s throughput
+```
