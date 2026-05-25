@@ -176,3 +176,43 @@ kv_transfer_config:
 ```
 
 `kv_role: kv_both` means each instance can act as either sender or receiver — this is the correct llm-d design for flexible scheduling.
+
+---
+
+## Why Sidecar Must Be on Port 5000 (Not 5001)
+
+### Constraint
+
+The EPP uses `InferencePool.spec.targetPorts` to construct **both** the decode routing destination AND the `x-prefiller-host-port` header value. There is only ONE targetPort shared across all pods in the pool.
+
+This means:
+- `x-prefiller-host-port` = `<prefill_pod_ip>:<targetPort>`
+- Decode routing destination = `<decode_pod_ip>:<targetPort>`
+
+### Why `targetPort=5001` Doesn't Work
+
+| Component | Port 5000 | Port 5001 |
+|-----------|-----------|-----------|
+| Prefill pod (no sidecar) | ✅ vLLM listening | ❌ nothing |
+| Decode pod | sidecar | vLLM |
+
+If `targetPort=5001`:
+- EPP routes decode request to `decode_ip:5001` → hits sidecar ✅
+- EPP sets header `x-prefiller-host-port: prefill_ip:5001` → **nothing listening on prefill:5001** ❌ → connection refused
+
+### Why `targetPort=5000` Works
+
+| Component | Port 5000 | Port 5001 |
+|-----------|-----------|-----------|
+| Prefill pod (no sidecar) | ✅ vLLM listening | — |
+| Decode pod | ✅ sidecar listening | vLLM |
+
+If `targetPort=5000`:
+- EPP routes decode request to `decode_ip:5000` → hits sidecar ✅
+- EPP sets header `x-prefiller-host-port: prefill_ip:5000` → hits prefill vLLM ✅
+
+### Rule
+
+> **InferencePool targetPort must equal the port that prefill vLLM listens on**, because the EPP uses the same targetPort for all pods in the pool.
+
+The decode sidecar must therefore be configured to listen on that same port, with vLLM moved to a different port (5001).
