@@ -111,9 +111,9 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
 
 ## Speaker Bio
 
-**Andy Zhang** — Senior Software Engineer at Microsoft, AKS team. Maintainer of KAITO (CNCF Sandbox). Focused on Kubernetes-native AI infrastructure, GPU scheduling, and inference optimization. Previously spoke at KubeCon EU 2024 on KAITO.
+**Andy Zhang**
 
-**Linbo He** — [Bio TBD]
+**Linbo He**
 
 ---
 
