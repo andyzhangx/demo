@@ -16,7 +16,7 @@ spec:
       serviceAccountName: phi-4-mini-inferencepool-epp
       containers:
         - name: tokenizer
-          image: vllm/vllm-openai-cpu:v0.21.0
+          image: upstream.azurecr.io/oss/v2/vllm/vllm-openai-cpu:v0.21.0
           command: ["python3"]
           args:
             - -m
