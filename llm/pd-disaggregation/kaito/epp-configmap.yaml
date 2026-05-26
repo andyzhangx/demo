@@ -5,39 +5,45 @@ metadata:
   namespace: default
 data:
   config.yaml: |
+    apiVersion: llm-d.ai/v1alpha1
+    kind: EndpointPickerConfig
     plugins:
-      - type: disagg-headers-handler
-      - type: prefix-based-pd-decider
-        parameters:
-          nonCachedTokens: 4
-      - type: disagg-profile-handler
-        parameters:
-          deciders:
-            prefill: prefix-based-pd-decider
-      - name: prefill-filter
-        type: by-label-selector
-        parameters:
-          matchLabels:
-            kaito.sh/inference-role: prefill
-      - name: decode-filter
-        type: by-label-selector
-        parameters:
-          matchLabels:
-            kaito.sh/inference-role: decode
-      - type: load-aware-scorer
-        parameters:
-          threshold: 10
-      - type: max-score-picker
+    - type: approx-prefix-cache-producer
+      parameters:
+        autoTune: true
+        lruCapacityPerServer: 1000
+    - type: disagg-headers-handler
+    - type: prefix-based-pd-decider
+      parameters:
+        nonCachedTokens: 4
+    - type: disagg-profile-handler
+      parameters:
+        deciders:
+          prefill: prefix-based-pd-decider
+    - name: prefill-filter
+      type: by-label-selector
+      parameters:
+        matchLabels:
+          kaito.sh/inference-role: prefill
+    - name: decode-filter
+      type: by-label-selector
+      parameters:
+        matchLabels:
+          kaito.sh/inference-role: decode
+    - type: load-aware-scorer
+      parameters:
+        threshold: 10
+    - type: max-score-picker
     schedulingProfiles:
-      - name: prefill
-        plugins:
-          - pluginRef: prefill-filter
-          - pluginRef: load-aware-scorer
-            weight: 10
-          - pluginRef: max-score-picker
-      - name: decode
-        plugins:
-          - pluginRef: decode-filter
-          - pluginRef: load-aware-scorer
-            weight: 10
-          - pluginRef: max-score-picker
+    - name: prefill
+      plugins:
+      - pluginRef: prefill-filter
+      - pluginRef: load-aware-scorer
+        weight: 10
+      - pluginRef: max-score-picker
+    - name: decode
+      plugins:
+      - pluginRef: decode-filter
+      - pluginRef: load-aware-scorer
+        weight: 10
+      - pluginRef: max-score-picker

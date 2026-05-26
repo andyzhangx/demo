@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: phi-4-mini-inferencepool-epp
+  namespace: default
+spec:
+  host: phi-4-mini-inferencepool-epp.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: phi-4-mini-inferencepool-backend
+  namespace: default
+spec:
+  host: phi-4-mini-inferencepool-ip-3ecb0ff8.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
