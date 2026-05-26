@@ -64,7 +64,7 @@ Attendees will learn:
 
 2. **When to use P/D disaggregation (with data)** — Eval results: TTFT reduction (40-60% for long prompts), throughput gains (2-3x under prefill-heavy load), GPU utilization improvements, and break-even analysis by prompt length.
 
-3. **How to autoscale P/D independently** — KEDA with role-specific metrics: prefill scales on queue depth, decode on KV-cache utilization. Live demo of asymmetric scaling under bursty traffic.
+3. **How to autoscale P/D independently** — KEDA with role-specific metrics: prefill scales on queue depth, decode on KV-cache utilization. Example of asymmetric scaling under bursty traffic.
 
 4. **KAITO vs Dynamo vs llm-d standalone** — Dynamo is Python-native/NVIDIA-coupled; llm-d is K8s-native but manual; KAITO adds a declarative CRD layer with built-in KEDA autoscaling, vendor-neutral GPU support, and single-CRD multi-model management.
 
