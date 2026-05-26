@@ -40,7 +40,7 @@ LLM inference has two phases with very different resource profiles: prefill is c
 
 P/D disaggregation fixes this, but existing approaches (NVIDIA Dynamo, llm-d standalone) require extensive manual wiring: topology-aware routing, KV cache transfer protocols, sidecar lifecycle management, and per-role autoscaling. KAITO introduces MultiRoleInference — a higher-level Kubernetes abstraction that composes llm-d's routing and Gateway API Inference Extension into a single declarative CRD.
 
-We'll present the motivation for this layered approach vs. Dynamo/llm-d alone, show a live demo with eval data comparing P/D vs. colocated serving (TTFT, throughput, GPU utilization), and demonstrate KEDA-driven autoscaling for each role independently.
+We'll present the motivation for this layered approach vs. Dynamo/llm-d alone, share eval data comparing P/D vs. colocated serving (TTFT, throughput, GPU utilization), and demonstrate KEDA-driven autoscaling for each role independently.
 
 ---
 
