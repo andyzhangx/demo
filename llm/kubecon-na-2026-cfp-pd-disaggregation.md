@@ -62,7 +62,7 @@ Attendees will learn:
 
 1. **A layered abstraction for complex inference topologies** — How KAITO's MultiRoleInference CRD composes Gateway API InferencePool, llm-d EPP plugins, and vLLM NIXL into one declarative interface. Why this matters as topologies grow (E/P/D, speculative decoding, MoE).
 
-2. **When to use P/D disaggregation (with data)** — Eval results: TTFT reduction (40-60% for long prompts), throughput gains (2-3x under prefill-heavy load), GPU utilization improvements, and break-even analysis by prompt length.
+2. **When to use P/D disaggregation** — Eval data showing TTFT reduction, throughput gains, GPU utilization improvements under different workload profiles, and break-even analysis by prompt length.
 
 3. **How to autoscale P/D independently** — KEDA with role-specific metrics: prefill scales on queue depth, decode on KV-cache utilization. Example of asymmetric scaling under bursty traffic.
 
