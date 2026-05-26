@@ -60,37 +60,17 @@ We'll show eval data: TTFT reduction, throughput gains, and autoscaling behavior
 
 Attendees will learn:
 
-1. **A layered abstraction model for complex inference topologies** — How KAITO's MultiRoleInference CRD composes lower-level primitives (Gateway API InferencePool, llm-d EPP plugins, vLLM NIXL connector) into a single declarative interface, and why this layering matters as inference topologies grow more complex (E/P/D, speculative decoding, MoE routing).
+1. **A layered abstraction for complex inference topologies** — How KAITO's MultiRoleInference CRD composes Gateway API InferencePool, llm-d EPP plugins, and vLLM NIXL into one declarative interface. Why this matters as topologies grow (E/P/D, speculative decoding, MoE).
 
-2. **When and why to use P/D disaggregation** — Eval data showing:
-   - TTFT improvement (40-60% reduction for long-context prompts)
-   - Throughput gains (2-3x decode tokens/sec under prefill-heavy load)
-   - GPU utilization efficiency (prefill pool at 90%+ compute, decode pool at 85%+ memory bandwidth)
-   - Break-even analysis: prompt length thresholds where P/D outperforms colocated
+2. **When to use P/D disaggregation (with data)** — Eval results: TTFT reduction (40-60% for long prompts), throughput gains (2-3x under prefill-heavy load), GPU utilization improvements, and break-even analysis by prompt length.
 
-3. **How to autoscale P/D independently** — Using KEDA with role-specific metrics:
-   - Prefill scales on queue depth and pending prompt tokens
-   - Decode scales on KV-cache utilization and active sequences
-   - Demo showing asymmetric scaling under bursty traffic
+3. **How to autoscale P/D independently** — KEDA with role-specific metrics: prefill scales on queue depth, decode on KV-cache utilization. Live demo of asymmetric scaling under bursty traffic.
 
-4. **Comparison with alternative approaches:**
+4. **KAITO vs Dynamo vs llm-d standalone** — Dynamo is Python-native/NVIDIA-coupled; llm-d is K8s-native but manual; KAITO adds a declarative CRD layer with built-in KEDA autoscaling, vendor-neutral GPU support, and single-CRD multi-model management.
 
-   | | NVIDIA Dynamo | llm-d (standalone) | KAITO MultiRoleInference |
-   |---|---|---|---|
-   | Abstraction | Python runtime | K8s Gateway API + sidecars | Declarative CRD |
-   | KV Transfer | NCCL/custom | NIXL (UCX/RDMA) | NIXL (via llm-d) |
-   | K8s-native | ❌ Requires custom operator | ⚠️ Manual config | ✅ Single CRD |
-   | Autoscaling | Manual | Manual + KEDA possible | KEDA built-in |
-   | Multi-model | Per-model config | Per-InferencePool | Per-CRD instance |
-   | Vendor lock-in | NVIDIA GPU required | Any GPU | Any GPU |
+5. **Production lessons** — NIXL side-channel pitfalls, sidecar placement constraints, port assignment rules, and startup ordering from running P/D on AKS.
 
-5. **Production patterns** — Lessons from running P/D on AKS at scale:
-   - NIXL side-channel configuration pitfalls (why `VLLM_NIXL_SIDE_CHANNEL_HOST` must be pod IP)
-   - Sidecar memory management (why prefill pods must NOT have a routing sidecar)
-   - Port assignment constraints (InferencePool targetPort must match prefill vLLM port)
-   - Startup ordering and health check design
-
-- All components are **open source and vendor-neutral**: KAITO (CNCF Sandbox), llm-d (community), Gateway API Inference Extension (K8s SIG), KEDA (CNCF Graduated)
+All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inference Extension (K8s SIG), KEDA (CNCF Graduated).
 
 ---
 
