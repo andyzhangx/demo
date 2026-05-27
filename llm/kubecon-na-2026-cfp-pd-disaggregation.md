@@ -46,11 +46,11 @@ We'll present the motivation for this layered approach vs. Dynamo/llm-d alone, s
 
 ## Description (max 1000 characters)
 
-The problem: P/D disaggregation improves LLM serving efficiency by 30-60% on prefill-heavy workloads, but the infrastructure complexity is brutal — routing sidecars, NIXL KV transfer configuration, ZMQ discovery, port management, label-based scheduling profiles, and independent autoscaling all need correct orchestration.
+The problem: P/D disaggregation improves LLM serving efficiency by 30-60% on prefill-heavy workloads, but infrastructure complexity is brutal — routing sidecars, NIXL KV transfer, ZMQ discovery, port management, scheduling profiles, and independent autoscaling all need correct orchestration.
 
-Existing solutions: NVIDIA Dynamo provides a Python-native disaggregation runtime but is tightly coupled to NVIDIA's stack and not Kubernetes-native. llm-d offers Kubernetes-native P/D routing via Gateway API, but requires manual StatefulSet configuration, sidecar injection, and environment variable plumbing.
+Existing solutions: NVIDIA Dynamo provides disaggregation but is tightly coupled to NVIDIA's stack, not Kubernetes-native. llm-d offers Kubernetes-native P/D routing via Gateway API but requires manual StatefulSet config, sidecar injection, and env var plumbing.
 
-KAITO's MultiRoleInference CRD bridges this gap: it is an opinionated, declarative layer that orchestrates llm-d components automatically. One CRD generates prefill/decode StatefulSets with correct port assignments, NIXL side-channel env vars, sidecar injection (decode-only), InferencePool with proper targetPort, EPP plugin chain configuration, and KEDA ScaledObjects per role.
+KAITO's MultiRoleInference CRD bridges this gap: a declarative layer orchestrating llm-d components automatically. One CRD generates prefill/decode StatefulSets with correct port assignments, NIXL env vars, decode-only sidecar injection, InferencePool with proper targetPort, EPP plugin chain, and KEDA ScaledObjects per role.
 
 We'll show eval data: TTFT reduction, throughput gains, and autoscaling behavior under mixed workloads.
 
