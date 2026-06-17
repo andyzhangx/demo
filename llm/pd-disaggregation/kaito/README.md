@@ -333,3 +333,25 @@ See [`pd-working-config.md`](pd-working-config.md) for the verified working conf
 ```
 NIXL KV Transfer: 4MB in 15.8ms = 252.9 MB/s throughput
 ```
+
+---
+
+## Related KAITO PRs
+
+| PR | Description | Status |
+|----|-------------|--------|
+| [#2093](https://github.com/kaito-project/kaito/pull/2093) | feat: support P/D disaggregation | WIP |
+| New PR (TBD) | feat: promote InferenceSet to beta & enable `EnableInferenceSetController` by default | Planned |
+
+### InferenceSet Promotion to Beta
+
+The `InferenceSet` CRD (currently alpha, gated behind `EnableInferenceSetController` feature flag) should be promoted to **beta** and **enabled by default**. This is required because:
+
+1. **P/D disaggregation depends on InferenceSet** — the `MultiRoleInference` controller creates `InferenceSet` resources for prefill/decode roles
+2. **NIXL env injection should be automatic** — the InferenceSet controller should inject `VLLM_NIXL_SIDE_CHANNEL_HOST` (set to Pod IP via `status.podIP` fieldRef) into vLLM containers when the inference role is `prefill` or `decode`. Currently users must manually patch StatefulSets.
+3. **Production readiness** — InferenceSet has been stable since v0.6.x and is actively used for multi-role inference workloads
+
+Expected changes in the PR:
+- Move `InferenceSet` CRD from `v1alpha1` to `v1beta1`
+- Set `EnableInferenceSetController` feature gate default to `true`
+- Auto-inject `VLLM_NIXL_SIDE_CHANNEL_HOST`, `VLLM_HOST_IP`, and `POD_IP` env vars into vLLM inference containers when `KAITO_INFERENCE_ROLE` is `prefill` or `decode`
