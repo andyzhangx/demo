@@ -15,6 +15,8 @@
 | epp crash: `references undefined plugin 'precise-prefix-cache-scorer'` | Removed from plugins but still referenced in schedulingProfiles | Remove from both `plugins` list AND `schedulingProfiles` |
 | epp error: `no pods available in datastore` | InferencePool `spec.selector.matchLabels` requires both `apps.kubernetes.io/pod-index: "0"` and `multiroleinference.kaito.sh/created-by: phi-4-mini`, but model pods don't have matching labels (e.g., Deployment pods lack `apps.kubernetes.io/pod-index`) | Verify model pod labels match InferencePool selector: `kubectl get pods -l "multiroleinference.kaito.sh/created-by=phi-4-mini" --show-labels`. If using Deployment instead of StatefulSet, remove `apps.kubernetes.io/pod-index` from InferencePool selector or switch to StatefulSet |
 | epp error: `failed to find available decode workerspod` (InferencePoolResourceExhausted) | EPP `by-label-selector` plugin expects `kaito.sh/inference-role: prefill/decode` labels, but KAITO pods only have `inferenceset.kaito.sh/created-by: phi-4-mini-prefill/decode` | Either add labels to pods: `kubectl label pod <pod> kaito.sh/inference-role=decode`, or update EPP configmap `by-label-selector` matchLabels to use `inferenceset.kaito.sh/created-by: phi-4-mini-decode` / `phi-4-mini-prefill`, then restart EPP |
+| NIXL error: `Remote NIXL agent engine ID mismatch` / `handshake_setup_failed`, `'remote_host': 'localhost'` | vLLM NIXL connector registers with `localhost` when `POD_IP` env var is missing from the vLLM container. Decode tries to connect to itself instead of prefill pod | Add `POD_IP` env var (from `status.podIP` fieldRef) to **both** prefill and decode vLLM containers (not just the routing sidecar). See [NIXL POD_IP Fix](#nixl-pod_ip-fix) section below |
+| Gateway → EPP: 500 `upstream connect error or disconnect/reset before headers. reset reason: connection termination` | EPP ext-proc gRPC port 9002 uses TLS by default in `llm-d-inference-scheduler:v0.8.0`, even with `--secure-serving=false`. DestinationRule `tls.mode: DISABLE` sends plaintext → TLS server resets connection | Change DestinationRule to `tls.mode: SIMPLE` with `insecureSkipVerify: true`. See [Gateway TLS Fix](#gateway--epp-tls-fix) section below |
 | epp error: `metric family "vllm:lora_requests_info" not found` | EPP `core-metrics-extractor` expects LoRA metrics by default, but vLLM is not configured with LoRA | Non-fatal, can be ignored. To suppress: configure `--lora-metric=""` in EPP args |
 | epp error: `poll failed ... dial tcp <pod-ip>:5001: connect: connection refused` | EPP metrics collector uses InferencePool `targetPort` (5001, routing sidecar) to scrape vLLM `/metrics`, but vLLM metrics are on port 5000 | Add `--model-server-metrics-port=5000` to EPP args (deprecated but functional in GIE v1.5.0) |
 | epp error: `unable to read prefix cache state` | `prefix_based_pd_decider` reads `PrefixCacheMatchInfoKey` from EPP internal plugin state (not prometheus metrics). This data is produced by `approx-prefix-cache-producer` plugin. If this plugin or its dependency `token-producer` is not configured, the key is never written | Requires `token-producer` + `approx-prefix-cache-producer` plugins (available in GIE v1.5.0 / llm-d main branch). Without these, `prefix-based-pd-decider` cannot determine prefix cache hit ratio. Add `approx-prefix-cache-producer` plugin (built into GIE v1.5.0) before `prefix-based-pd-decider` in the EPP configmap. This plugin uses approximate hash-based prefix matching without needing a tokenizer sidecar. See config example below |
@@ -216,6 +218,66 @@ testing but never shipped as a public container image.
 
 Without `precise-prefix-cache-scorer`, the scheduler uses `load-aware-scorer` to pick
 among prefill/decode pods by load — P/D separation still works correctly.
+
+---
+
+## NIXL POD_IP Fix
+
+vLLM's NIXL connector uses the `POD_IP` environment variable to register the pod's reachable IP address. **Without this env var, NIXL registers with `localhost`, causing cross-pod KV transfer to fail.**
+
+### Symptoms
+- `NIXL transfer failure: handshake_setup_failed`
+- `RuntimeError: Remote NIXL agent engine ID mismatch. Expected <prefill-id>, received <decode-id>`
+- Error context shows `'remote_host': 'localhost', 'remote_port': 5600` (should be a real pod IP)
+- `KeyError: '<engine-id>'` in `block_size_ratio_from_engine_id`
+
+### Root Cause
+Decode pod attempts NIXL handshake to `localhost:5600`, which connects to itself (same pod) instead of the remote prefill pod. The engine ID received is its own ID, not the expected prefill engine ID.
+
+### Fix
+Add `POD_IP` env var to **both** prefill and decode StatefulSets' **vLLM containers** (container index 0):
+
+```bash
+# Patch prefill
+kubectl patch statefulset <prefill-sts> --type=json \
+  -p='[{"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"POD_IP","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"status.podIP"}}}}]'
+
+# Patch decode
+kubectl patch statefulset <decode-sts> --type=json \
+  -p='[{"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"POD_IP","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"status.podIP"}}}}]'
+```
+
+> **Note:** The routing sidecar container already has `POD_IP` injected by KAITO, but the **main vLLM inference container** also needs it for NIXL to register correctly. This is a KAITO controller bug — it should inject `POD_IP` into both containers.
+
+---
+
+## Gateway → EPP TLS Fix
+
+The `llm-d-inference-scheduler:v0.8.0` image serves ext-proc gRPC on port 9002 with **TLS enabled by default**, regardless of the `--secure-serving=false` flag (this flag only affects non-ext-proc endpoints in v0.8.0).
+
+### Symptoms
+- All requests through the Istio gateway return HTTP 500
+- Gateway logs: `Received gRPC error on stream: 14, message upstream connect error or disconnect/reset before headers. reset reason: connection termination`
+- EPP logs show **no incoming requests** (connection terminated before reaching ext-proc handler)
+- `grpcurl -plaintext <pod-ip>:9002` times out, but `grpcurl -insecure <pod-ip>:9002` works
+
+### Fix
+Update the EPP DestinationRule to use TLS:
+
+```yaml
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: phi-4-mini-inferencepool-epp
+spec:
+  host: phi-4-mini-inferencepool-epp
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+      insecureSkipVerify: true
+```
+
+> **Note:** This is needed because v0.8.0's ext-proc server uses a self-signed certificate. `insecureSkipVerify: true` skips cert validation.
 
 ---
 
