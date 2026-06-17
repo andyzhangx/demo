@@ -15,7 +15,7 @@
 | epp crash: `references undefined plugin 'precise-prefix-cache-scorer'` | Removed from plugins but still referenced in schedulingProfiles | Remove from both `plugins` list AND `schedulingProfiles` |
 | epp error: `no pods available in datastore` | InferencePool `spec.selector.matchLabels` requires both `apps.kubernetes.io/pod-index: "0"` and `multiroleinference.kaito.sh/created-by: phi-4-mini`, but model pods don't have matching labels (e.g., Deployment pods lack `apps.kubernetes.io/pod-index`) | Verify model pod labels match InferencePool selector: `kubectl get pods -l "multiroleinference.kaito.sh/created-by=phi-4-mini" --show-labels`. If using Deployment instead of StatefulSet, remove `apps.kubernetes.io/pod-index` from InferencePool selector or switch to StatefulSet |
 | epp error: `failed to find available decode workerspod` (InferencePoolResourceExhausted) | EPP `by-label-selector` plugin expects `kaito.sh/inference-role: prefill/decode` labels, but KAITO pods only have `inferenceset.kaito.sh/created-by: phi-4-mini-prefill/decode` | Either add labels to pods: `kubectl label pod <pod> kaito.sh/inference-role=decode`, or update EPP configmap `by-label-selector` matchLabels to use `inferenceset.kaito.sh/created-by: phi-4-mini-decode` / `phi-4-mini-prefill`, then restart EPP |
-| NIXL error: `Remote NIXL agent engine ID mismatch` / `handshake_setup_failed`, `'remote_host': 'localhost'` | vLLM NIXL connector registers with `localhost` when `POD_IP` env var is missing from the vLLM container. Decode tries to connect to itself instead of prefill pod | Add `POD_IP` env var (from `status.podIP` fieldRef) to **both** prefill and decode vLLM containers (not just the routing sidecar). See [NIXL POD_IP Fix](#nixl-pod_ip-fix) section below |
+| NIXL error: `Remote NIXL agent engine ID mismatch` / `handshake_setup_failed`, `'remote_host': 'localhost'` | vLLM NIXL connector reads `VLLM_NIXL_SIDE_CHANNEL_HOST` env (defaults to `localhost`). `POD_IP` and `VLLM_HOST_IP` alone are NOT sufficient — NIXL side channel uses its own env var. Decode tries to connect to itself instead of prefill pod | Add `VLLM_NIXL_SIDE_CHANNEL_HOST` env var (from `status.podIP` fieldRef) to **both** prefill and decode vLLM containers. Also add `POD_IP` and `VLLM_HOST_IP` for completeness. See [NIXL POD_IP Fix](#nixl-pod_ip-fix) section below |
 | Gateway → EPP: 500 `upstream connect error or disconnect/reset before headers. reset reason: connection termination` | EPP ext-proc gRPC port 9002 uses TLS by default in `llm-d-inference-scheduler:v0.8.0`, even with `--secure-serving=false`. DestinationRule `tls.mode: DISABLE` sends plaintext → TLS server resets connection | Change DestinationRule to `tls.mode: SIMPLE` with `insecureSkipVerify: true`. See [Gateway TLS Fix](#gateway--epp-tls-fix) section below |
 | epp error: `metric family "vllm:lora_requests_info" not found` | EPP `core-metrics-extractor` expects LoRA metrics by default, but vLLM is not configured with LoRA | Non-fatal, can be ignored. To suppress: configure `--lora-metric=""` in EPP args |
 | epp error: `poll failed ... dial tcp <pod-ip>:5001: connect: connection refused` | EPP metrics collector uses InferencePool `targetPort` (5001, routing sidecar) to scrape vLLM `/metrics`, but vLLM metrics are on port 5000 | Add `--model-server-metrics-port=5000` to EPP args (deprecated but functional in GIE v1.5.0) |
@@ -223,7 +223,9 @@ among prefill/decode pods by load — P/D separation still works correctly.
 
 ## NIXL POD_IP Fix
 
-vLLM's NIXL connector uses the `POD_IP` environment variable to register the pod's reachable IP address. **Without this env var, NIXL registers with `localhost`, causing cross-pod KV transfer to fail.**
+vLLM's NIXL connector uses the `VLLM_NIXL_SIDE_CHANNEL_HOST` environment variable to determine what IP address to register in the NIXL metadata for cross-pod KV transfer. **Without this env var, it defaults to `localhost`, causing cross-pod KV transfer to fail.**
+
+> ⚠️ **Important (vLLM v0.19.1+):** Setting `POD_IP` alone is **NOT sufficient**. The NIXL connector reads `VLLM_NIXL_SIDE_CHANNEL_HOST` specifically (see `nixl_connector.py` line 556: `self.side_channel_host = envs.VLLM_NIXL_SIDE_CHANNEL_HOST`). `VLLM_HOST_IP` is used for general network binding but does NOT affect the NIXL side channel registration.
 
 ### Symptoms
 - `NIXL transfer failure: handshake_setup_failed`
@@ -234,20 +236,47 @@ vLLM's NIXL connector uses the `POD_IP` environment variable to register the pod
 ### Root Cause
 Decode pod attempts NIXL handshake to `localhost:5600`, which connects to itself (same pod) instead of the remote prefill pod. The engine ID received is its own ID, not the expected prefill engine ID.
 
-### Fix
-Add `POD_IP` env var to **both** prefill and decode StatefulSets' **vLLM containers** (container index 0):
-
-```bash
-# Patch prefill
-kubectl patch statefulset <prefill-sts> --type=json \
-  -p='[{"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"POD_IP","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"status.podIP"}}}}]'
-
-# Patch decode
-kubectl patch statefulset <decode-sts> --type=json \
-  -p='[{"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"POD_IP","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"status.podIP"}}}}]'
+The NIXL connector's side channel host is determined by:
+```python
+# vllm/distributed/kv_transfer/kv_connector/v1/nixl_connector.py
+self.side_channel_host = envs.VLLM_NIXL_SIDE_CHANNEL_HOST  # defaults to "localhost"
 ```
 
-> **Note:** The routing sidecar container already has `POD_IP` injected by KAITO, but the **main vLLM inference container** also needs it for NIXL to register correctly. This is a KAITO controller bug — it should inject `POD_IP` into both containers.
+### Fix
+Add `VLLM_NIXL_SIDE_CHANNEL_HOST` env var to **both** prefill and decode StatefulSets' **vLLM containers** (container index 0). Also add `VLLM_HOST_IP` and `POD_IP` for completeness:
+
+```bash
+# Patch prefill StatefulSet
+kubectl patch statefulset <prefill-sts> --type=json \
+  -p='[
+    {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"POD_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}},
+    {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"VLLM_HOST_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}},
+    {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"VLLM_NIXL_SIDE_CHANNEL_HOST","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}}
+  ]'
+
+# Patch decode StatefulSet (both vLLM container[0] and sidecar container[1])
+kubectl patch statefulset <decode-sts> --type=json \
+  -p='[
+    {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"POD_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}},
+    {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"VLLM_HOST_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}},
+    {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"VLLM_NIXL_SIDE_CHANNEL_HOST","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}},
+    {"op":"add","path":"/spec/template/spec/containers/1/env/-","value":{"name":"VLLM_NIXL_SIDE_CHANNEL_HOST","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}}
+  ]'
+```
+
+After patching, delete the pods to trigger recreation:
+```bash
+kubectl delete pod <prefill-pod> <decode-pod>
+```
+
+### Verification
+Confirm the env is correctly set inside the running pods:
+```bash
+kubectl exec <prefill-pod> -- python3 -c "from vllm import envs; print(envs.VLLM_NIXL_SIDE_CHANNEL_HOST)"
+# Should print a real pod IP like 10.244.x.x, NOT "localhost"
+```
+
+> **Note:** This is a KAITO controller bug — it should inject `VLLM_NIXL_SIDE_CHANNEL_HOST` (set to Pod IP) into the vLLM containers automatically when P/D disaggregation is enabled. A fix PR has been proposed: https://github.com/kaito-project/kaito/pull/XXX (promote InferenceSet to beta + enable by default).
 
 ---
 
