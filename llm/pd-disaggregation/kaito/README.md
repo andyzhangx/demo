@@ -282,16 +282,29 @@ kubectl exec <prefill-pod> -- python3 -c "from vllm import envs; print(envs.VLLM
 
 ## Gateway → EPP TLS Fix
 
-The `llm-d-inference-scheduler:v0.8.0` image serves ext-proc gRPC on port 9002 with **TLS enabled by default**, regardless of the `--secure-serving=false` flag (this flag only affects non-ext-proc endpoints in v0.8.0).
+### Why is a DestinationRule always required?
 
-### Symptoms
-- All requests through the Istio gateway return HTTP 500
-- Gateway logs: `Received gRPC error on stream: 14, message upstream connect error or disconnect/reset before headers. reset reason: connection termination`
-- EPP logs show **no incoming requests** (connection terminated before reaching ext-proc handler)
-- `grpcurl -plaintext <pod-ip>:9002` times out, but `grpcurl -insecure <pod-ip>:9002` works
+When using Istio as the Gateway API provider, a DestinationRule is **always required** for the EPP service. This is because:
 
-### Fix
-Update the EPP DestinationRule to use TLS:
+1. **EPP runs without an Istio sidecar** — The EPP pod is deployed by the llm-d-router Helm chart and does not have Istio sidecar injection. Without a sidecar, Istio cannot auto-negotiate mTLS.
+
+2. **Istio Gateway doesn't know how to connect** — Without explicit configuration, the Istio Gateway (Envoy) may attempt TLS or mTLS to reach the EPP's ext-proc gRPC port 9002, but the EPP isn't set up for that.
+
+3. **Injecting an Istio sidecar on EPP does NOT work** — We tested adding `sidecar.istio.io/inject: "true"` to the EPP deployment. The sidecar gets injected (pod becomes 2/2), but the Gateway's ext-proc filter connects directly to the EPP service (not through mesh mTLS), so the sidecar intercepts the inbound traffic and expects mTLS that the Gateway isn't sending via the ext-proc path → `connection termination` errors.
+
+### Which DestinationRule mode to use?
+
+| EPP version | `--secure-serving` | EPP listens on | DestinationRule mode |
+|---|---|---|---|
+| `llm-d-inference-scheduler:v0.8.0` | `true` (default) | TLS gRPC (self-signed cert) | `mode: SIMPLE` + `insecureSkipVerify: true` |
+| `llm-d-router-endpoint-picker:v0.9.1` | `false` | Plaintext gRPC | `mode: DISABLE` |
+
+- **`mode: SIMPLE`** = Gateway sends TLS but skips certificate verification (for self-signed certs)
+- **`mode: DISABLE`** = Gateway sends plaintext (no TLS at all)
+
+Using the wrong mode causes `WRONG_VERSION_NUMBER` (plaintext hitting TLS server) or `connection termination` (TLS hitting plaintext server).
+
+### v0.8.0 (secure-serving=true, default)
 
 ```yaml
 apiVersion: networking.istio.io/v1
@@ -306,7 +319,27 @@ spec:
       insecureSkipVerify: true
 ```
 
-> **Note:** This is needed because v0.8.0's ext-proc server uses a self-signed certificate. `insecureSkipVerify: true` skips cert validation.
+### v0.9.1 (secure-serving=false)
+
+```yaml
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: phi-4-mini-inferencepool-epp
+spec:
+  host: phi-4-mini-inferencepool-epp.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+```
+
+### Symptoms when DestinationRule is wrong or missing
+- All requests through the Istio gateway return HTTP 500 or timeout
+- Gateway (Envoy) logs: `Received gRPC error on stream: 14` with either:
+  - `WRONG_VERSION_NUMBER` — Gateway sends TLS to plaintext EPP (need `mode: DISABLE`)
+  - `connection termination` — Gateway sends plaintext to TLS EPP (need `mode: SIMPLE`)
+- EPP logs show **no incoming requests** (connection fails before reaching ext-proc handler)
+- With `failureMode: FailOpen`, traffic still reaches model pods but **without P/D-aware routing** (EPP is bypassed)
 
 ---
 
