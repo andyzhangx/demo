@@ -17,6 +17,7 @@
 | epp error: `failed to find available decode workerspod` (InferencePoolResourceExhausted) | EPP `by-label-selector` plugin expects `kaito.sh/inference-role: prefill/decode` labels, but KAITO pods only have `inferenceset.kaito.sh/created-by: phi-4-mini-prefill/decode` | Either add labels to pods: `kubectl label pod <pod> kaito.sh/inference-role=decode`, or update EPP configmap `by-label-selector` matchLabels to use `inferenceset.kaito.sh/created-by: phi-4-mini-decode` / `phi-4-mini-prefill`, then restart EPP |
 | NIXL error: `Remote NIXL agent engine ID mismatch` / `handshake_setup_failed`, `'remote_host': 'localhost'` | vLLM NIXL connector reads `VLLM_NIXL_SIDE_CHANNEL_HOST` env (defaults to `localhost`). `POD_IP` and `VLLM_HOST_IP` alone are NOT sufficient — NIXL side channel uses its own env var. Decode tries to connect to itself instead of prefill pod | Add `VLLM_NIXL_SIDE_CHANNEL_HOST` env var (from `status.podIP` fieldRef) to **both** prefill and decode vLLM containers. Also add `POD_IP` and `VLLM_HOST_IP` for completeness. See [NIXL POD_IP Fix](#nixl-pod_ip-fix) section below |
 | Gateway → EPP: 500 `upstream connect error or disconnect/reset before headers. reset reason: connection termination` | EPP ext-proc gRPC port 9002 uses TLS by default in `llm-d-inference-scheduler:v0.8.0`, even with `--secure-serving=false`. DestinationRule `tls.mode: DISABLE` sends plaintext → TLS server resets connection | Change DestinationRule to `tls.mode: SIMPLE` with `insecureSkipVerify: true`. See [Gateway TLS Fix](#gateway--epp-tls-fix) section below |
+| Gateway → EPP: 500 `connection termination` (with Istio sidecar injected on EPP) | Namespace has `istio-injection=enabled`, EPP pod gets Istio sidecar (native sidecar pattern). Sidecar intercepts inbound gRPC on port 9002, but Gateway ext_proc connects directly (not through mesh mTLS path), causing connection reset | Add `traffic.sidecar.istio.io/excludeInboundPorts: "9002"` annotation to EPP deployment + set DestinationRule `tls.mode: DISABLE`. See [Istio Sidecar on EPP Fix](#istio-sidecar-on-epp-fix) section below |
 | epp error: `metric family "vllm:lora_requests_info" not found` | EPP `core-metrics-extractor` expects LoRA metrics by default, but vLLM is not configured with LoRA | Non-fatal, can be ignored. To suppress: configure `--lora-metric=""` in EPP args |
 | epp error: `poll failed ... dial tcp <pod-ip>:5001: connect: connection refused` | EPP metrics collector uses InferencePool `targetPort` (5001, routing sidecar) to scrape vLLM `/metrics`, but vLLM metrics are on port 5000 | Add `--model-server-metrics-port=5000` to EPP args (deprecated but functional in GIE v1.5.0) |
 | epp error: `unable to read prefix cache state` | `prefix_based_pd_decider` reads `PrefixCacheMatchInfoKey` from EPP internal plugin state (not prometheus metrics). This data is produced by `approx-prefix-cache-producer` plugin. If this plugin or its dependency `token-producer` is not configured, the key is never written | Requires `token-producer` + `approx-prefix-cache-producer` plugins (available in GIE v1.5.0 / llm-d main branch). Without these, `prefix-based-pd-decider` cannot determine prefix cache hit ratio. Add `approx-prefix-cache-producer` plugin (built into GIE v1.5.0) before `prefix-based-pd-decider` in the EPP configmap. This plugin uses approximate hash-based prefix matching without needing a tokenizer sidecar. See config example below |
@@ -290,7 +291,7 @@ When using Istio as the Gateway API provider, a DestinationRule is **always requ
 
 2. **Istio Gateway doesn't know how to connect** — Without explicit configuration, the Istio Gateway (Envoy) may attempt TLS or mTLS to reach the EPP's ext-proc gRPC port 9002, but the EPP isn't set up for that.
 
-3. **Injecting an Istio sidecar on EPP does NOT work** — We tested adding `sidecar.istio.io/inject: "true"` to the EPP deployment. The sidecar gets injected (pod becomes 2/2), but the Gateway's ext-proc filter connects directly to the EPP service (not through mesh mTLS), so the sidecar intercepts the inbound traffic and expects mTLS that the Gateway isn't sending via the ext-proc path → `connection termination` errors.
+3. **Injecting an Istio sidecar on EPP does NOT work** — We tested adding `sidecar.istio.io/inject: "true"` to the EPP deployment. The sidecar gets injected (pod becomes 2/2), but the Gateway's ext-proc filter connects directly to the EPP service (not through mesh mTLS), so the sidecar intercepts the inbound traffic and expects mTLS that the Gateway isn't sending via the ext-proc path → `connection termination` errors. See also [Istio Sidecar on EPP Fix](#istio-sidecar-on-epp-fix) for the case where sidecar is auto-injected by namespace label.
 
 ### Which DestinationRule mode to use?
 
@@ -343,6 +344,82 @@ spec:
 
 ---
 
+## Istio Sidecar on EPP Fix
+
+### Problem
+
+When the `default` namespace has `istio-injection=enabled`, the EPP pod automatically gets an Istio sidecar injected (native sidecar pattern — `istio-proxy` as a restartable init container). This causes **all Gateway ext_proc gRPC connections to EPP to fail** with:
+
+```
+Received gRPC error on stream: 14, message upstream connect error or disconnect/reset before headers.
+reset reason: connection termination{upstream_reset_before_response_started{connection_termination}}
+```
+
+### Root Cause
+
+The Istio sidecar's iptables rules (configured by `istio-init`) intercept **all inbound traffic** (`-b *`), including port 9002 (EPP ext-proc gRPC). The Gateway envoy connects to EPP's service IP, but the traffic hits the sidecar's inbound listener first. The sidecar expects either:
+- mTLS from other mesh services, OR
+- Plaintext in PERMISSIVE mode
+
+However, the Istio Gateway's ext_proc filter uses a **separate gRPC connection** that doesn't go through the standard Istio mTLS negotiation path. This causes the sidecar to terminate the connection before it reaches the EPP application.
+
+Key findings:
+- `DestinationRule` changes (DISABLE, ISTIO_MUTUAL, or deletion) do **NOT** fix this
+- Auto-mTLS does **NOT** work for ext_proc connections to sidecar-injected pods
+- The issue only occurs when `istio-injection=enabled` on the namespace
+
+### Fix
+
+Exclude port 9002 from Istio sidecar inbound interception so Gateway traffic goes directly to the EPP application:
+
+```bash
+kubectl patch deployment <epp-deployment> --type='merge' \
+  -p '{"spec":{"template":{"metadata":{"annotations":{"traffic.sidecar.istio.io/excludeInboundPorts":"9002"}}}}}'
+```
+
+Then set the DestinationRule to `DISABLE` (since traffic now bypasses the sidecar):
+
+```yaml
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: <mri-name>-inferencepool-epp
+spec:
+  host: <mri-name>-inferencepool-epp
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+```
+
+### How to Detect This Issue
+
+1. EPP pod shows `2/2` Running (sidecar injected) or has `istio-proxy` as init container with state `running`
+2. Gateway envoy logs show repeated `connection termination` errors for ext_proc
+3. EPP application logs show **no incoming requests** (requests never reach the app)
+4. Direct `curl` to EPP pod IP:9002 returns `server: envoy` header (traffic going through sidecar)
+
+### Verification After Fix
+
+```bash
+# Confirm new EPP pod has the annotation
+kubectl get pod <new-epp-pod> -o jsonpath='{.metadata.annotations.traffic\.sidecar\.istio\.io/excludeInboundPorts}'
+# Should output: 9002
+
+# Test request through gateway
+curl -s http://<gateway-ip>/v1/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"phi-4-mini-instruct","prompt":"Hello","max_tokens":10}'
+# Should return a valid JSON response with choices
+
+# Confirm no ext_proc errors in gateway logs
+kubectl logs <gateway-pod> --since=30s | grep -c "ext_proc"
+# Should output: 0
+```
+
+> **Note for KAITO E2E tests:** When the E2E setup installs Istio with `istio-injection=enabled` on the namespace where EPP runs, the test must also add `traffic.sidecar.istio.io/excludeInboundPorts: "9002"` to the EPP deployment. See [PR #2149](https://github.com/kaito-project/kaito/pull/2149) for the E2E test that validates P/D disaggregation.
+
+---
+
 ## ✅ End-to-End Working P/D with NIXL KV Transfer (2026-05-25)
 
 See [`pd-working-config.md`](pd-working-config.md) for the verified working configuration.
@@ -374,6 +451,7 @@ NIXL KV Transfer: 4MB in 15.8ms = 252.9 MB/s throughput
 | PR | Description | Status |
 |----|-------------|--------|
 | [#2093](https://github.com/kaito-project/kaito/pull/2093) | feat: support P/D disaggregation | WIP |
+| [#2149](https://github.com/kaito-project/kaito/pull/2149) | test: add P/D disaggregation E2E validation for MultiRoleInference | Open |
 | New PR (TBD) | feat: promote InferenceSet to beta & enable `EnableInferenceSetController` by default | Planned |
 
 ### InferenceSet Promotion to Beta
