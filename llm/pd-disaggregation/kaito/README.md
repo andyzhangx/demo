@@ -466,3 +466,83 @@ Expected changes in the PR:
 - Move `InferenceSet` CRD from `v1alpha1` to `v1beta1`
 - Set `EnableInferenceSetController` feature gate default to `true`
 - Auto-inject `VLLM_NIXL_SIDE_CHANNEL_HOST`, `VLLM_HOST_IP`, and `POD_IP` env vars into vLLM inference containers when `KAITO_INFERENCE_ROLE` is `prefill` or `decode`
+
+---
+
+## NIXL on A10 (or any GPU without RDMA/NVLink)
+
+**TL;DR:** NIXL is a multi-backend framework, not a single protocol. On A10 nodes it falls back to **UCX/TCP over host memory** — slower than RDMA, but functionally works. If a test prints:
+
+```
+WARNING: KV transfer metrics not observed — NIXL may not be available in this environment (requires RDMA/NVLink). Skipping KV transfer assertion.
+```
+
+but the decode pod still shows `generation throughput > 0`, KV transfer **did happen** — the warning is misleading. The real cause is that the `nixl_*` / `vllm:kv_transfer_*` Prometheus metrics weren't scraped, not that NIXL was unavailable.
+
+### NIXL backends (highest → lowest performance)
+
+| Backend | Requires | Notes |
+|---|---|---|
+| UCX + GPUDirect RDMA (IB/RoCE) | A100/H100 + IB HCA + GDR firmware | Zero-copy GPU→NIC→GPU, µs latency |
+| UCX + NVLink (NVLS/P2P) | Intra-node NVLink | Only within a single node |
+| **UCX + TCP** | Any NIC | **A10 fallback path** — GPU→pinned host→TCP→pinned host→GPU |
+| Mooncake / Redis / etc. | External store | Slowest, hardware-agnostic |
+
+### Why A10 can't use the fast paths
+
+- A10 has **no NVLink** (Ampere consumer/entry datacenter SKU stripped it out; only A100 has it).
+- A10 is not certified for **GPUDirect RDMA over InfiniBand** — the driver/firmware combo needed for GDR ships with A100/H100.
+- On Azure `Standard_NV*_A10_v5` VMs the NIC is a Mellanox VF via Accelerated Networking, **not an IB HCA**.
+
+### What actually happens on A10 → A10
+
+```
+prefill GPU (A10)
+  ↓ cudaMemcpy D2H (pinned)
+prefill host RAM
+  ↓ TCP over VNet (~3–6 GB/s on 25/50 Gbps NICs)
+decode host RAM
+  ↓ cudaMemcpy H2D (pinned)
+decode GPU (A10)
+```
+
+- **Bandwidth:** ~3–6 GB/s (vs ~25+ GB/s with RDMA on A100)
+- **Latency:** extra D2H/H2D `cudaMemcpy` + TCP round-trip on top of the network hop
+- **CPU cost:** pinned buffers + TCP stack burn host CPU
+
+### Why the KV-transfer metrics might be empty even when transfer works
+
+The `WARNING: NIXL may not be available` really means "we didn't see the metrics we expected." Likely reasons:
+
+1. **vLLM version too old** — `vllm:kv_transfer_*` counters were added in `v0.6.4` / `v0.7.x` disagg pipeline.
+2. **KV metrics not enabled** at vLLM startup (they're opt-in behind `--enable-metrics` + connector-specific flags).
+3. **Different KV connector selected** — vLLM has `NixlConnector`, `PyNcclConnector`, `LMCacheConnector`, `MooncakeConnector`, etc. Not all of them emit the same metric names.
+4. **Prometheus scrape wasn't wired** — metrics endpoint not exposed on the pod's Service.
+
+### Recommendations for E2E tests on A10
+
+**Preferred: assert on transport-agnostic signals** rather than `nixl_*` counters:
+
+- Decode pod's `vllm:num_requests_running > 0` and **TTFT (time-to-first-token) significantly lower** than a non-disagg baseline → proves it reused KV from prefill.
+- Prefill pod's `vllm:prompt_tokens_total > 0` while decode pod's `vllm:prompt_tokens_total ≈ 0` → confirms decode is not re-doing prefill.
+
+**Alternative: force the backend + enable NIXL metrics explicitly.** Example:
+
+```yaml
+- --kv-transfer-config
+- '{"kv_connector":"NixlConnector","kv_role":"kv_both","kv_buffer_device":"cuda","kv_parallel_size":1}'
+```
+
+Then verify inside the container:
+
+```bash
+ucx_info -d | grep -E 'tcp|rdma'   # confirm which transports UCX built with
+```
+
+On A10 you should see `tcp` device; `nixl_*` counters should then be emitted (backed by TCP under the hood).
+
+### Rewording the warning
+
+The current message conflates two things ("NIXL unavailable" vs "metrics not scraped"). Better wording:
+
+> `WARNING: KV transfer metrics not exposed (nixl_* / vllm:kv_transfer_* absent). Skipping metrics-based KV transfer assertion. Transfer itself may still have succeeded via UCX/TCP fallback on non-RDMA GPUs (e.g., A10).`
