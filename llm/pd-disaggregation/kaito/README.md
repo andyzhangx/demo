@@ -546,3 +546,141 @@ On A10 you should see `tcp` device; `nixl_*` counters should then be emitted (ba
 The current message conflates two things ("NIXL unavailable" vs "metrics not scraped"). Better wording:
 
 > `WARNING: KV transfer metrics not exposed (nixl_* / vllm:kv_transfer_* absent). Skipping metrics-based KV transfer assertion. Transfer itself may still have succeeded via UCX/TCP fallback on non-RDMA GPUs (e.g., A10).`
+
+---
+
+## P/D Prometheus Metrics — What's Available
+
+P/D observability is split across three layers. There is no single "P/D dashboard metric"; you compose one from EPP (routing decisions), vLLM (per-stage timing + KV cache), and — if KAITO PR [#1890](https://github.com/kaito-project/kaito/pull/1890) is applied — a KV cache events subscriber.
+
+### 1. llm-d EPP (`llm-d-inference-scheduler`) — port `:9090`
+
+P/D-specific counter (ALPHA), prefix `llm_d_inference_scheduler_`:
+
+| Metric | Type | Labels | Notes |
+|---|---|---|---|
+| **`disagg_decision_total`** | Counter | `model_name`, `decision_type` | `decision_type` ∈ `decode-only` / `prefill-decode` / `encode-decode` / `encode-prefill-decode`. Use this as the top-level "how often did we actually disaggregate" panel |
+| `pd_decision_total` *(deprecated)* | Counter | `model_name`, `decision_type` | Old 2-value counter; only present when the deprecated `pd-profile-handler` is configured. Prefer `disagg_decision_total` |
+
+Flow control (only when `flowControl` feature gate is enabled), prefix `llm_d_epp_`:
+
+- `flow_control_request_queue_duration_seconds` (Histogram, `outcome=Dispatched|RejectedCapacity|EvictedTTL|…`)
+- `flow_control_dispatch_cycle_duration_seconds` (Histogram)
+- `flow_control_request_enqueue_duration_seconds` (Histogram)
+- `flow_control_queue_size` / `flow_control_queue_bytes` (Gauge)
+- `flow_control_pool_saturation` (Gauge, 0–1) — sustained 1.0 = all backends at capacity
+
+ext_proc gRPC stream lifecycle (only with `--enable-grpc-stream-metrics`), prefix `llm_d_epp_`:
+
+- `extproc_streams_inflight` (Gauge)
+- `extproc_stream_duration_seconds` (Histogram)
+- `extproc_streams_total{code=OK|Canceled|DeadlineExceeded|Internal|…}` (Counter)
+
+Plus generic GIE metrics inherited from `gateway-api-inference-extension` (e.g. `inference_pool_ready_pods`, `inference_extension_scheduler_plugin_duration_seconds` — useful for tracking `prefix-based-pd-decider` / `load-aware-scorer` plugin latency).
+
+### 2. vLLM engine — port `:5000/metrics` (prefix `vllm:`)
+
+Stage-split timing (this is where P/D actually shows up):
+
+| Metric | Type | Meaning |
+|---|---|---|
+| **`vllm:request_prefill_time_seconds`** | Histogram | Per-request prefill phase duration |
+| **`vllm:request_decode_time_seconds`** | Histogram | Per-request decode phase duration |
+| `vllm:time_to_first_token_seconds` (TTFT) | Histogram | Best single-signal for prefill quality |
+| `vllm:inter_token_latency_seconds` (TPOT/ITL) | Histogram | Best single-signal for decode quality |
+| `vllm:request_queue_time_seconds` | Histogram | Time in engine queue before scheduling |
+| `vllm:e2e_request_latency_seconds` | Histogram | End-to-end |
+
+KV cache — critical for judging P/D routing quality:
+
+- `vllm:kv_cache_usage_perc` (Gauge)
+- `vllm:prefix_cache_queries` / `vllm:prefix_cache_hits` (Counter) — **hit ratio is the primary signal that P/D routing is landing decode on the right pod**
+- `vllm:kv_block_lifetime_seconds` / `vllm:kv_block_idle_before_evict_seconds` / `vllm:kv_block_reuse_gap_seconds` (Histograms, sampled — enable with `--kv-cache-metrics-sample`)
+
+Throughput / counts:
+
+- `vllm:num_requests_running` / `_waiting` / `_swapped`
+- `vllm:prompt_tokens_total` / `vllm:generation_tokens_total`
+- `vllm:num_preemptions_total`
+- `vllm:request_success_total{finish_reason=…}`
+
+**Important scrape gotcha:** the InferencePool `targetPort` (5001) points at the P/D routing sidecar, not vLLM. Prometheus must scrape vLLM's own `/metrics` on port 5000. On the EPP side this is done via `--model-server-metrics-port=5000` (see [Working EPP ConfigMap](#working-epp-configmap-v080--gie-v150)).
+
+### 3. KV cache transfer (NIXL / Mooncake) — the observability gap
+
+- **NIXL connector:** as of the versions used here (vLLM v0.19.1 – v0.21), there is **no stable `nixl_*` or `vllm:kv_transfer_*` Prometheus metric family**. Handshake / transfer failures are surfaced only in logs (see [NIXL on A10](#nixl-on-a10-or-any-gpu-without-rdmanvlink)). Any e2e test that asserts on `nixl_*` counters will produce false negatives.
+- **Mooncake connector:** vLLM v0.21+ added bi-directional KV transfers with **Mooncake transfer telemetry**. If you can pick the connector, Mooncake is currently the better-observed option.
+- **Practical workaround** for NIXL: assert on transport-agnostic signals — decode pod's `vllm:num_requests_running > 0` with TTFT well below the non-disagg baseline, plus decode pod's `vllm:prompt_tokens_total ≈ 0`, is a reliable proxy that KV was actually reused from prefill.
+
+### 4. KAITO PR [#1890](https://github.com/kaito-project/kaito/pull/1890) — KV cache events (ZMQ, not Prometheus)
+
+With #1890 applied, vLLM pods expose a **ZMQ PUB** stream on port **5557** (`kv-events`) that emits per-block lifecycle events:
+
+- `BlockStored` — new KV block cached
+- `BlockRemoved` — block evicted
+- `AllBlocksCleared` — cache flush
+
+Not scrape-able by Prometheus directly. Two uses:
+
+1. **Feed llm-d's `precise-prefix-cache-scorer`** — the accurate (vs. approximate hash-based) prefix cache scorer consumes this ZMQ stream to build a global KV block index. This is the real payoff of #1890: unlocking precise P/D routing without a UDS tokenizer sidecar.
+2. **Turn events into Prometheus counters** yourself with a small subscriber (pyzmq, ~20 LoC). Suggested metrics: `kv_blocks_stored_total{pod,role}`, `kv_blocks_removed_total{pod,role}`, and derived `kv_cache_churn_rate` = eviction/s (high churn ⇒ capacity too small, decode hit-rate will drop).
+
+**Security:** port 5557 is unauthenticated / unencrypted. PR #1890 only exposes it on `ClusterIP` Services (not LoadBalancer), but any in-cluster pod can subscribe. Add a `NetworkPolicy` restricting ingress to EPP + your subscriber in production.
+
+### 5. Full observability map
+
+| Layer | Endpoint | Format | Key P/D signals |
+|---|---|---|---|
+| llm-d EPP | `:9090/metrics` | Prometheus | `disagg_decision_total`, flow control queue depth, pool saturation, plugin latency |
+| vLLM engine | `:5000/metrics` | Prometheus | `request_prefill_time_seconds`, `request_decode_time_seconds`, TTFT, ITL, `prefix_cache_hits` |
+| vLLM KV events (KAITO #1890) | `:5557` | **ZMQ PUB** | `BlockStored` / `BlockRemoved` / `AllBlocksCleared` — needs subscriber |
+| NIXL / Mooncake | — | logs (NIXL) / metrics (Mooncake v0.21+) | KV transfer bytes / latency (only on Mooncake today) |
+
+### 6. Starter PromQL for a P/D dashboard
+
+```promql
+# 1. Routing distribution: how often does EPP actually disaggregate?
+sum by (decision_type) (
+  rate(llm_d_inference_scheduler_disagg_decision_total[5m])
+)
+
+# 2. Prefill TTFT p95 (label pods with role=prefill)
+histogram_quantile(0.95,
+  sum by (le) (
+    rate(vllm:time_to_first_token_seconds_bucket{role="prefill"}[5m])
+  )
+)
+
+# 3. Decode ITL p95
+histogram_quantile(0.95,
+  sum by (le) (
+    rate(vllm:inter_token_latency_seconds_bucket{role="decode"}[5m])
+  )
+)
+
+# 4. Prefix cache hit ratio — primary signal for P/D routing quality
+sum(rate(vllm:prefix_cache_hits[5m]))
+  / sum(rate(vllm:prefix_cache_queries[5m]))
+
+# 5. Flow control saturation per pool
+max by (inference_pool) (llm_d_epp_flow_control_pool_saturation)
+
+# 6. Prefill vs decode phase time (stage cost breakdown)
+histogram_quantile(0.5, sum by (le)(rate(vllm:request_prefill_time_seconds_bucket[5m])))
+histogram_quantile(0.5, sum by (le)(rate(vllm:request_decode_time_seconds_bucket[5m])))
+```
+
+### 7. Common misreads
+
+- **"No P/D metrics exist"** — false. `disagg_decision_total` (EPP) and `request_prefill_time_seconds` / `request_decode_time_seconds` (vLLM) are shipping today.
+- **"NIXL will show up in Prometheus"** — false today. Only Mooncake exposes KV transfer telemetry as of vLLM v0.21.
+- **Scraping port 5001 returns nothing useful** — that's the routing sidecar. Scrape 5000 for vLLM engine metrics.
+- **`vllm:lora_requests_info` warnings from EPP `core-metrics-extractor`** — non-fatal when LoRA is not configured; safe to ignore or suppress with `--lora-metric=""`.
+
+### 8. References
+
+- llm-d EPP metrics: <https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/metrics.md>
+- vLLM metrics design: <https://github.com/vllm-project/vllm/blob/main/docs/design/metrics.md>
+- GIE metrics guide: <https://github.com/kubernetes-sigs/gateway-api-inference-extension/blob/main/site-src/guides/metrics-and-observability.md>
+- KAITO #1890 (KV cache events on vLLM): <https://github.com/kaito-project/kaito/pull/1890>
+
