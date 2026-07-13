@@ -314,6 +314,109 @@ WorkspaceSucceeded False  workspacePending                 (starting)
 kubectl delete workspace phi-4-cached
 ```
 
+## Troubleshooting: `GLIBC_2.38 not found` in the inference container
+
+### Symptom
+
+The inference container crashes immediately after DACS injection is enabled:
+
+```
+$ kubectl logs phi-4-cached-0 -c phi-4-cached
+/bin/sh: /opt/cache-client/usr/lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found (required by /bin/sh)
+```
+
+Pod status: `1/2 CrashLoopBackOff`.
+
+### Root cause
+
+The DACS injection sets `LD_LIBRARY_PATH` with `/opt/cache-client/usr/lib/x86_64-linux-gnu` at the front. That directory is shipped inside the
+`dacs-client:20260701.7` OCI image and contains a **glibc 2.38** copy of
+`libc.so.6` (built on Ubuntu 24.04).
+
+The KAITO base image `mcr.microsoft.com/aks/kaito/kaito-base:0.4.2` is
+Ubuntu 22.04 based (**glibc 2.35**). Because `LD_LIBRARY_PATH` is searched
+before the default loader path, every binary in the pod — including
+`/bin/sh` — tries to link against the newer libc and fails at startup.
+
+This is effectively a **glibc downgrade**: a binary can never be pointed at
+a libc *older* than the one it was built against, but the injected
+`LD_LIBRARY_PATH` here does the opposite — forces base-image binaries to
+load a *newer* libc that expects a matching newer dynamic loader, which the
+container doesn't have.
+
+### Immediate workaround (verified)
+
+Remove `usr/lib/x86_64-linux-gnu` from the injected `LD_LIBRARY_PATH`, keep
+only the `dacs_client` directory (which holds `libStorageDirect.so`):
+
+```bash
+kubectl patch sts phi-4-cached --type json -p '[
+  {"op":"replace","path":"/spec/template/spec/containers/0/env/10",
+   "value":{"name":"LD_LIBRARY_PATH",
+            "value":"/opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client"}}
+]'
+kubectl delete pod phi-4-cached-0
+```
+
+After this, `/bin/sh` uses the base image's own libc (2.35), and only
+DACS's own `libStorageDirect.so` is picked up from the injected path. The
+pod started successfully and vLLM began downloading the phi-4 weights.
+
+> ⚠️ **Caveat:** the next Workspace reconcile in the KAITO controller will
+> overwrite this patch. It's only a smoke-test unblock, not a real fix.
+
+> The env index `/env/10` is specific to the current StatefulSet layout;
+> confirm with
+> `kubectl get sts phi-4-cached -o json | jq '.spec.template.spec.containers[0].env | to_entries[] | select(.value.name=="LD_LIBRARY_PATH") | .key'`
+> before applying.
+
+### Proper fixes (need action from two teams)
+
+#### 1. DACS / Container Storage team — rebuild `dacs-client` on Ubuntu 22.04
+
+The `dacs-client` OCI image is intended to be layered on top of arbitrary
+consumer base images through an `ImageVolume` mount. It therefore must be
+built against **the oldest glibc it wants to support**, not the newest.
+
+Concretely:
+
+- Use `ubuntu:22.04` (glibc 2.35) as the build base — this matches
+  `mcr.microsoft.com/aks/kaito/kaito-base` today and is a safe lower bound
+  for most CUDA base images.
+- Publish a new tag, e.g. `hariazstortest.azurecr.io/dacs-client:20260713-jammy`.
+- Verify `libStorageDirect.so` and the Python wheel do not have symbols
+  requiring GLIBC ≥ 2.36:
+
+  ```bash
+  objdump -T /path/to/libStorageDirect.so | grep GLIBC_ | sort -u
+  ```
+
+#### 2. KAITO PR #2169 — narrow the injected `LD_LIBRARY_PATH`
+
+Even after (1), the injection should not put the client's entire
+`usr/lib/x86_64-linux-gnu` on `LD_LIBRARY_PATH`. It should only expose the
+DACS-specific directory:
+
+```
+LD_LIBRARY_PATH=/opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client
+```
+
+If `libStorageDirect.so` has its own non-system dependencies, ship them
+next to the `.so` and set `RPATH=$ORIGIN` at build time (or run
+`patchelf --set-rpath '$ORIGIN' libStorageDirect.so` in the `dacs-client`
+image build). This way, injecting the client library into another container
+never affects the resolution of core system libs like `libc`, `libpthread`,
+`libm`.
+
+#### 3. Optional defense in depth — preflight in the cache controller
+
+Before rendering the pod spec, the KAITO cache controller could check the
+base-image OS release (or run a tiny init container `ldd --version`) and
+refuse to inject if the client's minimum glibc is greater than the base's.
+Fail the Workspace with a clear condition such as
+`ModelCacheReady=False, Reason=ClientGlibcMismatch` instead of letting the
+user hit a `/bin/sh` crash loop.
+
 ## Reference
 
 - KAITO PR: <https://github.com/kaito-project/kaito/pull/2169>
