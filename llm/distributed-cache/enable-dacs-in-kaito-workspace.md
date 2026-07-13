@@ -205,7 +205,110 @@ kubectl get pods -l kaito.sh/workspace=phi-4-cached -o json \
   `hariazstortest.azurecr.io/dacs-client:20260701.7`.
 - `WorkspaceSucceeded` condition eventually becomes `True`.
 
-### 5.4 — Cleanup
+### 5.4 — Verified: rendered StatefulSet with DACS injection
+
+After the GPU node comes up, the KAITO controller creates a StatefulSet
+named after the Workspace. Below is the actual `kubectl describe sts
+phi-4-cached` output from this test cluster — use it as the ground truth of
+what DACS injection looks like when everything works.
+
+Key things to notice (marked 🔑):
+
+- 🔑 Selector / label `dacs.azure.com/inject=true` — added by the cache controller.
+- 🔑 Env vars `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true`,
+  `RUNAI_STREAMER_CACHE_ENABLED=true`, `CACHE_DISCOVERY_URL` pointing at
+  the DACS discovery service in `dacs-cache-system`.
+- 🔑 `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB` + `LD_LIBRARY_PATH`
+  pointing at `/opt/cache-client/...` (the DACS client mount).
+- 🔑 A dedicated **`Image` (OCI `ImageVolume`)** named `cache-client`
+  referencing `hariazstortest.azurecr.io/dacs-client:20260701.7`, mounted
+  read-only at `/opt/cache-client`.
+
+```
+Name:               phi-4-cached
+Namespace:          default
+CreationTimestamp:  Mon, 13 Jul 2026 14:09:02 +0000
+Selector:           dacs.azure.com/inject=true,kaito.sh/workspace=phi-4-cached
+Labels:             <none>
+Annotations:        workspace.kaito.io/revision: 1
+Replicas:           1 desired | 1 total
+Update Strategy:    RollingUpdate
+  Partition:        0
+  MaxUnavailable:   1
+Pods Status:        1 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  dacs.azure.com/inject=true
+           kaito.sh/workspace=phi-4-cached
+  Containers:
+   phi-4-cached:
+    Image:      mcr.microsoft.com/aks/kaito/kaito-base:0.4.2
+    Port:       5000/TCP
+    Host Port:  0/TCP
+    Command:
+      /bin/sh
+      -c
+      python3 /workspace/vllm/inference_api.py --load_format=auto --tokenizer_mode=auto --dtype=bfloat16 --served-model-name=phi-4 --compilation-config.pass_config.fuse_allreduce_rms=False --model=microsoft/phi-4 --download-dir=/workspace/weights --config_format=auto --trust-remote-code --max-model-len=auto --gpu-memory-utilization=0.84 --tensor-parallel-size=1
+    Limits:
+      nvidia.com/gpu:  1
+    Requests:
+      nvidia.com/gpu:  1
+    Liveness:          http-get http://:5000/health delay=0s timeout=1s period=10s #success=1 #failure=3
+    Readiness:         http-get http://:5000/health delay=30s timeout=1s period=10s #success=1 #failure=3
+    Startup:           exec [python3 /workspace/vllm/benchmark_entrypoint.py] delay=0s timeout=600s period=10s #success=1 #failure=180
+    Environment:
+      VLLM_USE_FLASHINFER_SAMPLER:                      0
+      VLLM_USE_DEEP_GEMM:                               0
+      VLLM_USE_FLASHINFER_MOE_FP16:                     0
+      VLLM_USE_FLASHINFER_MOE_FP8:                      0
+      VLLM_USE_FLASHINFER_MOE_FP4:                      0
+      VLLM_USE_FLASHINFER_MOE_MXFP4_BF16:               0
+      VLLM_USE_FLASHINFER_MOE_MXFP4_MXFP8:              0
+      VLLM_USE_FLASHINFER_MOE_MXFP4_MXFP8_CUTLASS:      0
+      RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED:  true
+      RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB:      /opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client/libStorageDirect.so
+      LD_LIBRARY_PATH:                                  /opt/cache-client/usr/lib/x86_64-linux-gnu:/opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client
+      RUNAI_STREAMER_CACHE_ENABLED:                     true
+      CACHE_DISCOVERY_URL:                              cacheserver-discovery.dacs-cache-system.svc.cluster.local:9065
+      CACHE_SERVER_PORT:                                9065
+    Mounts:
+      /dev/shm from dshm (rw)
+      /opt/cache-client from cache-client (ro)
+      /workspace/weights from model-weights-volume (rw)
+  Volumes:
+   dshm:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     Memory
+    SizeLimit:  <unset>
+   cache-client:
+    Type:          Image (a container image or OCI artifact)
+    Reference:     hariazstortest.azurecr.io/dacs-client:20260701.7
+    PullPolicy:    IfNotPresent
+  Node-Selectors:  <none>
+  Tolerations:     kubernetes.azure.com/scalesetpriority=spot:NoSchedule
+                   nvidia.com/gpu:NoSchedule op=Exists
+                   sku=gpu:NoSchedule
+Volume Claims:
+  Name:          model-weights-volume
+  StorageClass:  kaito-local-nvme-disk
+  Labels:        kaito.sh/workspace=phi-4-cached
+  Annotations:   <none>
+  Capacity:      107Gi
+  Access Modes:  [ReadWriteOnce]
+Events:          <none>
+```
+
+Workspace conditions once the node is ready:
+
+```
+NodesReady        True   NodesReady
+NodeClaimReady    True   NodeClaimsReady
+ResourceReady     True   workspaceResourceStatusSuccess
+ModelCacheReady   True   CacheReady
+InferenceReady    False  WorkspaceInferenceStatusPending   (starting)
+WorkspaceSucceeded False  workspacePending                 (starting)
+```
+
+### 5.5 — Cleanup
 
 ```bash
 kubectl delete workspace phi-4-cached
