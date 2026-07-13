@@ -124,6 +124,93 @@ kubectl apply -f /tmp/backup/kaito-workspace.deploy.*.yaml
 kubectl apply -f /tmp/backup/kaito-workspace.clusterrole.*.yaml
 ```
 
+## Step 5 — Smoke test with a Workspace that opts into the cache
+
+Create a Workspace with `spec.cache.modelCache` set to the `dacs` provider in
+`Opportunistic` mode. `Opportunistic` means: use the cache if it becomes ready,
+otherwise proceed with a normal (non-cached) launch — safe for a first test.
+
+> **Note on field name:** PR #2169 uses `modelCache` (JSON tag), not
+> `modelWeights`. The PR description text calls it "model weights caching" but
+> the CRD field is `modelCache`.
+
+### 5.1 — Label a GPU node with `apps=phi-4`
+
+The Workspace pod is pinned via `resource.labelSelector.matchLabels.apps=phi-4`.
+Either pre-label an existing GPU node, or let the GPU provisioner create one
+(if it is running in the cluster).
+
+```bash
+# example — label an existing A100 node
+kubectl label node <gpu-node-name> apps=phi-4 --overwrite
+```
+
+### 5.2 — Apply the Workspace
+
+Save as `phi-4-cached.yaml`:
+
+```yaml
+apiVersion: kaito.sh/v1beta1
+kind: Workspace
+metadata:
+  name: phi-4-cached
+resource:
+  instanceType: "Standard_NC24ads_A100_v4"
+  labelSelector:
+    matchLabels:
+      apps: phi-4
+inference:
+  preset:
+    name: "microsoft/phi-4"
+cache:
+  modelCache:
+    provider: dacs
+    mode: Opportunistic
+```
+
+Apply:
+
+```bash
+kubectl apply -f phi-4-cached.yaml
+```
+
+### 5.3 — Watch progress
+
+```bash
+# Workspace status conditions (ModelCacheReady is the new PR #2169 condition)
+kubectl get workspace phi-4-cached -o json \
+  | jq '.status.conditions[] | {type,status,reason,message}'
+
+# Controller logs specific to this workspace / cache
+kubectl -n kaito-workspace logs deploy/kaito-workspace --tail=500 \
+  | grep -iE 'phi-4-cached|dacs|modelcache|cache'
+
+# Inference pod (once scheduled) — verify DACS env vars were injected
+kubectl get pods -l kaito.sh/workspace=phi-4-cached -o json \
+  | jq '.items[].spec.containers[] | {name, image,
+        env: (.env // [] | map(select(.name | test("CACHE|RUNAI|LD_LIBRARY"))))}'
+
+# Also check volumes / init containers for the DACS client image mount
+kubectl get pods -l kaito.sh/workspace=phi-4-cached -o json \
+  | jq '.items[].spec | {volumes, initContainers: [.initContainers[]? | {name,image}]}'
+```
+
+**Success indicators:**
+
+- `status.conditions[].type == "ModelCacheReady"` transitions to `True`
+  (`Opportunistic` mode won't block launch even if this stays `False`).
+- Inference pod has `CACHE_DISCOVERY_URL`, `CACHE_SERVER_PORT`,
+  `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB`, `LD_LIBRARY_PATH` env vars.
+- Pod spec contains an `ImageVolume` referencing
+  `hariazstortest.azurecr.io/dacs-client:20260701.7`.
+- `WorkspaceSucceeded` condition eventually becomes `True`.
+
+### 5.4 — Cleanup
+
+```bash
+kubectl delete workspace phi-4-cached
+```
+
 ## Reference
 
 - KAITO PR: <https://github.com/kaito-project/kaito/pull/2169>
