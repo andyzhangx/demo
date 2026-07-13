@@ -417,6 +417,180 @@ Fail the Workspace with a clear condition such as
 `ModelCacheReady=False, Reason=ClientGlibcMismatch` instead of letting the
 user hit a `/bin/sh` crash loop.
 
+## Verification
+
+Use this section to check whether the model actually loaded through DACS versus
+quietly falling back to HuggingFace Hub. Passing `WorkspaceSucceeded=True` and
+`BenchmarkCompleted=True` is **not** sufficient — vLLM will happily fetch the
+weights from HF and still report a healthy benchmark.
+
+### Green signals (what “working DACS” looks like)
+
+1. vLLM was actually asked to use the runai streamer:
+
+   ```bash
+   kubectl get pod phi-4-cached-0 -o jsonpath='{.spec.containers[0].command}'
+   ```
+
+   Should contain something like `--load-format runai_streamer_azure` (or
+   `runai_streamer`) and `--model az://<account>/<container>/<path>`
+   (or a DACS URI). If it still says `--load_format=auto --model=microsoft/phi-4`,
+   vLLM will use the standard HuggingFace loader and DACS is bypassed.
+
+2. Inference container log should show cache-side signals, not HF Hub downloads:
+
+   ```bash
+   kubectl logs phi-4-cached-0 -c phi-4-cached | grep -iE 'runai|streamer|StorageDirect|cache_hit|cache_miss|dacs'
+   ```
+
+3. `/workspace/weights` should be empty or contain streamer-specific artifacts,
+   **not** a fully-populated `models--<org>--<model>/` HuggingFace cache tree:
+
+   ```bash
+   kubectl exec phi-4-cached-0 -c phi-4-cached -- ls /workspace/weights
+   ```
+
+### Red flags (silent HF fallback, DACS never touched)
+
+All of the following observed in our test on `andy-aks135` with
+`workspace:0.11.0-cache` + PR #2169 tip:
+
+```text
+# Container command — auto load_format, HF model id
+python3 /workspace/vllm/inference_api.py --load_format=auto ...
+    --model=microsoft/phi-4 --download-dir=/workspace/weights ...
+
+# Log — explicit HF Hub download of the full model
+Warning: You are sending unauthenticated requests to the HF Hub
+INFO 07-13 15:29:37 weight_utils.py:603] Time spent downloading weights
+    for microsoft/phi-4: 31.947335 seconds
+INFO 07-13 15:29:38 inference_api.py:328] Model microsoft/phi-4 download
+    complete: 27.31 GiB on disk in 68.5s
+
+# Weights dir — standard HF cache layout, not streamer
+/workspace/weights/models--microsoft--phi-4/...
+
+# inference_api.py — no code path that uses runai / StorageDirect / DACS
+$ grep -inE 'runai|streamer|StorageDirect|dacs|azure_cache' \
+    /workspace/vllm/inference_api.py
+(only kv_cache_* matches, nothing about the model streamer)
+
+# python pkgs — the client is installed but never invoked
+$ pip list | grep -iE 'runai|streamer'
+runai-model-streamer         0.16.0
+runai-model-streamer-azure   0.16.0
+```
+
+Even though the workspace reported `ModelCacheReady=True`,
+`InferenceReady=True`, `WorkspaceSucceeded=True`, `BenchmarkCompleted=True`,
+and pushed 306k tokens/min during the built-in benchmark — the model was
+downloaded straight from HuggingFace Hub in ~68 seconds. DACS cache-servers
+(`cacheserver-{0,1,2}`) were healthy but received zero traffic.
+
+### Component-by-component status observed in this test
+
+| Component | State | Effective? |
+| --- | --- | --- |
+| DACS cache-server StatefulSet (3 replicas) | `Ready` | ✅ |
+| Cache CR `cache-sample` in `dacs-cache-system` | `Ready=True` | ✅ |
+| KAITO webhook injection (`dacs.azure.com/inject=true` label) | applied | ✅ |
+| Env vars (`RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true`, `CACHE_DISCOVERY_URL=…`, `LD_LIBRARY_PATH=…`) | present on pod | ✅ |
+| ImageVolume `hariazstortest.azurecr.io/dacs-client:20260701.7` mounted at `/opt/cache-client` | mounted | ✅ |
+| `libStorageDirect.so` + `runai-model-streamer-azure 0.16.0` in image | present | ✅ |
+| vLLM actually invokes runai streamer to pull from DACS | — | ❌ never triggered |
+
+## Gap analysis of kaito-project/kaito#2169
+
+What the PR **does** (correct and needed):
+
+- Adds `spec.cache.{modelCache,kvCache}` API surface on `Workspace` and
+  `InferenceSet` with `provider` / `mode` / `config` / `cleanupOnDelete`
+  fields and CEL/enum validation.
+- Adds `ModelCacheReady` / `KVCacheReady` conditions.
+- Registers a provider abstraction (`pkg/cache/provider.go`) with a DACS
+  and a noop implementation; enables the mutating-webhook injection
+  contract (label + ImageVolume + env vars).
+- Adds the `distributedCache` feature gate + ClusterRole for
+  `storage.azure.com/caches[/status]`.
+- Threads Helm values (`cache.providers.dacs.*`) into controller env
+  (`DACS_CLIENT_IMAGE`, `DACS_DISCOVERY_ENDPOINT`, `DACS_KV_CACHE_ENABLED`,
+  `DACS_KV_CONNECTOR_PROTOCOL`).
+- Adds a provider-agnostic e2e conformance suite
+  (`test/e2e/cache_integration_test.go`) driven by
+  `cache.ListExpectations()`.
+
+What the PR is **missing** for `modelCache` to actually cache anything
+(observed empirically — details above):
+
+1. **vLLM invocation is never rewritten to use the runai streamer.**
+   `pkg/workspace/inference/preset_inferences.go` still emits
+   `--load_format=auto` and `--model=<HF repo id>` even when
+   `spec.cache.modelCache.provider = dacs` is set. Result: vLLM never
+   dlopens `libStorageDirect.so`, never queries `CACHE_DISCOVERY_URL`,
+   and streams the full model from HuggingFace Hub instead.
+
+   Concretely, when `workspace.Cache != nil && workspace.Cache.ModelCache != nil`
+   the preset renderer should:
+   - switch `--load-format` to `runai_streamer_azure`
+     (or `runai_streamer`, depending on the model source), **and**
+   - rewrite `--model` to the corresponding `az://<account>/<container>/<path>`
+     URI the DACS client understands — or add `--model-loader-extra-config`
+     pointing at the discovery endpoint. Compare with how the existing
+     ModelMirror path builds `az://` URIs when
+     `streamingEnabled == true`.
+
+2. **Injected `LD_LIBRARY_PATH` breaks glibc-older base images.**
+   `pkg/cache/dacs/provider.go` sets:
+
+   ```go
+   LD_LIBRARY_PATH = /opt/cache-client/usr/lib/x86_64-linux-gnu:
+                     /opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client
+   ```
+
+   The first path shadows the base image’s libc. If the DACS client image
+   is Ubuntu 24.04 (glibc 2.38) and the KAITO base image is Ubuntu 22.04
+   (glibc 2.35), every binary in the pod fails at load time — including
+   `/bin/sh`. See the [Troubleshooting](#troubleshooting-glibc_238-not-found-in-the-inference-container)
+   section above. The injection should:
+   - only put the `dacs_client` directory on `LD_LIBRARY_PATH`, or
+   - set an RPATH `$ORIGIN` inside `libStorageDirect.so` at build time
+     so `LD_LIBRARY_PATH` isn’t needed at all, and/or
+   - preflight-check that the client’s glibc floor ≤ the base image’s
+     glibc and fail `ModelCacheReady` with a clear reason instead of
+     letting `/bin/sh` crash-loop.
+
+3. **`ModelCacheReady=True` is a lie today.** The controller sets the
+   condition purely from the Cache CR’s own `Ready=True`, without
+   confirming the workspace pod is actually consuming the cache. This
+   is what let our test go all the way to `WorkspaceSucceeded=True`
+   despite DACS never being touched. Suggested: bind the condition to
+   an observable signal on the inference pod (e.g. detected
+   `--load-format runai_streamer_azure`, or a Prometheus counter from
+   `libStorageDirect.so`).
+
+4. **`Cleanup(cleanupOnDelete=true)` is a TODO.** The provider hard-codes
+   `klog.V(4).Info("Cleanup requested (not yet implemented)")`. The CRD
+   field advertises the behavior; the implementation should either land
+   in this PR or the field should be documented as “ignored, tracked in
+   issue X.”
+
+5. **No end-to-end assertion that a byte was ever streamed via DACS.**
+   The new e2e suite asserts that env vars / labels / volumes are injected
+   into the StatefulSet, and that the `ModelCacheReady` condition flips
+   — exactly the shape of “green” we saw in production with zero DACS
+   traffic. To catch this regression the suite should scrape a DACS
+   cache-server metric (`request_count`, `bytes_streamed`, or similar)
+   before and after workspace-ready and assert `delta > 0`.
+
+### Suggested reviewer ask
+
+Split the PR into a scaffolding half (API, CRD, feature gate, injection
+contract, conformance harness — all correct today) and a wiring half
+(vLLM `--load-format` switch, `--model` az-URI rewrite, glibc-safe
+`LD_LIBRARY_PATH`, `Cleanup` implementation, DACS-traffic e2e assertion).
+Merging the scaffolding without the wiring shipped a “working” code
+path that silently defeats its own purpose.
+
 ## Reference
 
 - KAITO PR: <https://github.com/kaito-project/kaito/pull/2169>
