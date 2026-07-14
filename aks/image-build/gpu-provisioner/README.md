@@ -28,9 +28,18 @@ Formula from the onboarding guide: `<repository>` (`aks`) → first segment,
 
 ## Tag pattern
 
-`gpu-provisioner` uses `vMAJOR.MINOR.PATCH` releases (e.g. `v0.4.2`). The
-regex `^v\d+\.\d+\.\d+$` matches every semver tag. Adjust to
-`^v0\.[3-9]\.\d+$` or similar if you want a narrower gate.
+`gpu-provisioner` is onboarded to managed DALEC **starting from `v0.4.3`**.
+Everything older (`v0.4.2` and below, all of the `v0.3.x` series) is
+intentionally excluded so we don't retro-build releases that predate the
+onboarding.
+
+The include list is written as three anchored patterns:
+
+| Pattern | Matches |
+| --- | --- |
+| `^v0\.4\.([3-9]|\d{2,})$` | `v0.4.3` … `v0.4.9`, `v0.4.10+` |
+| `^v0\.([5-9]|\d{2,})\.\d+$` | any `v0.5.x` / `v0.6.x` / … / `v0.10.x+` |
+| `^v([1-9]|\d{2,})\.\d+\.\d+$` | any future `v1.x.x` and above |
 
 ## Build target
 

@@ -10,10 +10,15 @@
 
 gpu-provisioner:
   repository: https://github.com/Azure/gpu-provisioner
-  # Matches vMAJOR.MINOR.PATCH release tags (e.g. v0.4.2). Tighten this
-  # once you settle on a supported minor range.
+  # Build only from v0.4.3 onward. This matches:
+  #   v0.4.3, v0.4.4, ... v0.4.N   (patch >= 3 on the 0.4 minor)
+  #   v0.5.x, v0.6.x, ...          (any newer 0.x minor)
+  #   v1.x.x and above             (future majors)
   tags:
-    - '^v\d+\.\d+\.\d+$'
+    include:
+      - '^v0\.4\.([3-9]|\d{2,})$'
+      - '^v0\.([5-9]|\d{2,})\.\d+$'
+      - '^v([1-9]|\d{2,})\.\d+\.\d+$'
   targets:
     - azlinux3/container
   dockerfile: .
