@@ -25,12 +25,7 @@ gpu-provisioner:
   makefile: .
   license: Apache-2.0
   owners:
-    # AKS Core owners for the KAITO / gpu-provisioner surface. Append
-    # `:notify` on anyone who should only receive Teams notifications
-    # without being auto-assigned as a PR reviewer.
-    - andyzhangx
-    - Fei-Guo
-    - zhuangqh
+    - xiazhang
   mar:
     contactEmail: aks-core@microsoft.com
     logoUrl: https://raw.githubusercontent.com/Azure/gpu-provisioner/main/docs/logo.svg
