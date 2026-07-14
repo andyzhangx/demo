@@ -1,0 +1,37 @@
+# specs/aks/gpu-provisioner/onboard.yml
+#
+# gpu-provisioner is a Karpenter Azure provider used by KAITO to provision
+# Azure VM-backed node pools for GPU workloads.
+#
+# Promotion path in aks-managed-dalec:
+#   specs/aks/gpu-provisioner/onboard.yml
+# Resulting MCR image:
+#   mcr.microsoft.com/aks/v2/gpu-provisioner:<tag>-<build>
+
+gpu-provisioner:
+  repository: https://github.com/Azure/gpu-provisioner
+  # Matches vMAJOR.MINOR.PATCH release tags (e.g. v0.4.2). Tighten this
+  # once you settle on a supported minor range.
+  tags:
+    - '^v\d+\.\d+\.\d+$'
+  targets:
+    - azlinux3/container
+  dockerfile: .
+  makefile: .
+  license: Apache-2.0
+  owners:
+    # AKS Core owners for the KAITO / gpu-provisioner surface. Append
+    # `:notify` on anyone who should only receive Teams notifications
+    # without being auto-assigned as a PR reviewer.
+    - andyzhangx
+    - Fei-Guo
+    - zhuangqh
+  mar:
+    contactEmail: aks-core@microsoft.com
+    logoUrl: https://raw.githubusercontent.com/Azure/gpu-provisioner/main/docs/logo.svg
+    displayName: GPU Provisioner
+    description: >-
+      Karpenter Azure provider that creates Azure VM-backed node pools on
+      demand. Used by KAITO to provision GPU nodes for large-model
+      inference and fine-tuning workloads on AKS.
+    discoveryPortalReadme: README.managed-dalec-azure-gpu-provisioner.portal.md
