@@ -687,7 +687,13 @@ kubectl get pods phi-4-cached-0 → 2/2 Running, Ready=true
 ## Performance comparison: DACS vs HuggingFace Hub download
 
 Tested on cluster `andy-aks135`, model `microsoft/phi-4` (27.3 GiB),
-Single A100 GPU (Standard_NC24ads_A100_v4), 2026-07-15.
+Single A100 GPU (Standard_NC24ads_A100_v4), cache mode `Opportunistic`, 2026-07-15.
+
+- **Model:** `microsoft/phi-4`
+- **Model size:** 27.3 GiB (bfloat16)
+- **GPU:** NVIDIA A100 80GB (Standard_NC24ads_A100_v4)
+- **Cache mode:** `Opportunistic` (use cache if ready, otherwise fall back to normal download)
+- **Cache provider:** DACS (`cacheserver-discovery.dacs-cache-system.svc.cluster.local:9065`)
 
 ### Without DACS (`--load_format=auto`, HuggingFace Hub)
 
