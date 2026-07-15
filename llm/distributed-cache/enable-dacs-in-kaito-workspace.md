@@ -591,6 +591,99 @@ contract, conformance harness — all correct today) and a wiring half
 Merging the scaffolding without the wiring shipped a “working” code
 path that silently defeats its own purpose.
 
+## Workaround: manually patch the StatefulSet to use DACS
+
+Since kaito-project/kaito#2169 injects the DACS env vars and cache-client
+volume correctly but **never rewrites the vLLM launch command**, the model
+streamer is never invoked. The following manual patch on the StatefulSet
+fixes this without modifying KAITO controller code.
+
+### Steps
+
+1. **Patch the STS command** — change `--load_format=auto` to
+   `--load-format=runai_streamer`:
+
+   ```bash
+   kubectl patch sts phi-4-cached --type json -p '[
+     {"op":"replace","path":"/spec/template/spec/containers/0/command/2",
+      "value":"python3 /workspace/vllm/inference_api.py --gpu-memory-utilization=0.84 --model=microsoft/phi-4 --download-dir=/workspace/weights --config_format=auto --tokenizer_mode=auto --trust-remote-code --dtype=bfloat16 --served-model-name=phi-4 --compilation-config.pass_config.fuse_allreduce_rms=False --tensor-parallel-size=1 --load-format=runai_streamer --max-model-len=auto"}
+   ]'
+   ```
+
+2. **Do NOT set `LD_LIBRARY_PATH`** — the DACS client image
+   (`hariazstortest.azurecr.io/dacs-client:20260701.7`) is built on
+   Ubuntu 24.04 (glibc 2.38) while the KAITO base image
+   (`mcr.microsoft.com/aks/kaito/kaito-base:0.4.2`) uses Ubuntu 22.04
+   (glibc 2.35). Setting `LD_LIBRARY_PATH` to include
+   `/opt/cache-client/usr/lib/x86_64-linux-gnu` shadows the base image's
+   libc and crashes `/bin/sh`. The env var
+   `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB` already provides the
+   full absolute path to `libStorageDirect.so`, so the streamer can
+   dlopen it directly without `LD_LIBRARY_PATH`.
+
+3. **Required env vars** (these are injected by the KAITO controller
+   when `distributedCache=true` feature gate is enabled, or can be
+   added manually):
+
+   ```
+   RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true
+   RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB=/opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client/libStorageDirect.so
+   RUNAI_STREAMER_CACHE_ENABLED=true
+   CACHE_DISCOVERY_URL=cacheserver-discovery.dacs-cache-system.svc.cluster.local:9065
+   CACHE_SERVER_PORT=9065
+   ```
+
+4. **Required volume** — cache-client OCI ImageVolume mounted at
+   `/opt/cache-client` (read-only):
+
+   ```yaml
+   volumes:
+   - name: cache-client
+     image:
+       reference: hariazstortest.azurecr.io/dacs-client:20260701.7
+       pullPolicy: IfNotPresent
+   ```
+
+5. **Clear existing weights and restart the pod** to force a fresh
+   download through DACS:
+
+   ```bash
+   kubectl exec phi-4-cached-0 -c phi-4-cached -- bash -c 'rm -rf /workspace/weights/*'
+   kubectl delete pod phi-4-cached-0
+   ```
+
+### Verified result (2026-07-15, cluster andy-aks135)
+
+```text
+# vLLM engine config confirms runai_streamer
+load_format=runai_streamer
+
+# Model streamed via DACS — 0 bytes written to disk
+(APIServer pid=45) INFO 07-15 05:08:25 inference_api.py:328]
+    Model microsoft/phi-4 download complete: 0.00 GiB on disk in 34.3s
+
+# RunAI Streamer log — 27.3 GiB streamed at 5.8 GiB/s
+(EngineCore pid=188) Loading safetensors using Runai Model Streamer: 100% Completed | 243/243
+(EngineCore pid=188) INFO 07-15 05:09:00 file_streamer.py:69]
+    [RunAI Streamer] Overall time to stream 27.3 GiB of all files to cpu: 4.73s, 5.8 GiB/s
+
+# Benchmark passed normally
+KAITO_BENCHMARK_RESULT {"vllm_total_tpm":307968.95,"ttft_avg_ms":8070.79,"tpot_avg_ms":213.9}
+
+# Pod Ready
+kubectl get pods phi-4-cached-0 → 2/2 Running, Ready=true
+```
+
+### Key difference: `--load-format=auto` vs `--load-format=runai_streamer`
+
+| | `--load_format=auto` (default) | `--load-format=runai_streamer` |
+| --- | --- | --- |
+| Model loading | HF Hub → disk → GPU | DACS cache → stream → GPU |
+| Download time | ~31s + disk I/O | **4.73s** (streamed) |
+| Disk written | 27.3 GiB | **0 GiB** |
+| Throughput | ~0.9 GiB/s | **5.8 GiB/s** |
+| DACS utilized | ❌ | ✅ |
+
 ## Reference
 
 - KAITO PR: <https://github.com/kaito-project/kaito/pull/2169>
