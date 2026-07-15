@@ -684,6 +684,66 @@ kubectl get pods phi-4-cached-0 → 2/2 Running, Ready=true
 | Throughput | ~0.9 GiB/s | **5.8 GiB/s** |
 | DACS utilized | ❌ | ✅ |
 
+## Performance comparison: DACS vs HuggingFace Hub download
+
+Tested on cluster `andy-aks135`, model `microsoft/phi-4` (27.3 GiB),
+Single A100 GPU (Standard_NC24ads_A100_v4), 2026-07-15.
+
+### Without DACS (`--load_format=auto`, HuggingFace Hub)
+
+```text
+# EngineCore downloads weights from HF Hub to local NVMe disk
+(EngineCore pid=188) INFO 07-15 05:01:33 [weight_utils.py:603]
+    Time spent downloading weights for microsoft/phi-4: 30.671232 seconds
+
+# Then loads from disk to GPU
+(EngineCore pid=188) Loading safetensors checkpoint shards: 100% Completed | 6/6 [00:03<00:00, 1.56it/s]
+(EngineCore pid=188) INFO [default_loader.py:397] Loading weights took 3.99 seconds
+
+# Total model ready time: ~34s download + ~4s load = ~38s
+# Disk usage: 27.3 GiB written to /workspace/weights/
+```
+
+Historical data from 07-13 test on same cluster:
+```text
+(EngineCore) Time spent downloading weights for microsoft/phi-4: 31.947335 seconds
+(APIServer) Model microsoft/phi-4 download complete: 27.31 GiB on disk in 68.5s
+```
+
+### With DACS (`--load-format=runai_streamer`)
+
+```text
+# Streamer loads directly from DACS cache to CPU memory — zero disk writes
+(APIServer pid=45) INFO 07-15 05:08:25 inference_api.py:328]
+    Model microsoft/phi-4 download complete: 0.00 GiB on disk in 34.3s
+
+(EngineCore pid=188) Loading safetensors using Runai Model Streamer: 100% Completed | 243/243 [00:04<00:00, 51.51it/s]
+(EngineCore pid=188) INFO 07-15 05:09:00 file_streamer.py:69]
+    [RunAI Streamer] Overall time to stream 27.3 GiB of all files to cpu: 4.73s, 5.8 GiB/s
+
+(EngineCore pid=188) INFO [gpu_model_runner.py:5132]
+    Model loading took 27.39 GiB memory and 36.483870 seconds
+
+# Disk usage: 0 GiB (streamed directly to memory)
+```
+
+### Summary
+
+| Metric | Without DACS (HF Hub) | With DACS (RunAI Streamer) | Speedup |
+| --- | --- | --- | --- |
+| Weight download/stream time | 30.7s | **4.73s** | **6.5x** |
+| Download throughput | ~0.9 GiB/s | **5.8 GiB/s** | **6.4x** |
+| Disk written | 27.3 GiB | **0 GiB** | ∞ |
+| Total model load (download + GPU) | ~38s | ~36.5s (stream overlaps GPU load) | ~1x |
+| Benchmark (tokens/min) | 307,969 | 307,969 | identical |
+
+> **Note:** Total wall-clock model loading time is similar (~36-38s) because
+> GPU weight loading dominates once data is in CPU memory. The key wins are:
+> 1. **6.5x faster weight fetch** — matters more for larger models (70B+)
+> 2. **Zero disk I/O** — no NVMe wear, no PVC needed for weights
+> 3. **Cache locality** — subsequent pod restarts / scale-outs hit warm
+>    DACS cache instead of re-downloading from internet
+
 ## Reference
 
 - KAITO PR: <https://github.com/kaito-project/kaito/pull/2169>
