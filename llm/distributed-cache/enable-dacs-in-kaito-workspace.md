@@ -750,7 +750,71 @@ Historical data from 07-13 test on same cluster:
 > 3. **Cache locality** — subsequent pod restarts / scale-outs hit warm
 >    DACS cache instead of re-downloading from internet
 
+## Why `--load-format=runai_streamer` is required for DACS
+
+vLLM's `--load-format` (aka `load_format`) controls **how model weights
+are loaded from storage into GPU memory**. It selects the I/O backend:
+
+| `load_format` | Behavior |
+| --- | --- |
+| `auto` (default) | Python `safetensors` lib reads local files from disk |
+| `safetensors` | Same as above, explicit format selection |
+| `runai_streamer` | Uses [RunAI Model Streamer](https://github.com/run-ai/runai-model-streamer) C++ library |
+| `runai_streamer_azure` | RunAI Streamer with explicit Azure Blob source |
+
+### How the DACS → RunAI Streamer → vLLM pipeline works
+
+```text
+vLLM Engine
+  │
+  ├── load_format=auto
+  │     └── Python safetensors → reads LOCAL FILES from /workspace/weights/
+  │           (must download from HF Hub first → DACS is bypassed entirely)
+  │
+  └── load_format=runai_streamer
+        └── RunAI Model Streamer (C++ high-perf streaming)
+              │
+              ├── detects RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true
+              ├── dlopen(RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB)
+              │     = /opt/cache-client/.../libStorageDirect.so  ← DACS client
+              │
+              └── libStorageDirect.so connects to CACHE_DISCOVERY_URL
+                    → DACS cache-server (local node or cluster)
+                    → streams safetensor data directly to CPU pinned memory → GPU
+                    → zero disk I/O
+```
+
+### Why `auto` never uses DACS
+
+With `--load_format=auto`, vLLM uses standard Python `safetensors` to
+load weights from local filesystem paths. This code path:
+
+1. Calls `huggingface_hub.snapshot_download()` to pull model files to
+   `/workspace/weights/models--microsoft--phi-4/` (standard HF cache tree)
+2. Opens each `.safetensors` file via `safetensors.safe_open(path)` —
+   plain POSIX `open()` + `mmap()`
+3. **Never calls RunAI Streamer** — the DACS env vars are ignored
+
+The DACS environment variables (`RUNAI_STREAMER_*`, `CACHE_DISCOVERY_URL`)
+only take effect inside the RunAI Streamer library. If that library is
+never loaded, DACS is dead code.
+
+### Conclusion
+
+**DACS is a plugin of RunAI Model Streamer, not of vLLM itself.**
+Without switching `load_format` to `runai_streamer`, the RunAI Streamer
+library is never invoked, `libStorageDirect.so` is never dlopen'd, and
+DACS cache-servers receive zero traffic — regardless of how many DACS
+env vars are injected into the pod.
+
+This is why kaito-project/kaito#2169 must rewrite the vLLM launch command
+to include `--load-format=runai_streamer` when `spec.cache.modelCache`
+is configured. The current PR injects env vars and volumes correctly
+but never flips the load_format switch — leaving DACS permanently
+bypassed while reporting `ModelCacheReady=True`.
+
 ## Reference
 
 - KAITO PR: <https://github.com/kaito-project/kaito/pull/2169>
+- RunAI Model Streamer: <https://github.com/run-ai/runai-model-streamer>
 - DACS getting started guide (Tachyon): internal doc from Container Storage team
