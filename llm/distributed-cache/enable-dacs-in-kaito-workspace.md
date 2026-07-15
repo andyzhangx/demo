@@ -822,7 +822,18 @@ KV cache path on `andy-aks135` on 2026-07-15 with the same controller image
 (`andyzhangx/workspace:0.11.0-cache`, DACS control plane in
 `dacs-cache-system`, Cache CR `cache-sample` Ready).
 
-### 2.1 Workspace spec
+### 2.1 Test environment
+
+| Item | Value |
+|---|---|
+| Cluster | `andy-aks135` (westeurope) |
+| Controller image | `andyzhangx/workspace:0.11.0-cache` (same as Part 1) |
+| Controller feature gates | `disableNodeAutoProvisioning=false,enableInferenceSetController=true,gatewayAPIInferenceExtension=true,vLLM=true,enableMultiRoleInferenceController=true,distributedCache=true` |
+| DACS control plane | `dacs-cache-system` ns: `cacheserver-discovery:9065`, `tachyon-cache-manager` deploy, `cache-server-prereq` DS, `tachyon-cache-webhook-service` (⚠️ no `MutatingWebhookConfiguration`) |
+| Cache CR | `dacs-cache-system/cache-sample` — `Ready` (3/3 desired) |
+| GPU node | `Standard_NC24ads_A100_v4` (Karpenter-provisioned, label `apps=phi-4`) |
+
+### 2.2 Workspace spec (`phi-4-kvcache.yaml`)
 
 ```yaml
 apiVersion: kaito.sh/v1beta1
@@ -833,7 +844,7 @@ resource:
   instanceType: "Standard_NC24ads_A100_v4"
   labelSelector:
     matchLabels:
-      apps: phi-4
+      apps: phi-4     # AKS-locked nodepool label; labelSelector is immutable
 inference:
   preset:
     name: "microsoft/phi-4"
@@ -843,12 +854,125 @@ cache:
     mode: Opportunistic
 ```
 
-Enable KV cache in the controller:
+### 2.3 Configuration changes applied during the test
+
+#### Change 1 — flip `DACS_KV_CACHE_ENABLED` on the controller
 
 ```bash
 kubectl -n kaito-workspace set env deploy/kaito-workspace DACS_KV_CACHE_ENABLED=true
 kubectl -n kaito-workspace rollout status deploy/kaito-workspace --timeout=180s
-# Expect: main.go:219 "Registered DACS cache provider" ... kvCacheEnabled=true
+```
+
+Control-plane env after the change (all other `DACS_*` values are inherited
+from Part 1):
+
+```json
+{
+  "DACS_ENABLED": "true",
+  "DACS_DISCOVERY_ENDPOINT": "cacheserver-discovery.dacs-cache-system.svc.cluster.local:9065",
+  "DACS_KV_CACHE_ENABLED": "true",
+  "DACS_KV_CONNECTOR_PROTOCOL": "tcp",
+  "DACS_CLIENT_IMAGE": "hariazstortest.azurecr.io/dacs-client:20260701.7"
+}
+```
+
+Controller log confirmation:
+
+```
+I0715 09:08:36 main.go:219 "Registered DACS cache provider"
+    discoveryEndpoint="cacheserver-discovery.dacs-cache-system.svc.cluster.local:9065"
+    kvCacheEnabled=true
+```
+
+#### Change 2 — force STS re-render
+
+Because the workspace was already `Ready` before the controller flip, the
+controller's "an inference workload already exists" short-circuit prevented
+re-rendering. Delete the STS (pods will be re-created by the workspace
+reconcile loop):
+
+```bash
+kubectl delete sts phi-4-kvcache --cascade=foreground --timeout=120s
+# controller log expected: resources.go:41 "CreateStatefulSet" statefulset="default/phi-4-kvcache"
+```
+
+Result on the rendered STS: **no change** — no label, no env, no volume
+(see § 2.5 for why: `cacheApplicable` was false).
+
+#### Change 3 — manual STS patch to prove out the missing wiring
+
+Since the controller did not inject anything, apply a strategic-merge patch
+by hand. **Critically: no `LD_LIBRARY_PATH`** — that env caused a glibc /
+`libc.so.6` symbol clash in the Part 1 test.
+
+`/tmp/kvcache-patch.yaml`:
+
+```yaml
+spec:
+  template:
+    metadata:
+      labels:
+        dacs.azure.com/inject: "true"
+    spec:
+      containers:
+      - name: phi-4-kvcache
+        env:
+        - name: VLLM_KV_TRANSFER_CONFIG
+          value: '{"kv_connector":"dacs_client.connectors.vllm_connector.DacsKVConnector","kv_connector_extra_config":{"locator_nodes":"cacheserver-discovery.dacs-cache-system.svc.cluster.local:9065","protocol":"tcp","initial_ttl_ms":300000,"producer_ttl_ms":1800000,"max_ttl_ms":86400000}}'
+```
+
+Apply:
+
+```bash
+kubectl patch sts phi-4-kvcache --type=strategic --patch-file=/tmp/kvcache-patch.yaml
+kubectl delete pod phi-4-kvcache-0    # restart to pick up the label/env
+```
+
+Verify the STS took the patch:
+
+```bash
+kubectl get sts phi-4-kvcache -o json | jq '{
+  podLabels: .spec.template.metadata.labels,
+  kvcacheEnv: (.spec.template.spec.containers[0].env
+               | map(select(.name=="VLLM_KV_TRANSFER_CONFIG")))
+}'
+```
+
+Expected:
+
+```json
+{
+  "podLabels": {
+    "dacs.azure.com/inject": "true",
+    "kaito.sh/workspace": "phi-4-kvcache"
+  },
+  "kvcacheEnv": [{"name": "VLLM_KV_TRANSFER_CONFIG", "value": "{...}"}]
+}
+```
+
+### 2.4 Verification commands
+
+After the pod is Running, run these checks (each maps to one row of the
+summary table in § 2.7):
+
+```bash
+# a) is any DACS mutating webhook registered on the apiserver?
+kubectl get mutatingwebhookconfigurations -o json \
+  | jq -r '.items[].metadata.name' | grep -i dacs || echo 'no DACS webhook'
+
+# b) did anything mount the dacs-client image into the pod?
+kubectl get pod phi-4-kvcache-0 -o json \
+  | jq '[.spec.volumes[].name]'
+
+# c) is the connector Python package importable?
+kubectl exec phi-4-kvcache-0 -c phi-4-kvcache -- ls /opt/cache-client
+kubectl exec phi-4-kvcache-0 -c phi-4-kvcache -- python3 -c 'import dacs_client; print(dacs_client.__file__)'
+
+# d) did vLLM honour VLLM_KV_TRANSFER_CONFIG?
+kubectl logs phi-4-kvcache-0 -c phi-4-kvcache | grep -iE 'VLLM_KV_TRANSFER|Unknown vLLM environment|kv_connector|DacsKVConnector'
+
+# e) LD_LIBRARY_PATH must NOT be set (per project constraint)
+kubectl exec phi-4-kvcache-0 -c phi-4-kvcache -- printenv LD_LIBRARY_PATH || echo 'unset (good)'
 ```
 
 ### 2.2 What the controller is supposed to inject
@@ -873,7 +997,7 @@ Note there is **no ImageVolume** for the client library on this path
 (unlike the ModelWeights concern) — the design relies on the DACS webhook
 to add it separately.
 
-### 2.3 Observed behaviour — controller does not inject anything
+### 2.5 Observed behaviour — controller does not inject anything
 
 Even with `DACS_KV_CACHE_ENABLED=true` in the controller and
 `KVCacheReady=True`/`WorkspaceSucceeded=True` on the Workspace, the rendered
@@ -913,29 +1037,7 @@ incorrect. `SetCacheMutations()` should be invoked whenever any cache
 concern is configured, and per-concern applicability should live inside
 the provider.
 
-### 2.4 Manually patching the StatefulSet — still does not work
-
-Applying the label + env by hand (without `LD_LIBRARY_PATH`):
-
-```bash
-cat > /tmp/kvcache-patch.yaml <<'EOF'
-spec:
-  template:
-    metadata:
-      labels:
-        dacs.azure.com/inject: "true"
-    spec:
-      containers:
-      - name: phi-4-kvcache
-        env:
-        - name: VLLM_KV_TRANSFER_CONFIG
-          value: '{"kv_connector":"dacs_client.connectors.vllm_connector.DacsKVConnector","kv_connector_extra_config":{"locator_nodes":"cacheserver-discovery.dacs-cache-system.svc.cluster.local:9065","protocol":"tcp","initial_ttl_ms":300000,"producer_ttl_ms":1800000,"max_ttl_ms":86400000}}'
-EOF
-kubectl patch sts phi-4-kvcache --type=strategic --patch-file=/tmp/kvcache-patch.yaml
-kubectl delete pod phi-4-kvcache-0
-```
-
-After the pod re-launches, two independent failures show up:
+### 2.6 After the manual STS patch — two independent failures show up
 
 #### Failure A — DACS mutating webhook is not registered on the cluster
 
@@ -985,7 +1087,7 @@ There is **no code path that reads `VLLM_KV_TRANSFER_CONFIG`**. Whatever
 the controller injects into that env var is silently discarded. vLLM never
 sees `--kv-transfer-config` on its argv and never loads the DACS connector.
 
-### 2.5 Summary of end-to-end status
+### 2.7 Summary of end-to-end status
 
 | Layer | Status |
 |---|---|
@@ -995,7 +1097,7 @@ sees `--kv-transfer-config` on its argv and never loads the DACS connector.
 | kaito vLLM entrypoint honours `VLLM_KV_TRANSFER_CONFIG` env | ❌ env var name is not read anywhere in `inference_api.py` |
 | DACS cache-servers receive KV cache traffic | ❌ (all of the above must be fixed first) |
 
-### 2.6 Recommended upstream fixes
+### 2.8 Recommended upstream fixes
 
 1. **`preset_inferences.go`** — split the gate:
 
