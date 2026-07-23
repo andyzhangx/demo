@@ -1,0 +1,279 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      workspace.kaito.io/revision: "1"
+    creationTimestamp: "2026-07-23T03:50:54Z"
+    generation: 1
+    name: phi-4-v9ptg
+    namespace: default
+    ownerReferences:
+    - apiVersion: kaito.sh/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Workspace
+      name: phi-4-v9ptg
+      uid: 4f8ae443-860a-45bb-a81e-d07aeb689b3b
+    resourceVersion: "356389"
+    uid: a9879d6f-c314-4c1d-a12f-985caa476b36
+  spec:
+    persistentVolumeClaimRetentionPolicy:
+      whenDeleted: Delete
+      whenScaled: Retain
+    podManagementPolicy: Parallel
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        inferenceset.kaito.sh/created-by: phi-4
+        kaito.sh/workspace: phi-4-v9ptg
+    serviceName: phi-4-v9ptg-headless
+    template:
+      metadata:
+        labels:
+          inferenceset.kaito.sh/created-by: phi-4
+          kaito.sh/workspace: phi-4-v9ptg
+      spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: apps
+                  operator: In
+                  values:
+                  - phi-4
+                - key: kaito.sh/workspace
+                  operator: In
+                  values:
+                  - phi-4-v9ptg
+                - key: kaito.sh/workspacenamespace
+                  operator: In
+                  values:
+                  - default
+        containers:
+        - command:
+          - /bin/sh
+          - -c
+          - python3 /workspace/vllm/inference_api.py --compilation-config.pass_config.fuse_allreduce_rms=False
+            --model=microsoft/phi-4-mini-instruct --download-dir=/workspace/weights
+            --tensor-parallel-size=1 --load_format=auto --config_format=auto --dtype=bfloat16
+            --chat-template=/workspace/chat_templates/tool-chat-phi4-mini.jinja --max-model-len=auto
+            --gpu-memory-utilization=0.84 --tokenizer_mode=auto --trust-remote-code
+            --served-model-name=phi-4
+          env:
+          - name: VLLM_USE_FLASHINFER_SAMPLER
+            value: "0"
+          - name: VLLM_USE_DEEP_GEMM
+            value: "0"
+          - name: VLLM_USE_FLASHINFER_MOE_FP16
+            value: "0"
+          - name: VLLM_USE_FLASHINFER_MOE_FP8
+            value: "0"
+          - name: VLLM_USE_FLASHINFER_MOE_FP4
+            value: "0"
+          - name: VLLM_USE_FLASHINFER_MOE_MXFP4_BF16
+            value: "0"
+          - name: VLLM_USE_FLASHINFER_MOE_MXFP4_MXFP8
+            value: "0"
+          - name: VLLM_USE_FLASHINFER_MOE_MXFP4_MXFP8_CUTLASS
+            value: "0"
+          image: mcr.microsoft.com/aks/kaito/kaito-base:0.4.2
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 5000
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: phi-4-v9ptg
+          ports:
+          - containerPort: 5000
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 5000
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              nvidia.com/gpu: "1"
+            requests:
+              nvidia.com/gpu: "1"
+          startupProbe:
+            exec:
+              command:
+              - python3
+              - /workspace/vllm/benchmark_entrypoint.py
+            failureThreshold: 180
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 600
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /workspace/weights
+            name: model-weights-volume
+          - mountPath: /dev/shm
+            name: dshm
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
+        - effect: NoSchedule
+          key: sku
+          operator: Equal
+          value: gpu
+        - effect: NoSchedule
+          key: kubernetes.azure.com/scalesetpriority
+          operator: Equal
+          value: spot
+        volumes:
+        - emptyDir:
+            medium: Memory
+          name: dshm
+    updateStrategy:
+      rollingUpdate:
+        partition: 0
+      type: RollingUpdate
+    volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        labels:
+          kaito.sh/workspace: phi-4-v9ptg
+        name: model-weights-volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 87Gi
+        storageClassName: kaito-local-nvme-disk
+        volumeMode: Filesystem
+      status:
+        phase: Pending
+  status:
+    availableReplicas: 1
+    collisionCount: 0
+    currentReplicas: 1
+    currentRevision: phi-4-v9ptg-66598b7559
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updateRevision: phi-4-v9ptg-66598b7559
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: localdisk.csi.acstor.io
+      volume.kubernetes.io/selected-node: aks-wsead4e9759-93477834-vmss000000
+      volume.kubernetes.io/storage-provisioner: localdisk.csi.acstor.io
+    creationTimestamp: "2026-07-23T03:50:54Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    labels:
+      inferenceset.kaito.sh/created-by: phi-4
+      kaito.sh/workspace: phi-4-v9ptg
+    name: model-weights-volume-phi-4-v9ptg-0
+    namespace: default
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: phi-4-v9ptg
+      uid: a9879d6f-c314-4c1d-a12f-985caa476b36
+    resourceVersion: "354666"
+    uid: 75bd902a-45a0-44c8-af12-34ee7abd6beb
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 87Gi
+    storageClassName: kaito-local-nvme-disk
+    volumeMode: Filesystem
+    volumeName: pvc-75bd902a-45a0-44c8-af12-34ee7abd6beb
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 87Gi
+    phase: Bound
+kind: List
+metadata:
+  resourceVersion: ""
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    annotations:
+      pv.kubernetes.io/provisioned-by: localdisk.csi.acstor.io
+      volume.kubernetes.io/provisioner-deletion-secret-name: ""
+      volume.kubernetes.io/provisioner-deletion-secret-namespace: ""
+    creationTimestamp: "2026-07-23T03:50:57Z"
+    finalizers:
+    - external-provisioner.volume.kubernetes.io/finalizer
+    - kubernetes.io/pv-protection
+    name: pvc-75bd902a-45a0-44c8-af12-34ee7abd6beb
+    resourceVersion: "354662"
+    uid: cbb2eed0-fc89-4695-86f0-1a73402d4b35
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 87Gi
+    claimRef:
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      name: model-weights-volume-phi-4-v9ptg-0
+      namespace: default
+      resourceVersion: "354644"
+      uid: 75bd902a-45a0-44c8-af12-34ee7abd6beb
+    csi:
+      driver: localdisk.csi.acstor.io
+      volumeAttributes:
+        csi.storage.k8s.io/pv/name: pvc-75bd902a-45a0-44c8-af12-34ee7abd6beb
+        csi.storage.k8s.io/pvc/name: model-weights-volume-phi-4-v9ptg-0
+        csi.storage.k8s.io/pvc/namespace: default
+        localdisk.csi.acstor.io/capacity: "93415538688"
+        localdisk.csi.acstor.io/limit: "0"
+        localdisk.csi.acstor.io/selected-initial-node: aks-wsead4e9759-93477834-vmss000000
+        storage.kubernetes.io/csiProvisionerIdentity: 1784778646999-7767-localdisk.csi.acstor.io-aks-wsead4e9759-93477834-vmss000000
+      volumeHandle: containerstorage#pvc-75bd902a-45a0-44c8-af12-34ee7abd6beb
+    persistentVolumeReclaimPolicy: Delete
+    storageClassName: kaito-local-nvme-disk
+    volumeMode: Filesystem
+  status:
+    lastPhaseTransitionTime: "2026-07-23T03:50:57Z"
+    phase: Bound
+kind: List
+metadata:
+  resourceVersion: ""
