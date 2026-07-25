@@ -229,3 +229,105 @@ PR #1890 works end-to-end on Kaito for a vLLM workspace. Subscribers running in 
 - **Security**: the ZMQ stream is unauthenticated and unencrypted. PR #1890 correctly gates the service port on ClusterIP only. If a workspace opts into a `LoadBalancer` service (`kaito.sh/enablelb: "True"`), the `kv-events` port is intentionally not exposed — users who need external access should create their own Service + NetworkPolicy.
 - **User override wins**: if `--kaito-config-file` explicitly sets a different `--kv-events-config`, the operator does not overwrite it (unit test `TestGetInferenceCommandVLLMKVCacheEventsDefault`).
 - **LMCache's own KV events** (`enable_kv_events` in LMCache config) is a separate feature not touched by this PR.
+
+---
+
+## 7. Who actually consumes KV events? (KAITO + GAIE + llm-d)
+
+A valid follow-up question: *now that vLLM emits KV events, who in the KAITO stack subscribes to them?* Short answer:
+
+> **The `llm-d-inference-scheduler` EPP that KAITO's GAIE integration wires up. And *only* that. Which means KV events only have a real consumer when the KAITO InferenceSet (a.k.a. MultiRoleInference) controller is enabled.**
+
+### The GAIE / llm-d path
+
+KAITO's [Gateway API Inference Extension docs](https://kaito-project.github.io/kaito/docs/gateway-api-inference-extension) call this out explicitly:
+
+> The EPP image is overridden to use the [llm-d inference scheduler](https://github.com/llm-d/llm-d-inference-scheduler), which builds on the GWIE EPP with advanced scheduling plugins including **KV cache-aware routing**, prefill/decode (P/D) disaggregation, and pluggable filters/scorers.
+
+The llm-d scheduler ships a `KVCache` scorer that subscribes to each backend pod's vLLM ZMQ publisher (`tcp://<pod>:5557`), builds a `{block_hash → pod}` index, and gives higher scores to pods that already hold the request's prefix — so identical / prefix-overlapping requests keep landing on the same replica, cutting TTFT.
+
+### The wiring
+
+```
+     ┌────────────────────────────────────────────────────────────┐
+     │ KAITO InferenceSet (MultiRoleInference) controller         │
+     │  → Flux HelmRelease → GWIE InferencePool + EPP             │
+     │       (EPP image = llm-d-inference-scheduler)              │
+     │            │                                               │
+     │            │  ZMQ SUB tcp://<workspace-pod>:5557           │
+     └────────────┼───────────────────────────────────────────────┘
+                  ▼
+            KAITO Workspace pods (vLLM)
+            --kv-events-config='{"enable_kv_cache_events":true}'
+            containerPort/kv-events + Service port/kv-events
+            ← PR #1890 makes this happen
+```
+
+So PR #1890 is not just "expose an event stream for future use" — it is the **producer half of KAITO's KV-cache-aware routing story**. Without it the llm-d KVCache scorer has nothing to subscribe to.
+
+### But: only useful when MultiRoleInference is enabled
+
+The consumer (`llm-d` EPP) only exists in the cluster when:
+
+1. `featureGates.enableMultiRoleInferenceController=true` (default from KAITO v0.11.0+), **and**
+2. `featureGates.gatewayAPIInferenceExtension=true`.
+
+If `enableMultiRoleInferenceController` is off, there is no InferenceSet controller, no Flux-managed InferencePool, no EPP — so nothing in the cluster will ever subscribe to port 5557. In that mode, enabling the vLLM ZMQ publisher would just:
+
+- spawn an extra ZMQ publisher thread inside every vLLM engine,
+- hold an open TCP socket on 5557 in every workspace pod,
+- add a container port and a Service port that point at a producer with no consumer.
+
+All cost, no benefit.
+
+### What PR #1890 does about it
+
+Gate all three operator-side changes on `FeatureFlagEnableMultiRoleInferenceController`:
+
+| File | Change |
+|------|--------|
+| `pkg/model/interface.go` | Only inject `--kv-events-config` into the vLLM command line when MRI is on. |
+| `pkg/workspace/inference/preset_inferences.go` | Only add `containerPort/kv-events=5557` to the pod spec when the runtime is vLLM **and** MRI is on. |
+| `pkg/workspace/manifests/manifests.go` | Only expose `Service port/kv-events=5557` for vLLM/ClusterIP **and** when MRI is on. (LoadBalancer is still always excluded to avoid publishing the unauth ZMQ stream.) |
+
+Unit tests updated to match:
+
+- **New**: `TestGetInferenceCommandVLLMKVCacheEventsDisabledWithoutMRI` — asserts the flag is **not** injected when MRI is off.
+- Pinned `MRI=true` in `TestGetInferenceCommandVLLMKVCacheEventsDefault`, `TestGeneratePresetInference` (its `expectedParams` includes `kv-events-config`), and `TestGenerateServiceManifest_KVEventsPort` so those tests remain deterministic.
+- Extended `TestGenerateServiceManifest_KVEventsPort` with a **vLLM + ClusterIP but MRI=false** case that asserts the Service port is **not** added.
+
+All targeted tests pass:
+
+```
+$ go test -run 'KVCache|KVEvents' ./pkg/model/ ./pkg/workspace/manifests/ -v
+=== RUN   TestGetInferenceCommandVLLMKVCacheEventsDefault
+--- PASS: TestGetInferenceCommandVLLMKVCacheEventsDefault (0.00s)
+=== RUN   TestGetInferenceCommandVLLMKVCacheEventsDisabledWithoutMRI
+--- PASS: TestGetInferenceCommandVLLMKVCacheEventsDisabledWithoutMRI (0.00s)
+=== RUN   TestBuildVLLMInferenceCommandDisablesKVCacheForHybridModels
+--- PASS: TestBuildVLLMInferenceCommandDisablesKVCacheForHybridModels (0.00s)
+=== RUN   TestBuildVLLMInferenceCommandNoKVCacheOverrideForNonHybrid
+--- PASS: TestBuildVLLMInferenceCommandNoKVCacheOverrideForNonHybrid (0.00s)
+PASS
+ok  	github.com/kaito-project/kaito/pkg/model	0.011s
+=== RUN   TestGenerateServiceManifest_KVEventsPort
+--- PASS: TestGenerateServiceManifest_KVEventsPort (0.00s)
+PASS
+ok  	github.com/kaito-project/kaito/pkg/workspace/manifests	0.020s
+
+$ go test -run TestGeneratePresetInference ./pkg/workspace/inference/
+ok  	github.com/kaito-project/kaito/pkg/workspace/inference	0.021s
+```
+
+### Practical implication for KAITO users
+
+| KAITO config | KV events behavior |
+|---|---|
+| `enableMultiRoleInferenceController=true` + `gatewayAPIInferenceExtension=true` (KAITO ≥ v0.11 default when GAIE is on) | ✅ vLLM emits KV events on 5557; llm-d EPP subscribes; KV-cache-aware routing works. |
+| `enableMultiRoleInferenceController=true` only | ✅ Publisher runs (harmless — you can attach your own subscriber for observability, custom routing, LMCache-style KV offload, etc.). |
+| `enableMultiRoleInferenceController=false` | ⛔ No publisher, no container port, no Service port — zero overhead when the feature can't be used. |
+
+### What's still needed to fully turn on KV-cache-aware routing
+
+PR #1890 unblocks the producer side. To close the loop on a KAITO GAIE cluster, the InferenceSet controller must also render the EPP `HelmRelease` with the llm-d KV-cache scorer plugin actually **enabled** (llm-d exposes it via env such as `ENABLE_KVCACHE_AWARE_SCORER=true` and optionally `KVCACHE_INDEXER_REDIS_ADDR` for cross-EPP sharing). Whether Kaito's InferenceSet controller already sets that today, or needs a small values-passthrough PR, is the next thing to check on the InferenceSet controller side (`pkg/inferenceset/...`).
+
