@@ -246,6 +246,181 @@ webhook.
    also means troubleshooting starts with "did the webhook fire?" — see
    the verification snippets in the sibling doc.
 
+## Consumer contract — how a workload actually opts in
+
+Every workload that wants to use DACS must mount the `dacs-client` image
+volume. Concretely a running `phi-4-cache-*` pod looks like this (only the
+DACS-relevant bits shown — everything else is unchanged from a normal
+vLLM inference pod):
+
+```yaml
+spec:
+  volumes:
+    # 1. The dacs-client, delivered as an OCI image volume (K8s 1.31+ beta,
+    #    1.33 GA, requires the ImageVolume feature gate on kubelet).
+    - name: cache-client
+      image:
+        reference: hariazstortest.azurecr.io/dacs-client:20260714.10
+        pullPolicy: IfNotPresent
+    # 2. Workload-identity federated token for cache -> Azure Blob auth.
+    - name: azure-identity-token
+      projected:
+        sources:
+          - serviceAccountToken:
+              audience: api://AzureADTokenExchange
+              expirationSeconds: 3600
+              path: azure-identity-token
+
+  containers:
+    - name: phi-4-cache
+      volumeMounts:
+        - name: cache-client
+          mountPath: /opt/cache-client
+          readOnly: true                # image volumes are ALWAYS read-only
+        - name: azure-identity-token
+          mountPath: /var/run/secrets/azure/tokens
+          readOnly: true
+      env:
+        # --- Where to reach the cache (data plane) ---
+        - name: CACHE_DISCOVERY_URL
+          value: cache-sample-discovery.dacs-cache-system.svc.cluster.local
+        - name: CACHE_SERVER_PORT
+          value: "9065"
+
+        # --- Storage account this workload wants to read ---
+        - name: AZURE_STORAGE_ACCOUNT_NAME
+          value: harikaito
+
+        # --- vLLM / RunAI Streamer wiring: tell the streamer to load
+        #     the DACS interception .so out of the image volume ---
+        - name: RUNAI_STREAMER_CACHE_ENABLED
+          value: "true"
+        - name: RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED
+          value: "true"
+        - name: RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB
+          value: /opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client/libStorageDirect.so
+
+        # --- Workload Identity for the cache to fetch blobs on
+        #     behalf of this pod's SA ---
+        - name: AZURE_CLIENT_ID
+          value: <workload-identity-client-id>
+        - name: AZURE_TENANT_ID
+          value: <tenant-id>
+        - name: AZURE_FEDERATED_TOKEN_FILE
+          value: /var/run/secrets/azure/tokens/azure-identity-token
+        - name: AZURE_AUTHORITY_HOST
+          value: https://login.microsoftonline.com/
+```
+
+The user does **not** hand-write any of this — the
+`tachyon-cache-webhook-service` MutatingWebhook (see §3 above) injects
+the `cache-client` volume, the `azure-identity-token` projection, and all
+the env vars at admission time based on a pod label (e.g.
+`dacs.azure.com/inject: "true"`). What the user *does* have to do is:
+
+1. Add the DACS mutation label to the pod / template.
+2. Bind the workload's ServiceAccount to a Workload Identity that has
+   `Storage Blob Data Reader` on the target storage account
+   (`harikaito` here).
+3. Use a model loader that understands the DACS interception library
+   (currently RunAI Streamer, i.e. vLLM's `--load-format=runai_streamer`).
+
+### Why an `image` volume specifically
+
+The `dacs-client` is a plain OCI image published to ACR
+(`hariazstortest.azurecr.io/dacs-client:20260714.10`). Kubernetes 1.31
+introduced the `image` volume source (beta, GA in 1.33) which pulls an
+OCI image via the container runtime and exposes its rootfs to the pod
+as a **read-only** volume, mounted at `/opt/cache-client` in this case.
+Compared to the alternatives, this buys DACS several properties:
+
+- **No init container, no sidecar.** No extra pod-startup latency, no
+  extra container to manage lifecycles for. The volume is just there
+  from the moment the main container starts.
+- **No baking `dacs_client` into every model image.** Kaito, HuggingFace
+  TGI, custom vLLM images … none of them need to know DACS exists at
+  build time. The webhook adds it at admission time.
+- **Independent lifecycle from the workload image.** Rolling out a new
+  DACS client (`:20260714.10` → `:20260801.1`) is a webhook config change
+  + pod restart, not a rebuild of every inference image.
+- **Read-only by design.** The volume is mounted `readOnly: true` (the
+  image-volume spec enforces this anyway), so nothing in the workload can
+  tamper with the interception library. The vLLM process can only load
+  the `.so` and use it.
+- **Same pull machinery as normal images.** Uses the node's kubelet image
+  pull secrets, same registry credentials, same containerd cache. Nothing
+  bespoke about registry auth.
+- **Content addressable / signable.** Because it's an OCI image, it can
+  be pinned by digest and cosigned/attested in a normal SLSA/sigstore
+  pipeline. No cluster-scoped file distribution or DaemonSet-based
+  bootstrap needed.
+
+### What the mount actually contains
+
+`/opt/cache-client` is the full rootfs of the `dacs-client` image. The
+pieces the workload consumes:
+
+- `/opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client/libStorageDirect.so`
+  — the C++ interception library. RunAI Streamer is pointed at this via
+  `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB`, `dlopen`s it, and from
+  that point on every Azure Blob GET/READ the streamer would issue goes
+  through the DACS `StreamingClient` → `ConnectionManager` → cache-pool
+  code path instead of straight to `*.blob.core.windows.net`.
+- The `dacs_client` Python package (also under `dist-packages/`) —
+  provides the `BlobSiWrapper` that generates `/tmp/storageIntercept.<pid>.config`
+  at process startup, populates `storagePath`, `cacheServerDiscoveryEndpoint`,
+  `cacheEnableRemote`, `HashingStrategy=ConsistentHashing`, etc. from
+  the `CACHE_DISCOVERY_URL` / `CACHE_SERVER_PORT` / `AZURE_*` env vars.
+
+All of the `AISC_CTR:INFO|StorageIntercept|...` and
+`AISC_CTR:INFO|StorageCommon|ConnectionManager.cpp:...` log lines you see
+in the inference pod logs come from this `.so` — they're the ground
+truth for `Samples=N from Cache` / `Samples=M from Remote` that drove
+the cold-vs-warm cache measurements in
+[`enable-dacs-in-kaito-workspace.md`](./enable-dacs-in-kaito-workspace.md).
+
+### End-to-end flow when a workload starts
+
+1. User creates a KAITO `Workspace` (or a plain pod with the DACS label).
+2. Admission goes through the API server → `tachyon-cache-webhook-service`.
+   The webhook mutates the pod spec to add the `cache-client` image
+   volume, the `azure-identity-token` projection, the `volumeMounts`,
+   and the RunAI Streamer + Workload Identity env vars.
+3. kubelet on the target node pulls `hariazstortest.azurecr.io/dacs-client:20260714.10`
+   via containerd (same path as any other image) and mounts its rootfs
+   read-only at `/opt/cache-client`. The workload's `phi-4-cache` main
+   container starts.
+4. vLLM sees `--load-format=runai_streamer` (or the KAITO controller has
+   set `load_format=runai_streamer` on its behalf).
+5. RunAI Streamer honours `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true`
+   and `dlopen`s `libStorageDirect.so` out of the image volume.
+6. `BlobSiWrapper` runs, generates the SI config, discovers the cache
+   pool via `cache-sample-discovery.dacs-cache-system.svc:9065`, gets
+   back `cache-sample-0.cache-sample.dacs-cache-system.svc:9065`.
+7. Streamer issues "blob GET" — the SI shim rewrites it into a request
+   against `cache-sample-0` on port 9065. Cache hit → served locally.
+   Cache miss → cache pod uses `azure-identity-token` (workload identity
+   federated exchange) to fetch from `harikaito.blob.core.windows.net`,
+   populates the cache, streams to the client. Both paths are labelled
+   in the shutdown latency histogram (`from Cache` vs `from Remote`).
+
+### If any piece is missing
+
+- **No image volume mounted at `/opt/cache-client`** → `dlopen` of the
+  `.so` fails, RunAI Streamer falls back to raw Azure Blob (or, if the
+  KAITO controller silently rewrites `--load-format` to `auto`, to HF
+  Hub). This is the exact "silent HF fallback" mode called out in the
+  sibling doc's *Red flags* section.
+- **`RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB` unset** → the library
+  is on disk but never loaded. Loader goes straight to Azure Blob.
+- **`azure-identity-token` projection missing** → cache pod's remote
+  fetch path fails with 401/403 the first time a miss falls through to
+  Azure Blob, and the whole workload wedges on the cold-cache path.
+- **`ImageVolume` feature gate off on kubelet** (K8s <1.31 or gate
+  disabled) → API server accepts the pod spec but kubelet refuses to
+  mount the volume, pod stuck in `ContainerCreating`. Node must be on
+  K8s 1.31+ with the gate enabled (default in 1.33).
+
 ## See also
 
 - [`enable-dacs-in-kaito-workspace.md`](./enable-dacs-in-kaito-workspace.md)
