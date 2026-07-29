@@ -421,6 +421,179 @@ the cold-vs-warm cache measurements in
   mount the volume, pod stuck in `ContainerCreating`. Node must be on
   K8s 1.31+ with the gate enabled (default in 1.33).
 
+## Failure case study — `cache-sample-0` in ImagePullBackOff (2026-07-29)
+
+Caught a live example of the exact silent-degradation mode called out
+above. `phi-4-cache-kdf7k-0` had DACS fully injected on the client side
+but still loaded weights straight from Azure Blob — because the cache
+backend was down.
+
+### Symptom on the client side
+
+Model load time jumped back to the cold-cache range even though the
+cache was "supposed to be warm":
+
+```text
+Loading safetensors using Runai Model Streamer: 100% Completed | 194/194 [00:09<...]
+StreamingClient.cpp:LogDownloadLatencyStatsInner:
+  Download latencies (ms) from Remote MountName= Samples=252 Min=263 Max=4267 Avg=1285 P50=1013 P95=3090
+  Download latencies (ms) from Remote MountName= Samples=426 Min=202 Max=4267 Avg=1127 P50=929  P95=2824
+Model loading took 7.17 GiB memory and 14.262235 seconds
+```
+
+Key signal: **`Samples=426 from Remote`, zero `from Cache`.** Compare
+against the warm baseline in
+[`enable-dacs-in-kaito-workspace.md`](./enable-dacs-in-kaito-workspace.md)
+(`Samples=433 from Cache`, `0 from Remote`, 4.2–4.6 s). The 14.26 s load
+time is even a bit worse than the original cold measurement because
+now *no* client is populating the cache either — there's literally no
+cache pod to write to.
+
+### The pod's DACS wiring was fine
+
+All the mutations were in place:
+
+- `cache-client` image volume mounted at `/opt/cache-client`
+- `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB` pointed at the right `.so`
+- `CACHE_DISCOVERY_URL=cache-sample-discovery.dacs-cache-system.svc.cluster.local`
+- Workload Identity token projected at `/var/run/secrets/azure/tokens/`
+
+SI startup logs even confirm the client thought it was going to use the
+cache:
+
+```text
+BlobSiWrapper.cpp:generate_si_config(214): distributed cache enabled (port=9065)
+ConnectionManager.cpp:ConnectionManager(144): Cache server discovery is enabled
+```
+
+### Where it fell over
+
+~5 ms later the client couldn't reach the discovery endpoint:
+
+```text
+ConnectionManager.cpp:CreateSocketAndConnect(622):
+  Connection timed out or socket not writable for
+  hostname=cache-sample-discovery.dacs-cache-system.svc.cluster.local
+ConnectionManager.cpp:FetchLatestCacheServers(922):
+  Couldn't create server connection for fetching cache servers
+ConnectionManager.cpp:ConnectionManager(148):
+  Failed to fetch the cache servers from endpoint ...
+  Cache client will start with empty server list and
+  rely on background discovery.
+```
+
+StreamingClient then continued setup with an *empty server list* and
+initialised `BlobClient` with the pod's Workload Identity:
+
+```text
+BlobAuthTokenProvider: Successfully fetched access token via WorkloadIdentityCredential
+BlobClient(114): Initialized blob client ... authType=2 ...
+StreamingClient(188): StreamingClient initialized ... enableRemoteWrite=true ...
+```
+
+From that point on, every safetensors read went straight to
+`harikaito.blob.core.windows.net` via the WI-authenticated `BlobClient`.
+No HF Hub fallback — the `runai_streamer` loader was still active, it
+just bypassed the cache tier entirely.
+
+### Root cause on the cache side
+
+```console
+$ kubectl -n dacs-cache-system get po
+NAME             READY   STATUS         RESTARTS   AGE
+cache-sample-0   0/1     ErrImagePull   0          3m30s
+
+$ kubectl -n dacs-cache-system get endpoints cache-sample cache-sample-discovery
+NAME                     ENDPOINTS   AGE
+cache-sample                         2d3h      # empty
+cache-sample-discovery               2d3h      # empty
+
+$ kubectl -n dacs-cache-system describe po cache-sample-0
+  Warning  Failed  ...  Failed to pull image
+    "tachyontestacr.azurecr.io/cache-server:20260724.17":
+    ... 401 Unauthorized
+```
+
+The `cache-sample` StatefulSet had been rolled to a new image tag
+`tachyontestacr.azurecr.io/cache-server:20260724.17`, but the cluster
+doesn't have credentials for `tachyontestacr.azurecr.io` (the previously
+working image was on `hariazstortest.azurecr.io`). kubelet loops on
+`ErrImagePull` → `ImagePullBackOff`, the pod never reaches Ready, the
+headless service and the discovery service both keep an empty endpoint
+list, and every DACS client in the cluster silently falls back to
+direct blob reads.
+
+### End-to-end path this pod actually took
+
+```
+phi-4-cache-kdf7k-0 (vLLM --load-format=runai_streamer)
+       |
+       | dlopen /opt/cache-client/.../libStorageDirect.so   OK
+       |
+       +-- cache-sample-discovery.dacs-cache-system.svc:9065
+       |         `-- X  connect timeout (endpoint empty)
+       |
+       |  (StreamingClient continues in remote-only mode)
+       v
+  BlobClient (WorkloadIdentity -> api://AzureADTokenExchange
+              -> Azure AD -> Storage Blob Data Reader)
+       |
+       v
+  https://harikaito.blob.core.windows.net/...   194 files, 426 GETs
+       |
+       v
+  vLLM model weights loaded (14.26 s, 100% Azure Blob egress)
+```
+
+### Why this is the *silent* fallback
+
+- Pod is `Running / Ready` — no alarm at the workload level.
+- Load time is 3× the warm baseline but only 15–20% worse than a legit
+  cold-cache load. Easy to miss unless you're watching the histogram.
+- Zero `from Cache` samples is the *only* immediate signal, and it lives
+  in the client's shutdown log, not in Prometheus.
+- Workload Identity path works, so the storage account still serves
+  reads happily — you just pay full egress every pod start.
+
+### Detection & remediation
+
+What to check when a workload "looks slow":
+
+```bash
+# 1. is the cache backend actually up?
+kubectl -n dacs-cache-system get po,endpoints cache-sample cache-sample-discovery
+
+# 2. did the client find a server?
+kubectl logs <workload-pod> | grep -E "ConnectionManager|FetchLatestCacheServers" | head
+
+# 3. what's the from-Cache / from-Remote split at shutdown?
+kubectl logs <workload-pod> | grep 'Download latencies'
+```
+
+Remediation for this specific incident:
+
+1. Fix `cache-sample` STS image: either revert the tag to the previously
+   working `hariazstortest.azurecr.io/cache-server:*`, or attach an
+   `imagePullSecret` for `tachyontestacr.azurecr.io` on the STS's
+   ServiceAccount.
+2. Wait for `cache-sample-0` Ready → endpoints populate.
+3. Running client pods **don't need to restart** — `ConnectionManager`
+   runs `background discovery` every 300 s and will pick up the new
+   endpoint automatically. But this only helps *future* reads; the model
+   is already loaded, so the cold-path cost on the already-running pod
+   can't be recovered until the pod restarts.
+
+### Follow-ups to prevent it next time
+
+- Add a PrometheusRule: alert if `cache-sample-*` pods have `ready==0`
+  for > 5 min, or if `cache-sample-discovery` endpoints are empty.
+- Add a KAITO controller readiness gate that scrapes
+  `Samples=... from Cache` on the first pod after `KVCacheReady=True` and
+  refuses to mark the workspace Healthy if `Cache==0 && Remote>0`.
+- Pin the cache backend image to a specific ACR the cluster already has
+  a working pull secret for; block silent tag changes behind
+  code review.
+
 ## See also
 
 - [`enable-dacs-in-kaito-workspace.md`](./enable-dacs-in-kaito-workspace.md)
