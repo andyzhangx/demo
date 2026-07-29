@@ -44,7 +44,22 @@ Three distinct roles: **data plane**, **node bootstrap**, **control plane**.
 - Services:
   - `cache-sample` — headless (`ClusterIP: None`), ports `9065/TCP` and `9096/TCP`
   - `cache-sample-discovery` — regular `ClusterIP` on `9065/TCP`, used by clients to bootstrap the server list
-- Node: currently scheduled on `aks-wseb5f636b9-...` (**not** a kaito nodepool node)
+- **Scheduling constraints** (from the STS `spec.template.spec`):
+  - `nodeAffinity requiredDuringScheduling: karpenter.sh/nodepool In [kaito]`
+    — the cache backend can **only** land on the kaito (GPU inference)
+    nodepool. It cannot run on any other pool.
+  - `podAntiAffinity requiredDuringScheduling: app=cacheserver, topologyKey=kubernetes.io/hostname`
+    — at most one `cache-sample-*` pod per node. Scaling replicas requires
+    at least the same number of kaito nodes.
+  - `tolerations: [{operator: Exists}]` — tolerates every taint
+    (including whatever kaito uses to keep non-GPU workloads off).
+- **Storage**: `hostPath: /var/lib/ssd/cacheserver` with `type: Directory`.
+  The directory must **already exist** on the node, i.e. the
+  `cache-server-prereq` DS must have finished its NVMe RAID0 setup on
+  that node before the STS pod can Ready. Without an NVMe-provisioned
+  kaito node, the pod fails with `FailedMount`.
+- Current placement: the sole kaito node in the cluster
+  (`aks-ws151843db6-36714139-vmss000000`).
 
 This is the Tachyon cache server that every `dacs_client` connects to.
 The client-side config (auto-generated in each workload pod) points at:
@@ -98,23 +113,33 @@ selector because karpenter is disrupting/replacing kaito-pool nodes
 frequently. Functionally every kaito-pool GPU node has exactly one live
 prereq pod that already did the NVMe RAID0 setup.
 
-### Latent design decision — currently unused disks
+### How the DS ties into the cache STS
 
-The NVMe RAID0 volumes are mounted on **kaito nodepool GPU nodes**, but
-`cache-sample-0` runs on a **different pool** (`aks-wseb5f636b9-...`) with
-no `hostPath` volume mount to `/var/lib/ssd/cacheserver`. So today the
-Tachyon cache server is **not** actually consuming these NVMe RAID0
-volumes — they're pre-provisioned and idle. This strongly suggests the
-roadmap is to either:
+The prereq DS is the hard prerequisite for `cache-sample-0` being able
+to start on a given node. The STS itself has a `hostPath` volume at
+`/var/lib/ssd/cacheserver` with `type: Directory`, so kubelet refuses
+to mount it if that path doesn't exist. The DS is what creates it:
 
-- convert `cache-sample` to a DaemonSet co-scheduled with the GPU pods and
-  fronting the local NVMe, or
-- add anti-affinity + `hostPath` to pin cache STS replicas onto kaito
-  nodes.
+```
+cache-server-prereq DS (per kaito node)
+    initContainer nvme-raid-setup
+        nsenter -> host mount namespace
+        mdadm --create /dev/md0 --level=0 (NVMe RAID0)
+        mkfs.ext4 -L tachyon-cache
+        mount /var/lib/ssd/cacheserver
+            |
+            v
+cache-sample-0 (STS) can now hostPath-mount /var/lib/ssd/cacheserver
+        `-- kaito nodepool nodeAffinity + one-per-node antiAffinity
+            makes sure it lands on exactly such a node
+```
 
-Either way, the prereq DS is preparing for a topology where cache lives
-next to compute for zero cross-node network hops. That step hasn't shipped
-in this cluster yet.
+Earlier drafts of this doc (before the STS spec was inspected) said the
+NVMe RAID0 volumes were pre-provisioned but idle and that `cache-sample`
+ran on a different pool. That was wrong — the STS is already pinned to
+kaito and the hostPath is already wired into `/var/lib/ssd/cacheserver`,
+so the RAID0 is being consumed today, not sitting idle. The mistake came
+from looking at a stale node name from a previous karpenter generation.
 
 ## 3. `tachyon-cache-manager-cb4745548-tmmkf` — the control plane
 
@@ -203,9 +228,9 @@ webhook.
                     │    cache                   │      /var/lib/ssd/
                     │  - persist to fstab        │      cacheserver
                     │  main: sleep infinity      │
-                    │                            │  (NOT yet consumed by
-                    │                            │   the current cache-
-                    │                            │   sample STS)
+                    │                            │   consumed by
+                    │                            │   cache-sample-0 via
+                    │                            │   hostPath
                     └─────────────────────────────┘
 ```
 
@@ -218,13 +243,18 @@ webhook.
    throughput bottleneck. `ConsistentHashing` is already the client
    strategy — scaling the STS out to 2–3 replicas requires only a CR /
    STS edit, no client-side migration.
-2. **NVMe RAID0 volumes are pre-provisioned on kaito nodes but not used
-   by `cache-sample-0`.** Either the cache STS needs a scheduling
-   constraint / hostPath mount to consume them, or the roadmap is to
-   move `cache-sample` to a DaemonSet co-scheduled with GPU workloads.
-   Until one of those lands, `cache-server-prereq` is dead weight from
-   the data-plane perspective (though it's cheap — just a bootstrapper +
-   pause).
+2. **NVMe RAID0 volumes on kaito nodes are consumed by `cache-sample-0`
+   via `hostPath`.** The STS is pinned to `karpenter.sh/nodepool=kaito`
+   with a one-per-node anti-affinity and mounts `/var/lib/ssd/cacheserver`
+   directly. That means:
+   - Scaling `cache-sample` beyond 1 replica requires ≥N kaito nodes
+     with a healthy prereq DS run on each.
+   - Losing the prereq DS (e.g. it crashes before mounting) on a node
+     that's about to host `cache-sample-0` blocks the STS pod at
+     `FailedMount`.
+   - Karpenter disrupting the current kaito node forces the STS to
+     reschedule to another kaito node where the prereq DS has already
+     finished — there's a rescheduling latency budget here.
 3. **`tachyon-cache-manager` is a single-replica Deployment sitting on
    the critical path** for pod admission (webhook) and Cache-CR
    reconcile. If it goes down or its serving cert lapses, new workload
