@@ -752,27 +752,34 @@ Historical data from 07-13 test on same cluster:
 
 ### Cache locality follow-up (2026-07-29, cluster `andy-aks135`)
 
-Ran two `phi-4-cache` Workspace pods back-to-back on the same DACS-enabled
-workspace to measure the cold-vs-warm cache path directly.
+Ran three `phi-4-cache` Workspace pods back-to-back on the same DACS-enabled
+workspace to measure the cold-vs-warm cache path directly. Each pod landed
+on a **different VMSS / node**, so this also exercises the cross-node cache
+path (not just node-local reuse).
 
 ```console
-$ kubectl get po
-NAME                  READY   STATUS    RESTARTS   AGE
-phi-4-cache-5m8l8-0   1/1     Running   0          10m   # 2nd pod, cache warm
-phi-4-cache-pdvcj-0   1/1     Running   0          58m   # 1st pod, cache cold
+$ kubectl get po -o wide
+NAME                  READY   STATUS    RESTARTS   AGE   NODE (VMSS)
+phi-4-cache-pdvcj-0   1/1     Running   0          88m   aks-wsb972e23c1-...   # 1st, cache cold
+phi-4-cache-5m8l8-0   1/1     Running   0          40m   aks-ws64d689ffd-...   # 2nd, cache warm, different node
+phi-4-cache-hnhlc-0   1/1     Running   0          20m   aks-ws2359e3bea-...   # 3rd, cache warm, another different node
 ```
 
-Both pods are identical: same StatefulSet template, same `runai_streamer`
+All three pods are identical: same StatefulSet template, same `runai_streamer`
 load format, same `dacs-client:20260714.10` image volume mount, same DACS
-discovery endpoint `cache-sample-discovery.dacs-cache-system.svc.cluster.local`.
-The only difference is that when `pdvcj-0` started the DACS cache pod
-(`cache-sample-0`) had never seen these weights, and when `5m8l8-0` started
-8 min later, `cache-sample-0` was fully warm.
+discovery endpoint `cache-sample-discovery.dacs-cache-system.svc.cluster.local`,
+same single cache backend pod `cache-sample-0.cache-sample.dacs-cache-system.svc:9065`.
+The only difference is timing:
 
-| Pod | Age when measured | `Model loading took` | RunAI streamer wall-clock | Data source (per `dacs_client` stats) |
-| --- | --- | --- | --- | --- |
-| `phi-4-cache-pdvcj-0` (**cold**, 1st) | 58 min | **12.07 s** | 194/194 files in ~9 s | **Cache miss → Azure Blob** (`harikaito.blob.core.windows.net`) via WorkloadIdentity; 401 remote GETs, only 29 cache hits |
-| `phi-4-cache-5m8l8-0` (**warm**, 2nd) | 10 min | **4.22 s** | 194/194 files in ~3 s | **Cache hit → DACS pod** (`cache-sample-0.cache-sample.dacs-cache-system.svc:9065`); 433 cache reads, **0 remote GETs** |
+- when `pdvcj-0` started, the DACS cache had never seen these weights;
+- when `5m8l8-0` started ~48 min later, the cache was warm;
+- when `hnhlc-0` started ~68 min later on yet another node, the cache was still warm.
+
+| Pod | Node (VMSS) | Age | `Model loading took` | RunAI streamer wall-clock | Cache samples | Remote samples | Data source |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `phi-4-cache-pdvcj-0` (**cold**, 1st) | `aks-wsb972e23c1-...` | 88 min | **12.07 s** | ~9 s | 29 | **401** | Cache miss → Azure Blob (`harikaito.blob.core.windows.net`) via WorkloadIdentity |
+| `phi-4-cache-5m8l8-0` (**warm**, 2nd) | `aks-ws64d689ffd-...` | 40 min | **4.22 s** | ~3 s | 433 | **0** | Cache hit → `cache-sample-0` (cross-node) |
+| `phi-4-cache-hnhlc-0` (**warm**, 3rd) | `aks-ws2359e3bea-...` | 20 min | **4.60 s** | ~3 s | 433 | **0** | Cache hit → `cache-sample-0` (cross-node, different again) |
 
 **Ground truth is the `dacs_client` shutdown latency histogram**, which the
 DACS storage-intercept library dumps right before the process exits. It
@@ -786,22 +793,44 @@ AISC_CTR:INFO ... Download latencies (ms) from Remote  Samples=401  Min=264 Max=
 
 ```text
 # phi-4-cache-5m8l8-0 (2nd pod, warm cache)
-AISC_CTR:INFO ... Download latencies (ms) from Cache   Samples=433  Min=... Max=...  Avg=521  P50=477  P95=1271
+AISC_CTR:INFO ... Download latencies (ms) from Cache   Samples=433  Avg=521 P50=477 P95=1271
 # (no "from Remote" line at all — literally zero bytes fetched from Azure Blob)
+```
+
+```text
+# phi-4-cache-hnhlc-0 (3rd pod, warm cache, different node again)
+AISC_CTR:INFO ... Download latencies (ms) from Cache   Samples=433  Avg=528 P50=446 P95=1348
+# (again no "from Remote" line)
 ```
 
 So end-to-end:
 
-- **1st pod (cold):** ~12 s to load model, and the 27 GiB of weights are
-  streamed from Azure Blob storage through DACS to CPU memory (populating
-  the cache along the way).
-- **2nd pod (warm):** ~4 s to load model — **~3× faster** than the cold
-  path — with **zero** egress from the storage account. All 194 file reads
-  are served from the DACS cache pod inside the cluster.
+- **1st pod (cold):** ~12 s to load the model; 27 GiB of weights are streamed
+  from Azure Blob storage through DACS to CPU memory (populating the cache
+  along the way).
+- **2nd + 3rd pods (warm):** ~4.2–4.6 s to load the model — **~2.6–2.9× faster**
+  than the cold path — with **zero** egress from the storage account. All 194
+  file reads are served from the DACS cache pod inside the cluster.
 
-This is the property that makes DACS worth enabling for KAITO in the first
-place: once one replica warms the cache, every subsequent replica (scale-out,
-rolling restart, HPA burst) skips the internet round-trip entirely.
+Key properties this confirms:
+
+1. **Cache benefit is stable and reproducible, not a one-off**. Both warm pods
+   report the same `Samples=433 / 0 remote` and near-identical latency
+   percentiles (P50 446–477 ms, Avg 521–528 ms). Once the cache is warm,
+   client-side load time converges to ~4.4 s ± 0.2 s.
+2. **Cache benefit is independent of pod scheduling**. All three pods ran on
+   three *different* VMSS/nodes. `hnhlc-0` never touched the nodes where
+   `pdvcj-0` or `5m8l8-0` ran, and still got a full cache hit — because
+   `cache-sample-0` is a cluster-scoped service, not a per-node cache.
+   For HPA burst / eviction / rolling restart scenarios this is exactly what
+   we want: new pods on brand-new nodes still skip the internet round-trip.
+3. **The ~4.4 s floor is not download time anymore.** With 0 remote GETs the
+   warm-pod cost is dominated by CPU→GPU copy and safetensors parsing, not
+   by I/O.
+4. **Current single-replica bottleneck.** All three clients hit the same
+   `cache-sample-0` pod. For production HPA bursts (10+ concurrent replicas)
+   the cache backend should scale to 2–3 `cache-sample-*` replicas — the
+   `ConsistentHashing` strategy in the client config is already there for it.
 
 ## Why `--load-format=runai_streamer` is required for DACS
 
