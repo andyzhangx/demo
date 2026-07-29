@@ -750,6 +750,59 @@ Historical data from 07-13 test on same cluster:
 > 3. **Cache locality** — subsequent pod restarts / scale-outs hit warm
 >    DACS cache instead of re-downloading from internet
 
+### Cache locality follow-up (2026-07-29, cluster `andy-aks135`)
+
+Ran two `phi-4-cache` Workspace pods back-to-back on the same DACS-enabled
+workspace to measure the cold-vs-warm cache path directly.
+
+```console
+$ kubectl get po
+NAME                  READY   STATUS    RESTARTS   AGE
+phi-4-cache-5m8l8-0   1/1     Running   0          10m   # 2nd pod, cache warm
+phi-4-cache-pdvcj-0   1/1     Running   0          58m   # 1st pod, cache cold
+```
+
+Both pods are identical: same StatefulSet template, same `runai_streamer`
+load format, same `dacs-client:20260714.10` image volume mount, same DACS
+discovery endpoint `cache-sample-discovery.dacs-cache-system.svc.cluster.local`.
+The only difference is that when `pdvcj-0` started the DACS cache pod
+(`cache-sample-0`) had never seen these weights, and when `5m8l8-0` started
+8 min later, `cache-sample-0` was fully warm.
+
+| Pod | Age when measured | `Model loading took` | RunAI streamer wall-clock | Data source (per `dacs_client` stats) |
+| --- | --- | --- | --- | --- |
+| `phi-4-cache-pdvcj-0` (**cold**, 1st) | 58 min | **12.07 s** | 194/194 files in ~9 s | **Cache miss → Azure Blob** (`harikaito.blob.core.windows.net`) via WorkloadIdentity; 401 remote GETs, only 29 cache hits |
+| `phi-4-cache-5m8l8-0` (**warm**, 2nd) | 10 min | **4.22 s** | 194/194 files in ~3 s | **Cache hit → DACS pod** (`cache-sample-0.cache-sample.dacs-cache-system.svc:9065`); 433 cache reads, **0 remote GETs** |
+
+**Ground truth is the `dacs_client` shutdown latency histogram**, which the
+DACS storage-intercept library dumps right before the process exits. It
+clearly labels each I/O by source:
+
+```text
+# phi-4-cache-pdvcj-0 (1st pod, cold cache)
+AISC_CTR:INFO ... Download latencies (ms) from Cache   Samples=29   Min=4   Max=... Avg=36   P50=29   P95=89
+AISC_CTR:INFO ... Download latencies (ms) from Remote  Samples=401  Min=264 Max=5775 Avg=1440 P50=735  P95=4732
+```
+
+```text
+# phi-4-cache-5m8l8-0 (2nd pod, warm cache)
+AISC_CTR:INFO ... Download latencies (ms) from Cache   Samples=433  Min=... Max=...  Avg=521  P50=477  P95=1271
+# (no "from Remote" line at all — literally zero bytes fetched from Azure Blob)
+```
+
+So end-to-end:
+
+- **1st pod (cold):** ~12 s to load model, and the 27 GiB of weights are
+  streamed from Azure Blob storage through DACS to CPU memory (populating
+  the cache along the way).
+- **2nd pod (warm):** ~4 s to load model — **~3× faster** than the cold
+  path — with **zero** egress from the storage account. All 194 file reads
+  are served from the DACS cache pod inside the cluster.
+
+This is the property that makes DACS worth enabling for KAITO in the first
+place: once one replica warms the cache, every subsequent replica (scale-out,
+rolling restart, HPA burst) skips the internet round-trip entirely.
+
 ## Why `--load-format=runai_streamer` is required for DACS
 
 vLLM's `--load-format` (aka `load_format`) controls **how model weights
