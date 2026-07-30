@@ -2,14 +2,33 @@
 
 Related upstream issue: [kubernetes-sigs/azurefile-csi-driver#2121](https://github.com/kubernetes-sigs/azurefile-csi-driver/issues/2121)
 
-**Scenario**: The storage account has `publicNetworkAccess = "Selected networks"` (or `Disabled`). Restoring a PVC from a `VolumeSnapshot` fails with:
+**Scenario**: The storage account has `publicNetworkAccess = "Selected networks"` or `Disabled`. Restoring a PVC from a `VolumeSnapshot`, or checking snapshot state, fails with:
 
 ```
 RESPONSE 403: 403 This request is not authorized to perform this operation.
 ERROR CODE: AuthorizationFailure
 ```
 
-This document explains why the failure happens, what does and does not fix it, and what the theoretical clean solution looks like.
+## TL;DR (2026-07 status)
+
+**This scenario now works with pure configuration**, via the AKS Trusted Microsoft Service integration on the Storage side.
+
+Required setup:
+
+| # | Config |
+|---|---|
+| 1 | AKS version rolled out with `storage.azure.com/` + `management.azure.com/` audience registered in the hcp `msi-adapter` (audience config landed 2026-06-12; trailing-slash fix landed 2026-06-22; validated end-to-end by Storage 2026-06-25) |
+| 2 | `useDataPlaneAPI: "oauth"` set on the `VolumeSnapshotClass` (and `StorageClass` where relevant) |
+| 3 | AKS control plane MI has **`Storage File Data Privileged Contributor`** on the storage account |
+| 4 | Storage account `networkRuleSet.bypass` includes `AzureServices` (this is the default) |
+| 5 | (Recommended) Shared key access disabled on the storage account so the CSI driver cannot silently fall back to SAS |
+
+Validated by Storage team (Mayank Aggarwal, 2026-06-25) across:
+
+- SMB: All networks / Selected networks / Public disabled / Selected networks + PE / Public disabled + PE
+- NFS: Selected networks + PE / Public disabled + PE
+
+No Private Endpoint on the AKS side, no vnet allowlist, no public network access required.
 
 ---
 
@@ -17,16 +36,14 @@ This document explains why the failure happens, what does and does not fix it, a
 
 For the **AKS managed Azure File CSI driver add-on**, the `csi-azurefile-controller` Deployment runs inside the **AKS-managed control plane (hcp)**, not on the user's nodepool.
 
-Consequences:
-- Its outbound traffic exits from the **Microsoft-managed underlay/overlay network**, not from the customer's vnet.
-- The source IP is a floating MSFT-owned IP; the customer cannot know it or add it to a firewall allowlist.
-- Adding customer subnets to storage "Selected networks" has no effect on this pod, because the traffic never traverses those subnets.
-
-This is the root architectural cause of the #2121 behavior.
+Consequences that shape the rest of this document:
+- Outbound traffic exits from Microsoft-managed underlay, not from the customer's vnet.
+- Source IP is not routable / not knowable from the customer side; any workaround based on "add my subnet / my NAT / my PE to the storage firewall" is by construction ineffective for this pod.
+- Anything that lets snapshot operations succeed against a firewalled storage account must therefore work **inside the token**, not by making the storage account trust the network origin.
 
 ---
 
-## 2. Management plane vs data plane — why `CreateFileShare` works but snapshot restore doesn't
+## 2. Management plane vs data plane — why `CreateFileShare` was never blocked
 
 Azure Storage exposes two independent endpoints:
 
@@ -35,36 +52,70 @@ Azure Storage exposes two independent endpoints:
 | Management (SRP / ARM) | `management.azure.com/.../Microsoft.Storage/storageAccounts/<a>/fileServices/default/shares/<s>` | Azure Resource Manager | **No** |
 | Data plane | `<account>.file.core.windows.net/<share>/...` | Storage service front-end | **Yes** |
 
-The account-level **Networks** blade only guards the **data plane** endpoint.
-
-In `controllerserver.go`:
+`controllerserver.go` (`CreateFileShare`, L726):
 
 ```go
-// L726
 if err := d.CreateFileShare(ctx, accountOptions, shareOptions, secret, useDataPlaneAPI); err != nil {
 ```
 
-- `useDataPlaneAPI` empty / `"false"` (default) → uses `armstorage.FileSharesClient.Create` → **ARM path** → only needs `Storage Account Contributor` RBAC → **not blocked by storage firewall**.
-- `useDataPlaneAPI="true"` → hits `<account>.file.core.windows.net` → **blocked**.
+- `useDataPlaneAPI` empty / `"false"` (default) → `armstorage.FileSharesClient.Create` → ARM path → only needs `Storage Account Contributor` RBAC → **not subject to storage firewall**.
+- `useDataPlaneAPI="true"` → `share.Client.Create` → hits `<account>.file.core.windows.net` → **subject to firewall**.
 
-This is why file share create/delete/resize from hcp works even with the firewall enabled: it uses the ARM path.
+So file share create/delete/resize from hcp has always succeeded through firewalled accounts because it uses ARM. Same story for snapshot metadata operations that have a SRP path.
 
-**Snapshot restore is different** — the data copy has no ARM equivalent:
+The **data copy for snapshot restore has no ARM equivalent** — Azure Files doesn't expose a server-side share-to-share copy management API (Blob has [Copy Blob](https://learn.microsoft.com/en-us/rest/api/storageservices/copy-blob), Files does not). Driver source (L1371 in `copyFileShareByAzcopy`):
 
 ```go
-// L1371 in copyFileShareByAzcopy
 cmd := exec.Command("azcopy", "copy", srcPath, dstPath)
 ```
 
-`azcopy copy` always hits `<account>.file.core.windows.net`. There is no server-side share-to-share copy management API in Azure Files (Blob has [Copy Blob](https://learn.microsoft.com/en-us/rest/api/storageservices/copy-blob), Files does not). So snapshot restore **must** go through the data plane endpoint, and therefore **must** pass through the firewall.
+`azcopy copy` always hits `<account>.file.core.windows.net`. **Any solution for #2121 must therefore let the data-plane request survive the firewall check.**
 
 ---
 
-## 3. Why identity-based fixes don't help
+## 3. The actual firewall evaluation order (updated)
 
-### 3.1 `useDataPlaneAPI: "oauth"` (added in v1.33.0)
+An earlier revision of this document claimed firewall is purely network-based. **That was wrong.** The real order is:
 
-Source (L1474):
+```
+TCP/TLS
+   ↓
+Network rules (Selected networks: IP allow, subnet allow, PE)
+   ↓ if none match
+Bypass rules (networkRuleSet.bypass: None | Logging | Metrics | AzureServices)
+   ↓ if AzureServices is set, and the caller token is recognized as a trusted MSFT service
+   ↓        ↑ this is where the identity-based bypass lives
+AuthN (SAS validation / OAuth token validation)
+   ↓
+AuthZ (RBAC / share ACL)
+```
+
+- Storage recognizes a caller as a "trusted Microsoft service" by inspecting **`xms_az_tm` claim** in the OAuth token (`xms_az_tm=azureinfra` is the trusted-infrastructure trust mode).
+- **The claim is not something AAD issues automatically for any MSI request.** It has to be requested by an intermediary — for AKS, that intermediary is the hcp-side `msi-adapter` sidecar. The msi-adapter has a hard-coded per-client audience allowlist:
+
+```go
+"msi-adapter/csi-azurefile-controller": {
+    s.cloudEnvCfg.ResourceIdentifiers.Storage: true,           // storage.azure.com/
+    s.cloudEnvCfg.ServiceManagementEndpoint:  true,            // management.azure.com/
+    s.cloudEnvCfg.TokenAudience:              true,
+},
+```
+
+  When csi-azurefile-controller asks IMDS for a token, IMDS → msi-adapter → AAD, and the trusted-service claim is injected only for these audiences.
+
+- Storage's default `networkRuleSet.bypass` includes `AzureServices`, so once the token is identified as trusted service the firewall is skipped and evaluation proceeds to authN/authZ.
+
+- Nothing about the network path changes — DNS still resolves `<acct>.file.core.windows.net` to a public IP, request still traverses the same hcp egress. What changes is only the firewall's decision.
+
+---
+
+## 4. Why this only lights up when `useDataPlaneAPI: "oauth"` is set
+
+Trusted-service bypass requires the request to actually reach storage carrying the OAuth Bearer token whose `xms_az_tm` claim can be inspected. Two CSI code paths matter:
+
+### 4.1 SDK data plane calls (`snapshotExists`, `getFileShareQuota`, `getShareClient`, `CreateFileShare`)
+
+`controllerserver.go` L1474:
 
 ```go
 if d.cloud != nil && d.cloud.AuthProvider != nil && strings.EqualFold(useDataPlaneAPI, oauth) {
@@ -72,193 +123,138 @@ if d.cloud != nil && d.cloud.AuthProvider != nil && strings.EqualFold(useDataPla
 }
 ```
 
-`oauth` only affects **SDK-based data plane calls** the driver itself makes (`snapshotExists`, `getFileShareQuota`, `getShareClient`) — swapping shared key for OAuth token. It has **no effect on the AzCopy subprocess** that actually copies snapshot data.
+- `useDataPlaneAPI = ""` or `"false"` → SRP / ARM path → not applicable (already always worked).
+- `useDataPlaneAPI = "true"` → data plane with **shared key** → no OAuth token → no `xms_az_tm` claim → **still blocked**.
+- `useDataPlaneAPI = "oauth"` → data plane with **OAuth token via `AzIdentity`** → token from hcp MSI adapter carries `xms_az_tm=azureinfra` → **trusted service bypass fires**.
 
-### 3.2 `Storage File Data Privileged Contributor` role
+This is why simply setting `useDataPlaneAPI: "oauth"` on the snapshotclass unblocks the `snapshotExists` 403 that #2121 reports.
 
-The role assignment only affects the **authZ layer**. Source (L760):
+### 4.2 AzCopy subprocess (`copyFileShareByAzcopy` → `execAzcopyCopy`)
+
+`controllerserver.go` L1593 (`authorizeAzcopyWithIdentity`):
 
 ```go
-klog.Warningf("azcopy copy failed with AuthorizationPermissionMismatch error,
-    should assign \"Storage File Data Privileged Contributor\" role to controller identity,
-    fall back to use sas token, original error: %v", copyErr)
+authAzcopyEnv = append(authAzcopyEnv, fmt.Sprintf("%s=%s", azcopyAutoLoginType, MSI))
 ```
 
-Effect: lets AzCopy authenticate via OAuth without falling back to shared key. Good for the "shared key disabled" security posture. **Does not bypass the firewall.**
+- Sets `AZCOPY_AUTO_LOGIN_TYPE=MSI` (+ optional `AZCOPY_MSI_CLIENT_ID`).
+- AzCopy at runtime queries IMDS from inside the csi-azurefile-controller pod → **same IMDS → same msi-adapter → same trusted-service claim** is included in the token AzCopy uses to authenticate its `<acct>.file.core.windows.net` calls.
+- Prerequisite for this path to actually be used instead of SAS fallback (L760):
 
-### 3.3 `authorizeAzcopyWithIdentity`
+  ```go
+  klog.Warningf("azcopy copy failed with AuthorizationPermissionMismatch error,
+      should assign \"Storage File Data Privileged Contributor\" role ...")
+  ```
 
-`authorizeAzcopyWithIdentity` (L1593) only sets environment variables (`AZCOPY_AUTO_LOGIN_TYPE=MSI`, `AZCOPY_MSI_CLIENT_ID=...`). It performs **no network call**.
+  If RBAC is missing, driver falls back to SAS; SAS has no `xms_az_tm`, trusted-service bypass will not fire on the retry, and the customer sees 403 again. Hence the **`Storage File Data Privileged Contributor` role assignment is mandatory** for the AzCopy path.
 
-At `azcopy copy` execution time:
-
-1. AzCopy calls IMDS `http://169.254.169.254/metadata/identity/oauth2/token?...` — **host-local**, not subject to storage firewall.
-2. AzCopy sends `GET https://<account>.file.core.windows.net/...` with `Authorization: Bearer <token>` — **hits storage firewall first**, gets 403 before the token is even inspected.
-
-### 3.4 The processing order that dooms all identity-based fixes
-
-```
-TCP/TLS → Network ACL (firewall / vnet rules / PE) → AuthN (SAS / OAuth) → AuthZ (RBAC / ACL)
-                       ↑
-                 #2121 fails here
-```
-
-The firewall evaluates **network origin only** (source IP / subnet resource ID). No `Authorization` header is read. Therefore no identity, role, or token type can change the outcome.
+The `useDataPlaneAPI="oauth"` value is what the customer configures at storage-class/snapshot-class level; it also has the side-effect of the SDK OAuth path above, so the whole flow is consistent.
 
 ---
 
-## 4. Why the "obvious" workarounds also don't work for #2121
+## 5. What was rolled out to enable this
 
-Because the CSI controller runs inside hcp (not in the customer vnet), the following fail:
+Timeline reconstructed from the storage / AKS trusted-service thread:
 
-| Attempted workaround | Reason it fails |
+| Date (2026) | Change | Where |
+|---|---|---|
+| 06-12 | Added `storage.azure.com/` audience to msi-adapter trusted-service client list for `csi-azurefile-controller` | AKS internal repo |
+| 06-12 | Also added `management.azure.com/` audience | AKS internal repo |
+| 06-22 | Fixed trailing-slash mismatch — csi-azurefile-controller was requesting audience `https://storage.azure.com` (no trailing slash) but msi-adapter matched with slash → trusted-service claim was silently dropped | AKS internal repo |
+| 06-24 | Mayank validates all SMB + NFS scenarios successfully (Selected networks / Public disabled, with and without PE) | Test cluster |
+| 06-25 | Storage side confirms trusted-service integration correct | — |
+
+Any AKS release cut before ~2026-06-22 will not have the trailing-slash fix and will still hit 403 even with all customer-side config right.
+
+---
+
+## 6. Prerequisites — full checklist
+
+For **snapshot create + restore (SMB and NFS)** against a private storage account:
+
+1. **AKS release** with:
+   - msi-adapter `storage.azure.com/` audience for `csi-azurefile-controller` — ✅ landed 2026-06-12
+   - Trailing-slash fix — ✅ landed 2026-06-22
+   - Rolled out to the target region (check via [Rollout dashboard](https://ev2portal.azure.net/)).
+
+2. **VolumeSnapshotClass / StorageClass parameters**:
+   ```yaml
+   apiVersion: snapshot.storage.k8s.io/v1
+   kind: VolumeSnapshotClass
+   parameters:
+     useDataPlaneAPI: "oauth"      # required
+     # ... other params
+   ```
+
+3. **RBAC on the AKS control plane MI**:
+   ```bash
+   PRINCIPAL_ID=$(az aks show -g <rg> -n <cluster> --query identity.principalId -o tsv)
+   az role assignment create \
+     --assignee-object-id "$PRINCIPAL_ID" \
+     --assignee-principal-type ServicePrincipal \
+     --role "Storage File Data Privileged Contributor" \
+     --scope /subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.Storage/storageAccounts/<acct>
+   ```
+   The `Storage Account Contributor` role is also often present for management plane operations; both roles can coexist. `Storage File Data Privileged Contributor` is the one that unblocks OAuth-authenticated data-plane traffic without falling back to SAS.
+
+4. **Storage account settings**:
+   - `networkAcls.bypass` includes `AzureServices` — default, verify it hasn't been explicitly set to `None`.
+   - Optional but strongly recommended: `allowSharedKeyAccess = false`. Prevents the driver from silently landing on SAS-based auth, which would bypass the whole trusted-service path and re-introduce 403.
+
+5. **Storage account firewall** — no changes needed on the customer side. Selected networks list can remain empty; PE optional; public network access can be `Disabled`.
+
+Failure of any of 1/2/3/4 will typically manifest as:
+
+- 1 (release) → 403 identical to pre-fix behavior
+- 2 (`useDataPlaneAPI` not set) → 403 (driver uses SDK data plane with shared key, or ARM path for calls that have no data-plane fallback)
+- 3 (RBAC) → 403 `AuthorizationPermissionMismatch`, driver falls back to SAS on AzCopy, which then gets 403 `AuthorizationFailure` since SAS ≠ trusted service
+- 4 (bypass) → 403 (trusted-service claim present but bypass rule not honored)
+
+---
+
+## 7. What this replaces from the earlier analysis
+
+Earlier revisions of this document argued that no pure-configuration bypass existed and proposed workarounds like running AzCopy from a customer pod, static PV with `shareSnapshotName`, temporary public-access flips, or Velero. **Those are no longer needed** on releases that carry the trusted-service audience fixes.
+
+Statements from the earlier analysis that are now **incorrect** (superseded by section 3 and 4):
+
+- ~~"Firewall evaluates only network origin; identity cannot bypass firewall."~~ — Firewall does read the OAuth token's `xms_az_tm` claim during the bypass evaluation. Identity-based bypass is exactly what's implemented.
+- ~~"AKS is not in the Trusted Microsoft Services list nor in resource instance supported types."~~ — AKS was onboarded as a trusted service via `xms_az_tm=azureinfra` trust mode; the `Microsoft.ContainerService` resource type onboarding is a separate (Resource Instance rules) mechanism which remains unsupported, but is not required for this scenario.
+- ~~"`useDataPlaneAPI: 'oauth'` only affects SDK calls, not the AzCopy subprocess."~~ — The `oauth` value affects the SDK path directly, and the AzCopy subprocess also runs inside the csi-azurefile-controller pod, so it inherits the same msi-adapter path and gets the same trusted-service claim. The RBAC assignment (Storage File Data Privileged Contributor) is what actually determines whether AzCopy stays on OAuth or falls back to SAS.
+- ~~"Only bypass is to run AzCopy inside the customer vnet."~~ — Correct in the pre-fix era, no longer needed.
+
+The **ARM vs data plane distinction (section 2)** is still accurate and still explains why `CreateFileShare` was never affected — that reasoning is unchanged.
+
+---
+
+## 8. Residual limitations
+
+The trusted-service bypass **only helps requests originating from processes inside csi-azurefile-controller pod**. The following paths do **not** benefit:
+
+| Path | Reason |
 |---|---|
-| Add AKS vnet/subnet to storage "Selected networks" | Traffic doesn't originate in customer vnet — hcp outbound is MSFT-owned |
-| Private Endpoint on storage account bound to AKS node vnet | Private DNS zone linked to customer vnet is not visible from hcp; PE private IP is not routable from hcp |
-| Enable `Microsoft.Storage` service endpoint on the system nodepool subnet | Same reason — the request is not sourced from that subnet |
-| NAT Gateway to pin an egress IP | hcp egress IPs are MSFT-managed and not exposed to the customer |
-| "Allow trusted Microsoft services to access this storage account" | The trusted-services list is a fixed set (Backup, Site Recovery, Azure Monitor, Event Grid, etc.). **AKS / AKS managed CSI is not in this list.** |
-| Resource instance rules today | Storage RP's supported `resource type` allowlist includes AzureML, Synapse, Data Factory, Cosmos DB, HDInsight, ACR task run, Fabric, Cognitive Search, etc. **`Microsoft.ContainerService/managedClusters` is not currently supported.** |
+| `mount.cifs` at node plugin | Uses account key or Kerberos, not OAuth token; no `xms_az_tm` involved. Still needs the traditional network path (PE / vnet rules) into storage. |
+| Any customer pod hitting `<acct>.file.core.windows.net` directly | Their own MSI tokens don't go through msi-adapter → no trusted-service claim. |
+| SAS-based auth from csi-azurefile-controller | SAS carries no claims. If shared key access is left enabled and RBAC is missing, driver may fall back to SAS and the whole bypass is lost. |
+| Non-controller CSI operations that don't touch `<acct>.file.core.windows.net` (e.g. mgmt-plane ARM calls) | Already worked via ARM; unaffected either way. |
 
-`az storage file copy start` is also **not** a true server-side bypass here — the initiating `PUT ...?comp=copy` request still hits the data plane endpoint on `<account>.file.core.windows.net`, so it is subject to the same firewall.
+Practical implication: **snapshot lifecycle is unblocked, but the eventual `PersistentVolumeClaim` mount from the restored share still requires the node → storage path to be reachable** (PE + private DNS on the node vnet, or account allows the node subnet). This has always been true and is independent of the trusted-service work.
 
 ---
 
-## 5. What actually works today
-
-Given the current architecture, only these options let snapshot restore succeed:
-
-### 5.1 Temporarily enable public network access on the storage account
-
-Documented in the issue. The customer flips `publicNetworkAccess=Enabled` for the duration of restore, then flips it back. Supported but obviously undesirable.
-
-### 5.2 Skip CSI `VolumeSnapshot` restore — use static PV against `shareSnapshotName`
-
-Directly mount the snapshot read-only from the node plugin (which runs on customer nodes and can traverse PE / vnet rules):
-
-```yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-from-snapshot
-spec:
-  csi:
-    driver: file.csi.azure.com
-    volumeHandle: <rg>#<account>#<share>#<snapshot-ts>
-    volumeAttributes:
-      shareSnapshotName: "2026-07-30T04:00:00.0000000Z"
-```
-
-Loses K8s-native `VolumeSnapshot` / `VolumeSnapshotContent` automation, but the network path is clean because the node plugin runs on the user nodepool.
-
-### 5.3 Run AzCopy from a customer pod (out-of-band restore Job)
-
-Bypass the CSI restore flow entirely; do the copy from a pod on the user nodepool that can traverse a Private Endpoint:
-
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: fileshare-restore
-  namespace: kube-system
-spec:
-  template:
-    spec:
-      serviceAccountName: azurefile-restore-sa   # workload-identity bound to UAMI
-      containers:
-        - name: azcopy
-          image: mcr.microsoft.com/azure-cli:latest   # or custom image with azcopy
-          command:
-            - /bin/sh
-            - -c
-            - |
-              export AZCOPY_AUTO_LOGIN_TYPE=MSI
-              azcopy copy \
-                "https://<acct>.file.core.windows.net/<src>?sharesnapshot=<ts>" \
-                "https://<acct>.file.core.windows.net/<dst>" \
-                --recursive --preserve-smb-permissions=true
-      restartPolicy: Never
-```
-
-Prerequisites: Private Endpoint on the storage account bound to the AKS node vnet, private DNS zone `privatelink.file.core.windows.net` linked to the vnet, UAMI has `Storage File Data Privileged Contributor` on the storage account.
-
-Fully satisfies **"no firewall allowlist entry, public access disabled, AzCopy still used for data plane copy"** — but the customer has to author / operate the Job orchestration themselves.
-
-### 5.4 Application-level backup (Velero + restic / kopia)
-
-Traffic streams through customer pods to backup storage. Bypasses CSI snapshot mechanics entirely.
-
----
-
-## 6. The clean theoretical fix — Resource Instance rules for AKS
-
-The only Azure-native way to have identity **actually** cross a storage firewall is a **Resource Instance rule**:
-
-- Firewall reads the `Authorization: Bearer <token>` header
-- Matches the token's `oid` against an allowlist of "resource instance" identities
-- If it matches, the request is permitted regardless of source IP
-
-If Azure Storage RP added `Microsoft.ContainerService/managedClusters` to the supported resource types, the configuration would become:
-
-```
-Storage account
-└── Networking
-    └── Resource instances
-        └── Resource type: Microsoft.ContainerService/managedClusters
-            Instance: <aks-cluster-resource-id>
-```
-
-### Why this would work end-to-end
-
-1. hcp CSI controller uses the AKS **control plane MI** via `AZCOPY_AUTO_LOGIN_TYPE=MSI`.
-2. AzCopy obtains an AAD token from IMDS whose `oid` matches the control plane MI principal ID.
-3. AzCopy issues `GET https://<account>.file.core.windows.net/...` with `Authorization: Bearer <token>`.
-4. Storage firewall reads the token, matches `oid` against the resource instance allowlist, **permits**.
-5. AuthZ layer checks RBAC (needs `Storage File Data Privileged Contributor`) → passes.
-6. Copy succeeds.
-
-Verified against source: `authorizeAzcopyWithIdentity` in hcp defaults to system-assigned MSI (`azureAuthConfig.UserAssignedIdentityID` is empty), which is the cluster's control plane MI. Token `oid` therefore equals control plane MI principal ID, matching the resource instance entry.
-
-### Preconditions
-
-- **Shared key access should be disabled** on the storage account. Otherwise the fallback path (L760) can still issue SAS, which has no `oid` and can't match the resource instance rule.
-- Storage RP must support `Microsoft.ContainerService/managedClusters` as a resource instance type. **This is the blocking gap today.**
-
-### End-to-end config (future)
-
-```bash
-# 1) Storage account resource instance rule (future API)
-az storage account network-rule add \
-  --resource-id /subscriptions/.../managedClusters/<cluster-name> \
-  ...
-
-# 2) RBAC
-az role assignment create \
-  --assignee <control-plane-mi-principal-id> \
-  --role "Storage File Data Privileged Contributor" \
-  --scope <storage-account-id>
-
-# 3) StorageClass — default AzCopy identity path
-```
-
-No PE, no vnet allowlist, no public access. Matches exactly what customers ask for.
-
----
-
-## 7. Summary
+## 9. Summary
 
 | Question | Answer |
 |---|---|
-| Does `useDataPlaneAPI: "oauth"` fix snapshot restore behind firewall? | No — only affects SDK calls, not AzCopy. |
-| Does assigning `Storage File Data Privileged Contributor` fix it? | No — it fixes authZ only; firewall precedes authZ. |
-| Does the control plane MI's OAuth token cross the firewall? | No — firewall is source-based; identity is not inspected. |
-| Why does `CreateFileShare` from hcp succeed? | It uses the ARM management plane, which is not subject to storage firewall. |
-| Does Private Endpoint on the customer vnet help? | No, for the managed add-on — controller runs in hcp, not in the customer vnet. |
-| Trusted Microsoft services? | AKS is not in the list. |
-| Resource instance rules? | AKS is not in the supported resource types today. Would be the clean fix if added. |
-| What works today? | Temporary public access, static PV with `shareSnapshotName`, out-of-band Job running AzCopy from a customer pod (with PE), or app-layer backup. |
-| What is the right long-term fix? | Storage RP adds `Microsoft.ContainerService/managedClusters` to Resource Instance rule types. |
+| Does `useDataPlaneAPI: "oauth"` fix snapshot restore behind firewall? | **Yes**, on AKS releases with the msi-adapter trusted-service audience config (post 2026-06-22). |
+| Does the `Storage File Data Privileged Contributor` role matter? | **Yes** — required, otherwise AzCopy falls back to SAS and loses the trusted-service claim. |
+| Does the control plane MI's token cross the firewall? | **Yes**, because msi-adapter injects `xms_az_tm=azureinfra` claim → storage recognizes trusted service → bypass=AzureServices allows it. |
+| Why does `CreateFileShare` from hcp succeed even without the fixes? | It uses the ARM management plane, not subject to data-plane firewall. |
+| Does Private Endpoint on the customer vnet help for controller-side snapshot ops? | Not needed. The customer vnet is not the network origin. |
+| Does the traditional "Trusted Microsoft Services" allowlist ever include AKS? | Not directly; AKS integration uses the `xms_az_tm` trust-mode claim, evaluated via the same `AzureServices` bypass. |
+| Are Resource Instance rules for `Microsoft.ContainerService` needed? | Not for this scenario. |
+| Does the mount on customer nodes benefit from this fix? | No — node-side mount is CIFS, not OAuth; still needs network reachability from node subnet. |
 
 ---
 
-*Reference: [`pkg/azurefile/controllerserver.go`](https://github.com/kubernetes-sigs/azurefile-csi-driver/blob/master/pkg/azurefile/controllerserver.go) (verified line references from master as of analysis).*
+*Reference: [`pkg/azurefile/controllerserver.go`](https://github.com/kubernetes-sigs/azurefile-csi-driver/blob/master/pkg/azurefile/controllerserver.go). Trusted-service enablement: internal PRs [16065499](https://msazure.visualstudio.com/CloudNativeCompute/_git/aks-rp/pullrequest/16065499) (audience), [16173168](https://msazure.visualstudio.com/CloudNativeCompute/_git/aks-rp/pullrequest/16173168) (trailing-slash fix). Related feature: [27675525 — onboard xms_az_tm trust mode in AKS managed identity](https://msazure.visualstudio.com/One/_workitems/edit/27675525).*
