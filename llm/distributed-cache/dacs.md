@@ -624,10 +624,144 @@ Remediation for this specific incident:
   a working pull secret for; block silent tag changes behind
   code review.
 
+## `ModelMirror` — the origin blob layer in front of HF Hub
+
+A lot of confusion around "is the cache warm?" comes from mixing up two
+different backends. This section separates them.
+
+### What it is
+
+`ModelMirror` is a **cluster-scoped Kaito CRD** (`kaito.sh/v1alpha1`) that
+pre-fetches a HuggingFace (or OCI) model into cluster-local persistent
+storage, and exposes it as a **stable, auth-controlled blob URI** for later
+Workspace / InferenceSet runs. Think "in-cluster mirror of HF Hub."
+
+How the reconcile loop works, roughly:
+
+1. Kaito controller creates a one-shot download `Job` in
+   `spec.jobNamespace`, using `spec.serviceAccountName` for HF token /
+   Azure workload identity.
+2. Job pulls the model from `spec.source.registry` + `modelID`.
+3. Bytes land in a PVC provisioned from `spec.storage.storageClassName`
+   (on `andy-aks135` this is `blob-harikaito` → Azure Blob account
+   `harikaito`).
+4. On success: `status.phase=Ready`, `status.modelPath` becomes the path
+   vLLM / RunAI Streamer reads from.
+
+### Where it sits vs DACS
+
+With DACS enabled the full read path is:
+
+```text
+vLLM (--load-format=runai_streamer)
+   → RunAI Streamer
+      → libStorageDirect.so (DACS client)
+         → cache-sample-0 (DACS cache, host-path SSD)
+            → (miss) ModelMirror blob PVC = harikaito.blob.core.windows.net/...
+               → (miss) HuggingFace Hub   ← only during ModelMirror initial pull
+```
+
+Two distinct backends, both fronting HF:
+
+| Layer | What it stores | Populated by | Consumed as |
+|---|---|---|---|
+| **ModelMirror** | HF snapshot on Azure Blob PVC (`storageClassName: blob-harikaito`, path `/models/<org>/<model>`) | one-shot Job at ModelMirror create time | RunAI Streamer's **origin URI** — shows up as `from Remote` in the DACS histogram |
+| **DACS `cache-sample-0`** | on-disk block cache (`/var/lib/ssd/cacheserver`) | lazily by client I/O (first miss → fetch → store) | RunAI Streamer via `libStorageDirect.so` — shows up as `from Cache` in the DACS histogram |
+
+**⚠️ `ModelMirror.status.phase=Ready` does *not* imply the DACS cache is
+warm.** All it guarantees is that the origin blob is populated. If
+`cache-sample-0` has been pending, restarted, or its host-path SSD was
+wiped (e.g. Karpenter replaced the node), the next inference pod is
+back on the cold path even if `ModelMirror` reported `Ready` days ago.
+See [`dacs-test-result.md`](./dacs-test-result.md) for a concrete
+cold-path observation with `ModelMirror` already Ready for 2 days.
+
+### `kubectl` cookbook
+
+`ModelMirror` is cluster-scoped, so no `-n` needed:
+
+```bash
+# List everything
+kubectl get modelmirror
+kubectl get mm                              # short name
+kubectl get modelmirror -o wide
+
+# Detail on one CR
+kubectl describe modelmirror <name>
+kubectl get modelmirror <name> -o yaml
+
+# Compact JSON summary of what matters
+kubectl get modelmirror -o json | jq '.items[] | {
+  name: .metadata.name,
+  model: .spec.source.modelID,
+  registry: .spec.source.registry,
+  storageClass: .spec.storage.storageClassName,
+  size: .spec.storage.size,
+  jobNs: .spec.jobNamespace,
+  sa: .spec.serviceAccountName,
+  phase: .status.phase,
+  modelPath: .status.modelPath,
+  lastDownload: .status.lastDownloadTime,
+  ready: (.status.conditions[]? | select(.type=="Ready") | .status)
+}'
+
+# CRD schema — useful for authoring new mirrors
+kubectl explain modelmirror.spec --recursive
+kubectl get crd modelmirrors.kaito.sh -o yaml
+
+# Backing PVC + downloader Job
+kubectl get pvc -A | grep -i mirror
+kubectl get job -A | grep -i mirror         # in spec.jobNamespace
+kubectl -n <jobNs> logs job/<mirror-download-job>
+```
+
+Example from `andy-aks135` today:
+
+```console
+$ kubectl get modelmirror
+NAME     MODEL                            PHASE   AGE
+172f34   microsoft/phi-4-mini-instruct    Ready   2d
+8deac4   qwen/qwen2.5-coder-7b-instruct   Ready   2d16h
+```
+
+`172f34` key spec + status:
+
+```yaml
+spec:
+  mode: Managed
+  jobNamespace: default
+  serviceAccountName: vllm-sa
+  source:
+    registry: huggingface
+    modelID: microsoft/phi-4-mini-instruct
+  storage:
+    storageClassName: blob-harikaito       # → Azure Blob account 'harikaito'
+    size: 87Gi
+status:
+  phase: Ready
+  modelPath: /models/microsoft/phi-4-mini-instruct
+  lastDownloadTime: 2026-07-29T07:15:34Z
+  conditions:
+    - type: StorageReady   status: True   reason: PVCBound
+    - type: Ready          status: True   reason: DownloadSucceeded
+```
+
+### How a Workspace opts in
+
+Set `Workspace.spec.inference.preset.name` to a model ID that has a Ready
+`ModelMirror`. The Kaito controller matches by `spec.source.modelID`,
+mounts the ModelMirror's PVC into the inference pod, and rewrites the
+vLLM launch to read from `status.modelPath`. If no matching ModelMirror
+exists, vLLM falls back to `huggingface_hub.snapshot_download()` and
+pays the HF Hub round-trip per pod — which also **bypasses DACS entirely**
+unless `--load-format=runai_streamer` is being used.
+
 ## See also
 
 - [`enable-dacs-in-kaito-workspace.md`](./enable-dacs-in-kaito-workspace.md)
   — end-to-end enablement walkthrough on the KAITO controller side,
   including the cold-vs-warm cache benchmark that these components serve.
+- [`dacs-test-result.md`](./dacs-test-result.md) — concrete cold-path
+  observation on `andy-aks135` showing why `ModelMirror Ready` ≠ warm cache.
 - [`dacs-vs-tachyon.md`](./dacs-vs-tachyon.md) — comparison notes.
 - [`setup.md`](./setup.md) — cluster/component installation notes.
