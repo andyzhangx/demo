@@ -167,7 +167,10 @@ Compare with the warm pods from the 2026-07-29 run (both on different nodes):
 | `phi-4-cache-pdvcj-0` (cold, 1st on 07-29) | 88 min | 12.07 s | 29 | 401 |
 | `phi-4-cache-5m8l8-0` (warm, 2nd) | 40 min | **4.22 s** | 433 | **0** |
 | `phi-4-cache-hnhlc-0` (warm, 3rd) | 20 min | **4.60 s** | 433 | **0** |
-| `phi-4-cache-lvgbp-0` (cold, 07-31 — this run) | fresh | 12.05 s | 28 | 404 |
+| `phi-4-cache-lvgbp-0` (cold, 07-31 07:18 — first-ever boot) | fresh | 12.05 s | 28 | 404 |
+| `phi-4-cache-6mnkq-0` (07-31 08:22, cross-node warm) | fresh | **4.51 s** | 433 | **0** |
+| `phi-4-cache-lvgbp-0` (07-31 08:55, **host-local warm** — reboot, same node as `cache-sample-0`) | fresh | **4.19 s** | 433 | **0** |
+| `phi-4-cache-qtzp8-0` (07-31 09:57, cross-node warm) | fresh | **4.40 s** | 433 | **0** |
 
 The new cold pod matches the previous cold pod almost byte-for-byte on
 sample counts and wall-clock: **~430 chunks total, ~93–95% from Remote,
