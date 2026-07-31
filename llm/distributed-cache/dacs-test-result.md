@@ -366,6 +366,75 @@ At config `{input=2048, output=256, max_concurrency=204}` — 644 K TPM,
 actually restarted (`RESTARTS=0`), it just failed a few early probes before
 the engine finished warming up.
 
+## Update 2026-07-31 10:00 UTC — third pod, fresh cross-node warm confirmation
+
+A third Workspace `phi-4-cache-qtzp8` was created after `6mnkq-0` and after
+`lvgbp-0` had been rebooted (see previous section — the rebooted `lvgbp-0`
+landed co-resident with `cache-sample-0`, host-local path). The new pod
+`phi-4-cache-qtzp8-0` scheduled on a **different node**
+(`aks-wsc6ea289c3-21453539-vmss000000`) than `cache-sample-0`
+(`aks-wse3cab073d-15829513-vmss000000`), so this is a second
+cross-node remote-cache hit, independent of `6mnkq-0`.
+
+### DACS stats and load time
+
+```
+ReadChunk stats:              Total=433  PrefetchCache=0  RemoteCache=433  RemoteClient=0  ZeroCopy=118  SubChunk=315
+GetProperties stats:          Total=205  CacheHit=205    CacheMiss=0
+Download latencies from Cache: Samples=433  Min=1 ms  Max=2164 ms  Avg=510 ms  P50=436 ms  P95=1388 ms
+[RunAI Streamer] Overall time to stream 7.1 GiB of all files to cpu: 3.45s, 2.1 GiB/s
+Model loading took 7.17 GiB memory and 4.395175 seconds
+KAITO_BENCHMARK_RESULT { "vllm_total_tpm": 644633.19, "ttft_avg_ms": 8584.53, "tpot_avg_ms": 216.94 }
+```
+
+Almost identical to `6mnkq-0`. Both cross-node warm pods land in the same
+band — this is the reproducible remote-hit path on this cluster.
+
+### Correction: `lvgbp-0` is *originally* the cold-start pod, not a warm one
+
+Earlier chat analysis compared the three currently-Running pods
+(`6mnkq-0`, `lvgbp-0`, `qtzp8-0`) as three warm-cache measurements and
+ascribed `lvgbp-0`'s 3.8 GiB/s streaming rate to "node/network bandwidth
+ differences." That is wrong — this section is the record of the correction.
+
+The **original** `phi-4-cache-lvgbp-0` (first-ever boot at 07:18 UTC on
+2026-07-31) is the cold-start pod on this cluster and is the one documented
+in the top of this file (Samples=28 Cache / 404 Remote, `Model loading took
+12.05 s`). At 08:54 UTC we deliberately deleted it to force a warm-path
+measurement; the StatefulSet recreated `lvgbp-0` and — by chance — placed
+the new instance on `aks-wse3cab073d-15829513-vmss000000`, the same node
+that runs `cache-sample-0`. That reboot is the pod currently visible in
+`kubectl get pods` under the same name `lvgbp-0` (`creationTimestamp
+2026-07-31T08:55:11Z`), and it is the **host-local warm** measurement, not
+a fresh cold start.
+
+All three currently-Running pods are consistent once you stop calling the
+current `lvgbp-0` a plain warm hit:
+
+| Pod | Node | Same node as `cache-sample-0`? | Path | Stream time | Model loading | Chunk P50 |
+|---|---|---|---|---:|---:|---:|
+| Original `lvgbp-0` (07:18, cold) | `wse3cab073d-...` | yes | first-write, remote (blob) | 11.01 s (664 MiB/s) | 12.05 s | Cache=10 ms / Remote=938 ms |
+| Rebooted `lvgbp-0` (08:55, warm) | `wse3cab073d-...` | **yes** | **host-local warm** | **1.86 s (3.8 GiB/s)** | **4.19 s** | **59 ms** |
+| `6mnkq-0` (08:22, warm) | `ws6d3aa0bbb-...` | no | cross-node warm | 3.62 s (2.0 GiB/s) | 4.51 s | 399 ms |
+| `qtzp8-0` (09:57, warm) | `wsc6ea289c3-...` | no | cross-node warm | 3.45 s (2.1 GiB/s) | 4.40 s | 436 ms |
+
+Take-home:
+
+- The speedup of the rebooted `lvgbp-0` over `6mnkq-0`/`qtzp8-0` is **not**
+  "different node hardware / different cache-server headroom." It is the
+  host-local optimization: same-host CacheClient → cache-server loopback,
+  aligned 32 MiB chunks use `ZeroCopy=118` and the client-side memcpy fan-in
+  runs at NVMe read speed. The section "Follow-up: host-local vs
+  remote-cache hit" above already documents this correctly.
+- The two cross-node warm pods (`6mnkq-0`, `qtzp8-0`) sit within noise of
+  each other on every metric (stream time 3.45–3.62 s, model loading
+  4.40–4.51 s, chunk P50 399–436 ms), which confirms that once the cache
+  is populated the remote path is stable across kaito nodes.
+- The cold path (original `lvgbp-0`) is not represented in the current pod
+  list; do not read the currently-Running `lvgbp-0` as a cold measurement.
+  If you want to reproduce cold, delete the Workspace, evict
+  `cache-sample-0`'s host-path SSD, and start over.
+
 ---
 
 If the reboot **still** shows `from Remote: Samples=~400`, the cache is not
