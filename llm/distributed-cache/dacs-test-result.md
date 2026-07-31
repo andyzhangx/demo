@@ -173,6 +173,61 @@ All pods below load the same model: **`microsoft/phi-4-mini-instruct`** — 194 
 | `phi-4-cache-6mnkq-0` (07-31 08:22, cross-node warm) | fresh | **4.51 s** | 433 | **0** |
 | `phi-4-cache-lvgbp-0` (07-31 08:55, **host-local warm** — reboot, same node as `cache-sample-0`) | fresh | **4.19 s** | 433 | **0** |
 | `phi-4-cache-qtzp8-0` (07-31 09:57, cross-node warm) | fresh | **4.40 s** | 433 | **0** |
+| `qwen3-coder-30b-a3b-instruct-8jdxx-0` (07-31 14:01, cold, different model) | fresh | n/a (log rolled) | — | — |
+
+### 2026-07-31 14:01 UTC — different model (Qwen3-Coder-30B-A3B-Instruct), cold via CacheServer restart
+
+A new Workspace `qwen3-coder-30b-a3b-instruct-8jdxx` was created after
+`cache-sample-0` had been restarted at `13:57:15 UTC` on the same node
+`aks-ws467f12d19-35590499-vmss000000`. On startup the CacheServer
+reported *"Snapshot enabled but no snapshot found, will start with empty
+cache"*, so this run is a **cold** measurement even though the pod itself
+is on the same node as the cache server. The model is different from the
+phi-4 runs above:
+
+- Model: `Qwen/Qwen3-Coder-30B-A3B-Instruct` (`az://pvc-04139f8b-…/Qwen/Qwen3-Coder-30B-A3B-Instruct`).
+- vLLM args: `--load-format=runai_streamer`, `--tensor-parallel-size=1`,
+  `--dtype=bfloat16`, `--gpu-memory-utilization=0.84`.
+- DACS envs: `RUNAI_STREAMER_CACHE_ENABLED=true`,
+  `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true`,
+  `CACHE_DISCOVERY_URL=cache-sample-discovery.dacs-cache-system.svc.cluster.local`,
+  `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB=/opt/cache-client/…/libStorageDirect.so`.
+
+The client-side `LogReadChunkStats` / `Model loading took` lines were
+already rotated out of `kubectl logs` by ~33 min of ASGI errors before I
+got to look (`kubectl logs … --limit-bytes=5000000` starts at 14:34), so
+there is no client-side histogram to report for this run.
+
+Instead, the ground-truth signal comes from the CacheServer side. The
+`Server.cpp:CacheServerSizeBackgroundThread(318)` size samples during
+the cache fill were:
+
+| Time (UTC) | Cache size | Delta | Note |
+|---|---:|---:|---|
+| 13:57:15 | 0.00 GiB | — | cache-sample-0 just (re)started, empty snapshot |
+| 14:03:15 | 11.14 GiB | +11.14 GiB | ~2 min after qwen3 pod start, first non-zero |
+| 14:04:15 | 28.48 GiB | +17.34 GiB | ~296 MB/s |
+| 14:05:15 | 43.69 GiB | +15.21 GiB | ~260 MB/s |
+| 14:06:15 | 56.87 GiB | +13.19 GiB | ~225 MB/s |
+| 14:06:15 onward | **56.87 GiB stable (28.4 % of 214.7 GiB limit)** | 0 | fill complete |
+
+Takeaway:
+
+- DACS is wired in (env + sidecar + `--load-format=runai_streamer` +
+  `az://` model URL), but this run is *cold* because CacheServer was
+  restarted 4 min before the pod — the co-location advantage of
+  same-node cache-sample-0 does not help when the cache itself has to
+  fetch from Blob first.
+- **~57 GiB pulled from Azure Blob into the local cache in ~3 min,
+  aggregate ~300 MB/s (~2.4 Gbps)**. That is the blob-egress ingest rate
+  for Qwen3-Coder-30B-A3B-Instruct on this cluster/subscription.
+- The cache is now populated for this model: a subsequent pod for the
+  same Workspace on the same node should hit the **host-local warm**
+  path (analogous to the rebooted `lvgbp-0` row above); a pod on a
+  different node would go the **cross-node warm** path (analogous to
+  `6mnkq-0`/`qtzp8-0`).
+
+---
 
 The new cold pod matches the previous cold pod almost byte-for-byte on
 sample counts and wall-clock: **~430 chunks total, ~93–95% from Remote,
