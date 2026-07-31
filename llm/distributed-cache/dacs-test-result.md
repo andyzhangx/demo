@@ -249,6 +249,62 @@ Download latencies (ms) from Cache    Samples≈430   ...
 # (no "from Remote" line)
 ```
 
+## Update 2026-07-31 08:24 UTC — warm-path confirmed on second pod
+
+A second Workspace `phi-4-cache-6mnkq` was created on the same cluster while
+`cache-sample-0` was already Running with the first pod's data resident. The
+new pod `phi-4-cache-6mnkq-0` scheduled onto a **different** node
+(`aks-ws6d3aa0bbb-31340636-vmss000000`, vs. `31340635` for the first pod),
+so this is a true remote-cache warm-path test (cross-node fetch from
+`cache-sample-0`, not host-local reuse).
+
+### DACS stats at shutdown
+
+```
+ReadChunk stats:              Total=433  PrefetchCache=0  RemoteCache=433  RemoteClient=0
+GetProperties stats:          Total=205  CacheHit=205    CacheMiss=0
+Download latencies from Cache: Samples=433  Min=1 ms  Max=2567 ms  Avg=501 ms  P50=399 ms  P95=1481 ms
+```
+
+- **433 / 433 chunks served from the cache**, zero requests fell back to the
+  storage account (`RemoteClient=0`).
+- **205 / 205 GetProperties hit the cache**, zero misses.
+- P50 chunk latency **399 ms** across the network to `cache-sample-0` on
+  another node — dominated by 4 MiB chunk transfer, not blob round-trip.
+
+### Load-time result
+
+```
+[RunAI Streamer] Overall time to stream 7.1 GiB of all files to cpu: 3.62s, 2.0 GiB/s
+Model loading took 7.17 GiB memory and 4.509744 seconds
+```
+
+| Metric | Cold pod `lvgbp-0` (07-31 07:22) | Warm pod `6mnkq-0` (07-31 08:24) | Speedup |
+|---|---|---|---|
+| Stream 7.1 GiB → CPU | **12.05 s** (~604 MB/s) | **3.62 s** (~2.0 GiB/s) | **3.33×** |
+| Model loading (incl. CPU→GPU) | ~12.5 s | **4.51 s** | **2.77×** |
+| Cache hit rate | 28 / 432 (~6%) | **433 / 433 (100%)** | — |
+| Blob-egress requests | ~404 | **0** | — |
+
+This matches the 07-29 warm-cache baseline (~4.4 s ± 0.2 s) and validates the
+correction below: **once a real read has populated `cache-sample-0`, every
+subsequent pod — even on a different node — hits the fully-warm path.**
+
+### Benchmark also finished cleanly on this pod
+
+```
+KAITO_BENCHMARK 2026-07-31T08:26:59Z benchmark_done elapsed=75.2s
+KAITO_BENCHMARK_RESULT {"vllm_total_tpm":644436.67,"ttft_avg_ms":8703.45,"tpot_avg_ms":218.51}
+```
+
+At config `{input=2048, output=256, max_concurrency=204}` — 644 K TPM,
+8.7 s TTFT, 218 ms TPOT. The startup-probe `Unhealthy` events in
+`describe pod` are the usual vLLM torch-compile warmup window; the pod never
+actually restarted (`RESTARTS=0`), it just failed a few early probes before
+the engine finished warming up.
+
+---
+
 If the reboot **still** shows `from Remote: Samples=~400`, the cache is not
 retaining data across restarts — check:
 
