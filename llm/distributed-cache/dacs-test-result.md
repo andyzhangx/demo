@@ -174,6 +174,49 @@ All pods below load the same model: **`microsoft/phi-4-mini-instruct`** — 194 
 | `phi-4-cache-lvgbp-0` (07-31 08:55, **host-local warm** — reboot, same node as `cache-sample-0`) | fresh | **4.19 s** | 433 | **0** |
 | `phi-4-cache-qtzp8-0` (07-31 09:57, cross-node warm) | fresh | **4.40 s** | 433 | **0** |
 | `qwen3-coder-30b-a3b-instruct-8jdxx-0` (07-31 14:01, cold, different model) | fresh | n/a (log rolled) | — | — |
+| `qwen3-coder-30b-a3b-instruct-8jdxx-0` (07-31 14:38, **host-local warm** after reboot, same node as `cache-sample-0`) | fresh | **17.13 s** | 18913 | **0** |
+
+### 2026-07-31 14:38 UTC — qwen3-coder-30b-a3b-instruct, host-local warm reboot
+
+After the cold fill above finished, `qwen3-coder-30b-a3b-instruct-8jdxx-0`
+was deleted and the StatefulSet recreated it at `14:38:57Z`. The new
+instance again landed on `aks-ws467f12d19-35590499-vmss000000`, which is
+the same node as `cache-sample-0` (still the same cache-server instance,
+created 12:42:47Z, now warm from the 14:01 fill). This is the host-local
+warm path for a 56.9 GiB model.
+
+```
+ReadChunk stats:           Total=20729  PrefetchCache=0  RemoteCache=20729  RemoteClient=0  ZeroCopy=34  SubChunk=20695
+ReadFile requested stats:  TotalReads=18913  128k=213  4MB=18602  100MB=96  1GB=2  TotalBytes=61066575656 (56.87 GiB)
+GetProperties stats:       Total=18913  CacheHit=18913  CacheMiss=0
+Download latencies from Cache: Samples=1000  Min=0 ms  Max=28 ms  Avg=3 ms  P50=2 ms  P95=11 ms
+[RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 16.11s, 3.5 GiB/s
+Model loading took 56.93 GiB memory and 17.130801 seconds
+KAITO_BENCHMARK_RESULT { "vllm_total_tpm": 315276.13, "ttft_avg_ms": 0.0, "tpot_avg_ms": 59.71 }
+```
+
+Compared to the cold fill above (~57 GiB pulled from Blob in ~3 min
+aggregate) the same 56.9 GiB now streams to CPU in **16.11 s** — an
+~11× wall-clock speedup on the model data path. This mirrors the
+rebooted phi-4 `lvgbp-0` result (host-local IPC + ZeroCopy) but with
+even better chunk latency (P50 2 ms here vs 59 ms for phi-4). Two
+interesting differences from phi-4:
+
+- Model is 56.9 GiB / 18,913 files vs 7.15 GiB / 205 files for phi-4;
+  the majority of ReadFile calls fall in the 4 MB bucket (`4MB=18602`)
+  which is exactly the Qwen3 safetensors shard granularity.
+- `ZeroCopy=34` out of 20,729 chunks (~0.16 %) vs `ZeroCopy=118 / 433`
+  (~27 %) for phi-4 lvgbp-0. Almost all Qwen3 reads go through the
+  SubChunk path (`SubChunk=20695`), which suggests the 32 MiB chunk
+  alignment is worse for these larger shards; the aggregate throughput
+  is still 3.5 GiB/s because of the same-host loopback bandwidth.
+
+All 56.87 GiB of the model is now proven cache-resident: `GetProperties`
+100 % hit, `RemoteCache=20729/20729`, `RemoteClient=0`. The next
+qwen3-coder-30b-a3b pod that lands on this node will hit this same
+host-local path.
+
+---
 
 ### 2026-07-31 14:01 UTC — different model (Qwen3-Coder-30B-A3B-Instruct), cold via CacheServer restart
 
