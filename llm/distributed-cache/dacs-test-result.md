@@ -162,6 +162,8 @@ Two independent facts to read out of this:
 
 Compare with the warm pods from the 2026-07-29 run (both on different nodes):
 
+All pods below load the same model: **`microsoft/phi-4-mini-instruct`** — 194 `.safetensors` shards, **7,672,066,216 bytes total (≈7.15 GiB / 7.14 GiB reported by RunAI Streamer)**, staged at `/root/.cache/vllm/assets/model_streamer/a6caa38b` and served via `load_format=runai_streamer`.
+
 | Pod | Age at measurement | `Model loading took` | Cache samples | Remote samples |
 |---|---|---|---|---|
 | `phi-4-cache-pdvcj-0` (cold, 1st on 07-29) | 88 min | 12.07 s | 29 | 401 |
