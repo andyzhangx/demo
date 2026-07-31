@@ -290,6 +290,69 @@ This matches the 07-29 warm-cache baseline (~4.4 s ± 0.2 s) and validates the
 correction below: **once a real read has populated `cache-sample-0`, every
 subsequent pod — even on a different node — hits the fully-warm path.**
 
+### Follow-up: host-local vs remote-cache hit
+
+At 08:54 UTC we deleted `phi-4-cache-lvgbp-0` and let the StatefulSet
+reschedule it. It landed **on the same node as `cache-sample-0`**
+(`aks-wse3cab073d-15829513-vmss000000`), so this reboot exercises the
+**host-local** read path: CacheClient → loopback → cache-server → local SSD,
+no pod-network hop.
+
+```
+ReadChunk stats:              Total=433  PrefetchCache=0  RemoteCache=433  RemoteClient=0  ZeroCopy=118  SubChunk=315
+GetProperties stats:          Total=205  CacheHit=205    CacheMiss=0
+Download latencies from Cache: Samples=433  Min=0 ms  Max=340 ms  Avg=68 ms  P50=59 ms  P95=179 ms
+[RunAI Streamer] Overall time to stream 7.1 GiB of all files to cpu: 1.86s, 3.8 GiB/s
+Model loading took 7.17 GiB memory and 4.185914 seconds
+```
+
+Side-by-side of the two warm-path variants on this cluster:
+
+| Metric | Cross-node remote hit (`6mnkq-0`) | Host-local hit (`lvgbp-0` reboot) | Delta |
+|---|---|---|---|
+| Stream 7.1 GiB → CPU | 3.62 s (2.0 GiB/s) | **1.86 s (3.8 GiB/s)** | **1.95×** faster |
+| Model loading (incl. GPU copy) | 4.51 s | **4.19 s** | 1.08× faster |
+| Chunk latency P50 | 399 ms | **59 ms** | **6.8×** |
+| Chunk latency P95 | 1481 ms | **179 ms** | **8.3×** |
+| Chunk latency Avg | 501 ms | **68 ms** | **7.4×** |
+| Chunk latency Max | 2567 ms | **340 ms** | 7.5× |
+| ZeroCopy chunks | 0 | **118 / 433** | — |
+| Blob-egress | 0 | 0 | — |
+
+Takeaways:
+
+- **Chunk-level latency drops ~7×** when the client and server share a host,
+  because the read path collapses to loopback + local SSD (NVMe). The remote
+  path pays for gRPC framing, TCP fan-out to 80 upload threads, and pod
+  network RTT.
+- **Streaming throughput almost doubles** (2.0 → 3.8 GiB/s) once the network
+  hop is removed. This is now bounded by the NVMe read + the CacheClient's
+  memcpy fan-in, not the pod network.
+- **`Model loading` time barely changes** (4.51 → 4.19 s). That is because
+  the remaining time is CPU→GPU copy + `safetensors` header parsing +
+  RunAI Streamer thread startup, which are constant regardless of where
+  the bytes came from. In other words, once the cache is warm, the network
+  hop costs you the streaming phase but not the load phase; both are
+  already well under the cold-path 12 s.
+- The `ZeroCopy=118 SubChunk=315` counters only appear on the host-local
+  path — DACS's client library recognizes local IPC and skips the copy for
+  aligned 32 MiB chunks, which is where a big chunk of the P50 speedup
+  comes from.
+
+Practical guidance:
+
+- If you can steer inference pods onto the same nodes as `cache-sample`
+  members (e.g. via `podAffinity` on the cache-server label), you get the
+  host-local 7× chunk latency win for free. On a large fleet this only
+  helps a fraction of the pods.
+- If not, the remote hit path (`6mnkq-0` numbers) is still the primary
+  target and is already **2.7× faster than cold**. The extra 1.6 s that
+  host-local buys is a nice-to-have, not the main story.
+- The cold-vs-warm gap (**12 s → 4 s, 3×**) matters much more than the
+  remote-vs-local gap (**4.5 s → 4.2 s, 1.08×**). Design DACS rollouts
+  around "never let a user pay the cold price," not around trying to keep
+  every pod host-local.
+
 ### Benchmark also finished cleanly on this pod
 
 ```
