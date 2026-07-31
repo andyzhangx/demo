@@ -174,7 +174,7 @@ All pods below load the same model: **`microsoft/phi-4-mini-instruct`** — 194 
 | `phi-4-cache-lvgbp-0` (07-31 08:55, **host-local warm** — reboot, same node as `cache-sample-0`) | fresh | **4.19 s** | 433 | **0** |
 | `phi-4-cache-qtzp8-0` (07-31 09:57, cross-node warm) | fresh | **4.40 s** | 433 | **0** |
 | `qwen3-coder-30b-a3b-instruct-8jdxx-0` (07-31 14:01, cold, different model) | fresh | n/a (log rolled) | — | — |
-| `qwen3-coder-30b-a3b-instruct-8jdxx-0` (07-31 14:38, **host-local warm** after reboot, same node as `cache-sample-0`) | fresh | **17.13 s** | 18913 | **0** |
+| `qwen3-coder-30b-a3b-instruct-8jdxx-0` (07-31 14:38, **host-local warm** after reboot, same node as `cache-sample-0`) | fresh | **17.13 s** | 20729 | **0** |
 
 ### 2026-07-31 14:38 UTC — qwen3-coder-30b-a3b-instruct, host-local warm reboot
 
