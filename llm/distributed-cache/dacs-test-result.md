@@ -175,6 +175,9 @@ All pods below load the same model: **`microsoft/phi-4-mini-instruct`** — 194 
 | `phi-4-cache-qtzp8-0` (07-31 09:57, cross-node warm) | fresh | **4.40 s** | 433 | **0** |
 | `qwen3-coder-30b-a3b-instruct-8jdxx-0` (07-31 14:01, cold, different model) | fresh | n/a (log rolled) | — | — |
 | `qwen3-coder-30b-a3b-instruct-8jdxx-0` (07-31 14:38, **host-local warm** after reboot, same node as `cache-sample-0`) | fresh | **17.13 s** | 20729 | **0** |
+| `qwen3-coder-30b-a3b-instruct-66nj8-0` (07-31 15:26, **partial cold** — same node as `cache-sample-0` but cache empty after restart) | fresh | **211.01 s** | 6169 | **14543** |
+| `qwen3-coder-30b-a3b-instruct-786qr-0` (08-01 02:19, **cross-node warm**, different node) | fresh | **27.52 s** | 20729 | **0** |
+| `qwen3-coder-30b-a3b-instruct-82l2f-0` (08-01 02:39, **cross-node warm**, different node) | fresh | **28.19 s** | 20729 | **0** |
 
 ### 2026-07-31 14:38 UTC — qwen3-coder-30b-a3b-instruct, host-local warm reboot
 
@@ -215,6 +218,103 @@ All 56.87 GiB of the model is now proven cache-resident: `GetProperties`
 100 % hit, `RemoteCache=20729/20729`, `RemoteClient=0`. The next
 qwen3-coder-30b-a3b pod that lands on this node will hit this same
 host-local path.
+
+---
+
+### 2026-07-31 15:26 UTC — qwen3-coder-30b-a3b-instruct-66nj8-0, partial cold (cache empty after restart)
+
+A new Workspace `qwen3-coder-30b-a3b-instruct-66nj8` was created on
+`aks-wsbba1b3935-46884430-vmss000000` — the **same node** as
+`cache-sample-0`. However, `cache-sample-0` had been restarted at
+15:08 UTC with an empty snapshot, so this pod paid nearly the full
+cold-path cost despite co-location.
+
+```
+ReadChunk stats:           Total=20729  PrefetchCache=17  RemoteCache=6169  RemoteClient=14543  ZeroCopy=0  SubChunk=20695
+GetProperties stats:       Total=18913  CacheHit=18897  CacheMiss=16
+Download latencies from Cache:  Samples=1000  Min=0 ms   Max=30 ms    Avg=1 ms   P50=1 ms   P95=4 ms
+Download latencies from Remote: Samples=1000  Min=203 ms Max=1895 ms  Avg=533 ms P50=483 ms P95=955 ms
+[RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 209.92s, 277.4 MiB/s
+Model loading took 56.93 GiB memory and 211.007970 seconds
+```
+
+- **30% cache hit / 70% blob-direct** — the cache was filling concurrently
+  as the pod read. RemoteCache fraction climbed during the load, but the
+  majority of chunks still had to be fetched from Azure Blob.
+- Cache latency (P50=1 ms) is excellent when it hits; blob latency
+  (P50=483 ms) dominates the overall load time.
+- **12.3× slower than the pure warm reboot** (17.13 s vs 211.01 s) despite
+  being on the same node as cache-sample-0.
+
+Key insight: same-node co-location means nothing if the cache is empty.
+The cache must be populated before co-location benefits kick in.
+
+---
+
+### 2026-08-01 02:19 UTC — qwen3-coder-30b-a3b-instruct-786qr-0, cross-node warm
+
+A new Workspace `qwen3-coder-30b-a3b-instruct-786qr` created on
+`aks-ws847b6ecb9-52652368-vmss000000`, a **different node** from
+`cache-sample-0` (`aks-wsbba1b3935-46884430-vmss000000`). By this time
+the cache was fully populated (56.87 GiB stable from the earlier fills).
+
+```
+ReadChunk stats:           Total=20729  PrefetchCache=0  RemoteCache=20729  RemoteClient=0  ZeroCopy=34  SubChunk=20695
+GetProperties stats:       Total=14759  CacheHit=14759  CacheMiss=0
+Download latencies from Cache: Samples=1000  Min=1 ms  Max=397 ms  Avg=49 ms  P50=49 ms  P95=79 ms
+[RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 26.37s, 2.2 GiB/s
+Model loading took 56.93 GiB memory and 27.515194 seconds
+```
+
+- **100% cache hit, 0 blob requests** — fully served from the warm
+  remote cache over the pod network.
+- Cross-node cache latency P50=49 ms is higher than the host-local
+  P50=2 ms (8jdxx-0 warm reboot), but still delivers 2.2 GiB/s aggregate
+  streaming throughput.
+- **7.7× faster than the partial-cold 66nj8-0** (27.52 s vs 211.01 s),
+  confirming that cache warmth matters far more than node proximity.
+
+---
+
+### 2026-08-01 02:39 UTC — qwen3-coder-30b-a3b-instruct-82l2f-0, cross-node warm
+
+A third Workspace `qwen3-coder-30b-a3b-instruct-82l2f` on yet another
+node `aks-wsc586f63e2-37137876-vmss000000`, also remote from
+`cache-sample-0`.
+
+```
+ReadChunk stats:           Total=20729  PrefetchCache=0  RemoteCache=20729  RemoteClient=0  ZeroCopy=34  SubChunk=20695
+GetProperties stats:       Total=14881  CacheHit=14881  CacheMiss=0
+Download latencies from Cache: Samples=1000  Min=1 ms  Max=304 ms  Avg=46 ms  P50=47 ms  P95=78 ms
+[RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 25.93s, 2.2 GiB/s
+Model loading took 56.93 GiB memory and 28.188675 seconds
+```
+
+- Near-identical to 786qr-0: 100% cache hit, P50=47 ms, 2.2 GiB/s.
+- The two cross-node warm pods sit within noise of each other on every
+  metric (stream 25.93–26.37 s, model loading 27.52–28.19 s, P50 47–49 ms),
+  confirming the remote warm path is stable and reproducible for the
+  56.9 GiB Qwen3-Coder-30B-A3B-Instruct model.
+
+### Qwen3-Coder-30B-A3B comparison summary (3 latest pods)
+
+| Metric | 66nj8-0 (partial cold) | 786qr-0 (cross-node warm) | 82l2f-0 (cross-node warm) |
+|---|---|---|---|
+| Created | 07-31 15:26 UTC | 08-01 02:19 UTC | 08-01 02:39 UTC |
+| Node | wsbba1b3935 (same as cache) | ws847b6ecb9 | wsc586f63e2 |
+| Model loading | **211.01 s** | **27.52 s** | **28.19 s** |
+| Stream speed | 277 MiB/s | 2.2 GiB/s | 2.2 GiB/s |
+| Cache hit % | 30% | **100%** | **100%** |
+| RemoteCache chunks | 6169 | 20729 | 20729 |
+| RemoteClient (blob) chunks | 14543 | 0 | 0 |
+| Cache P50 latency | 1 ms | 49 ms | 47 ms |
+| Blob P50 latency | 483 ms | — | — |
+| Speedup vs 66nj8 | 1× | **7.7×** | **7.5×** |
+
+**Key conclusion:** Cache warmth is the dominant factor. Warm cross-node
+(7.5–7.7×) vastly outperforms cold same-node (1×). Once the cache is
+populated, cross-node overhead is minimal — P50 latency ~50 ms, aggregate
+throughput 2.2 GiB/s, model loading ~28 s for 56.9 GiB.
 
 ---
 
