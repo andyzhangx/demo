@@ -665,3 +665,200 @@ The DACS cache is warmed **only by a real client read that misses**. Any
 serious deployment that wants to hide the cold path from its first user
 should ship an explicit warm-up hook (a tiny pre-flight pod that opens the
 model files once), not rely on `ModelMirror Ready`.
+
+---
+
+## 2026-08-04 — new cluster, InferenceSet scale-out (3 pods)
+
+A fresh cluster (`westeurope`, storage account `harikaito`) with a
+single `cache-sample-0` on `aks-ws3ec2a5685-34418831-vmss000000`. An
+InferenceSet `qwen3-coder-30b-a3b-instruct` with `replicas: 3` was
+created; the first pod (`mvnsn-0`) landed on the same node as
+`cache-sample-0` and had to fill the cache from Blob, then two more
+replicas (`nw6lw-0`, `cx64z-0`) came up on different nodes and drove
+the cache into cross-node warm.
+
+This run confirms end-to-end that Kaito's
+[Model Mirror and Streaming](https://kaito-project.github.io/kaito/docs/model-mirror-streaming)
+is active on this cluster:
+
+```console
+$ kubectl get modelmirror
+NAME     MODEL                               PHASE   AGE
+172f34   microsoft/phi-4-mini-instruct       Ready   5d21h
+43903f   Qwen/Qwen3-Coder-30B-A3B-Instruct   Ready   3d14h
+8deac4   qwen/qwen2.5-coder-7b-instruct      Ready   6d13h
+
+$ kubectl get pvc -A | grep pvc-04139f8b
+default  43903f  Bound  pvc-04139f8b-4c55-41b0-ad83-039aa18194eb  136Gi  RWX  blob-harikaito
+```
+
+The ModelMirror `43903f` has been `Ready` for 3d14h — every subsequent
+Workspace on this cluster reuses the blob-backed PVC and never touches
+HuggingFace. The vLLM invocation on every pod uses:
+
+```
+--load-format=runai_streamer
+--model=az://pvc-04139f8b-4c55-41b0-ad83-039aa18194eb/Qwen/Qwen3-Coder-30B-A3B-Instruct
+```
+
+which points RunAI Streamer at the mirrored PVC. On top of Streaming,
+the DACS `libStorageDirect.so` intercept layer routes the reads
+through `cache-sample-0` before falling back to
+`harikaito.blob.core.windows.net`.
+
+### 2026-08-04 02:58 UTC — `mvnsn-0`, host-local partial cold (first pod, fills the cache)
+
+Workspace `qwen3-coder-30b-a3b-instruct-mvnsn` was the first pod on
+this cluster to read `Qwen3-Coder-30B-A3B-Instruct`. It landed on
+`aks-ws3ec2a5685-...`, which is the **same node** as `cache-sample-0`,
+but the DACS cache had zero chunks for this model — so this is the
+**host-local partial-cold** pattern (same layout as `66nj8-0` in the
+earlier run).
+
+DACS wiring confirmed on the pod:
+
+- Sidecar `cache-client` ImageVolume from
+  `hariazstortest.azurecr.io/dacs-client:20260714.10` mounted at
+  `/opt/cache-client`.
+- Envs: `RUNAI_STREAMER_CACHE_ENABLED=true`,
+  `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true`,
+  `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB=/opt/cache-client/usr/local/lib/python3.10/dist-packages/dacs_client/libStorageDirect.so`,
+  `CACHE_DISCOVERY_URL=cache-sample-discovery.dacs-cache-system.svc.cluster.local`,
+  `CACHE_SERVER_PORT=9065`.
+- Workload Identity envs (`AZURE_CLIENT_ID=20b065b7-5981-455a-ad3b-a2cdb32bd48c`,
+  `AZURE_TENANT_ID`, `AZURE_FEDERATED_TOKEN_FILE`) present.
+
+Startup log:
+
+```
+(EngineCore pid=242) INFO 08-04 03:01:27 [core.py:112] Initializing a V1 LLM engine (v0.22.1)
+  with config: model='/root/.cache/vllm/assets/model_streamer/a301d1bf', load_format=runai_streamer, ...
+(EngineCore pid=242) INFO 08-04 03:01:31 [gpu_model_runner.py:5037]
+  Starting to load model /root/.cache/vllm/assets/model_streamer/a301d1bf...
+AISC_CTR:INFO ... BlobSiWrapper.cpp:generate_si_config: blob_read: SI config using Azure Identity SDK (DefaultAzureCredential)
+AISC_CTR:INFO ... BlobSiWrapper.cpp:generate_si_config: blob_read: using cache discovery API at cache-sample-discovery.dacs-cache-system.svc.cluster.local
+AISC_CTR:INFO ... BlobSiWrapper.cpp:generate_si_config: blob_read: distributed cache enabled (port=9065)
+AISC_CTR:INFO ... ConnectionManager.cpp:UpdateCacheServers: New set: cache-sample-0.cache-sample.dacs-cache-system.svc.cluster.local
+AISC_CTR:INFO ... BlobClient.cpp:GetBlobClient: Creating new blob client for account=harikaito, endpoint=https://harikaito.blob.core.windows.net
+(EngineCore pid=242) Loading safetensors using Runai Model Streamer: 100% Completed | 18867/18867 [03:44<00:00, 84.17it/s]
+(EngineCore pid=242) INFO 08-04 03:05:21 file_streamer.py:69] [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 228.8s, 254.5 MiB/s
+(EngineCore pid=242) INFO 08-04 03:05:22 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 229.909696 seconds
+```
+
+Final DACS shutdown histogram:
+
+```text
+ReadChunk stats:           Total=20729  PrefetchCache=32  RemoteCache=5053  RemoteClient=15644  ZeroCopy=0  SubChunk=20695
+ReadFile requested stats:  TotalReads=18913  128k=213  4MB=18602  100MB=96  1GB=2  TotalBytes=61066575656 (56.87 GiB)
+GetProperties stats:       Total=18913  CacheHit=18897  CacheMiss=16
+Download latencies from Cache:  Samples=1000  Min=0 ms   Max=33 ms    Avg=1 ms    P50=1 ms    P95=6 ms
+Download latencies from Remote: Samples=1000  Min=191 ms Max=2484 ms  Avg=508 ms  P50=469 ms  P95=965 ms
+```
+
+**Data plane: ~75.5 % of chunks (15,644 / 20,729) came from Blob** —
+the cache was populated **by this pod as it read**. Same-node
+co-location with `cache-sample-0` does not help when the cache is
+empty for this model; `cache-sample-0` itself has to fetch from Blob.
+
+### 2026-08-04 04:39 UTC — `nw6lw-0` + `cx64z-0`, cross-node warm (InferenceSet scale-out)
+
+After `mvnsn-0` finished filling the cache, the InferenceSet scaled
+out to 3 replicas. Two new pods came up on different nodes:
+
+```console
+$ kubectl -n default get pods -l inferenceset.kaito.sh/created-by=qwen3-coder-30b-a3b-instruct -o wide
+NAME                                   READY   NODE
+qwen3-coder-30b-a3b-instruct-cx64z-0   1/1     aks-ws6b2df096c-16013696-vmss000000
+qwen3-coder-30b-a3b-instruct-mvnsn-0   1/1     aks-ws3ec2a5685-34418831-vmss000000
+qwen3-coder-30b-a3b-instruct-nw6lw-0   1/1     aks-ws85c688f12-27197094-vmss000000
+```
+
+Both `nw6lw-0` and `cx64z-0` are on nodes **different from**
+`cache-sample-0` — this is the cross-node warm path.
+
+Startup log — `nw6lw-0`:
+
+```
+(EngineCore pid=248) INFO 08-04 04:40:32 [gpu_model_runner.py:5037] Starting to load model /root/.cache/vllm/assets/model_streamer/a301d1bf...
+(EngineCore pid=248) Loading safetensors using Runai Model Streamer: 100% Completed | 18867/18867 [00:44<00:00, 420.27it/s]
+(EngineCore pid=248) INFO 08-04 04:41:18 file_streamer.py:69] [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 45.19s, 1.3 GiB/s
+AISC_CTR:INFO ... ReadChunk stats: Total=20729 PrefetchCache=0 RemoteCache=20729 RemoteClient=0 ZeroCopy=34 SubChunk=20695
+AISC_CTR:INFO ... GetProperties stats: Total=18913 CacheHit=18913 CacheMiss=0
+(EngineCore pid=248) INFO 08-04 04:41:19 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 46.132885 seconds
+```
+
+Startup log — `cx64z-0`:
+
+```
+(EngineCore pid=250) INFO 08-04 04:40:38 [gpu_model_runner.py:5037] Starting to load model /root/.cache/vllm/assets/model_streamer/a301d1bf...
+(EngineCore pid=250) Loading safetensors using Runai Model Streamer: 100% Completed | 18867/18867 [00:46<00:00, 410.00it/s]
+(EngineCore pid=250) INFO 08-04 04:41:25 file_streamer.py:69] [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 46.39s, 1.2 GiB/s
+AISC_CTR:INFO ... ReadChunk stats: Total=20729 PrefetchCache=0 RemoteCache=20729 RemoteClient=0 ZeroCopy=34 SubChunk=20695
+AISC_CTR:INFO ... GetProperties stats: Total=18913 CacheHit=18913 CacheMiss=0
+(EngineCore pid=250) INFO 08-04 04:41:26 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 47.367450 seconds
+```
+
+**Both new pods: `RemoteClient=0` — zero Blob egress; 100 % of the
+20,729 chunks came from `cache-sample-0`. `ZeroCopy=34` also appears
+(vs 0 on `mvnsn-0`), the warm-path optimization is taking effect.**
+
+### Qwen3-Coder-30B-A3B comparison summary (3 latest pods, same cluster, 2026-08-04)
+
+All three pods load the same 56.87 GiB model
+(`Qwen/Qwen3-Coder-30B-A3B-Instruct`, 18,913 files, 20,729 33-MiB
+chunks) via `--load-format=runai_streamer` from
+`az://pvc-04139f8b-.../Qwen/Qwen3-Coder-30B-A3B-Instruct`. What
+differs is the DACS cache state each pod hits.
+
+| Pod | Created (UTC) | Node vs `cache-sample-0` | Scenario | `Model loading` | RunAI stream speed | RunAI wall-clock | RemoteCache | RemoteClient (blob) | ZeroCopy | Data cache hit % | Cache lat P50 / P95 (final) |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| `qwen3-coder-30b-a3b-instruct-mvnsn-0` | 02:58:44 | **same** (`ws3ec2a5685`) | **host-local partial cold** (fills cache) | **229.91 s** | 254.5 MiB/s | 228.8 s | 5,053 | **15,644** | 0 | **24.4 %** | 1 ms / 6 ms |
+| `qwen3-coder-30b-a3b-instruct-nw6lw-0` | 04:39:xx | different (`ws85c688f12`) | **cross-node warm** | **46.13 s** | 1.3 GiB/s | 45.19 s | 20,729 | **0** | 34 | **100 %** | 98 ms / 209 ms |
+| `qwen3-coder-30b-a3b-instruct-cx64z-0` | 04:39:xx | different (`ws6b2df096c`) | **cross-node warm** | **47.37 s** | 1.2 GiB/s | 46.39 s | 20,729 | **0** | 34 | **100 %** | 48 ms / 82 ms |
+
+Wall-clock speedup vs the first pod:
+
+| Pod | Speedup vs `mvnsn-0` |
+|---|---:|
+| `mvnsn-0` (host-local partial cold, cache fill) | 1× |
+| `nw6lw-0` (cross-node warm) | **4.98×** |
+| `cx64z-0` (cross-node warm) | **4.85×** |
+
+### Takeaways
+
+- **Model Mirror + Streaming is in use.** `ModelMirror 43903f` has
+  been `Ready` for 3d14h; every pod streams from
+  `pvc-04139f8b-...` via `--load-format=runai_streamer` and never
+  touches HuggingFace. This is the Kaito
+  [Model Mirror and Streaming](https://kaito-project.github.io/kaito/docs/model-mirror-streaming)
+  path.
+- **DACS is layered on top of Streaming.** RunAI Streamer's reads go
+  through `libStorageDirect.so` → `cache-sample-0` → Blob. When the
+  cache has the chunks, Blob is skipped entirely.
+- **The 254.5 MiB/s on `mvnsn-0` is not a Streaming regression** — it
+  is the one-time DACS cache-fill cost. Compare with the earlier
+  cross-cluster reference of `--load-format=auto` from HuggingFace
+  (~0.9 GiB/s at best): the very next replicas on this cluster
+  (`nw6lw-0` / `cx64z-0`) do 1.2–1.3 GiB/s, matching or exceeding HF
+  direct download and with **zero Blob egress**.
+- **Cross-node warm on this cluster is ~1.2–1.3 GiB/s**, slightly
+  slower than the 2.2 GiB/s in the 08-01 reference run because both
+  `nw6lw-0` and `cx64z-0` hit the **single** `cache-sample-0`
+  concurrently and share its network / worker threads; `cx64z-0`
+  started ~6 s later and already sees P50 48 ms vs `nw6lw-0`'s 98 ms.
+- **Expected next data point:** if a 4th replica lands on
+  `aks-ws3ec2a5685-...` (same node as `cache-sample-0`), it should
+  see the **host-local warm** path — model loading ≈ 17–20 s at
+  ~3.5 GiB/s (analogous to `8jdxx-0` in the earlier run).
+
+Investment-vs-payoff view of DACS on this cluster:
+
+| Phase | Pod | Cost / Payoff |
+|---|---|---|
+| **Investment** | `mvnsn-0` | 229.9 s (pod also filled the shared cache from Blob) |
+| **Payoff #1** | `nw6lw-0` | 46.1 s (5× faster, 0 Blob egress) |
+| **Payoff #2** | `cx64z-0` | 47.4 s (5× faster, 0 Blob egress) |
+
+The cost is amortized on the very first scale-out event.
+
