@@ -862,3 +862,22 @@ Investment-vs-payoff view of DACS on this cluster:
 
 The cost is amortized on the very first scale-out event.
 
+
+---
+
+## 2026-08-05 / 2026-08-06 — Qwen3-Coder-30B-A3B-Instruct load comparison
+
+| Date (UTC) | Pod | Node | VM SKU | Model source | Model file size | Load format | Cache / download path seen in logs | RunAI streamer time | Model loading time | Pod Ready time | Conclusion |
+|---|---|---|---|---|---:|---|---|---:|---:|---:|---|
+| 2026-08-05 | `qwen3-coder-30b-a3b-instruct-ccx24-0` | `aks-ws824879e3f-28114834-vmss000000` | `Standard_NC24ads_A100_v4` | `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct` | 56.9 GiB | `runai_streamer` | DACS enabled, but most reads came from origin / remote client: `PrefetchCache=2037`, `RemoteCache=1955`, `RemoteClient=34325` | 68.96s | 70.11s | 5m36s | Same streaming mechanism, but cache hit ratio was low, so most model chunks were fetched from the remote source. |
+| 2026-08-06 | `qwen3-coder-30b-a3b-instruct-zdz9x-0` | `aks-ws4d1d2affe-11877758-vmss000000` | `Standard_NC24ads_A100_v4` | `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct` | 56.9 GiB | `runai_streamer` | DACS enabled, and all model chunks were served from distributed cache: `PrefetchCache=0`, `RemoteCache=38317`, `RemoteClient=0`, `ZeroCopy=786` | 25.88s | 27.33s | 6m40s | Same streaming mechanism, but this run was effectively a hot-cache load, so model transfer/load was much faster. |
+
+### Key takeaways
+
+| Comparison item | Result |
+|---|---|
+| Download / load mechanism | Both pods used **vLLM + RunAI Model Streamer** with `--model=az://...` and `--load-format=runai_streamer`. Authentication used **Azure Workload Identity** (`kaito-model-streamer` service account). |
+| Why `zdz9x-0` was faster | The main difference was **cache hit behavior**, not a different download method. `ccx24-0` mostly read from `RemoteClient` (origin), while `zdz9x-0` read entirely from `RemoteCache`. |
+| Streamer speedup | `68.96s -> 25.88s` (~2.66x faster) |
+| Model loading speedup | `70.11s -> 27.33s` (~2.57x faster) |
+| Practical conclusion | DACS hot-cache hits significantly reduced model transfer/loading time for this 56.9 GiB model, even though the pod-level Ready time still included engine init / compile / warmup overhead. |
