@@ -865,20 +865,59 @@ The cost is amortized on the very first scale-out event.
 
 ---
 
-## 2026-08-05 / 2026-08-06 — Qwen3-Coder-30B-A3B-Instruct load comparison
+## 2026-08-05 / 2026-08-06 — Qwen3-Coder-30B-A3B-Instruct (56.9 GiB, VM SKU: Standard_NC24ads_A100_v4)
 
-| Date (UTC) | Pod | Node | VM SKU | Model source | Model file size | Load format | Cache / download path seen in logs | RunAI streamer time | Model download throughput | Model loading time | Pod Ready time | Conclusion |
-|---|---|---|---|---|---:|---|---|---:|---|---:|---:|---|
-| 2026-08-05 | `qwen3-coder-30b-a3b-instruct-ccx24-0` | `aks-ws824879e3f-28114834-vmss000000` | `Standard_NC24ads_A100_v4` | `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct` | 56.9 GiB | `runai_streamer` | DACS enabled, but most reads came from origin / remote client: `PrefetchCache=2037`, `RemoteCache=1955`, `RemoteClient=34325` | 68.96s | 844.5 MiB/s | 70.11s | 5m36s | Same streaming mechanism, but cache hit ratio was low, so most model chunks were fetched from the remote source. |
-| 2026-08-06 | `qwen3-coder-30b-a3b-instruct-zdz9x-0` | `aks-ws4d1d2affe-11877758-vmss000000` | `Standard_NC24ads_A100_v4` | `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct` | 56.9 GiB | `runai_streamer` | DACS enabled, and all model chunks were served from distributed cache: `PrefetchCache=0`, `RemoteCache=38317`, `RemoteClient=0`, `ZeroCopy=786` | 25.88s | 2.2 GiB/s | 27.33s | 6m40s | Same streaming mechanism, but this run was effectively a hot-cache load, so model transfer/load was much faster. |
-| 2026-08-06 | `qwen3-coder-30b-a3b-instruct-kd2rg-0` | `aks-wsed7ffa655-15239804-vmss000000` | `Standard_NC24ads_A100_v4` | `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct` | 56.9 GiB | `runai_streamer` | No DACS/cache injection visible on the pod; model was streamed directly from the Azure source using Workload Identity | 34.41s | 1.7 GiB/s | 35.56s | 6m55s | Same RunAI streamer mechanism, but this pod appears to be a direct Azure-source load rather than a distributed-cache hit. |
+### `qwen3-coder-30b-a3b-instruct-ccx24-0`
+
+| Item | Value |
+|---|---|
+| Date (UTC) | 2026-08-05 |
+| Node | `aks-ws824879e3f-28114834-vmss000000` |
+| Model source | `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct` |
+| Load format | `runai_streamer` |
+| Cache / download path | DACS enabled, but most reads came from origin / remote client: `PrefetchCache=2037`, `RemoteCache=1955`, `RemoteClient=34325` |
+| RunAI streamer time | 68.96s |
+| **Model download throughput** | **844.5 MiB/s** |
+| Model loading time | 70.11s |
+| Pod Ready time | 5m36s |
+| Conclusion | Same streaming mechanism, but cache hit ratio was low, so most model chunks were fetched from the remote source. |
+
+### `qwen3-coder-30b-a3b-instruct-zdz9x-0`
+
+| Item | Value |
+|---|---|
+| Date (UTC) | 2026-08-06 |
+| Node | `aks-ws4d1d2affe-11877758-vmss000000` |
+| Model source | `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct` |
+| Load format | `runai_streamer` |
+| Cache / download path | DACS enabled, and all model chunks were served from distributed cache: `PrefetchCache=0`, `RemoteCache=38317`, `RemoteClient=0`, `ZeroCopy=786` |
+| RunAI streamer time | 25.88s |
+| **Model download throughput** | **2.2 GiB/s** |
+| Model loading time | 27.33s |
+| Pod Ready time | 6m40s |
+| Conclusion | Same streaming mechanism, but this run was effectively a hot-cache load, so model transfer/load was much faster. |
+
+### `qwen3-coder-30b-a3b-instruct-kd2rg-0`
+
+| Item | Value |
+|---|---|
+| Date (UTC) | 2026-08-06 |
+| Node | `aks-wsed7ffa655-15239804-vmss000000` |
+| Model source | `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct` |
+| Load format | `runai_streamer` |
+| Cache / download path | No DACS/cache injection visible on the pod; model was streamed directly from the Azure source using Workload Identity |
+| RunAI streamer time | 34.41s |
+| **Model download throughput** | **1.7 GiB/s** |
+| Model loading time | 35.56s |
+| Pod Ready time | 6m55s |
+| Conclusion | Same RunAI streamer mechanism, but this pod appears to be a direct Azure-source load rather than a distributed-cache hit. |
 
 ### Key takeaways
 
-| Comparison item | Result |
+| Item | Result |
 |---|---|
 | Download / load mechanism | All three pods used **vLLM + RunAI Model Streamer** with `--model=az://...` and `--load-format=runai_streamer`. Authentication used **Azure Workload Identity** (`kaito-model-streamer` service account). |
-| Why `zdz9x-0` was fastest | The main difference was **cache hit behavior**, not a different model source or loader. `ccx24-0` mostly read from `RemoteClient` (origin), `zdz9x-0` read entirely from `RemoteCache`, and `kd2rg-0` appears to have streamed directly from Azure source without DACS cache injection. |
-| Streamer speed comparison | `ccx24-0`: 68.96s @ 844.5 MiB/s; `kd2rg-0`: 34.41s @ 1.7 GiB/s; `zdz9x-0`: 25.88s @ 2.2 GiB/s |
+| Fastest path | `zdz9x-0` was fastest because it hit hot DACS distributed cache. |
+| **Model download throughput** | **`ccx24-0`: 844.5 MiB/s; `kd2rg-0`: 1.7 GiB/s; `zdz9x-0`: 2.2 GiB/s** |
 | Model loading comparison | `ccx24-0`: 70.11s; `kd2rg-0`: 35.56s; `zdz9x-0`: 27.33s |
 | Practical conclusion | For this 56.9 GiB model, hot DACS cache hits delivered the best throughput and shortest load time. Direct Azure-source streaming (`kd2rg-0`) was materially faster than a low-hit DACS run, but still slower than the hot-cache path. Pod-level Ready time remained dominated by engine init / compile / warmup overhead after model transfer finished. |
