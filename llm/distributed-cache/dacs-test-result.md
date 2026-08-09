@@ -872,3 +872,60 @@ The cost is amortized on the very first scale-out event.
 | `qwen3-coder-30b-a3b-instruct-ccx24-0` | 2026-08-05 | `aks-ws824879e3f-28114834-vmss000000` | DACS enabled, but mostly origin / remote client: `PrefetchCache=2037`, `RemoteCache=1955`, `RemoteClient=34325` | 68.96s | **844.5 MiB/s** | 70.11s | 5m36s | Low cache-hit DACS run; most model chunks fetched from remote source. |
 | `qwen3-coder-30b-a3b-instruct-zdz9x-0` | 2026-08-06 | `aks-ws4d1d2affe-11877758-vmss000000` | DACS hot-cache hit: `PrefetchCache=0`, `RemoteCache=38317`, `RemoteClient=0`, `ZeroCopy=786` | 25.88s | **2.2 GiB/s** | 27.33s | 6m40s | Fastest path; model chunks served from distributed cache. |
 | `qwen3-coder-30b-a3b-instruct-kd2rg-0` | 2026-08-06 | `aks-wsed7ffa655-15239804-vmss000000` | No DACS/cache injection visible; direct Azure-source streaming with Workload Identity | 34.41s | **1.7 GiB/s** | 35.56s | 6m55s | Direct Azure-source load; faster than low-hit DACS, slower than hot-cache DACS. |
+
+---
+
+## 2026-08-09 — `qwen3-coder-30b-a3b-instruct-v2wzt-0`
+
+### Summary
+- Model source: `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct`
+- Loader: `vLLM --load-format=runai_streamer`
+- DACS config present: yes
+- Actual data path: **no RemoteCache hit**; chunks came from **RemoteClient**
+- Streamer time: **55.24s** for **56.9 GiB** (**1.0 GiB/s**)
+- Model loading time: **56.86s**
+
+### Pod / environment
+- Pod: `qwen3-coder-30b-a3b-instruct-v2wzt-0`
+- Namespace: `default`
+- Node: `aks-ws3362a5a00-32140693-vmss000000`
+- Image: `mcr.microsoft.com/aks/kaito/kaito-base:0.4.4`
+
+Relevant command line:
+
+```text
+--model=az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct
+--load-format=runai_streamer
+```
+
+Relevant env:
+
+```text
+RUNAI_STREAMER_CACHE_ENABLED=true
+RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true
+CACHE_DISCOVERY_URL=cache-sample-discovery.dacs-cache-system.svc.cluster.local
+```
+
+### Cache / download path evidence
+The startup logs show DACS wiring was injected, but the actual chunk-read stats show a pure remote-client path:
+
+```text
+ReadChunk stats: MountName= ChunkSize=3145728 Total=19787 PrefetchCache=0 RemoteCache=0 RemoteClient=19787 ZeroCopy=0 SubChunk=495
+```
+
+Interpretation:
+- `PrefetchCache=0`
+- `RemoteCache=0`
+- `RemoteClient=19787`
+
+So this run **did not hit DACS RemoteCache**. Model chunks were fetched directly from the remote Azure-backed source through the RemoteClient path.
+
+### Timing evidence
+
+```text
+[RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 55.24s, 1.0 GiB/s
+Model loading took 56.93 GiB memory and 56.860297 seconds
+```
+
+### Conclusion
+This run used **RunAI Model Streamer** against the `az://...` model source, with DACS/cache configuration present, but **no cache hit** during model load. The effective path was **RemoteClient/origin**, and the 56.9 GiB model took **55.24s** to stream and **56.86s** to finish loading.
