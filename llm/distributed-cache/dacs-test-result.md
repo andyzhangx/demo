@@ -875,30 +875,16 @@ The cost is amortized on the very first scale-out event.
 
 ---
 
-## 2026-08-09 — `qwen3-coder-30b-a3b-instruct-v2wzt-0`
+## 2026-08-09 — Qwen3-Coder-30B-A3B-Instruct follow-up comparison
 
-### Summary
-- Model source: `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct`
-- Loader: `vLLM --load-format=runai_streamer`
-- DACS config present: yes
-- Actual data path: **no RemoteCache hit**; chunks came from **RemoteClient**
-- Streamer time: **55.24s** for **56.9 GiB** (**1.0 GiB/s**)
-- Model loading time: **56.86s**
-
-### Pod / environment
-- Pod: `qwen3-coder-30b-a3b-instruct-v2wzt-0`
-- Namespace: `default`
-- Node: `aks-ws3362a5a00-32140693-vmss000000`
-- Image: `mcr.microsoft.com/aks/kaito/kaito-base:0.4.4`
-
-Relevant command line:
+All pods below use the same model source and loader:
 
 ```text
 --model=az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct
 --load-format=runai_streamer
 ```
 
-Relevant env:
+DACS/cache configuration was present on all of them:
 
 ```text
 RUNAI_STREAMER_CACHE_ENABLED=true
@@ -906,26 +892,44 @@ RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=true
 CACHE_DISCOVERY_URL=cache-sample-discovery.dacs-cache-system.svc.cluster.local
 ```
 
-### Cache / download path evidence
-The startup logs show DACS wiring was injected, but the actual chunk-read stats show a pure remote-client path:
+### Download throughput comparison
+
+| Pod | Node | Cache / download path | ReadChunk stats | RunAI streamer time | **Download throughput** | Model loading time | Notes |
+|---|---|---|---|---:|---:|---:|---|
+| `qwen3-coder-30b-a3b-instruct-v2wzt-0` | `aks-ws3362a5a00-32140693-vmss000000` | **Uncached remote path** | `PrefetchCache=0`, `RemoteCache=0`, `RemoteClient=19787` | 55.24s | **1.0 GiB/s** | 56.86s | No DACS cache hit; chunks fetched through RemoteClient/origin. |
+| `qwen3-coder-30b-a3b-instruct-lskhj-0` | `aks-ws3362a5a00-32140693-vmss000000` | **DACS remote-cache hit** | `PrefetchCache=0`, `RemoteCache=19787`, `RemoteClient=0` | 25.92s | **2.2 GiB/s** | 26.99s | Warm-cache fast path. |
+| `qwen3-coder-30b-a3b-instruct-q8tp4-0` | `aks-ws38180e667-64195973-vmss000000` | **DACS remote-cache hit** | `PrefetchCache=0`, `RemoteCache=19787`, `RemoteClient=0` | 26.45s | **2.2 GiB/s** | 27.40s | Warm-cache fast path on another node. |
+
+### Timing evidence for `q8tp4-0`
 
 ```text
-ReadChunk stats: MountName= ChunkSize=3145728 Total=19787 PrefetchCache=0 RemoteCache=0 RemoteClient=19787 ZeroCopy=0 SubChunk=495
+ReadChunk stats: MountName= ChunkSize=3145728 Total=19787 PrefetchCache=0 RemoteCache=19787 RemoteClient=0 ZeroCopy=19292 SubChunk=495
+[RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 26.45s, 2.2 GiB/s
+Model loading took 56.93 GiB memory and 27.401224 seconds
 ```
 
-Interpretation:
-- `PrefetchCache=0`
-- `RemoteCache=0`
-- `RemoteClient=19787`
+### Interpretation
 
-So this run **did not hit DACS RemoteCache**. Model chunks were fetched directly from the remote Azure-backed source through the RemoteClient path.
+- `v2wzt-0` is the slow path in this set:
+  - **1.0 GiB/s**
+  - `RemoteCache=0`, `RemoteClient=19787`
+  - model chunks came directly from the remote source
+- `lskhj-0` and `q8tp4-0` are both DACS warm-cache runs:
+  - both reached about **2.2 GiB/s**
+  - both had `RemoteCache=19787`, `RemoteClient=0`
+  - both finished model loading in about **27 seconds**
 
-### Timing evidence
+### Throughput delta vs `v2wzt-0`
 
-```text
-[RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 55.24s, 1.0 GiB/s
-Model loading took 56.93 GiB memory and 56.860297 seconds
-```
+| Pod | Throughput vs `v2wzt-0` |
+|---|---:|
+| `v2wzt-0` | 1.00× |
+| `lskhj-0` | **2.20×** |
+| `q8tp4-0` | **2.20×** |
 
 ### Conclusion
-This run used **RunAI Model Streamer** against the `az://...` model source, with DACS/cache configuration present, but **no cache hit** during model load. The effective path was **RemoteClient/origin**, and the 56.9 GiB model took **55.24s** to stream and **56.86s** to finish loading.
+On 2026-08-09, the main performance differentiator was whether DACS `RemoteCache` served the model chunks:
+- **No cache hit (`v2wzt-0`)** → about **1.0 GiB/s**, **56.86s** total model load
+- **Cache hit (`lskhj-0`, `q8tp4-0`)** → about **2.2 GiB/s**, about **27s** total model load
+
+So for this 56.9 GiB Qwen3-Coder-30B-A3B-Instruct model, the warm-cache path is roughly **2× faster** than the uncached remote-client path.
