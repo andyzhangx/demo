@@ -875,7 +875,7 @@ The cost is amortized on the very first scale-out event.
 
 ---
 
-## 2026-08-09 — Qwen3-Coder-30B-A3B-Instruct follow-up comparison
+## 2026-08-09 — Qwen3-Coder-30B-A3B-Instruct follow-up comparison (VM SKU: Standard_NC24ads_A100_v4)
 
 All pods below use the same model source and loader:
 
@@ -883,6 +883,8 @@ All pods below use the same model source and loader:
 --model=az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct
 --load-format=runai_streamer
 ```
+
+All pods in this comparison ran on GPU nodes with VM SKU **`Standard_NC24ads_A100_v4`**.
 
 DACS/cache configuration was present on all of them:
 
