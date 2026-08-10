@@ -933,3 +933,64 @@ On 2026-08-09, the main performance differentiator was whether DACS `RemoteCache
 - **Cache hit (`lskhj-0`, `q8tp4-0`)** → about **2.2 GiB/s**, about **27s** total model load
 
 So for this 56.9 GiB Qwen3-Coder-30B-A3B-Instruct model, the warm-cache path is roughly **2× faster** than the uncached remote-client path.
+
+---
+
+## 2026-08-10 — `qwen3-coder-30b-a3b-instruct-zd9p2-0` on larger GPU node size
+
+Pod under test:
+
+- Pod: `qwen3-coder-30b-a3b-instruct-zd9p2-0`
+- Cluster: `andy-aks135`
+- Node: `aks-wsbc0b0ca81-11400277-vmss000000`
+- **GPU node size:** `Standard_NC48ads_A100_v4`
+
+### What path was used?
+
+This pod used **RunAI Model Streamer**:
+
+```text
+load_format=runai_streamer
+model='/root/.cache/vllm/assets/model_streamer/2c82cfef'
+Loading safetensors using Runai Model Streamer
+```
+
+Unlike the earlier DACS-focused runs, this log does **not** show the usual cache-client summary lines such as:
+
+```text
+ReadChunk stats: ...
+RemoteCache=...
+RemoteClient=...
+```
+
+So from the pod log alone, this run is best described as:
+
+- **RunAI Streamer path confirmed**
+- **No pod-side DACS `ReadChunk stats` evidence available in the current log window**
+- therefore **cannot attribute this run to `RemoteCache` vs `RemoteClient` with the same confidence** as the 2026-08-09 cases above
+
+### Timing
+
+Relevant startup lines:
+
+```text
+02:17:33 Starting to load model /root/.cache/vllm/assets/model_streamer/2c82cfef...
+02:17:49 [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cuda:0: 15.24s, 3.7 GiB/s
+02:17:50 Model loading took 56.93 GiB memory and 16.270193 seconds
+```
+
+### Result summary
+
+| Pod | GPU node size | Confirmed path from log | RunAI streamer time | **Download throughput** | Model loading time | Notes |
+|---|---|---|---:|---:|---:|---|
+| `qwen3-coder-30b-a3b-instruct-zd9p2-0` | `Standard_NC48ads_A100_v4` | `runai_streamer` | 15.24s | **3.7 GiB/s** | 16.27s | Fastest result in this note set so far; pod log does not include `ReadChunk stats`, so cache-hit source is not proven from this log alone. |
+
+### Interpretation
+
+Compared with the 2026-08-09 results on `Standard_NC24ads_A100_v4` nodes:
+
+- `v2wzt-0` (uncached remote-client path): **1.0 GiB/s**, **56.86s**
+- `lskhj-0` / `q8tp4-0` (warm remote-cache path): **2.2 GiB/s**, about **27s**
+- `zd9p2-0` on **`Standard_NC48ads_A100_v4`**: **3.7 GiB/s**, **16.27s**
+
+So this `zd9p2-0` run is materially faster than both the uncached path and the earlier warm remote-cache runs. The key confirmed difference from the log we inspected is the **larger GPU node size (`Standard_NC48ads_A100_v4`)** plus a very fast RunAI streaming path to `cuda:0`.
