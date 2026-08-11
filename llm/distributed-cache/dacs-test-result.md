@@ -996,3 +996,73 @@ Compared with the 2026-08-09 results on `Standard_NC24ads_A100_v4` nodes:
 - `zd9p2-0` on **`Standard_NC48ads_A100_v4`**: **3.7 GiB/s**, **16.27s**
 
 So this `zd9p2-0` run is materially faster than both the uncached path and the earlier warm remote-cache runs. The key confirmed difference from the log we inspected is the **larger GPU node size (`Standard_NC48ads_A100_v4`)** plus a very fast RunAI streaming path to `cuda:0`.
+
+---
+
+## 2026-08-11 — `qwen3-coder-30b-a3b-instruct` DACS/streaming spot checks on `andy-aks135`
+
+These notes capture four more spot checks for the same Qwen3-Coder-30B-A3B-Instruct model on `andy-aks135`, focusing on whether the startup path hit DACS `RemoteCache` or fell back to `RemoteClient` / origin reads.
+
+### What was under test?
+
+- Model: `Qwen/Qwen3-Coder-30B-A3B-Instruct`
+- vLLM load path: `--load-format=runai_streamer`
+- Model source: `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct`
+
+For the currently running pod `qwen3-coder-30b-a3b-instruct-4fwkc-0`, the startup command line confirmed:
+
+```text
+--tensor-parallel-size=1
+--model=az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct
+--load-format=runai_streamer
+```
+
+The live pod also confirmed the **GPU VM SKU**:
+
+- Pod: `qwen3-coder-30b-a3b-instruct-4fwkc-0`
+- Node: `aks-ws0c015ab37-41624886-vmss000000`
+- **VM SKU:** `Standard_NC24ads_A100_v4`
+
+> Note: the older pods in the comparison table below had already been deleted by the time this note was written, so their VM SKU was not re-read live from the node label in this pass.
+
+### Result summary
+
+| Date (UTC) | Pod | VM SKU | Observed path | Cache evidence | Stream time | Throughput | Model load time | Notes |
+|---|---|---|---|---|---:|---:|---:|---|
+| 2026-08-11 | `qwen3-coder-30b-a3b-instruct-9lprt-0` | not re-verified (pod gone) | **Uncached remote-client path** | `RemoteCache=0`, `RemoteClient≈9917/9902` | 28.21s / 28.3s | **~1.0 GiB/s** | 29.25s | Earlier uncached run; no DACS cache hit. |
+| 2026-08-11 | `qwen3-coder-30b-a3b-instruct-2dr7g-0` | not re-verified (pod gone) | **DACS remote-cache hit** | `RemoteCache=19787`, `RemoteClient=0` | 13.14s | **4.3 GiB/s** | 14.10s | Best result in this set; pure cache-served path. |
+| 2026-08-11 | `qwen3-coder-30b-a3b-instruct-2mkrm-0` | not re-verified (pod gone) | **Mixed cache + remote-client path** | `RemoteCache=19093`, `RemoteClient=694` | n/a in retained notes | n/a | 31.00s | Mostly cache-hit, but not fully warm. |
+| 2026-08-11 | `qwen3-coder-30b-a3b-instruct-4fwkc-0` | `Standard_NC24ads_A100_v4` | **Uncached remote-client path** | `RemoteCache=0`, `RemoteClient=19787` | 56.29s | **1.0 GiB/s** | 58.27s | Live run re-checked with kubeconfig from the shared gist. |
+
+### Timing evidence for `4fwkc-0`
+
+```text
+ReadChunk stats: MountName= ChunkSize=3145728 Total=19787 PrefetchCache=0 RemoteCache=0 RemoteClient=19787 ZeroCopy=0 SubChunk=495
+[RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 56.29s, 1.0 GiB/s
+Model loading took 56.93 GiB memory and 58.268750 seconds
+```
+
+### Interpretation
+
+The dominant variable across these 2026-08-11 runs was still **whether DACS `RemoteCache` served the model chunks**:
+
+- **Pure cache-hit (`2dr7g-0`)**
+  - `RemoteCache=19787`, `RemoteClient=0`
+  - **4.3 GiB/s**
+  - **14.10 s** total model load
+- **Mixed cache state (`2mkrm-0`)**
+  - `RemoteCache=19093`, `RemoteClient=694`
+  - **31.00 s** total model load
+- **No cache-hit (`9lprt-0`, `4fwkc-0`)**
+  - `RemoteCache=0`
+  - about **1.0 GiB/s**
+  - **29.25 s** (`9lprt-0`, smaller/earlier run footprint) to **58.27 s** (`4fwkc-0`, full 56.9 GiB stream) total load time
+
+### Conclusion
+
+For this Qwen3-Coder-30B-A3B-Instruct workload on `andy-aks135`, the 2026-08-11 spot checks again show a very large startup delta between the DACS warm path and the uncached remote-client path:
+
+- **Warm DACS cache hit**: as fast as **4.3 GiB/s** and **14.10 s** model load
+- **Uncached remote-client path**: around **1.0 GiB/s** and up to **58.27 s** model load
+
+So within the same model family and same RunAI Streamer integration, a fully warm DACS path was about **4× higher throughput** and roughly **4× faster wall-clock model load** than the uncached remote-client path observed in `4fwkc-0`.
