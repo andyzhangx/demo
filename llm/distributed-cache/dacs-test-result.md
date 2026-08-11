@@ -1017,10 +1017,10 @@ Both retained pods in this comparison ran on GPU nodes with VM SKU **`Standard_N
 
 ### Result summary
 
-| Date (UTC) | Pod | Observed path | Cache evidence | Stream time | Throughput | Model load time | Notes |
-|---|---|---|---|---:|---:|---:|---|
-| 2026-08-11 | `qwen3-coder-30b-a3b-instruct-4fwkc-0` | **Uncached remote-client path** | `RemoteCache=0`, `RemoteClient=19787` | 56.29s | **1.0 GiB/s** | 58.27s | Live run re-checked with kubeconfig from the shared gist. |
-| 2026-08-11 | `qwen3-coder-30b-a3b-instruct-bp2kr-0` | **DACS remote-cache hit** | `RemoteCache=19787`, `RemoteClient=0` | 25.9s | **2.2 GiB/s** | 26.83s | Live run re-checked with kubeconfig from the shared gist. |
+| Date (UTC) | Pod | Observed path | Cache evidence | Stream time | Throughput | Model load time |
+|---|---|---|---|---:|---:|---:|
+| 2026-08-11 | `qwen3-coder-30b-a3b-instruct-4fwkc-0` | **Uncached remote-client path** | `RemoteCache=0`, `RemoteClient=19787` | 56.29s | **1.0 GiB/s** | 58.27s |
+| 2026-08-11 | `qwen3-coder-30b-a3b-instruct-bp2kr-0` | **DACS remote-cache hit** | `RemoteCache=19787`, `RemoteClient=0` | 25.9s | **2.2 GiB/s** | 26.83s |
 
 ### Timing evidence for `4fwkc-0`
 
