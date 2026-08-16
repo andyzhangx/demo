@@ -25,7 +25,12 @@ Before submitting a promotion PR, verify the image and tag exist in the staging 
 gcloud container images list-tags gcr.io/k8s-staging-sig-storage/nfsplugin --filter="tags:v4.13.2" --format=json
 
 # SMB CSI driver
-gcloud container images list-tags gcr.io/k8s-staging-sig-storage/smbplugin --filter="tags:v1.20.1" --format=json
+gcloud container images list-tags gcr.io/k8s-staging-sig-storage/smbplugin --filter="tags:v1.20.3" --format=json
+gcloud container images list-tags gcr.io/k8s-staging-sig-storage/smbplugin --filter="tags:v1.20.3-windows-hp" --format=json
+
+# https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner
+gcloud container images list-tags gcr.io/k8s-staging-sig-storage/local-volume-provisioner --filter="tags:v2.9.0" --format=json
+gcloud container images list-tags gcr.io/k8s-staging-sig-storage/local-volume-node-cleanup --filter="tags:v2.9.0" --format=json
 ```
 
 ### Other useful staging registries
@@ -39,6 +44,18 @@ gcloud container images list-tags gcr.io/k8s-staging-test-infra/gcb-docker-gclou
 
 # Check specific image with all tags
 gcloud container images list-tags gcr.io/k8s-staging-sig-storage/nfsplugin --format=json
+```
+
+### trivy scan on csi sidecar images
+
+```bash
+trivy image --detection-priority=comprehensive gcr.io/k8s-staging-sig-storage/livenessprobe:canary
+trivy image --detection-priority=comprehensive gcr.io/k8s-staging-sig-storage/csi-node-driver-registrar:canary
+trivy image --detection-priority=comprehensive  gcr.io/k8s-staging-sig-storage/snapshot-controller:canary
+trivy image --detection-priority=comprehensive  gcr.io/k8s-staging-sig-storage/csi-attacher:canary
+trivy image --detection-priority=comprehensive  gcr.io/k8s-staging-sig-storage/csi-provisioner:canary
+trivy image --detection-priority=comprehensive  gcr.io/k8s-staging-sig-storage/csi-resizer:canary
+trivy image --detection-priority=comprehensive  gcr.io/k8s-staging-sig-storage/csi-snapshotter:canary
 ```
 
 ## Step 2: Update Image Promoter Config
