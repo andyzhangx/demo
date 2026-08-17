@@ -8,10 +8,18 @@
 Speculative decoding runs a cheap "drafter" that proposes N tokens per step,
 and lets the target model verify them in a single forward pass. When the
 acceptance rate is high enough (typically >50%), end-to-end tokens/sec goes
-up 1.5–3× on autoregressive workloads.
+up 1.5–3× on autoregressive workloads — with **no change to the output
+distribution**, because rejected drafts fall back to a normal target-model
+sample. It is a pure inter-token-latency win under memory-bound,
+medium-to-low QPS traffic.
 
-vLLM has had speculative decoding built in since 0.7 and it stabilised
-significantly through 0.10. KAITO's vLLM runtime already exposes almost
+vLLM's built-in support for this is documented at:
+
+- [Speculative Decoding — vLLM docs](https://docs.vllm.ai/en/latest/features/speculative_decoding/)
+- Source: [`vllm-project/vllm/docs/features/speculative_decoding/`](https://github.com/vllm-project/vllm/tree/main/docs/features/speculative_decoding)
+- API reference: [`SpeculativeConfig`](https://docs.vllm.ai/en/latest/api/vllm/config/speculative.html)
+
+The feature has been in vLLM since 0.7 and stabilised significantly through 0.10. KAITO's vLLM runtime already exposes almost
 everything vLLM supports, but there is currently no first-class knob for
 speculative decoding — users have to reach into
 `--kaito-config-file` overrides to enable it, and there is no
@@ -367,6 +375,29 @@ Recommended derived signals:
    with the code sketch in §4.
 3. Follow up with Phase 2 (draft model) once init-container + resource
    calc changes are scoped.
+
+## 10. References
+
+### vLLM upstream
+
+- [vLLM — Speculative Decoding (latest)](https://docs.vllm.ai/en/latest/features/speculative_decoding/)
+- [vLLM — Speculative Decoding (v0.10.2 snapshot)](https://docs.vllm.ai/en/v0.10.2/features/spec_decode.html)
+- [vLLM — `SpeculativeConfig` API](https://docs.vllm.ai/en/latest/api/vllm/config/speculative.html)
+- [`vllm-project/vllm` — `docs/features/speculative_decoding/`](https://github.com/vllm-project/vllm/tree/main/docs/features/speculative_decoding)
+- [vLLM blog — How Speculative Decoding Boosts vLLM Performance by up to 2.8x](https://blog.vllm.ai/2024/10/17/spec-decode.html)
+
+### Drafter techniques
+
+- **EAGLE / EAGLE-3** — [paper](https://arxiv.org/abs/2401.15077), [EAGLE-3 paper](https://arxiv.org/abs/2503.01840), [SafeAILab/EAGLE](https://github.com/SafeAILab/EAGLE)
+- **Medusa** — [paper](https://arxiv.org/abs/2401.10774), [FasterDecoding/Medusa](https://github.com/FasterDecoding/Medusa)
+- **MLPSpeculator** (IBM) — [`ibm-fms/mlp_speculator`](https://github.com/foundation-model-stack/fms-extras)
+- **N-gram / prompt lookup** — [apoorvumang/prompt-lookup-decoding](https://github.com/apoorvumang/prompt-lookup-decoding)
+- Original speculative decoding paper — Leviathan et al., ["Fast Inference from Transformers via Speculative Decoding"](https://arxiv.org/abs/2211.17192) (2022)
+
+### KAITO context
+
+- KAITO vLLM runtime entrypoint: [`pkg/model/interface.go` — `buildVLLMInferenceCommand`](https://github.com/kaito-project/kaito/blob/main/pkg/model/interface.go)
+- Existing single-quoted JSON blob pattern we reuse: `kv-events-config` in the same file.
 
 ---
 
