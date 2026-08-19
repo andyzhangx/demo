@@ -42,7 +42,26 @@ docker build -t <registry>/nfs-kerberos-server:v0.1.0 .
 
 ## Run in Kubernetes (sketch)
 
+Both a headless Service (so `<SERVER_FQDN>` resolves) and a Deployment are
+required. The Service name + namespace MUST match the `SERVER_FQDN` env var,
+otherwise the Kerberos SPN and the client mount address will not resolve.
+
 ```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfs-kerberos-server        # must match the hostname in SERVER_FQDN
+  namespace: default               # must match the namespace in SERVER_FQDN
+spec:
+  # Headless so the Pod's A record answers `nfs-kerberos-server.default.svc.<cluster-domain>`.
+  clusterIP: None
+  selector: { app: nfs-kerberos-server }
+  ports:
+    - { name: nfs,  port: 2049, targetPort: 2049, protocol: TCP }
+    - { name: kdc,  port: 88,   targetPort: 88,   protocol: TCP }
+    - { name: kdcu, port: 88,   targetPort: 88,   protocol: UDP }
+    - { name: kadm, port: 749,  targetPort: 749,  protocol: TCP }
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -84,6 +103,10 @@ rpc.gssd -vf &
 mount -t nfs4 -o sec=krb5,vers=4.1 \
     nfs-kerberos-server.default.svc.cluster.local:/srv/shared /mnt/nfs
 ```
+
+> The export does NOT use `fsid=0`, so the client-visible NFSv4 path is the
+> same as the server path (`/srv/shared`). If you switch the export to use
+> `fsid=0`, mount `server:/` instead.
 
 ## Environment variables
 

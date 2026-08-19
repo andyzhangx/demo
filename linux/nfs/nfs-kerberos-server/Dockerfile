@@ -15,7 +15,7 @@
 #
 # Build: docker build -t <registry>/nfs-kerberos-server:v0.1.0 .
 
-FROM alpine:3.20
+FROM alpine:3.22
 
 ARG NFSV4_DOMAIN=default.svc.cluster.local
 ARG REALM=EXAMPLE.COM

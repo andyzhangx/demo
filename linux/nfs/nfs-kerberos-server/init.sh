@@ -56,9 +56,15 @@ EOF
 ################################################################################
 # /etc/exports  — allow sys AND krb5 flavors so v4.1 SEQUENCE bring-up works
 #                 even before GSS context negotiation completes.
+#
+# NOTE: we intentionally do NOT set fsid=0 here. Marking /srv/shared as the
+# NFSv4 pseudo-root would force clients to mount `server:/`, but README and
+# csi-driver-nfs#999 both mount `server:/srv/shared`. Modern nfs-utils walks
+# the export tree and synthesizes an implicit pseudo-root, so the client-
+# visible NFSv4 path stays `/srv/shared`.
 ################################################################################
 cat >/etc/exports <<EOF
-/srv/shared  *(rw,sync,no_root_squash,insecure,fsid=0,sec=sys:krb5:krb5i:krb5p)
+/srv/shared  *(rw,sync,no_root_squash,insecure,no_subtree_check,sec=sys:krb5:krb5i:krb5p)
 EOF
 
 ################################################################################
