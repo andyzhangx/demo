@@ -17,18 +17,26 @@ rpcbind -w
 sleep 1
 
 # ---- KDC + kadmind ---------------------------------------------------------
-krb5kdc          -P /var/run/krb5kdc.pid
-kadmind          -P /var/run/kadmind.pid
+# Run in the foreground (-n / -nofork) so their PIDs are shell children of
+# this script and `wait -n` below can detect a crash. Otherwise the daemons
+# fork away, `wait -n` never sees them, and a dead KDC would leave the pod
+# looking healthy while every Kerberos mount fails.
+krb5kdc -n &
+KDC_PID=$!
+kadmind -nofork &
+KADMIND_PID=$!
 sleep 1
 
 # ---- NFS -------------------------------------------------------------------
 # order matters: statd -> nfsd -> mountd -> idmapd -> svcgssd
 #
-# All long-running daemons stay in the FOREGROUND (-F / -f) so that if any
-# one of them dies, `wait -n` returns and we exit with a non-zero status.
-# That lets Kubernetes restart the pod instead of us silently sleeping on
-# top of a broken server. `rpc.mountd` defaults to daemonizing, hence -F.
-rpc.statd  --no-notify
+# All long-running daemons stay in the FOREGROUND (-F / -f / -n / -nofork)
+# so that if any one of them dies, `wait -n` returns and we exit with a
+# non-zero status. That lets Kubernetes restart the pod instead of us
+# silently sleeping on top of a broken server. `rpc.mountd` and `rpc.statd`
+# default to daemonizing, hence -F / -F.
+rpc.statd -F --no-notify &
+STATD_PID=$!
 exportfs -rav
 rpc.nfsd 8
 rpc.mountd -F --no-nfs-version 2 --no-nfs-version 3 --debug=all &
@@ -38,15 +46,16 @@ IDMAPD_PID=$!
 rpc.svcgssd -f -vvv &
 SVCGSSD_PID=$!
 
-echo "[entry] all services started (mountd=${MOUNTD_PID} idmapd=${IDMAPD_PID} svcgssd=${SVCGSSD_PID}). tailing logs."
+echo "[entry] all services started (kdc=${KDC_PID} kadmind=${KADMIND_PID} statd=${STATD_PID} mountd=${MOUNTD_PID} idmapd=${IDMAPD_PID} svcgssd=${SVCGSSD_PID}). tailing logs."
 touch /var/log/messages /var/log/gssd.log
 tail -F /var/log/messages /var/log/gssd.log &
 
 # Wait for the FIRST monitored daemon to exit, then exit non-zero so that
 # Kubernetes restarts the container. Do NOT sleep infinity here — that would
-# mask failures of rpc.idmapd / rpc.svcgssd behind a healthy-looking PID 1.
+# mask failures of any monitored daemon behind a healthy-looking PID 1.
 set +e
-wait -n "${MOUNTD_PID}" "${IDMAPD_PID}" "${SVCGSSD_PID}"
+wait -n "${KDC_PID}" "${KADMIND_PID}" "${STATD_PID}" \
+        "${MOUNTD_PID}" "${IDMAPD_PID}" "${SVCGSSD_PID}"
 RC=$?
 echo "[entry] a monitored daemon exited (rc=${RC}); shutting down for Kubernetes to restart us"
 exit "${RC}"
