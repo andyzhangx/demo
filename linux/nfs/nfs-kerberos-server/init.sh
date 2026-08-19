@@ -95,6 +95,15 @@ if [[ ! -f /var/lib/krb5kdc/principal ]]; then
     echo "[init] creating KDC database"
     kdb5_util create -s -P "${KDC_MASTER_PASSWORD}" -r "${REALM}"
 
+    # kdb5_util does NOT populate the configured admin_keytab, so kadmind
+    # would fail to start on first launch. Explicitly extract kadmin/admin
+    # and kadmin/changepw into /etc/krb5kdc/kadm5.keytab.
+    mkdir -p /etc/krb5kdc
+    echo "[init] extracting kadmin principals into admin_keytab"
+    kadmin.local -q "ktadd -k /etc/krb5kdc/kadm5.keytab kadmin/admin"
+    kadmin.local -q "ktadd -k /etc/krb5kdc/kadm5.keytab kadmin/changepw"
+    chmod 0600 /etc/krb5kdc/kadm5.keytab
+
     echo "[init] adding server principal nfs/${SERVER_FQDN}@${REALM}"
     kadmin.local -q "addprinc -randkey nfs/${SERVER_FQDN}@${REALM}"
     kadmin.local -q "ktadd -k /etc/krb5.keytab nfs/${SERVER_FQDN}@${REALM}"
@@ -102,7 +111,10 @@ if [[ ! -f /var/lib/krb5kdc/principal ]]; then
     echo "[init] adding client principal host/${CLIENT_FQDN}@${REALM}"
     kadmin.local -q "addprinc -randkey host/${CLIENT_FQDN}@${REALM}"
     kadmin.local -q "ktadd -k /shared/client.keytab host/${CLIENT_FQDN}@${REALM}"
-    chmod 0644 /shared/client.keytab
+    # rpc.gssd runs as root; keep the client machine credential secret-only.
+    # Callers that need to hand this off to a non-root sidecar should adjust
+    # ownership/mode themselves when copying via a Secret / init container.
+    chmod 0600 /shared/client.keytab
 
     # Convenience: a test user so krb5 mounts can be validated end-to-end.
     kadmin.local -q "addprinc -pw testpw testuser@${REALM}"
