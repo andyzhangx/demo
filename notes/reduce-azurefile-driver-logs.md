@@ -62,6 +62,72 @@ These lines fire on every reconcile of already-mounted volumes and carry no diag
   - `NodePublishVolume: ephemeral volume(...) mount on ...` → `klog.V(4)`.
   - `already mounted to target ...` → `klog.V(4)` (or throttle to 1-in-N per volume).
 
+## Distinguishing ephemeral vs. PVC `NodePublishVolume`
+
+In this log, **all 301 `NodePublishVolume` calls are for CSI inline (ephemeral) volumes**. Kubelet reconciles inline volumes on every sync loop, so they are the main source of the reconcile-noise. PVC-backed volumes only get `NodePublishVolume` on the first mount.
+
+Ways to tell them apart:
+
+### 1. From the log itself
+
+The driver already emits different lines:
+
+```
+nodeserver.go] NodePublishVolume: ephemeral volume(csi-xxx) mount on ...   # inline
+nodeserver.go] NodePublishVolume: volume(pvc-xxx) mount on ...             # PVC-backed
+```
+
+```bash
+grep "NodePublishVolume: ephemeral volume" csi.log | wc -l
+grep -E "NodePublishVolume: volume\(" csi.log | wc -l
+```
+
+### 2. From the GRPC request
+
+`volume_context` carries the CSI ephemeral flag:
+
+```json
+"volume_context": { "csi.storage.k8s.io/ephemeral": "true", ... }
+```
+
+And inline `volume_id` starts with `csi-<hash>` (synthesized by kubelet) instead of a PVC-style id.
+
+### 3. Suggested driver change: log verbosity by volume type
+
+Inside `NodePublishVolume` (and in `logGRPC`), branch on `ephemeral`:
+
+```go
+ephemeral := req.GetVolumeContext()["csi.storage.k8s.io/ephemeral"] == "true"
+if ephemeral {
+    klog.V(4).Infof("NodePublishVolume: ephemeral volume(%s) mount on %s", volID, target)
+} else {
+    klog.V(2).Infof("NodePublishVolume: volume(%s) mount on %s", volID, target)
+}
+```
+
+And in `logGRPC`:
+
+```go
+if ephemeral && err == nil {
+    klog.V(4).Infof("GRPC call: %s", info.FullMethod)
+    ...
+} else {
+    klog.V(2).Infof("GRPC call: %s", info.FullMethod)
+    ...
+}
+```
+
+This preserves full logs for PVC-backed mounts (rare, high-value events) while silencing the inline-volume reconcile storm.
+
+## Side finding: fix the root cause, not just the logs
+
+In this log the ephemeral secrets (`neo-*`, `raas-*`, `msrd-*`, ...) all fail with `GetStorageAccountFromSecret ... could not get secret(...)`. Every kubelet reconcile retries and re-logs, contributing:
+
+- `GetStorageAccountFromSecret failed`: **105**
+- `GRPC error InvalidArgument`: **106**
+
+i.e. ~211 lines / ~9% of the log are one recurring configuration bug. Fixing the missing secrets removes this noise entirely — arguably more impactful than the verbosity work.
+
 ## Expected result
 
 - Remove ~1646 lines of noise + keep ~617 diagnostic lines + small remainder (~90).
