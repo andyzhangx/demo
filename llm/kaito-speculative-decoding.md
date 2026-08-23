@@ -346,7 +346,120 @@ if ws.Annotations["kaito.sh/enable-speculative-decoding"] == "true" {
 
 ---
 
-## 7. TL;DR
+## 7. Using it with `InferenceSet`
+
+`InferenceSet` fans a preset out across `spec.replicas` child `Workspace`
+objects (with optional autoscaling and MIG partitioning). The speculative
+decoding toggle works exactly the same way — just put the annotation on
+`spec.template.metadata.annotations` and the InferenceSet controller
+propagates it to every child `Workspace`.
+
+### How the propagation works (evidence)
+
+In `pkg/utils/inferenceset/inferenceset.go`, `NewWorkspaceForInferenceSet`
+literally clones the template annotations onto each child Workspace:
+
+```go
+func NewWorkspaceForInferenceSet(iObj *kaitov1beta1.InferenceSet) *kaitov1beta1.Workspace {
+    annotations := maps.Clone(iObj.Spec.Template.Annotations)
+    // ...
+    workspaceObj := &kaitov1beta1.Workspace{
+        ObjectMeta: metav1.ObjectMeta{
+            Labels:      workspaceLabels,
+            Annotations: annotations,
+            // ...
+        },
+        // ...
+    }
+}
+```
+
+So any annotation the preset controller / admission webhook understands
+on a standalone `Workspace` also works when set on
+`InferenceSet.spec.template.metadata.annotations`. **No InferenceSet-specific
+code change is needed** for the speculative decoding toggle — the same
+annotation, in the template block, is enough.
+
+### Example — DeepSeek-R1 InferenceSet with speculative decoding on
+
+Start from an existing example
+([`kaito_inferenceset_phi_4_mini.yaml`](https://github.com/kaito-project/kaito/blob/main/examples/inference/kaito_inferenceset_phi_4_mini.yaml))
+and adapt it to `deepseek-r1-0528` with the annotation on
+`spec.template.metadata`:
+
+```yaml
+apiVersion: kaito.sh/v1alpha1
+kind: InferenceSet
+metadata:
+  # Scaling annotations belong on the InferenceSet itself.
+  annotations:
+    scaledobject.kaito.sh/auto-provision: "true"
+    scaledobject.kaito.sh/metricName: "vllm:num_requests_waiting"
+    scaledobject.kaito.sh/threshold: "10"
+  name: deepseek-r1
+  namespace: default
+spec:
+  replicas: 2
+  nodeCountLimit: 5
+  labelSelector:
+    matchLabels:
+      apps: deepseek-r1
+  template:
+    metadata:
+      # ← Per-Workspace annotation goes here. Propagated verbatim to every
+      #   child Workspace by NewWorkspaceForInferenceSet.
+      annotations:
+        kaito.sh/enable-speculative-decoding: "true"
+    inference:
+      preset:
+        accessMode: public
+        name: deepseek-r1-0528
+    resource:
+      instanceType: Standard_ND96isr_H100_v5
+```
+
+`kubectl apply -f` and the InferenceSet controller creates
+`replicas` Workspaces, each with
+`kaito.sh/enable-speculative-decoding: "true"` in its own annotation map.
+Each child then goes through the exact same preset-controller injection
+and admission-webhook validation flow described in sections 2–5.
+
+### Which annotations go where
+
+| Annotation location | Purpose | Reaches child Workspace? |
+|---|---|---|
+| `InferenceSet.metadata.annotations` | Cluster-level policy on the InferenceSet itself (e.g. `scaledobject.kaito.sh/*` autoscaling, `inferenceset.kaito.io/hash`) | ❌ No — controller-scoped |
+| `InferenceSet.spec.template.metadata.annotations` | Per-Workspace behavior (**this is where `kaito.sh/enable-speculative-decoding` goes**) | ✅ Yes — cloned to each child Workspace |
+
+### Rejection semantics for InferenceSet
+
+If the template's preset has no `SpeculativeDecoding` entry in the catalog:
+
+- On `kubectl apply -f <InferenceSet>`, the InferenceSet **itself** may be
+  accepted (it validates its own schema), but each child Workspace that
+  the controller tries to create is rejected by the Workspace admission
+  webhook with the same `preset %q does not have a validated speculative
+  decoding configuration` error shown in section 2.
+- The rejection surfaces on the InferenceSet's status (create-workspace
+  event / condition), so the user still sees a fast, clear failure — just
+  at reconciliation time rather than at `apply` time.
+- (Optional hardening left as follow-up: teach the InferenceSet admission
+  webhook to also validate the annotation against the templated preset,
+  so rejection happens at `apply` time too. Not required for correctness.)
+
+### Scaling implication (unchanged)
+
+Speculative decoding is a **per-replica** speedup — MTP verifies within a
+single vLLM engine. Turning it on across an InferenceSet's replicas just
+means every replica gets the same per-request latency win. It does **not**
+share draft state across replicas and does **not** replace autoscaling —
+you still want KEDA / auto-provision to grow replicas under high QPS,
+because the throughput of speculative decoding degrades toward 1.0× as
+QPS climbs. The two features are complementary.
+
+---
+
+## 8. TL;DR
 
 - **User**: adds one annotation. Gets ~1.5×–1.7× interactive-latency win on
   supported presets, zero risk on unsupported presets (webhook rejects).
