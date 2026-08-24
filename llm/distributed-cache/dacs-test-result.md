@@ -1088,6 +1088,7 @@ setup.
 |---|---|---|---|---|---:|---:|
 | 2026-08-24 08:51 | `qwen3-coder-30b-a3b-instruct-rcgrj-0` | `aks-wsc45b85930-29303857-vmss000000` | **Uncached remote-client (blob-direct)** | `PrefetchCache=0`, `RemoteCache=0`, `RemoteClient=19508+`, `GetProperties CacheHit=0 / CacheMiss=16` | 46.28 s model load | **~1.23 GiB/s** |
 | 2026-08-24 09:31 | `qwen3-coder-30b-a3b-instruct-d7l26-0` | `aks-ws2d413dc2e-15611082-vmss000000` | **Uncached remote-client (blob-direct)** | `PrefetchCache=0`, `RemoteCache=0`, `RemoteClient=19787`, `GetProperties CacheHit=0 / CacheMiss=16` | 43.94 s model load | **~1.30 GiB/s** |
+| 2026-08-24 12:39 | `qwen3-coder-30b-a3b-instruct-pr8t4-0` | (Standard_NC24ads_A100_v4) | **Warm DACS remote cache hit** | `PrefetchCache=0`, `RemoteCache=19787`, `RemoteClient=0`, `GetProperties CacheHit=16 / CacheMiss=0` | 27.44 s model load (26.3 s stream) | **~2.20 GiB/s** |
 
 ### Timing evidence for `rcgrj-0`
 
@@ -1109,12 +1110,22 @@ StreamingClient.cpp:LogDownloadLatencyStatsInner: Download latencies (ms) from R
 INFO 08-24 09:32:09 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 43.941432 seconds
 ```
 
+### Timing evidence for `pr8t4-0` (warm DACS cache hit)
+
+```text
+INFO 08-24 12:39:16 [gpu_model_runner.py:5037] Starting to load model /root/.cache/vllm/assets/model_streamer/2c82cfef...
+StreamingClient.cpp:LogReadChunkStats: ReadChunk stats: MountName= ChunkSize=3145728 Total=19787 PrefetchCache=0 RemoteCache=19787 RemoteClient=0 ZeroCopy=19292 SubChunk=495
+StreamingClient.cpp:LogGetPropertiesStats: GetProperties stats: MountName= Total=16 CacheHit=16 CacheMiss=0
+INFO 08-24 12:39:43 file_streamer.py:69 [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 26.3s, 2.2 GiB/s
+INFO 08-24 12:39:44 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 27.438513 seconds
+```
+
 ### Interpretation
 
-- Both pods ran on `Standard_NC24ads_A100_v4` and both landed on the
-  **uncached remote-client (blob-direct) path** — `RemoteCache=0`,
-  `RemoteClient=~19,500–19,787`.
-- Blob-side latency was very similar on both runs (P50 41–42 ms,
+- Both `rcgrj-0` and `d7l26-0` ran on `Standard_NC24ads_A100_v4` and
+  landed on the **uncached remote-client (blob-direct) path** —
+  `RemoteCache=0`, `RemoteClient=~19,500–19,787`.
+- Blob-side latency was very similar on both uncached runs (P50 41–42 ms,
   P95 ~77 ms), and end-to-end throughput came out at
   **~1.23 GiB/s** and **~1.30 GiB/s** respectively — well above the
   1.0 GiB/s uncached number in the 2026-08-11 runs on this cluster.
@@ -1128,18 +1139,28 @@ INFO 08-24 09:32:09 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memo
   2. Even if some chunks did upload, `d7l26-0` landed on a different
      node from `cache-sample-0`, and consistent-hashing / server pool
      changes could keep it from finding those keys.
-- Compared with the 2026-08-11 warm-cache baseline
-  (`bp2kr-0`: 2.2 GiB/s, 26.83 s), both of these uncached runs are
-  about **1.7× slower** than what the DACS cache-hit path delivered
-  on the same VM SKU.
+- By the time `pr8t4-0` started (~3 h later, 12:39 UTC), the DACS
+  remote cache had been fully populated — all 19,787 chunks served
+  as `RemoteCache` hits, `RemoteClient=0` (no blob-direct fallback),
+  `GetProperties CacheHit=16/16`. End-to-end throughput jumped to
+  **~2.20 GiB/s** (26.3 s stream, 27.44 s total model load), i.e.
+  **~1.7× faster** than the two uncached runs and back in line with
+  the 2026-08-11 warm-cache baseline (`bp2kr-0`: 2.2 GiB/s, 26.83 s).
 
 ### Conclusion
 
-On 2026-08-24, both `qwen3-coder-30b-a3b-instruct-rcgrj-0` and
-`qwen3-coder-30b-a3b-instruct-d7l26-0` ran on `Standard_NC24ads_A100_v4`
-with DACS wired in but ended up on the **blob-direct** path. End-to-end
-model download throughput was about **1.23 GiB/s** and **1.30 GiB/s**
-respectively (~44–46 s to bring 56.93 GiB of safetensors into GPU
-memory), roughly consistent with each other and clearly slower than
-the ~2.2 GiB/s DACS `RemoteCache` hit path documented earlier on this
-cluster.
+On 2026-08-24 the same 56.93 GiB `qwen3-coder-30b-a3b-instruct` model
+was loaded three times on `Standard_NC24ads_A100_v4` with DACS wired
+in, and produced a clean uncached-vs-cached comparison on this same
+cluster:
+
+- `rcgrj-0` (08:51) and `d7l26-0` (09:31): both **blob-direct**, ~44–46 s
+  to bring the model in, **~1.23–1.30 GiB/s**.
+- `pr8t4-0` (12:39): **warm DACS cache hit** (`RemoteCache=19787/19787`),
+  **26.3 s stream / 27.44 s model load, ~2.20 GiB/s** — about **1.7×
+  faster** than the two uncached runs, matching the 2026-08-11
+  `bp2kr-0` warm-cache baseline (~2.2 GiB/s, 26.83 s).
+
+So once the DACS cache is actually populated for this model, the
+real-world payoff on this SKU is roughly a **1.7× speedup** over the
+blob-direct path.
