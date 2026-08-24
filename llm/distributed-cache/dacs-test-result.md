@@ -1060,3 +1060,86 @@ For this Qwen3-Coder-30B-A3B-Instruct workload on `andy-aks135`, the two live 20
 - **Uncached remote-client path (`4fwkc-0`)**: **1.0 GiB/s**, **58.27 s** model load
 
 So within the same model family and same RunAI Streamer integration, the DACS cache-hit path was about **2.2× higher throughput** and roughly **2.17× faster wall-clock model load**, saving about **31.44 s** versus `4fwkc-0`.
+
+---
+
+## 2026-08-24 — `qwen3-coder-30b-a3b-instruct` two back-to-back uncached runs on `andy-aks135`
+
+Two pods were spun up on this cluster within ~40 min of each other. Both
+show the DACS cache client wired in but **neither hit `RemoteCache`** —
+both ended up on the pure remote-client (blob-direct) path, so this note
+records two consecutive **uncached** baselines under otherwise identical
+setup.
+
+### Setup (both pods)
+
+- Model: `Qwen/Qwen3-Coder-30B-A3B-Instruct` (56.93 GiB, 18,867 tensor chunks)
+- Model source: `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct`
+- vLLM load path: `--load-format=runai_streamer`, `--tensor-parallel-size=1`, `--dtype=bfloat16`
+- Storage account: `fuse27e8e9b66850e485189` (via Azure Workload Identity, `AZURE_CLIENT_ID=4d91b548-…`)
+- DACS wiring present: `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED=1`,
+  `CACHE_DISCOVERY_URL=cache-sample-discovery.dacs-cache-system.svc.cluster.local`,
+  `RUNAI_STREAMER_CHUNK_BYTESIZE=3145728`
+- **VM SKU on both nodes: `Standard_NC24ads_A100_v4`** (A100 80 GB × 1)
+
+### Result summary
+
+| Time (UTC) | Pod | Node | Observed path | Cache evidence | Stream / model-load time | **Download throughput** |
+|---|---|---|---|---|---:|---:|
+| 2026-08-24 08:51 | `qwen3-coder-30b-a3b-instruct-rcgrj-0` | `aks-wsc45b85930-29303857-vmss000000` | **Uncached remote-client (blob-direct)** | `PrefetchCache=0`, `RemoteCache=0`, `RemoteClient=19508+`, `GetProperties CacheHit=0 / CacheMiss=16` | 46.28 s model load | **~1.23 GiB/s** |
+| 2026-08-24 09:31 | `qwen3-coder-30b-a3b-instruct-d7l26-0` | `aks-ws2d413dc2e-15611082-vmss000000` | **Uncached remote-client (blob-direct)** | `PrefetchCache=0`, `RemoteCache=0`, `RemoteClient=19787`, `GetProperties CacheHit=0 / CacheMiss=16` | 43.94 s model load | **~1.30 GiB/s** |
+
+### Timing evidence for `rcgrj-0`
+
+```text
+INFO 08-24 08:52:33 [gpu_model_runner.py:5037] Starting to load model /root/.cache/vllm/assets/model_streamer/2c82cfef...
+StreamingClient.cpp:LogReadChunkStats: ReadChunk stats: MountName= ChunkSize=3145728 Total=19487 PrefetchCache=0 RemoteCache=0 RemoteClient=19508 ZeroCopy=0 SubChunk=479
+StreamingClient.cpp:LogGetPropertiesStats: GetProperties stats: MountName= Total=16 CacheHit=0 CacheMiss=16
+StreamingClient.cpp:LogDownloadLatencyStatsInner: Download latencies (ms) from Remote Samples=1000 Min=24 Max=399 Avg=46 P50=41 P95=77
+INFO 08-24 08:53:21 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 46.281176 seconds
+```
+
+### Timing evidence for `d7l26-0`
+
+```text
+INFO 08-24 09:31:24 [gpu_model_runner.py:5037] Starting to load model /root/.cache/vllm/assets/model_streamer/2c82cfef...
+StreamingClient.cpp:LogReadChunkStats: ReadChunk stats: MountName= ChunkSize=3145728 Total=19787 PrefetchCache=0 RemoteCache=0 RemoteClient=19787 ZeroCopy=0 SubChunk=495
+StreamingClient.cpp:LogGetPropertiesStats: GetProperties stats: MountName= Total=16 CacheHit=0 CacheMiss=16
+StreamingClient.cpp:LogDownloadLatencyStatsInner: Download latencies (ms) from Remote Samples=1000 Min=22 Max=364 Avg=46 P50=42 P95=77
+INFO 08-24 09:32:09 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 43.941432 seconds
+```
+
+### Interpretation
+
+- Both pods ran on `Standard_NC24ads_A100_v4` and both landed on the
+  **uncached remote-client (blob-direct) path** — `RemoteCache=0`,
+  `RemoteClient=~19,500–19,787`.
+- Blob-side latency was very similar on both runs (P50 41–42 ms,
+  P95 ~77 ms), and end-to-end throughput came out at
+  **~1.23 GiB/s** and **~1.30 GiB/s** respectively — well above the
+  1.0 GiB/s uncached number in the 2026-08-11 runs on this cluster.
+- Interestingly, `d7l26-0` ran ~40 min after `rcgrj-0` finished but
+  **still did not hit the DACS cache**: `CacheHit=0`, no `RemoteCache`
+  chunks. Two plausible reasons:
+  1. Cache upload has a 60 s start delay (`cacheUploadStartDelaySeconds=60`)
+     but `rcgrj-0` loaded in only 46 s → the first pod finished before
+     the async upload window really engaged, so the cache never got
+     populated with these chunks.
+  2. Even if some chunks did upload, `d7l26-0` landed on a different
+     node from `cache-sample-0`, and consistent-hashing / server pool
+     changes could keep it from finding those keys.
+- Compared with the 2026-08-11 warm-cache baseline
+  (`bp2kr-0`: 2.2 GiB/s, 26.83 s), both of these uncached runs are
+  about **1.7× slower** than what the DACS cache-hit path delivered
+  on the same VM SKU.
+
+### Conclusion
+
+On 2026-08-24, both `qwen3-coder-30b-a3b-instruct-rcgrj-0` and
+`qwen3-coder-30b-a3b-instruct-d7l26-0` ran on `Standard_NC24ads_A100_v4`
+with DACS wired in but ended up on the **blob-direct** path. End-to-end
+model download throughput was about **1.23 GiB/s** and **1.30 GiB/s**
+respectively (~44–46 s to bring 56.93 GiB of safetensors into GPU
+memory), roughly consistent with each other and clearly slower than
+the ~2.2 GiB/s DACS `RemoteCache` hit path documented earlier on this
+cluster.
