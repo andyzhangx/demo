@@ -1191,6 +1191,7 @@ and populated the remote cache, the two subsequent runs hit that cache
 | 2026-08-24 14:32 | `qwen3-coder-30b-a3b-instruct-6tgdc-0` | **Uncached remote-client (blob-direct)** | `PrefetchCache=0`, `RemoteCache=0`, `RemoteClient=19787`, `ZeroCopy=0`, `GetProperties CacheHit=0 / CacheMiss=16` | 41.8 s | 42.85 s | **~1.4 GiB/s** |
 | 2026-08-24 14:50 | `qwen3-coder-30b-a3b-instruct-wv7xc-0` | **Warm DACS remote cache hit** ⚡ | `PrefetchCache=0`, `RemoteCache=19787`, `RemoteClient=0`, `ZeroCopy=19292`, `GetProperties CacheHit=16 / CacheMiss=0` | **25.87 s** | **26.84 s** | **~2.2 GiB/s** |
 | 2026-08-24 15:13 | `qwen3-coder-30b-a3b-instruct-w9qnz-0` | **Warm DACS remote cache hit** ⚡ | `PrefetchCache=0`, `RemoteCache=19787`, `RemoteClient=0`, `ZeroCopy=19292`, `GetProperties CacheHit=16 / CacheMiss=0` | **25.88 s** | **26.88 s** | **~2.2 GiB/s** |
+| 2026-08-25 01:12 | `qwen3-coder-30b-a3b-instruct-xk87g-0` | **Runai Streamer, no DACS** (baseline reference) | No `AISC_CTR` / `StreamingClient` logs at all — pod has no `RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED` / `CACHE_DISCOVERY_URL` env, so the DACS StorageIntercept isn't loaded | **32.27 s** | **33.29 s** | **~1.8 GiB/s** |
 
 ### Timing evidence for `6tgdc-0` (uncached blob-direct)
 
@@ -1220,6 +1221,24 @@ StreamingClient.cpp:LogReadChunkStats: ReadChunk stats: MountName= ChunkSize=314
 StreamingClient.cpp:LogGetPropertiesStats: GetProperties stats: MountName= Total=16 CacheHit=16 CacheMiss=0
 INFO 08-24 15:14:06 file_streamer.py:69 [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 25.88s, 2.2 GiB/s
 INFO 08-24 15:14:07 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 26.883669 seconds
+```
+
+### Timing evidence for `xk87g-0` (Runai Streamer, no DACS)
+
+This pod was deployed **without** the DACS wiring env vars
+(`RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_ENABLED`,
+`CACHE_DISCOVERY_URL`), so the DACS StorageIntercept isn't loaded and
+there are **no `AISC_CTR` / `StreamingClient` log lines at all**. Only
+Workload Identity envs are present
+(`AZURE_STORAGE_ACCOUNT_NAME=fuse27e8e9b66850e485189`,
+`AZURE_CLIENT_ID=4d91b548-…`,
+`AZURE_FEDERATED_TOKEN_FILE=/var/run/secrets/azure/tokens/azure-identity-token`),
+so the streamer talks straight to Azure Blob.
+
+```text
+INFO 08-25 01:12:08 [gpu_model_runner.py:5037] Starting to load model /root/.cache/vllm/assets/model_streamer/2c82cfef...
+INFO 08-25 01:12:41 file_streamer.py:69 [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 32.27s, 1.8 GiB/s
+INFO 08-25 01:12:42 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 33.287981 seconds
 ```
 
 ### Interpretation
@@ -1263,10 +1282,17 @@ the expected DACS cache warm-up + hit pattern:
   `GetProperties CacheHit=16/16`), **25.88 s stream / 26.88 s model
   load, ~2.2 GiB/s** — within 40 ms of `wv7xc-0`, confirming the
   warm-cache path is reproducible run-to-run.
+- `xk87g-0` (2026-08-25 01:12): **Runai Streamer with no DACS**
+  (baseline reference), **32.27 s stream / 33.29 s model load,
+  ~1.8 GiB/s**. Sits between the warm-cache path (~2.2 GiB/s) and the
+  DACS uncached blob-direct path (~1.4 GiB/s): plain streamer is
+  ~1.3× faster than the DACS uncached fallback, but the warm-cache
+  path is still ~1.2× faster than plain streamer.
 
 All three warm-cache runs on this cluster (`pr8t4-0` at 12:39,
 `wv7xc-0` at 14:50, `w9qnz-0` at 15:13) converge on the **same
 ~26–27 s / ~2.2 GiB/s** window, matching the 2026-08-11 `bp2kr-0`
 baseline (~2.2 GiB/s, 26.83 s). Once the DACS remote cache is
 populated for a given model, the end-to-end payoff on this SKU is a
-consistent **~1.6–1.7× speedup** over the uncached blob-direct path.
+consistent **~1.6–1.7× speedup** over the DACS uncached blob-direct
+path, and **~1.2× speedup** over plain Runai Streamer without DACS.
