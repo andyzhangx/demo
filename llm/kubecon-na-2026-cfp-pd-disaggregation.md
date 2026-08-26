@@ -149,15 +149,15 @@ All hotels below are part of the official KubeCon NA 2026 room block (discounted
 
 | Hotel | Stars | Rate/night | Distance | Walk | Notes |
 |---|---|---|---|---|---|
-| [Hyatt Regency Salt Lake City](https://www.hyatt.com/hyatt-regency/en-US/slcrs-hyatt-regency-salt-lake-city) | ★★★★ | $265+ | 0.0 mi | 2 min | Adjacent to venue — most convenient |
-| [Hilton Salt Lake City Center](https://www.hilton.com/en/hotels/slccchh-hilton-salt-lake-city-center/) | ★★★★ | $259+ | 0.1 mi | 3 min | Right next door |
-| [Salt Lake Marriott Downtown at City Creek](https://www.marriott.com/en-us/hotels/slcut-salt-lake-marriott-downtown-at-city-creek/overview) | ★★★★ | $259+ | 0.2 mi | 2 min | Very close, flexible cancellation |
-| [Kimpton Hotel Monaco](https://www.monaco-saltlakecity.com/) | ★★★★ | $224+ | 0.3 mi | 3 min | Boutique; 24h cancellation policy |
-| [Hyatt Place Salt Lake City/Downtown/The Gateway](https://www.hyatt.com/hyatt-place/en-US/slczd-hyatt-place-salt-lake-city-downtown-the-gateway) | ★★★ | $215+ | 0.3 mi | 8 min | **Includes breakfast** |
-| [Salt Lake Marriott City Center](https://www.marriott.com/en-us/hotels/slccc-salt-lake-city-marriott-city-center/overview) | ★★★★ | $249+ | 0.4 mi | 9 min | Solid four-star option |
-| [Element Salt Lake City Downtown](https://www.marriott.com/en-us/hotels/slcel-element-salt-lake-city-downtown/overview) | ★★★ | $209+ | ~0.4 mi | ~10 min | **Includes breakfast**; extended-stay style |
-| [The Little America Hotel](https://saltlake.littleamerica.com/) | ★★★★ | $219+ | 0.7 mi | 16 min | Classic SLC property, large rooms |
-| [DoubleTree by Hilton Downtown](https://www.hilton.com/en/hotels/slcwsdt-doubletree-suites-salt-lake-city-downtown/) | ★★★ | $234+ | 0.7 mi | 16 min | 15.52% tax (lower) |
+| [Hyatt Regency Salt Lake City](https://www.hyatt.com/hyatt-regency/en-US/slcrs-hyatt-regency-salt-lake-city)<br>盐湖城凯悦酒店 | ★★★★ | $265+ | 0.0 mi | 2 min | Adjacent to venue — most convenient<br>紧邻会场 — 最方便 |
+| [Hilton Salt Lake City Center](https://www.hilton.com/en/hotels/slccchh-hilton-salt-lake-city-center/)<br>盐湖城中心希尔顿酒店 | ★★★★ | $259+ | 0.1 mi | 3 min | Right next door<br>就在会场旁边 |
+| [Salt Lake Marriott Downtown at City Creek](https://www.marriott.com/en-us/hotels/slcut-salt-lake-marriott-downtown-at-city-creek/overview)<br>盐湖城市溪万豪酒店 | ★★★★ | $259+ | 0.2 mi | 2 min | Very close, flexible cancellation<br>非常近，取消政策灵活 |
+| [Kimpton Hotel Monaco](https://www.monaco-saltlakecity.com/)<br>金普顿摩纳哥酒店 | ★★★★ | $224+ | 0.3 mi | 3 min | Boutique; 24h cancellation policy<br>精品酒店；24 小时取消政策 |
+| [Hyatt Place Salt Lake City/Downtown/The Gateway](https://www.hyatt.com/hyatt-place/en-US/slczd-hyatt-place-salt-lake-city-downtown-the-gateway)<br>盐湖城市中心 Gateway 凯悦嘉轩 | ★★★ | $215+ | 0.3 mi | 8 min | **Includes breakfast**<br>**含早餐** |
+| [Salt Lake Marriott City Center](https://www.marriott.com/en-us/hotels/slccc-salt-lake-city-marriott-city-center/overview)<br>盐湖城市中心万豪酒店 | ★★★★ | $249+ | 0.4 mi | 9 min | Solid four-star option<br>可靠的四星选择 |
+| [Element Salt Lake City Downtown](https://www.marriott.com/en-us/hotels/slcel-element-salt-lake-city-downtown/overview)<br>盐湖城市中心雅乐轩 Element | ★★★ | $209+ | ~0.4 mi | ~10 min | **Includes breakfast**; extended-stay style<br>**含早餐**；长住型酒店 |
+| [The Little America Hotel](https://saltlake.littleamerica.com/)<br>小美洲酒店 | ★★★★ | $219+ | 0.7 mi | 16 min | Classic SLC property, large rooms<br>盐湖城经典老牌酒店，房间宽敞 |
+| [DoubleTree by Hilton Downtown](https://www.hilton.com/en/hotels/slcwsdt-doubletree-suites-salt-lake-city-downtown/)<br>市中心希尔顿逸林酒店 | ★★★ | $234+ | 0.7 mi | 16 min | 15.52% tax (lower)<br>税率较低 (15.52%) |
 
 ### Recommendations
 
