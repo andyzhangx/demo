@@ -134,3 +134,35 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
 - NVIDIA Dynamo: https://github.com/ai-dynamo/dynamo
 - NIXL (NVIDIA Inference Xfer Library): https://github.com/ai-dynamo/nixl
 - P/D working config (our verified setup): https://github.com/andyzhangx/demo/blob/master/llm/pd-disaggregation/kaito/pd-working-config.md
+
+---
+
+## Travel / Logistics
+
+**Event:** KubeCon + CloudNativeCon North America 2026
+**Dates:** November 9–12, 2026
+**Venue:** [Salt Palace Convention Center](https://www.visitsaltlake.com/salt-palace-convention-center/attend/), 90 South West Temple, Salt Lake City, UT 84101
+
+### Official Room Block Hotels
+
+All hotels below are part of the official KubeCon NA 2026 room block (discounted rates) and are within walking distance of the Salt Palace Convention Center. Taxes ~17.52% unless noted. Book early — room blocks close mid-to-late October 2026.
+
+| Hotel | Stars | Rate/night | Distance | Walk | Notes |
+|---|---|---|---|---|---|
+| [Hyatt Regency Salt Lake City](https://www.hyatt.com/hyatt-regency/en-US/slcrs-hyatt-regency-salt-lake-city) | ★★★★ | $265+ | 0.0 mi | 2 min | Adjacent to venue — most convenient |
+| [Hilton Salt Lake City Center](https://www.hilton.com/en/hotels/slccchh-hilton-salt-lake-city-center/) | ★★★★ | $259+ | 0.1 mi | 3 min | Right next door |
+| [Salt Lake Marriott Downtown at City Creek](https://www.marriott.com/en-us/hotels/slcut-salt-lake-marriott-downtown-at-city-creek/overview) | ★★★★ | $259+ | 0.2 mi | 2 min | Very close, flexible cancellation |
+| [Kimpton Hotel Monaco](https://www.monaco-saltlakecity.com/) | ★★★★ | $224+ | 0.3 mi | 3 min | Boutique; 24h cancellation policy |
+| [Hyatt Place Salt Lake City/Downtown/The Gateway](https://www.hyatt.com/hyatt-place/en-US/slczd-hyatt-place-salt-lake-city-downtown-the-gateway) | ★★★ | $215+ | 0.3 mi | 8 min | **Includes breakfast** |
+| [Salt Lake Marriott City Center](https://www.marriott.com/en-us/hotels/slccc-salt-lake-city-marriott-city-center/overview) | ★★★★ | $249+ | 0.4 mi | 9 min | Solid four-star option |
+| [Element Salt Lake City Downtown](https://www.marriott.com/en-us/hotels/slcel-element-salt-lake-city-downtown/overview) | ★★★ | $209+ | ~0.4 mi | ~10 min | **Includes breakfast**; extended-stay style |
+| [The Little America Hotel](https://saltlake.littleamerica.com/) | ★★★★ | $219+ | 0.7 mi | 16 min | Classic SLC property, large rooms |
+| [DoubleTree by Hilton Downtown](https://www.hilton.com/en/hotels/slcwsdt-doubletree-suites-salt-lake-city-downtown/) | ★★★ | $234+ | 0.7 mi | 16 min | 15.52% tax (lower) |
+
+### Recommendations
+
+- 🏃 **Closest to venue:** Hyatt Regency (2 min) or Hilton City Center (3 min)
+- 💰 **Best value:** Hyatt Place ($215, breakfast included) or Element ($209, breakfast included)
+- ✨ **Most flexible cancellation:** Kimpton Hotel Monaco (24h) or Salt Lake Marriott Downtown at City Creek (24h)
+
+Official venue + travel page (booking links, room block cutoffs): <https://events.linuxfoundation.org/kubecon-cloudnativecon-north-america/attend/venue-travel/>
