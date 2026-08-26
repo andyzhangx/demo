@@ -470,10 +470,10 @@ layered on later.
 
 ### 8.1. Committed by issue #2286 (initial preset coverage)
 
-| KAITO preset | HF ID | Method | `num_speculative_tokens` | Extra memory / download |
-|---|---|---|---|---|
-| `deepseek-r1-0528` | `deepseek-ai/DeepSeek-R1-0528` | `mtp` | 3 | none — MTP head is in the checkpoint |
-| `deepseek-v3-0324` | `deepseek-ai/DeepSeek-V3-0324` | `mtp` | 3 | none — same |
+| KAITO preset | HF ID | In KAITO catalog? | Method | `num_speculative_tokens` | Extra memory / download |
+|---|---|---|---|---|---|
+| `deepseek-r1-0528` | `deepseek-ai/DeepSeek-R1-0528` | ✅ Yes | `mtp` | 3 | none — MTP head is in the checkpoint |
+| `deepseek-v3-0324` | `deepseek-ai/DeepSeek-V3-0324` | ✅ Yes | `mtp` | 3 | none — same |
 
 Source: issue #2286 —
 
@@ -484,7 +484,6 @@ Explicitly out of scope for this issue:
 
 - EAGLE / Medusa separate-draft-model methods (need checkpoint sourcing).
 - Typed override field on `InferenceSpec` for power users.
-- DeepSeek-V4 preset onboarding with `dspark` (lands once that preset exists).
 
 ### 8.2. Free-to-onboard next (same `mtp` path, still no extra memory / download)
 
@@ -495,29 +494,32 @@ confirm the checkpoint ships an MTP path. The maintainer cost is one
 re-verification against KAITO's pinned vLLM version, then one entry in
 `catalogOverrides`.
 
-| KAITO preset | HF ID | Notes / vLLM evidence |
-|---|---|---|
-| `deepseek-v3.2` | `deepseek-ai/DeepSeek-V3.2` | DeepSeek-V3 family continuation; same MTP path |
-| `gemma-4-E2B-it` | `google/gemma-4-E2B-it` | vLLM MTP doc: *"The E2B, E4B, 12B, 26B-A4B, and 31B Gemma 4 IT assistant checkpoints are supported."* Uses `"method":"mtp"` with a Gemma 4 assistant checkpoint in the `model` field. |
-| `gemma-4-E4B-it` | `google/gemma-4-E4B-it` | same |
-| `gemma-4-12B-it` | `google/gemma-4-12B-it` | same |
-| `gemma-4-26B-A4B-it` | `google/gemma-4-26B-A4B-it` | same |
-| `gemma-4-31B-it` | `google/gemma-4-31B-it` | same |
+| KAITO preset | HF ID | In KAITO catalog? | Notes / vLLM evidence |
+|---|---|---|---|
+| `deepseek-v3.2` | `deepseek-ai/DeepSeek-V3.2` | ✅ Yes | DeepSeek-V3 family continuation; same MTP path |
+| `gemma-4-E2B-it` | `google/gemma-4-E2B-it` | ✅ Yes | vLLM MTP doc: *"The E2B, E4B, 12B, 26B-A4B, and 31B Gemma 4 IT assistant checkpoints are supported."* Uses `"method":"mtp"` with a Gemma 4 assistant checkpoint in the `model` field. |
+| `gemma-4-E4B-it` | `google/gemma-4-E4B-it` | ✅ Yes | same |
+| `gemma-4-12B-it` | `google/gemma-4-12B-it` | ✅ Yes | same |
+| `gemma-4-26B-A4B-it` | `google/gemma-4-26B-A4B-it` | ✅ Yes | same |
+| `gemma-4-31B-it` | `google/gemma-4-31B-it` | ✅ Yes | same |
 
 ⚠️ Note: the distilled presets
 `DeepSeek-R1-Distill-Llama-8B` and `DeepSeek-R1-Distill-Qwen-14B` are
 **not** MTP candidates — they are Llama / Qwen architectures with no MTP
 head in the checkpoint.
 
-### 8.3. Waiting on preset (`dspark`, DeepSeek-V4 family)
+### 8.3. Ready to onboard (`dspark`, DeepSeek-V4 family) — presets now in catalog
 
-Issue #2286 explicitly parks `dspark` until the DeepSeek-V4 preset lands.
-Once it does, the same pattern applies:
+Issue #2286 originally parked `dspark` until the DeepSeek-V4 preset landed.
+**As of August 2026, both DeepSeek-V4 presets are now in the KAITO model
+catalog** (architecture `DeepseekV4ForCausalLM`), so `dspark` onboarding is
+no longer blocked on preset availability — it just needs the same
+re-verification + `catalogOverrides` entry as section 8.2.
 
-| KAITO preset | HF ID | Method |
-|---|---|---|
-| `deepseek-v4-flash-0731` | `deepseek-ai/DeepSeek-V4-Flash-0731` | `dspark` |
-| `deepseek-v4-pro` | `deepseek-ai/DeepSeek-V4-Pro` | `dspark` |
+| KAITO preset | HF ID | In KAITO catalog? | Method |
+|---|---|---|---|
+| `deepseek-v4-flash-0731` | `deepseek-ai/DeepSeek-V4-Flash-0731` | ✅ Yes | `dspark` |
+| `deepseek-v4-pro` | `deepseek-ai/DeepSeek-V4-Pro` | ✅ Yes | `dspark` |
 
 Evidence: DeepSeek DSpark paper (arXiv:2607.05147); vLLM upstream now
 documents DSpark as one of the parallel-drafter methods.
@@ -574,7 +576,7 @@ code-completion / RAG / agent workloads.
 |---|---|---|
 | **Shipping (issue #2286)** | `deepseek-r1-0528`, `deepseek-v3-0324` | `mtp`, `num_speculative_tokens: 3`, in `catalogOverrides` from day one |
 | **Free-to-onboard next (same `mtp` path)** | `deepseek-v3.2`, `gemma-4-{E2B,E4B,12B,26B-A4B,31B}-it` | Needs one re-verification + one `catalogOverrides` entry each |
-| **Blocked on preset (`dspark`)** | `deepseek-v4-flash-0731`, `deepseek-v4-pro` | Waits until DeepSeek-V4 preset merges |
+| **Ready to onboard (`dspark`)** | `deepseek-v4-flash-0731`, `deepseek-v4-pro` | Presets now in KAITO catalog; needs re-verification + `catalogOverrides` entry |
 | **Deferred (EAGLE / MLP draft)** | Llama-3.1/3.3, Qwen3.*, Mistral-7B, etc. | Out of scope for #2286; needs draft-checkpoint sourcing design |
 | **Universal opt-in (`ngram` / `suffix`)** | Any preset | Not part of #2286 initial commitment |
 
