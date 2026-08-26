@@ -459,7 +459,128 @@ QPS climbs. The two features are complementary.
 
 ---
 
-## 8. TL;DR
+## 8. Model coverage — today vs. what could be onboarded next
+
+Cross-referencing the KAITO preset catalog
+([`presets/workspace/models/model_catalog.yaml`](https://github.com/kaito-project/kaito/blob/main/presets/workspace/models/model_catalog.yaml))
+against vLLM's speculative-decoding docs
+([features/speculative_decoding/](https://github.com/vllm-project/vllm/tree/main/docs/features/speculative_decoding))
+gives a clear picture of what issue #2286 actually ships versus what could be
+layered on later.
+
+### 8.1. Committed by issue #2286 (initial preset coverage)
+
+| KAITO preset | HF ID | Method | `num_speculative_tokens` | Extra memory / download |
+|---|---|---|---|---|
+| `deepseek-r1-0528` | `deepseek-ai/DeepSeek-R1-0528` | `mtp` | 3 | none — MTP head is in the checkpoint |
+| `deepseek-v3-0324` | `deepseek-ai/DeepSeek-V3-0324` | `mtp` | 3 | none — same |
+
+Source: issue #2286 —
+
+> *"deepseek-v3-0324 and deepseek-r1-0528 (existing KAITO presets) already
+> support mtp at zero extra memory/download cost."*
+
+Explicitly out of scope for this issue:
+
+- EAGLE / Medusa separate-draft-model methods (need checkpoint sourcing).
+- Typed override field on `InferenceSpec` for power users.
+- DeepSeek-V4 preset onboarding with `dspark` (lands once that preset exists).
+
+### 8.2. Free-to-onboard next (same `mtp` path, still no extra memory / download)
+
+These presets already exist in the KAITO catalog and the vLLM upstream MTP
+docs
+([mtp.md](https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/mtp.md))
+confirm the checkpoint ships an MTP path. The maintainer cost is one
+re-verification against KAITO's pinned vLLM version, then one entry in
+`catalogOverrides`.
+
+| KAITO preset | HF ID | Notes / vLLM evidence |
+|---|---|---|
+| `deepseek-v3.2` | `deepseek-ai/DeepSeek-V3.2` | DeepSeek-V3 family continuation; same MTP path |
+| `gemma-4-E2B-it` | `google/gemma-4-E2B-it` | vLLM MTP doc: *"The E2B, E4B, 12B, 26B-A4B, and 31B Gemma 4 IT assistant checkpoints are supported."* Uses `"method":"mtp"` with a Gemma 4 assistant checkpoint in the `model` field. |
+| `gemma-4-E4B-it` | `google/gemma-4-E4B-it` | same |
+| `gemma-4-12B-it` | `google/gemma-4-12B-it` | same |
+| `gemma-4-26B-A4B-it` | `google/gemma-4-26B-A4B-it` | same |
+| `gemma-4-31B-it` | `google/gemma-4-31B-it` | same |
+
+⚠️ Note: the distilled presets
+`DeepSeek-R1-Distill-Llama-8B` and `DeepSeek-R1-Distill-Qwen-14B` are
+**not** MTP candidates — they are Llama / Qwen architectures with no MTP
+head in the checkpoint.
+
+### 8.3. Waiting on preset (`dspark`, DeepSeek-V4 family)
+
+Issue #2286 explicitly parks `dspark` until the DeepSeek-V4 preset lands.
+Once it does, the same pattern applies:
+
+| KAITO preset | HF ID | Method |
+|---|---|---|
+| `deepseek-v4-flash-0731` | `deepseek-ai/DeepSeek-V4-Flash-0731` | `dspark` |
+| `deepseek-v4-pro` | `deepseek-ai/DeepSeek-V4-Pro` | `dspark` |
+
+Evidence: DeepSeek DSpark paper (arXiv:2607.05147); vLLM upstream now
+documents DSpark as one of the parallel-drafter methods.
+
+### 8.4. Deferred — EAGLE / EAGLE-3 (separate draft checkpoint)
+
+Out of scope for issue #2286 (each target needs a matching, maintained
+draft checkpoint plus real extra GPU memory), but the vLLM EAGLE docs
+([eagle.md](https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/eagle.md))
+point at two curated draft collections:
+
+- [`RedHatAI/speculator-models`](https://huggingface.co/collections/RedHatAI/speculator-models)
+- [`yuhuili/models` (EAGLE)](https://huggingface.co/yuhuili/models?search=eagle)
+
+Mapping to presets already in the KAITO catalog:
+
+| KAITO preset | Candidate EAGLE / EAGLE-3 draft |
+|---|---|
+| `llama-3.1-8b-instruct` | `RedHatAI/Llama-3.1-8B-Instruct-speculator.eagle3`, `yuhuili/EAGLE-LLaMA3-Instruct-8B` |
+| `llama-3.3-70b-instruct` | RedHatAI Llama-3.3-70B EAGLE-3 speculator |
+| `qwen3-8b-awq`, `qwen3.5-*`, `qwen3.6-*` | RedHatAI Qwen3-family EAGLE-3 speculators |
+| `mistral-7b-instruct-v0.3` | yuhuili EAGLE Mistral series |
+
+### 8.5. Deferred — MLP speculator (IBM accelerators)
+
+Also out of scope for issue #2286 for the same reason (separate draft
+checkpoint). vLLM's MLP speculator docs
+([mlp.md](https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/mlp.md))
+list IBM's `*-accelerator` checkpoints:
+
+| KAITO preset | Candidate MLP draft |
+|---|---|
+| `llama-3.1-8b-instruct` | `ibm-ai-platform/llama3-8b-accelerator` |
+| `llama-3.3-70b-instruct` | `ibm-ai-platform/llama3-70b-accelerator` — known issue tracked in vLLM [#34106](https://github.com/vllm-project/vllm/issues/34106) / [#34163](https://github.com/vllm-project/vllm/pull/34163) |
+
+⚠️ `granite-4.1-8b` is not directly served by the current IBM accelerator
+collection (they cover granite-3b/8b/20b **code** and granite-7b
+instruct, not granite-4.1); it would need a fresh accelerator checkpoint
+before it can join this row.
+
+### 8.6. `ngram` / `suffix` — universal, but not part of the initial commitment
+
+These methods do not need a draft model at all — they lookup against the
+prompt and generation history. In principle any preset in the catalog
+could opt in, and typical parameters are
+`num_speculative_tokens: 5, prompt_lookup_max: 4`. Issue #2286 does not
+define per-preset ngram entries; if the maintainers decide to expose it,
+it is a good candidate for a preset-wide default on
+code-completion / RAG / agent workloads.
+
+### 8.7. Summary table
+
+| Bucket | Presets | Status |
+|---|---|---|
+| **Shipping (issue #2286)** | `deepseek-r1-0528`, `deepseek-v3-0324` | `mtp`, `num_speculative_tokens: 3`, in `catalogOverrides` from day one |
+| **Free-to-onboard next (same `mtp` path)** | `deepseek-v3.2`, `gemma-4-{E2B,E4B,12B,26B-A4B,31B}-it` | Needs one re-verification + one `catalogOverrides` entry each |
+| **Blocked on preset (`dspark`)** | `deepseek-v4-flash-0731`, `deepseek-v4-pro` | Waits until DeepSeek-V4 preset merges |
+| **Deferred (EAGLE / MLP draft)** | Llama-3.1/3.3, Qwen3.*, Mistral-7B, etc. | Out of scope for #2286; needs draft-checkpoint sourcing design |
+| **Universal opt-in (`ngram` / `suffix`)** | Any preset | Not part of #2286 initial commitment |
+
+---
+
+## 9. TL;DR
 
 - **User**: adds one annotation. Gets ~1.5×–1.7× interactive-latency win on
   supported presets, zero risk on unsupported presets (webhook rejects).
