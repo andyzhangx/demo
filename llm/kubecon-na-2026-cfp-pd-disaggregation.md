@@ -159,10 +159,55 @@ All hotels below are part of the official KubeCon NA 2026 room block (discounted
 | [The Little America Hotel](https://saltlake.littleamerica.com/)<br>小美洲酒店 | ★★★★ | $219+ | 0.7 mi | 16 min | Classic SLC property, large rooms<br>盐湖城经典老牌酒店，房间宽敞 |
 | [DoubleTree by Hilton Downtown](https://www.hilton.com/en/hotels/slcwsdt-doubletree-suites-salt-lake-city-downtown/)<br>市中心希尔顿逸林酒店 | ★★★ | $234+ | 0.7 mi | 16 min | 15.52% tax (lower)<br>税率较低 (15.52%) |
 
+### Additional Nearby Hotels (not in official room block / 非官方协议酒店)
+
+These hotels are **not** part of the KubeCon official room block, so you won't get the conference discount — but several are actually **closer to the venue** than some official block properties. Book via each hotel's website, Booking.com, Expedia, etc. Prices fluctuate and rooms may sell out earlier, so book ASAP if the official block is full or you prefer these properties.
+
+以下酒店**不在** KubeCon 官方协议价名单中，所以拿不到大会折扣价，但其中不少地理位置甚至比官方名单里的酒店更近。可直接通过酒店官网或 Booking/Expedia 等平台预订。价格会波动，房间也可能更早售完，建议尽早预订。
+
+| Hotel | Stars | Distance | Walk | Notes |
+|---|---|---|---|---|
+| [Radisson Hotel Salt Lake City Downtown](https://www.radissonhotelsamericas.com/en-us/hotels/radisson-salt-lake-city)<br>盐湖城市中心丽笙酒店 | ★★★ | 0.1 mi | 2 min | Steps from convention center entrance; Copper Canyon restaurant on-site; 15 meeting rooms<br>紧邻会场入口；含 Copper Canyon 餐厅；15 间会议室 |
+| [Le Méridien Salt Lake City Downtown](https://www.marriott.com/en-us/hotels/slcmd-le-meridien-salt-lake-city-downtown/overview/)<br>盐湖城市中心艾美酒店 | ★★★★ | 0.2 mi | 3 min | Boutique design, 144 rooms; outdoor pool; Adelaide French-inspired restaurant<br>精品设计，144 间客房；室外泳池；Adelaide 法式风格餐厅 |
+| [Hyatt House Salt Lake City/Downtown](https://www.hyatt.com/hyatt-house/en-US/slcxd-hyatt-house-salt-lake-city-downtown)<br>盐湖城市中心凯悦嘉寓 | ★★★ | 0.2 mi | 3 min | All-suite with in-room kitchens; **free breakfast**; H Bar in lobby<br>全套房带厨房；**含免费早餐**；大堂 H Bar |
+| [Holiday Inn Express Salt Lake City Downtown](https://www.ihg.com/holidayinnexpress/hotels/us/en/salt-lake-city/slcew/hoteldetail)<br>盐湖城市中心智选假日酒店 | ★★★ | 0.2 mi | 3 min | **Best value pick**; free hot breakfast; indoor pool, hot tub, sauna; 2,400+ reviews<br>**性价比首选**；免费热早餐；室内泳池、热水浴缸、桑拿；2400+ 评论 |
+| [AC Hotel by Marriott Salt Lake City Downtown](https://www.marriott.com/en-us/hotels/slcak-ac-hotel-salt-lake-city-downtown/overview/)<br>盐湖城市中心 AC 万豪酒店 | ★★★★ | 0.3 mi | 5 min | Modern boutique; Marriott Bonvoy; European-inspired design<br>现代精品风格；Marriott Bonvoy 积分；欧式设计 |
+| [Courtyard by Marriott Salt Lake City Downtown](https://www.marriott.com/en-us/hotels/slcdt-courtyard-salt-lake-city-downtown/overview/)<br>盐湖城市中心万怡酒店 | ★★★ | 0.3 mi | 6 min | Reliable business-class standard; good value<br>可靠的商务级酒店；性价比不错 |
+| [Kimpton Grand Hotel Salt Lake](https://www.grandhotelsaltlake.com/)<br>盐湖城金普顿豪华酒店 | ★★★★ | ~0.6 mi | ~12 min | Recently renovated; near Delta Center<br>近期翻新；靠近 Delta Center |
+| [Sheraton Salt Lake City Hotel](https://www.marriott.com/en-us/hotels/slcsi-sheraton-salt-lake-city-hotel/overview/)<br>盐湖城喜来登酒店 | ★★★★ | 0.8 mi | 16 min | Marriott portfolio; business-focused<br>万豪旗下；商务定位 |
+
+**💡 Trade-off / 权衡：**
+
+- ✅ Better location or unique style (Radisson, Le Méridien, Hyatt House, AC — all ≤ 0.3 mi)<br>更好的位置或独特风格（Radisson、Le Méridien、Hyatt House、AC — 均在 0.3 mi 内）
+- ✅ Not bound by official block cutoff dates<br>不受官方 room block cutoff 时间限制
+- ⚠️ No conference discount — compare final price with the official rate before deciding<br>没有大会折扣 — 下单前请与官方协议价比较
+- ⚠️ May sell out earlier during peak conference week<br>大会高峰期可能更早售罄
+
 ### Recommendations
 
-- 🏃 **Closest to venue:** Hyatt Regency (2 min) or Hilton City Center (3 min)
-- 💰 **Best value:** Hyatt Place ($215, breakfast included) or Element ($209, breakfast included)
-- ✨ **Most flexible cancellation:** Kimpton Hotel Monaco (24h) or Salt Lake Marriott Downtown at City Creek (24h)
+**🏃 Closest to venue / 距离会场最近:**
+- Hyatt Regency (0.0 mi, skybridge to Salt Palace) — official block
+- Radisson (0.1 mi) — non-block
+- Salt Lake Marriott Downtown at City Creek (0.1 mi) — official block
+
+**💰 Best value / 性价比首选:**
+- Holiday Inn Express (~$150–200, 0.2 mi, free breakfast) — non-block
+- Element ($209, official block, free breakfast)
+- Hyatt Place ($215, official block, free breakfast)
+
+**💎 Design / boutique experience / 精品体验:**
+- Le Méridien (0.2 mi, non-block) — modern boutique
+- Kimpton Hotel Monaco (0.3 mi, official block, 24h cancellation)
+- Kimpton Grand Hotel (0.6 mi, non-block) — recently renovated
+
+**🍳 Long-stay / kitchen + breakfast / 长住带厨房+早餐:**
+- Hyatt House (0.2 mi, non-block) — full kitchen, free breakfast
+- Element (0.4 mi, official block) — full kitchen, free breakfast
+
+**✨ Most flexible cancellation / 最灵活取消政策:**
+- Kimpton Hotel Monaco (24h)
+- Salt Lake Marriott Downtown at City Creek (24h)
+
+**🎯 Loyalty program tip / 积分党提示:** Marriott Bonvoy (7 properties here), Hilton Honors (2), World of Hyatt (3), IHG One Rewards (Holiday Inn Express), Radisson Rewards (1).
 
 Official venue + travel page (booking links, room block cutoffs): <https://events.linuxfoundation.org/kubecon-cloudnativecon-north-america/attend/venue-travel/>
