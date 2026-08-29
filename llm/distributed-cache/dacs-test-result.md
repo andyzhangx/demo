@@ -1296,3 +1296,116 @@ baseline (~2.2 GiB/s, 26.83 s). Once the DACS remote cache is
 populated for a given model, the end-to-end payoff on this SKU is a
 consistent **~1.6–1.7× speedup** over the DACS uncached blob-direct
 path, and **~1.2× speedup** over plain Runai Streamer without DACS.
+
+---
+
+## 2026-08-29 — `qwen3-coder-30b-a3b-instruct-lxg9q-0` end-to-end with DACS pre-warmer sidecar
+
+Pod under test:
+
+- Pod: `qwen3-coder-30b-a3b-instruct-lxg9q-0` (namespace `default`)
+- Model: `Qwen/Qwen3-Coder-30B-A3B-Instruct` (56.9 GiB, 18,913 files, 20,729 chunks total across the two paths)
+- Loader: vLLM `--load-format=runai_streamer`, model URI
+  `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct`
+- Containers: main `qwen3-coder-30b-a3b-instruct-lxg9q` + sidecar
+  `dacs-model-warmer` (no init container in this pod — the warmer is
+  wired as a sidecar that runs at pod start, pulls all weights into
+  the DACS cache, then stays alive)
+- Auth: Workload Identity → `WorkloadIdentityCredential`
+- DACS: `distributed cache enabled (port=9065)`, discovery via
+  `cache-sample-discovery.dacs-cache-system.svc.cluster.local`,
+  `prefetchWindowSizeInMB=64`, `maxConnsPerBlobClient=84`
+
+### Two-phase timeline (serial, non-overlapping)
+
+The DACS pre-warmer runs first and blocks until it has streamed all
+model bytes from Azure Blob into the local DACS cache. Only then does
+the main container's vLLM `runai_streamer` load them from the (now
+warm) DACS cache into GPU memory.
+
+| Phase | Actor | Start (UTC) | End (UTC) | Duration | Bytes | Throughput | Cache path |
+|---|---|---|---|---:|---:|---:|---|
+| **Phase 1 — Blob → DACS cache** | `dacs-model-warmer` sidecar | 02:58:06.69 | 02:58:58.00 | **48.52 s** | 56.9 GiB | **~1.17 GiB/s** | `RemoteCache=124`, `RemoteClient=36,520`, `PrefetchCache=2,197` (≈94% chunks from Azure Blob, cold fill) |
+| _gap: vLLM engine boot before `Starting to load model`_ | — | 02:58:58 | 02:59:02 | ~4 s | — | — | — |
+| **Phase 2 — DACS cache → GPU** | main container `runai_streamer` | 02:59:02 | 02:59:20 | **17.93 s** (stream itself 16.99 s) | 56.9 GiB | **~3.3 GiB/s** | `RemoteCache=37,984`, `RemoteClient=0`, `PrefetchCache=333` (100% cluster-cache hit, no blob touch) |
+| **End-to-end** | — | **02:58:06.69** | **02:59:20** | **~74 s** | 56.9 GiB | **~0.77 GiB/s** | — |
+
+### Timing evidence
+
+Pre-warmer sidecar (`dacs-model-warmer`):
+
+```text
+2026-08-29T02:58:06.675 [dacs-warmer] waiting for cache endpoint cache-sample-discovery.dacs-cache-system.svc.cluster.local:9065
+2026-08-29T02:58:06.693 [dacs-warmer] cache endpoint is reachable
+2026-08-29T02:58:06.693 [dacs-warmer] starting model stream for az://pvc-58e234e9-.../Qwen/Qwen3-Coder-30B-A3B-Instruct
+2026-08-29T02:58:09.489 [dacs-warmer] discovered files=16
+2026-08-29T02:58:19.489 [dacs-warmer] progress tensors=2767/18867 elapsed_seconds=10.00
+2026-08-29T02:58:29.499 [dacs-warmer] progress tensors=7104/18867 elapsed_seconds=20.01
+2026-08-29T02:58:39.502 [dacs-warmer] progress tensors=11432/18867 elapsed_seconds=30.01
+2026-08-29T02:58:49.503 [dacs-warmer] progress tensors=15585/18867 elapsed_seconds=40.01
+2026-08-29T02:58:58.004 [dacs-warmer] completed tensors=18867 files=16 elapsed_seconds=48.52
+```
+
+Final DACS histogram from the warmer side:
+
+```text
+ReadChunk stats:  Total=38841  PrefetchCache=2197  RemoteCache=124  RemoteClient=36520  ZeroCopy=0  SubChunk=34575
+Download latencies from Cache:  Samples=124   Min=0 ms   Max=5011 ms  Avg=44 ms   P50=1 ms    P95=19 ms
+Download latencies from Remote: Samples=1000  Min=23 ms  Max=143 ms   Avg=42 ms   P50=41 ms   P95=67 ms
+```
+
+Main container `runai_streamer`:
+
+```text
+(EngineCore pid=235) INFO 08-29 02:59:02 [gpu_model_runner.py:5037] Starting to load model /root/.cache/vllm/assets/model_streamer/2c82cfef...
+(EngineCore pid=235) Loading safetensors using Runai Model Streamer: 100% Completed | 18867/18867 [00:16<00:00, 1129.08it/s]
+(EngineCore pid=235) INFO 08-29 02:59:20 file_streamer.py:69] [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 16.99s, 3.3 GiB/s
+(EngineCore pid=235) INFO 08-29 02:59:20 [gpu_model_runner.py:5132] Model loading took 56.93 GiB memory and 17.932542 seconds
+```
+
+DACS histogram from the main container side (proves phase 2 is 100%
+cluster-cache-served, zero blob egress):
+
+```text
+ReadChunk stats: Total=38317  PrefetchCache=333  RemoteCache=37984  RemoteClient=0  ZeroCopy=786  SubChunk=33748
+```
+
+### Result summary
+
+| Metric | Value |
+|---|---:|
+| Model size | 56.9 GiB (18,913 files, 20,729 chunks) |
+| Phase 1 duration (Blob → DACS cache, warmer) | **48.52 s** |
+| Phase 1 throughput (from Azure Blob into cluster) | **~1.17 GiB/s** |
+| Phase 2 duration (DACS cache → GPU, `runai_streamer`) | **17.93 s** (stream 16.99 s) |
+| Phase 2 throughput (from cache into vLLM) | **~3.3 GiB/s** |
+| End-to-end wall clock (warmer start → model loaded) | **~74 s** |
+| **End-to-end total throughput** | **~0.77 GiB/s** |
+| Post-load engine init (compile + warmup + KV cache) | 132.03 s (compile 31.93 s) — not counted as download |
+| Benchmark result (post-warmup) | `vllm_total_tpm=319107.47`, `tpot_avg_ms=59.57` |
+
+### Interpretation
+
+- This pod does **not** use an init container. Instead the DACS
+  pre-warmer runs as a **sidecar** that fills the cluster cache before
+  the main container's vLLM starts loading — the two phases are strictly
+  serial and non-overlapping, so their times **add** rather than max.
+- **Phase 1** is the real cold Blob → cluster ingest cost:
+  ~94% of chunks come from `RemoteClient` (Azure Blob). Aggregate
+  ~1.17 GiB/s from Blob is consistent with the earlier cold cluster
+  fills in this cluster series (e.g. 2026-07-31 `mvnsn-0` cold fill).
+- **Phase 2** is the fully-warm DACS path: `RemoteClient=0`, 100%
+  cluster-cache-served, and Run:ai Streamer delivers ~3.3 GiB/s from
+  cache into GPU. Matches the earlier host-local warm reference
+  (2026-07-31 `8jdxx-0` reboot at 3.5 GiB/s, 17.13 s).
+- **Reporting choices:**
+  - **User-visible "model download time"** = ~74 s → **~0.77 GiB/s**
+    total throughput (pod scheduled → weights on GPU).
+  - **Internal blob-egress throughput** = ~1.17 GiB/s (phase 1 only)
+    for capacity planning against Azure Blob bandwidth.
+  - **Cache-hit path throughput** = ~3.3 GiB/s (phase 2 only) as the
+    achievable steady state for every subsequent pod on this model.
+- **Second pod on the same model would skip Phase 1 entirely**: the
+  warmer would see `RemoteCache=~100%` at the cluster level and finish
+  within a few seconds (only mirror metadata + a small delta), letting
+  the main container hit the ~3.3 GiB/s DACS-hot path immediately.
