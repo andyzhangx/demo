@@ -37,7 +37,145 @@ carry the full Blob egress latency into the vLLM tensor-load hot path. Even
 then, ~74 s is roughly 2.7× slower than the warm 27 s baseline the sidecar
 was supposedly enabling.
 
-## 2. Why the sidecar exists in the first place
+## 2. Concrete issues observed with the current `dacs-model-warmer` sidecar
+
+These are all directly attributable to the two-phase serial design, not to
+bugs in the warmer binary itself. They come from `dacs-test-result.md` runs
+on `andy-aks135` and comparisons across cluster series.
+
+### 2.1 First-pod wall-clock regresses vs. no-DACS baseline
+
+| Path | First-pod wall clock (Qwen3-Coder-30B, 56.9 GiB) | vs. sidecar |
+|---|---:|---:|
+| Sidecar warmer + main container (`lxg9q-0`) | **~74 s** | 1.00× |
+| Plain Run:ai Streamer against origin Blob (same region, no DACS) | ~26–27 s | ~0.36× |
+| DACS client in-process cold, Blob-direct (`8jdxx-0` early cold fill) | ~180 s (log rolled, aggregate ~300 MB/s during fill) | ~2.4× |
+
+For small models the regression is worse in relative terms: phi-4 (7.15 GiB)
+cold with just the client library was **12.05 s** (`pdvcj-0`). A sidecar
+applied to the same model would add roughly the same Phase-1 duration (~10 s)
+before vLLM even starts — turning a 12 s startup into ~25 s for zero benefit
+to that pod.
+
+### 2.2 Phase 1 and Phase 2 forced to be strictly serial
+
+Measured on `lxg9q-0`:
+
+- Phase 1 (Blob → cache, warmer): 02:58:06.69 → 02:58:58.00 = 48.52 s
+- Gap (vLLM engine boot): 02:58:58 → 02:59:02 = ~4 s
+- Phase 2 (cache → GPU, `runai_streamer`): 02:59:02 → 02:59:20 = 17.93 s
+
+The 56.9 GiB payload is moved through the client-node NIC twice — once as a
+cold Blob download during Phase 1 (`RemoteClient=36,520`) and once as a
+host-local cache read during Phase 2 (`RemoteCache=37,984`). There is no
+overlap: the sidecar’s `startupProbe` gate keeps the main container from
+starting until Phase 1 reports completion, so Run:ai Streamer cannot begin
+reading chunks that are already in cache while the warmer is still writing
+later ones.
+
+### 2.3 The "end-to-end throughput" number is misleading
+
+`dacs-test-result.md` reports `~0.77 GiB/s` end-to-end throughput for the
+sidecar path. This is the payload-over-wall-clock figure, computed as
+56.9 GiB / 74 s. It **hides** that:
+
+- Only 56.9 GiB of unique bytes actually needed to move over the Blob
+  boundary; the rest is intra-node loopback.
+- The comparable no-DACS number (Run:ai Streamer against Blob, same region)
+  is ~2.2 GiB/s (`bp2kr-0` baseline), or 26.83 s wall clock.
+
+Quoting `0.77 GiB/s` next to "cache-hit path throughput 3.3 GiB/s" invites
+readers to conclude DACS is a ~4× win on the cold path when it is actually
+a ~2.7× regression against the no-DACS baseline for that same first pod.
+
+### 2.4 The sidecar consumes cluster resources indefinitely
+
+After Phase 1 completes, the warmer container "stays alive" (per the doc's
+own description). It holds:
+
+- CPU / memory `requests` and `limits` for the entire life of the Workspace
+  pod, not just the warmup window.
+- One Kubernetes container slot per pod (contributes to pod restart/eviction
+  bookkeeping, `containerStatuses`, log volume, and readiness aggregation).
+- A persistent open connection into `cache-sample-discovery`.
+
+An `initContainer` would give the same one-shot semantics without any of
+these steady-state costs. That the current design uses a sidecar and not an
+init container suggests it is trying to leave room for background prefetch
+or progress reporting; neither behavior is exercised after the initial fill.
+
+### 2.5 Concurrent scale-up hits the Blob egress quota N times
+
+Because each pod carries its own warmer, an `InferenceSet` scaling from 0
+to N replicas of a fresh model has N sidecars all downloading the same
+56.9 GiB from the same storage account in parallel. There is no
+de-duplication:
+
+- N × 56.9 GiB against the storage account within the same ~50 s window.
+- On this cluster's storage account that saturates the ~2.4 Gbps aggregate
+  egress observed during `8jdxx-0` — the actual per-pod Phase 1 duration
+  balloons proportionally to N, so 20 pods do not warm in 50 s; they warm
+  in something closer to `50 × 20 / (available parallelism)`.
+- Populates the DACS cache N times over (redundant SSD writes, contends with
+  eviction).
+
+Singleflight de-duplication is impossible from the client side: each
+sidecar is a separate process on a separate pod and cannot see the others.
+Only a shared component (the cache server) can coalesce.
+
+### 2.6 `PrefetchCache` hit rate is low, so the warmer is not even a good
+cache-warming pattern
+
+From the `lxg9q-0` warmer histogram:
+
+```text
+ReadChunk stats: Total=38841  PrefetchCache=2197  RemoteCache=124  RemoteClient=36520
+```
+
+That is ~5.6 % of chunks satisfied by prefetch, ~94 % by direct remote fetch,
+~0.3 % by cross-pool cache. The `prefetchWindowSizeInMB=64` window is not
+tracking the safetensors tensor-order well when the warmer is used, so the
+warmer is barely benefiting from the same prefetch machinery that helps
+steady-state readers.
+
+### 2.7 Failure semantics are ambiguous
+
+If the warmer sidecar fails mid-fill (e.g. transient Blob 503, node SSD
+full), the current design has three unspecified behaviors:
+
+1. Does the main container still start? (If yes, it will fall into the
+   partial-cold path and pay Blob latency for the missing chunks — exactly
+   `66nj8-0`’s 211 s regression.)
+2. Does Kubernetes restart the sidecar? (If yes, the restart re-downloads
+   already-cached chunks unless the warmer is idempotent against the cache
+   — not documented.)
+3. Does the `Workspace` status reflect the fill error? (No: `ModelCacheReady`
+   only tracks `ModelMirror`, not the DACS-side fill.)
+
+Each of these needs its own guard rail today. A server-side read-through
+design eliminates the class of question because the fill is implicit; there
+is no separate object to succeed or fail.
+
+### 2.8 `ModelMirror Ready` semantics are already misleading; the sidecar amplifies it
+
+`dacs-test-result.md` itself calls out that `ModelMirror Ready` does not
+imply the DACS cache is warm. The sidecar makes this worse: users see
+`ModelMirrorReady=True` and `ModelCacheReady=True`, but the pod is *still*
+doing a ~50 s Blob pull inside the sidecar. There is no user-facing signal
+for "cache warmup for this specific pod is in progress"; the operator
+learns it only from the container's stdout progress lines.
+
+### 2.9 Summary of the design smell
+
+The sidecar is doing the work that a distributed cache server is supposed
+to do: fetching from origin, populating shared storage, coordinating across
+requesters. Pushing that responsibility onto every client (via a sidecar or
+otherwise) is exactly the anti-pattern that read-through caches were
+invented to fix. The sections below propose the standard fix.
+
+---
+
+## 3. Why the sidecar exists in the first place
 
 Inspection of the live `cache-sample-0` pod on cluster `andy-aks135`:
 
@@ -98,7 +236,7 @@ The warmer's serial two-phase penalty is baked into this "cache server has no
 origin backend" architectural choice; there is no way to fix it with better
 sidecar scheduling.
 
-## 3. Proposal: move the origin backend into the cache server
+## 4. Proposal: move the origin backend into the cache server
 
 Turn the cache server from a passive block store into a proper **read-through
 cache with asynchronous write-back**. The design goal is: on a miss, the client
@@ -196,7 +334,7 @@ GET latency is ~50–200 ms not 500 ms). The self-serve fallback path stays as
 a safety net for `NetworkError` / server-unreachable scenarios.
 
 `dacs-model-warmer` becomes optional. It is still useful for large
-`InferenceSet` scale-up events (see §5), but it is no longer needed on the
+`InferenceSet` scale-up events (see §6), but it is no longer needed on the
 critical path of the first pod.
 
 ### 3.3 Wire compatibility
@@ -209,7 +347,7 @@ conditions — it either serves the chunk (from cache or from Blob) or reports
 `InvalidTransition` by self-serving) continue to work; they just never hit
 that code path when talking to a new server.
 
-## 4. Expected performance
+## 5. Expected performance
 
 Measured baseline (from `dacs-test-result.md`, this cluster):
 
@@ -228,13 +366,13 @@ With server-side read-through:
 | First pod, small model (phi-4) | **~10–12 s** | Same as current no-warmer path; Blob → client goes through server but adds negligible latency (~1 ms proxy). SSD fill happens off-path. |
 | First pod, big model (Qwen3) | **~35–45 s** | Bounded by Blob-egress bandwidth (~1.5–1.7 GiB/s aggregate through the server's `maxConnsPerBlobClient=84` pool), not by client-serial tensor-load. Wall clock ≈ payload / Blob-egress-BW + 4 s engine boot + 17 s Phase-2 read from cache. Under read-through, Phase 1 and Phase 2 partially overlap — Phase 2 can start reading chunks the moment they are streamed through the server, so the "17 s Phase 2" tail collapses into Phase 1. |
 | Second pod, warm | **~17–28 s** | Unchanged. |
-| Sidecar warmer path (`lxg9q-0` shape) | **~30–35 s** | If the sidecar is still used (see §5), it is much faster too because its own reads go through the same read-through path. |
+| Sidecar warmer path (`lxg9q-0` shape) | **~30–35 s** | If the sidecar is still used (see §6), it is much faster too because its own reads go through the same read-through path. |
 
 Concretely: `74 s → ~35 s` is a ~2× first-pod speedup, achieved without any
 change to Workspace / InferenceSet CRDs and without the sidecar. The
 second-pod path (already fast) is unchanged.
 
-## 5. When the sidecar warmer is still useful
+## 6. When the sidecar warmer is still useful
 
 Read-through does not obsolete the warmer entirely; it only obsoletes it as
 the *default per-pod* path. Two scenarios where an explicit warmer is still
@@ -254,7 +392,7 @@ the right tool:
 
 Both cases are opt-in and cluster-level, not per-pod.
 
-## 6. Migration plan
+## 7. Migration plan
 
 Rough ordering (server-side changes tracked in the DACS repo, client-side in
 the Kaito integration):
@@ -276,7 +414,7 @@ the Kaito integration):
    (Qwen3-Coder-30B), compare first-pod wall-clock against the historical
    sidecar numbers in `dacs-test-result.md`, then GA.
 
-## 7. Interim mitigations (no server changes required)
+## 8. Interim mitigations (no server changes required)
 
 While the server-side work lands, two client-side changes can be made in
 parallel:
@@ -290,7 +428,7 @@ parallel:
    fiber (log-and-forget) shaves that fraction off every client miss even
    in the current architecture.
 
-Neither substitutes for §3, but they are safe defaults today and give
+Neither substitutes for §4, but they are safe defaults today and give
 consistent measurements to compare Option A against.
 
 ---
