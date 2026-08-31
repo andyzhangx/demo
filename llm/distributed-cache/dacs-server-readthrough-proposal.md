@@ -667,3 +667,92 @@ The no-DACS pod's `runai_streamer` reads directly from Azure Blob at
    isolation, DACS changes are necessary but not sufficient — the
    ~212 s post-model-load phase (torch.compile + CUDA-graph capture +
    LMCache/KV warmup) needs separate optimization
+
+---
+
+## Appendix C — Cost of the `dacs-model-warmer` sidecar (2026-08-31)
+
+Based on the live cluster measurements in Appendix A/B, here is the full
+cost of running the current `dacs-model-warmer` sidecar per inference
+pod. All numbers are from the `lxg9q-0` pod
+(`Qwen3-Coder-30B-A3B-Instruct`, 56.9 GiB) on `andy-aks135`.
+
+### C.1 Resource cost (per pod)
+
+| Item | Amount | Evidence / source |
+|---|---|---|
+| Extra client-node NIC traffic | **+56.9 GiB / pod** (Blob→SSD, then SSD→GPU) | vs 1× 56.9 GiB Blob→GPU in the no-DACS baseline |
+| Extra local NVMe SSD residency | 56.9 GiB / pod / node | `/mnt/cache` must hold the full model; `cacheEnable=true`, `attributesCacheEnable=true` |
+| Extra always-on sidecar container | 1 per pod (does not exit after warm) | warmer log: `remaining alive after successful warm` |
+| Extra reserved upload buffer | **400 GiB** (`429496729600` bytes) | warmer log: `Started CacheUploadManager. workers=80, max uploadbuffer=429496729600 bytes` |
+| Extra threads | 80 upload workers + background cache-server-discovery thread + BlobAuthTokenProvider refresh thread | warmer log: `Background cache server discovery thread is enabled`, `Background token update started` |
+
+### C.2 Time cost
+
+| Metric | Value |
+|---|---|
+| Phase 2 waits for Phase 1 tail | ~4 s (engine init finished at +164 s, byte-read starts at +168 s) |
+| Net user-visible pod-ready savings vs no-DACS baseline | **0 s** (398 s vs 399 s Ready) |
+| Model-load step savings | ~14 s (18 s vs 32 s) — but fully absorbed by the ~212 s post-model-load phase |
+
+The sidecar does not shorten user-visible startup on a single first-pod.
+
+### C.3 Azure Blob egress cost (the expensive resource)
+
+For N concurrent first-pods loading the same model:
+
+| Design | Blob egress | Notes |
+|---|---|---|
+| DACS sidecar (current) | **N × 56.9 GiB** | Each pod's warmer does its own Blob fetch |
+| No-DACS baseline | **N × 56.9 GiB** | Each pod's `runai_streamer` does its own Blob fetch |
+| Server-side read-through (proposed) | **1 × 56.9 GiB** | Cache server single-flights the origin fetch |
+
+The sidecar has **no Blob-egress advantage** over no-DACS in the
+first-pod concurrency case — both burn N × 56.9 GiB.
+
+### C.4 Operational and reliability cost
+
+- **Extra container to monitor / debug** in every inference pod
+  (`dacs-model-warmer` has its own crash / probe / config failure modes)
+- **~20 tuning knobs to maintain** per pod: `storagePath`,
+  `azBlobDynamicAccount`, `azBlobDynamicContainer`,
+  `azBlobUseAzureIdentitySDK`, `cacheServerDiscoveryEndpoint`,
+  `prefetchWindowSizeInMB`, `streamingChunkSize`, `maxConnsPerBlobClient`,
+  `cacheRetryMaxAttempts`, `attributesCacheEnable`, etc.
+- **Longer startup dependency chain**: main-container Phase 2 blocks
+  on warmer `startupProbe`; warmer blocks on `cache-sample-discovery`
+  Service being ready
+- **Per-pod token refresh loop** (`BlobAuthTokenProvider`) hitting
+  IMDS / Entra independently from every inference pod
+- **Ineffective prefetch (5.6% hit rate)** on this workload — the
+  `prefetchWindowSizeInMB=64` window does not match safetensors
+  tensor-order access, so the "warmer" is not effectively warming
+  anything beyond dumping bytes into cache
+- **Architectural coupling**: DACS requires the client-side
+  `StorageIntercept` library to talk to the cache server, forcing
+  `dacs-model-warmer` to exist as the intermediary — this is the root
+  cause the read-through proposal addresses
+
+### C.5 What the sidecar *does* buy
+
+To be fair, the sidecar-populated cache does produce value — but the
+value is delivered by the **cache layer**, not by the sidecar itself:
+
+1. **Same-node pod restart is fast** (~3.3 GiB/s host-local SSD read,
+   vs 1.8 GiB/s no-DACS Blob-direct every restart)
+2. **Cross-node second pod on the same model** can hit
+   `cache-sample-0` and skip Blob entirely, saving Blob egress
+
+Server-side read-through **keeps both of these cache-layer benefits**
+while removing the sidecar layer entirely.
+
+### C.6 One-line summary
+
+The `dacs-model-warmer` sidecar is a **client-side workaround for the
+cache server's missing read-through capability**. It moves the
+Blob-fetch work from the cache server into every inference pod, at a
+cost of +56.9 GiB NIC traffic, +400 GiB reserved upload buffer, +80
+threads, +~20 config knobs, +one always-on container per pod, and an
+independent per-pod IMDS/Entra token loop — for a measured
+user-visible startup speedup of **0 s** versus the no-DACS baseline on
+this workload.
