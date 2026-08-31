@@ -677,15 +677,48 @@ cost of running the current `dacs-model-warmer` sidecar per inference
 pod. All numbers are from the `lxg9q-0` pod
 (`Qwen3-Coder-30B-A3B-Instruct`, 56.9 GiB) on `andy-aks135`.
 
-### C.1 Resource cost (per pod)
+### C.1 Resource cost (measured live, not from config)
 
-| Item | Amount | Evidence / source |
+Measured against `lxg9q-0` sidecar container and `cache-sample-0` on
+`andy-aks135` after warm-up completed. Numbers are from `kubectl top`,
+`/proc/1/status`, and `df` / `du` inside the containers.
+
+**Per inference pod (sidecar container, steady-state after warm):**
+
+| Item | Measured | Notes |
 |---|---|---|
-| Extra client-node NIC traffic | **+56.9 GiB / pod** (Blob→SSD, then SSD→GPU) | vs 1× 56.9 GiB Blob→GPU in the no-DACS baseline |
-| Extra local NVMe SSD residency | 56.9 GiB / pod / node | `/mnt/cache` must hold the full model; `cacheEnable=true`, `attributesCacheEnable=true` |
-| Extra always-on sidecar container | 1 per pod (does not exit after warm) | warmer log: `remaining alive after successful warm` |
-| Extra reserved upload buffer | **400 GiB** (`429496729600` bytes) | warmer log: `Started CacheUploadManager. workers=80, max uploadbuffer=429496729600 bytes` |
-| Extra threads | 80 upload workers + background cache-server-discovery thread + BlobAuthTokenProvider refresh thread | warmer log: `Background cache server discovery thread is enabled`, `Background token update started` |
+| CPU limits/requests | **none set** (`resources: {}`) | no sandboxing on the sidecar |
+| Actual CPU (idle after warm) | ~0 mCPU | `kubectl top` |
+| Actual RSS (idle after warm) | **1.4 GiB** (1336 MiB) | `kubectl top` and `/proc/1/status VmRSS` |
+| Threads | **24** | `ls /proc/1/task/` |
+| VmSize (virtual address space) | 13 GiB | address-space reservation, not physical memory |
+| Local SSD residency in sidecar | **0** (`/mnt/cache` empty) | cache lives on `cache-sample-0`, not in the sidecar |
+
+**Per inference pod (sidecar container, peak during Phase 1, ~48 s window):**
+
+| Item | Measured | Notes |
+|---|---|---|
+| Peak memory HWM | **~45 GiB** (`VmHWM = 45599636 kB`) | during Blob→cache streaming; released after Phase 1 |
+| Peak VmSize | 57 GiB (`VmPeak = 57140752 kB`) | virtual only |
+| NIC traffic | **+56.9 GiB** | Blob→SSD ingest done by this sidecar |
+
+**Per cluster (shared across all pods using the same model):**
+
+| Item | Measured | Notes |
+|---|---|---|
+| Cache-server disk residency | **57 GiB** on `/var/lib/ssd/cacheserver` | `cache-sample-0` NVMe, single copy for the whole cluster |
+| Cache-server RAM | 1.8 GiB | `kubectl top` |
+| Cache-server CPU | ~1 mCPU | idle steady state |
+| Cache-server resources requested | 250 mCPU / 100 Mi | pod spec |
+
+> **Correction note:** an earlier revision of this appendix cited
+> "400 GiB reserved upload buffer" and "56.9 GiB / pod / node NVMe
+> residency". Both were wrong. The `max uploadbuffer=429496729600` in
+> the warmer log is a *virtual address-space cap*, not a physical
+> reservation — actual RSS is 1.4 GiB idle / 45 GiB peak. And the cache
+> lives on `cache-sample-0`, not in a per-pod local mount, so there's
+> **one** 57 GiB copy across the whole cluster, not N copies. Thanks to
+> @andyzhangx for catching this.
 
 ### C.2 Time cost
 
@@ -714,6 +747,9 @@ first-pod concurrency case — both burn N × 56.9 GiB.
 
 - **Extra container to monitor / debug** in every inference pod
   (`dacs-model-warmer` has its own crash / probe / config failure modes)
+- **No CPU / memory limits set on the sidecar** (`resources: {}`) — the
+  ~45 GiB Phase 1 memory peak is entirely unbounded, and can compete
+  with the main container for node memory
 - **~20 tuning knobs to maintain** per pod: `storagePath`,
   `azBlobDynamicAccount`, `azBlobDynamicContainer`,
   `azBlobUseAzureIdentitySDK`, `cacheServerDiscoveryEndpoint`,
@@ -751,8 +787,9 @@ while removing the sidecar layer entirely.
 The `dacs-model-warmer` sidecar is a **client-side workaround for the
 cache server's missing read-through capability**. It moves the
 Blob-fetch work from the cache server into every inference pod, at a
-cost of +56.9 GiB NIC traffic, +400 GiB reserved upload buffer, +80
-threads, +~20 config knobs, +one always-on container per pod, and an
-independent per-pod IMDS/Entra token loop — for a measured
-user-visible startup speedup of **0 s** versus the no-DACS baseline on
-this workload.
+measured cost of +56.9 GiB NIC traffic per pod, ~45 GiB peak memory
+during the ~48 s Phase 1 (dropping to ~1.4 GiB RSS idle), 24 threads,
+no CPU/memory limits set on the sidecar, ~20 config knobs, one
+always-on container per pod, and an independent per-pod IMDS/Entra
+token loop — for a measured user-visible startup speedup of **0 s**
+versus the no-DACS baseline on this workload.
