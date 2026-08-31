@@ -1430,12 +1430,12 @@ translates into user-visible startup latency.
 | `qwen3-coder-30b-a3b-instruct-lxg9q-0` | 2/2 (main + `dacs-model-warmer`) | `aks-wsc281c546e-15491801-vmss000000` | **Yes** |
 | `qwen3-coder-30b-a3b-instruct-raw-5xt9x-0` | 1/1 (main only) | `aks-ws7bd17ef34-80560299-vmss000000` | **No** |
 
-Both pods use `runai_streamer` load format. `raw-5xt9x-0` is scheduled
-onto a different node, so its `runai_streamer` reads chunks from the
-DACS `cache-sample-0` server over the pod network — a **cross-node
-warm-cache read**, since `cache-sample-0` was already fully warmed by
-the earlier `lxg9q-0` run. This is *not* a true cold-cache test (see
-caveats at the bottom).
+Both pods use `runai_streamer` load format. **`raw-5xt9x-0` does
+not use DACS at all** — it has no `dacs-model-warmer` sidecar, no
+`/mnt/cache` volume mount, no `AISC`/`StorageIntercept`/`CacheClient`
+logs. `runai_streamer` reads the safetensor files directly from Azure
+Blob (its native Azure backend). This is the true **no-DACS baseline**
+for comparison.
 
 ### Timeline aligned to pod-created (Δ from `.metadata.creationTimestamp`)
 
@@ -1464,18 +1464,19 @@ have to wait for Phase 1 to complete. The measured wait is ~4 s
 `runai_streamer` reports its own throughput at the end of the tensor
 read:
 
-| | `lxg9q-0` (sidecar) | `raw-5xt9x-0` (no sidecar) |
+| | `lxg9q-0` (sidecar + DACS) | `raw-5xt9x-0` (no DACS) |
 |---|---|---|
 | Reported by `runai_streamer` | `Overall time to stream 56.9 GiB of all files to cpu: 17.93 s, 3.17 GiB/s` | `Overall time to stream 56.9 GiB of all files to cpu: 31.1 s, 1.8 GiB/s` |
-| Bytes read path | host-local SSD cache → GPU (warmer pre-populated `/mnt/cache` on this node) | cross-node DACS cache server → GPU (over pod network) |
-| Client-node NIC data movement | **2× 56.9 GiB** (Blob→SSD in Phase 1, SSD→GPU in Phase 2) | **1× 56.9 GiB** (cache→GPU) |
+| Bytes read path | host-local NVMe SSD cache → GPU (warmer pre-populated `/mnt/cache` on this node) | Azure Blob → GPU (direct, via `runai_streamer` Azure backend) |
+| Client-node NIC data movement | **2× 56.9 GiB** (Blob→SSD in Phase 1, SSD→GPU in Phase 2) | **1× 56.9 GiB** (Blob→GPU) |
 
 - **Phase 2 alone**: sidecar version wins (17.93 s vs 31.1 s) because
-  the bytes are on the local NVMe SSD after Phase 1.
+  the bytes are on the local NVMe SSD after Phase 1; the no-DACS
+  version pays the full Blob round-trip latency per chunk.
 - **Model-download step relative to pod-created**: essentially tied
-  (+168→+186 = 18 s for sidecar; +153→+185 = 32 s for no-sidecar).
-  The sidecar saves ~14 s here, at the cost of consuming client-node
-  NIC bandwidth twice.
+  (+168→+186 = 18 s for sidecar; +153→+185 = 32 s for no-DACS).
+  The sidecar saves ~14 s at the byte-read step, at the cost of
+  consuming client-node NIC bandwidth twice.
 
 ### End-to-end pod-ready time
 
@@ -1502,36 +1503,42 @@ steady-state throughput, as expected.
 
 ### Important caveats
 
-1. **`raw-5xt9x-0` is a warm-cache path, not a cold-cache path.**
-   `cache-sample-0` was already fully populated by `lxg9q-0` two days
-   earlier, so `runai_streamer` reads pre-warmed chunks over the pod
-   network at 1.8 GiB/s. A true first-ever pod on an empty cluster
-   would fall back to the client-side Blob fetch + Upload path (§5 of
-   the read-through proposal predicts ~35–45 s to move 56.9 GiB).
-2. **Different node.** `raw-5xt9x-0` lands on a different VMSS node, so
-   its DACS I/O is entirely network (pod → `cache-sample-0` pod). The
-   sidecar variant benefits from same-node NVMe SSD reads after Phase 1.
+1. **`raw-5xt9x-0` uses no DACS at all** — this is the true no-DACS
+   baseline, `runai_streamer` reads directly from Azure Blob. The
+   1.8 GiB/s figure is Blob-direct throughput on
+   `Standard_NC24ads_A100_v4` for this model, matching the
+   ~26–27 s / ~2.2 GiB/s baseline seen in earlier no-DACS runs on this
+   cluster series.
+2. **Different node.** `raw-5xt9x-0` lands on a different VMSS node,
+   which does not matter here because there is no host-local cache to
+   benefit from anyway — all bytes come from Blob over the client-node
+   NIC.
 3. Both pods share the same benchmark harness after `Ready=True`, so
    post-ready throughput numbers are directly comparable.
 
 ### Takeaways
 
 - **Model-download step** (main-container start → `Model loading took`)
-  is ~2× faster with the sidecar (18 s vs 32 s), and Phase 1's ~48.5 s
-  overlaps with main-container init, so it costs only ~4 s of extra
-  serial time in this run.
-- **End-to-end pod-ready** is unchanged (~398–399 s). If the goal is to
-  cut user-visible pod startup, DACS/warmer changes alone are
-  insufficient — the ~212 s post-model-load phase (torch.compile +
-  CUDA-graph capture + LMCache/KV warmup) is the current bottleneck.
-- Where server-side read-through (see `dacs-server-readthrough-proposal.md`)
-  still helps:
-  - **2× → 1× client-node NIC traffic** on Blob-miss first-pod
-  - **Concurrent first-pods scale**: N sidecar-based first-pods each
-    pay their own Phase 1; N read-through first-pods share one
-    server-side Blob fetch (single-flight)
-  - **Removes a whole moving part** (the sidecar, its probes, its
-    dynamic-account/container config, its failure modes) from every
-    inference pod spec
-- A follow-up run with `cache-sample-0` fully evicted / restarted would
-  be needed to measure the true cold-cache no-sidecar path.
+  is ~2× faster with the DACS sidecar (18 s vs 32 s), and Phase 1's
+  ~48.5 s overlaps with main-container init, so it costs only ~4 s of
+  extra serial time in this run.
+- **End-to-end pod-ready** is unchanged (~398–399 s). If the goal is
+  to cut user-visible pod startup, the DACS sidecar buys nothing on
+  a single-pod first-load — the ~212 s post-model-load phase
+  (torch.compile + CUDA-graph capture + LMCache/KV warmup) is the
+  actual bottleneck.
+- **Direct implication for the DACS sidecar design:** on this
+  workload, the sidecar's ~48.5 s Phase 1 does not translate into a
+  faster pod-ready than the no-DACS baseline. It just moves 56.9 GiB
+  across the client node NIC one extra time.
+- Where server-side read-through (see
+  `dacs-server-readthrough-proposal.md`) still helps versus the
+  no-DACS baseline:
+  - **Same 1× NIC traffic** as no-DACS, but data is cached for
+    subsequent pods (no-DACS re-fetches from Blob every pod)
+  - **Concurrent first-pods share** one server-side Blob fetch
+    (single-flight), whereas no-DACS and sidecar both pay N × 56.9 GiB
+    of Blob egress for N first-pods
+  - **Second and later pods** on the same model hit the ~3.3 GiB/s
+    DACS-warm path (see 08-29 `lxg9q-0` interpretation above),
+    dramatically faster than repeatedly re-downloading from Blob
