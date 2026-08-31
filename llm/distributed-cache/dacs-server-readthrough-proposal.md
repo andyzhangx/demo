@@ -488,21 +488,36 @@ The following analysis was performed against the live `andy-aks135` cluster on
 2026-08-31 to independently verify the Phase 1 blocking claim from real pod
 logs.
 
-### A.1 Phase 1 blocks the model download step — confirmed
+### A.1 Phase 1 blocks the model-load step (not the main container) — refined
 
-The `lxg9q-0` pod logs confirm that Phase 1 and Phase 2 are **strictly
-serial** with zero overlap. The blocking mechanism is the sidecar's
-`startupProbe` gate that prevents the main container from starting until the
-warmer reports completion.
+> **Correction (2026-08-31):** an earlier revision of this appendix claimed
+> Phase 1 and Phase 2 were *strictly serial with zero overlap*. Re-reading
+> the `lxg9q-0` logs with pod-created-relative offsets shows that is too
+> strong. What actually blocks is **Phase 2 (tensor-byte read)**, not the
+> whole main container. Main-container startup (Python imports, CUDA init,
+> vLLM engine bootstrap) runs **concurrently** with the warmer sidecar.
 
-**Timeline extracted from pod logs:**
+**Timeline extracted from pod logs (all times relative to pod `created`):**
 
-| Phase | Start → End | Duration | Evidence (log line) |
+| Milestone | Absolute time | Δ from created | Evidence |
 |---|---|---:|---|
-| Phase 1 — `dacs-model-warmer` Blob → DACS cache | `02:58:06.69` → `02:58:58.00` | **48.52 s** | warmer: `completed tensors=18867 files=16 elapsed_seconds=48.52` |
-| Gap — vLLM EngineCore init | `02:58:58` → `02:59:02` | ~4 s | main: `Initializing a V1 LLM engine (v0.22.1)` @ `02:58:58` |
-| Phase 2 — `runai_streamer` DACS cache → GPU | `02:59:02` → `02:59:20` | ~17.93 s | main: `Starting to load model` @ `02:59:02` |
-| **Total (pod scheduled → model on GPU)** | | **~74 s** | |
+| Pod created | `02:56:14` | 0 s | k8s status |
+| Warmer Phase 1 starts (Blob → cache) | `02:58:06.69` | +113 s | warmer log |
+| Main container `inference_api.py` first log | `02:58:07` | +113 s | main log — **starts in parallel with Phase 1** |
+| Main: `Resolved architecture` | `02:58:40` | +146 s | main log |
+| Main: CUDA initialized | `02:58:46` | +152 s | main log |
+| Warmer Phase 1 complete | `02:58:58` | +164 s | warmer: `elapsed_seconds=48.52` |
+| Main: `Initializing a V1 LLM engine` | `02:58:58` | +164 s | main log |
+| **Phase 2 begins:** `Starting to load model` | `02:59:02` | +168 s | main log |
+| Model loaded on GPU | `02:59:20` | +186 s | `Model loading took 56.93 GiB / ~17.93 s` |
+
+So the sidecar penalty is **not** "Phase 1 duration added on top of Phase 2".
+It is only:
+
+1. The ~4 s tail where the vLLM EngineCore has to wait for Phase 1 to finish
+   before it can open the safetensors files under `/mnt/cache/...`, plus
+2. Any Phase 1 tail that extends *past* the point where main-container init
+   would otherwise have reached the byte-read step.
 
 Key observations from the warmer sidecar log:
 
@@ -517,9 +532,10 @@ ReadChunk stats: Total=38841  PrefetchCache=2197  RemoteCache=124  RemoteClient=
 - The `prefetchWindowSizeInMB=64` window is not tracking safetensors
   tensor-order well, so the warmer barely benefits from prefetch
 
-The 56.9 GiB payload traverses the client-node NIC **twice** — once as a cold
-Blob download during Phase 1, and again as a host-local cache read during
-Phase 2. Effective end-to-end throughput: **~0.77 GiB/s** (56.9 GiB / 74 s).
+The 56.9 GiB payload still traverses the client-node NIC **twice** — once as
+a cold Blob download during Phase 1, and again as a host-local cache read
+during Phase 2. This double-move is real, even though its end-to-end wall
+clock cost is smaller than the naive "Phase 1 + Phase 2" sum suggests.
 
 ### A.2 Comparison: sidecar vs. no-sidecar pod on the same cluster
 
@@ -557,14 +573,89 @@ client requests chunk C via Download RPC → server
 
 ### A.4 Summary
 
-The live cluster logs independently confirm every claim in sections 1–3 of
-this proposal:
+The live cluster logs partially confirm sections 1–3 of this proposal, with
+nuance:
 
-1. Phase 1 **fully blocks** the model download step via `startupProbe` gating
-2. The two phases are strictly serial — their durations **add, not max**
-3. First-pod cold path (~74 s) is **~2.7× slower** than no-DACS baseline
-   (~26–27 s)
-4. The cache server cannot read-through to origin, forcing the sidecar to
+1. Phase 2 (tensor-byte read) **is** gated on Phase 1 completion — that
+   dependency is real
+2. But Phase 1 runs **in parallel with** main-container startup (Python
+   imports, CUDA init, vLLM engine bootstrap), so the wall-clock penalty is
+   *not* the sum of Phase 1 + Phase 2
+3. The cache server cannot read-through to origin, forcing the sidecar to
    exist as a client-side workaround
-5. Prefetch hit rate is only ~5.6%, confirming the warmer is not an effective
-   cache-warming pattern for safetensors workloads
+4. Prefetch hit rate is only ~5.6%, confirming the warmer is not an
+   effective cache-warming pattern for safetensors workloads
+5. A control-group pod without the sidecar was measured — see Appendix B
+
+---
+
+## Appendix B — Sidecar-off control-group comparison (2026-08-31)
+
+The `qwen3-coder-30b-a3b-instruct-raw-5xt9x-0` pod is the same workload
+deployed **without** the `dacs-model-warmer` sidecar (single container).
+Both pods were captured on the same cluster to allow a like-for-like
+compare.
+
+### B.1 End-to-end timing (from pod `created` to `Ready=True`)
+
+| Milestone (Δ from pod created) | `lxg9q-0` (sidecar) | `raw-5xt9x-0` (no sidecar) | Δ |
+|---|---:|---:|---:|
+| Main container first log | +113 s | +115 s | +2 s |
+| Model-load starts (`Starting to load model`) | +168 s | +153 s | **−15 s** |
+| Model-load ends (`Model loading took ... seconds`) | +186 s | +185 s | −1 s |
+| Ready=True | +398 s | +399 s | +1 s |
+| **Post-model-load phase** (torch.compile, CUDA-graph capture, LMCache init, KV-cache warmup, etc.) | **~212 s** | **~214 s** | +2 s |
+
+**Observation:** end-to-end pod-ready time is essentially identical
+(398 s vs 399 s). The Phase 1 wall clock does *not* translate 1:1 into
+faster pod-ready time, because:
+
+- Phase 1 overlaps with main-container startup (§A.1), so much of it is
+  "free"
+- The post-model-load phase (~213 s) dominates total pod-ready time and is
+  unaffected by DACS
+
+### B.2 Model-download step by itself
+
+| | `lxg9q-0` (sidecar) | `raw-5xt9x-0` (no sidecar) |
+|---|---|---|
+| Bytes read path | host-local SSD cache → GPU | cross-node DACS cache → GPU |
+| Reported by `runai_streamer` | 56.9 GiB in ~17.93 s → **3.17 GiB/s** | 56.9 GiB in 31.1 s → **1.8 GiB/s** |
+| Data movement over client-node NIC | 2× 56.9 GiB (Blob→SSD, SSD→GPU) | 1× 56.9 GiB (cache→GPU) |
+
+The sidecar buys a faster Phase 2 (host-local SSD hit at 3.17 GiB/s) at the
+cost of an earlier cross-node Blob download. Without the sidecar,
+`runai_streamer` reads directly from the DACS cache server over the
+pod-network at 1.8 GiB/s.
+
+### B.3 Important caveat: `raw-5xt9x-0` is *not* a true cold-cache test
+
+The `raw-5xt9x-0` pod was created **after** `lxg9q-0` had already warmed the
+`cache-sample-0` server with the full 56.9 GiB model. So `raw-5xt9x-0`
+hits an already-populated remote cache — this is a **cross-node warm-cache**
+path, not the true cold path a first-ever pod on an empty cluster would
+take.
+
+A true cold-cache no-sidecar test would fall back to the client's in-process
+Blob fetch + upload path described in §5 (predicted ~35–45 s to load
+56.9 GiB), still faster than the sidecar's ~48.5 s Phase 1 because the fetch
+and consumption can overlap.
+
+### B.4 What this means for the read-through proposal
+
+1. On this specific model / this specific cluster, **the sidecar's
+   wall-clock overhead is smaller than the naive "Phase 1 = 48.5 s of extra
+   latency" reading suggests** — most of Phase 1 hides behind main-container
+   init
+2. The strongest remaining arguments for server-side read-through are:
+   - Eliminating the **2× data movement** across the client node NIC
+   - Removing the ~5 s Phase 2-waits-for-Phase 1 tail
+   - **Scaling with concurrent first-pods**: N sidecar-based first-pods each
+     pay their own Phase 1; N read-through first-pods share a single
+     server-side Blob fetch (single-flight)
+   - Removing a whole moving part (the sidecar, its probes, its config, its
+     failure modes) from every inference pod spec
+3. To materially reduce pod-ready time for a **single first-pod**, DACS
+   changes are necessary but not sufficient — the ~212 s post-model-load
+   phase (torch.compile + CUDA-graph capture + LMCache/KV warmup) needs
+   separate optimization
