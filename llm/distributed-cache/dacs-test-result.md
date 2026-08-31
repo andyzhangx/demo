@@ -1409,3 +1409,129 @@ ReadChunk stats: Total=38317  PrefetchCache=333  RemoteCache=37984  RemoteClient
   warmer would see `RemoteCache=~100%` at the cluster level and finish
   within a few seconds (only mirror metadata + a small delta), letting
   the main container hit the ~3.3 GiB/s DACS-hot path immediately.
+
+## 2026-08-31 — `qwen3-coder-30b-a3b-instruct-raw-5xt9x-0` sidecar-off control-group on `andy-aks135`
+
+**Cluster / model / SKU:** same `andy-aks135`, same
+`Qwen3-Coder-30B-A3B-Instruct` (56.9 GiB, 18867 tensors, 16 safetensor
+files), same `Standard_NC24ads_A100_v4` VM SKU as the 2026-08-29
+`lxg9q-0` run above.
+
+**Point of the run:** deploy the same workload **without** the
+`dacs-model-warmer` sidecar (single container, no init container) and
+compare end-to-end pod-ready time and model-download-step time against
+the sidecar variant to see how much of the sidecar's Phase 1 wall clock
+translates into user-visible startup latency.
+
+### Pods compared
+
+| Pod | Containers | Node | Sidecar? |
+|---|---|---|---|
+| `qwen3-coder-30b-a3b-instruct-lxg9q-0` | 2/2 (main + `dacs-model-warmer`) | `aks-wsc281c546e-15491801-vmss000000` | **Yes** |
+| `qwen3-coder-30b-a3b-instruct-raw-5xt9x-0` | 1/1 (main only) | `aks-ws7bd17ef34-80560299-vmss000000` | **No** |
+
+Both pods use `runai_streamer` load format. `raw-5xt9x-0` is scheduled
+onto a different node, so its `runai_streamer` reads chunks from the
+DACS `cache-sample-0` server over the pod network — a **cross-node
+warm-cache read**, since `cache-sample-0` was already fully warmed by
+the earlier `lxg9q-0` run. This is *not* a true cold-cache test (see
+caveats at the bottom).
+
+### Timeline aligned to pod-created (Δ from `.metadata.creationTimestamp`)
+
+| Milestone | `lxg9q-0` (sidecar) | `raw-5xt9x-0` (no sidecar) | Δ |
+|---|---:|---:|---:|
+| Pod created | 0 s | 0 s | — |
+| Main container first log (`inference_api.py:488 Set default gpu_memory_utilization`) | +113 s | +115 s | +2 s |
+| Warmer Phase 1 complete (`elapsed_seconds=48.52`) | +164 s | *(n/a)* | — |
+| vLLM `Initializing a V1 LLM engine` | +164 s | +150 s | −14 s |
+| `Starting to load model` (Phase 2 begins) | +168 s | +153 s | **−15 s** |
+| `Model loading took ... seconds` (Phase 2 ends) | +186 s | +185 s | −1 s |
+| `Ready=True` (server up, first benchmark step done) | +398 s | +399 s | **+1 s** |
+| **Post-model-load phase** (torch.compile + CUDA-graph capture + LMCache init + engine warmup + KV cache profile) | ~212 s | ~214 s | +2 s |
+
+**Sidecar Phase 1 runs in parallel with main-container startup.** The
+warmer starts at +113 s and finishes at +164 s (48.52 s duration). In
+that same window, the main container is already doing Python imports,
+CUDA init, `Resolved architecture`, `Async scheduling enabled`, etc.
+Only when vLLM tries to open the safetensors files at
+`/root/.cache/vllm/assets/model_streamer/2c82cfef/*.safetensors` does it
+have to wait for Phase 1 to complete. The measured wait is ~4 s
+(engine init at +164 s → byte-read start at +168 s).
+
+### Model-download step by itself
+
+`runai_streamer` reports its own throughput at the end of the tensor
+read:
+
+| | `lxg9q-0` (sidecar) | `raw-5xt9x-0` (no sidecar) |
+|---|---|---|
+| Reported by `runai_streamer` | `Overall time to stream 56.9 GiB of all files to cpu: 17.93 s, 3.17 GiB/s` | `Overall time to stream 56.9 GiB of all files to cpu: 31.1 s, 1.8 GiB/s` |
+| Bytes read path | host-local SSD cache → GPU (warmer pre-populated `/mnt/cache` on this node) | cross-node DACS cache server → GPU (over pod network) |
+| Client-node NIC data movement | **2× 56.9 GiB** (Blob→SSD in Phase 1, SSD→GPU in Phase 2) | **1× 56.9 GiB** (cache→GPU) |
+
+- **Phase 2 alone**: sidecar version wins (17.93 s vs 31.1 s) because
+  the bytes are on the local NVMe SSD after Phase 1.
+- **Model-download step relative to pod-created**: essentially tied
+  (+168→+186 = 18 s for sidecar; +153→+185 = 32 s for no-sidecar).
+  The sidecar saves ~14 s here, at the cost of consuming client-node
+  NIC bandwidth twice.
+
+### End-to-end pod-ready time
+
+| Pod | `Ready=True` (Δ from created) |
+|---|---:|
+| `lxg9q-0` (sidecar) | **~398 s** |
+| `raw-5xt9x-0` (no sidecar) | **~399 s** |
+
+**The two variants finish at the same wall clock time.** The ~14 s
+that no-sidecar loses on model-download is absorbed by post-model-load
+work (torch.compile, CUDA-graph capture, LMCache init, engine warmup,
+KV-cache profile) that is unaffected by DACS. That post-load phase
+takes ~212–214 s and dominates total pod-ready time.
+
+### Benchmark result (`raw-5xt9x-0`, from its own log tail)
+
+```
+KAITO_BENCHMARK_RESULT {"vllm_total_tpm":324926.55,"ttft_avg_ms":0.0,"tpot_avg_ms":59.47}
+```
+
+For reference the 2026-08-29 `lxg9q-0` reported
+`vllm_total_tpm=319107.47, tpot_avg_ms=59.57` — statistically identical
+steady-state throughput, as expected.
+
+### Important caveats
+
+1. **`raw-5xt9x-0` is a warm-cache path, not a cold-cache path.**
+   `cache-sample-0` was already fully populated by `lxg9q-0` two days
+   earlier, so `runai_streamer` reads pre-warmed chunks over the pod
+   network at 1.8 GiB/s. A true first-ever pod on an empty cluster
+   would fall back to the client-side Blob fetch + Upload path (§5 of
+   the read-through proposal predicts ~35–45 s to move 56.9 GiB).
+2. **Different node.** `raw-5xt9x-0` lands on a different VMSS node, so
+   its DACS I/O is entirely network (pod → `cache-sample-0` pod). The
+   sidecar variant benefits from same-node NVMe SSD reads after Phase 1.
+3. Both pods share the same benchmark harness after `Ready=True`, so
+   post-ready throughput numbers are directly comparable.
+
+### Takeaways
+
+- **Model-download step** (main-container start → `Model loading took`)
+  is ~2× faster with the sidecar (18 s vs 32 s), and Phase 1's ~48.5 s
+  overlaps with main-container init, so it costs only ~4 s of extra
+  serial time in this run.
+- **End-to-end pod-ready** is unchanged (~398–399 s). If the goal is to
+  cut user-visible pod startup, DACS/warmer changes alone are
+  insufficient — the ~212 s post-model-load phase (torch.compile +
+  CUDA-graph capture + LMCache/KV warmup) is the current bottleneck.
+- Where server-side read-through (see `dacs-server-readthrough-proposal.md`)
+  still helps:
+  - **2× → 1× client-node NIC traffic** on Blob-miss first-pod
+  - **Concurrent first-pods scale**: N sidecar-based first-pods each
+    pay their own Phase 1; N read-through first-pods share one
+    server-side Blob fetch (single-flight)
+  - **Removes a whole moving part** (the sidecar, its probes, its
+    dynamic-account/container config, its failure modes) from every
+    inference pod spec
+- A follow-up run with `cache-sample-0` fully evicted / restarted would
+  be needed to measure the true cold-cache no-sidecar path.
