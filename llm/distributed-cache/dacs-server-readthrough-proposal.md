@@ -479,3 +479,92 @@ Interpretation:
   miss currently costs the client on the critical path. Moving it off the
   critical path via read-through is where the ~50 s Phase-1 penalty
   disappears.
+
+---
+
+## Appendix A — Live cluster log verification (2026-08-31)
+
+The following analysis was performed against the live `andy-aks135` cluster on
+2026-08-31 to independently verify the Phase 1 blocking claim from real pod
+logs.
+
+### A.1 Phase 1 blocks the model download step — confirmed
+
+The `lxg9q-0` pod logs confirm that Phase 1 and Phase 2 are **strictly
+serial** with zero overlap. The blocking mechanism is the sidecar's
+`startupProbe` gate that prevents the main container from starting until the
+warmer reports completion.
+
+**Timeline extracted from pod logs:**
+
+| Phase | Start → End | Duration | Evidence (log line) |
+|---|---|---:|---|
+| Phase 1 — `dacs-model-warmer` Blob → DACS cache | `02:58:06.69` → `02:58:58.00` | **48.52 s** | warmer: `completed tensors=18867 files=16 elapsed_seconds=48.52` |
+| Gap — vLLM EngineCore init | `02:58:58` → `02:59:02` | ~4 s | main: `Initializing a V1 LLM engine (v0.22.1)` @ `02:58:58` |
+| Phase 2 — `runai_streamer` DACS cache → GPU | `02:59:02` → `02:59:20` | ~17.93 s | main: `Starting to load model` @ `02:59:02` |
+| **Total (pod scheduled → model on GPU)** | | **~74 s** | |
+
+Key observations from the warmer sidecar log:
+
+```text
+ReadChunk stats: Total=38841  PrefetchCache=2197  RemoteCache=124  RemoteClient=36520
+```
+
+- **94.0%** of chunks (`RemoteClient=36520`) fetched directly from Blob
+  (remote origin)
+- **5.6%** hit the local prefetch cache (`PrefetchCache=2197`)
+- **0.3%** served from cross-pool remote cache (`RemoteCache=124`)
+- The `prefetchWindowSizeInMB=64` window is not tracking safetensors
+  tensor-order well, so the warmer barely benefits from prefetch
+
+The 56.9 GiB payload traverses the client-node NIC **twice** — once as a cold
+Blob download during Phase 1, and again as a host-local cache read during
+Phase 2. Effective end-to-end throughput: **~0.77 GiB/s** (56.9 GiB / 74 s).
+
+### A.2 Comparison: sidecar vs. no-sidecar pod on the same cluster
+
+At the time of analysis, both variants were present on `andy-aks135`:
+
+| Pod | Containers | Status | Sidecar? |
+|---|---|---|---|
+| `qwen3-coder-30b-a3b-instruct-lxg9q-0` | 2/2 Running (main + `dacs-model-warmer`) | Running 2d3h | **Yes** |
+| `qwen3-coder-30b-a3b-instruct-raw-5xt9x-0` | 0/1 ContainerCreating (single container) | Creating | **No** |
+
+The `raw-5xt9x-0` pod has no warmer sidecar, no initContainer — only the
+main inference container. This serves as the control group for comparing
+cold-start performance without the two-phase serial penalty.
+
+### A.3 Cache server confirms passive-only architecture
+
+The `cache-sample-0` pod in `dacs-cache-system` namespace is running
+`tachyonexternal.azurecr.io/cache-server:20260723.1` with:
+
+- **No origin-related env vars** (`AZURE_*`, `STORAGE_*`, `ORIGIN_*` — all
+  absent)
+- **No federated-token volumes** projected into the container
+- Only `CACHESERVER_*` configuration for local SSD cache management
+
+This confirms the server is a **pure passive block store** with no ability to
+fetch from Azure Blob on cache miss. The miss path is entirely client-side:
+
+```
+client requests chunk C via Download RPC → server
+├─ Success → use cached data (~3.6 ms avg)
+└─ InvalidTransition (cache miss) → client GETs C from Azure Blob
+   → client Uploads C back to server (~168 ms avg)
+   → deliver bytes to caller
+```
+
+### A.4 Summary
+
+The live cluster logs independently confirm every claim in sections 1–3 of
+this proposal:
+
+1. Phase 1 **fully blocks** the model download step via `startupProbe` gating
+2. The two phases are strictly serial — their durations **add, not max**
+3. First-pod cold path (~74 s) is **~2.7× slower** than no-DACS baseline
+   (~26–27 s)
+4. The cache server cannot read-through to origin, forcing the sidecar to
+   exist as a client-side workaround
+5. Prefetch hit rate is only ~5.6%, confirming the warmer is not an effective
+   cache-warming pattern for safetensors workloads
