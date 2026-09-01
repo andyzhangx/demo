@@ -711,7 +711,7 @@ Measured against `lxg9q-0` sidecar container and `cache-sample-0` on
 | Cache-server CPU | ~1 mCPU | idle steady state |
 | Cache-server resources requested | 250 mCPU / 100 Mi | pod spec |
 
-> **Correction note:** an earlier revision of this appendix cited
+**Correction (2026-08-31):** an earlier revision of this appendix claimed
 > "400 GiB reserved upload buffer" and "56.9 GiB / pod / node NVMe
 > residency". Both were wrong. The `max uploadbuffer=429496729600` in
 > the warmer log is a *virtual address-space cap*, not a physical
@@ -719,6 +719,12 @@ Measured against `lxg9q-0` sidecar container and `cache-sample-0` on
 > lives on `cache-sample-0`, not in a per-pod local mount, so there's
 > **one** 57 GiB copy across the whole cluster, not N copies. Thanks to
 > @andyzhangx for catching this.
+
+**Correction (2026-09-01):** two more things I got wrong in the first cost writeup, corrected against pod spec + main-container log on the live cluster:
+
+1. **The main container does not talk to the sidecar for model bytes.** There is no shared model-data volume between the two containers. The only shared mount is `/opt/cache-client` (a K8s image volume containing `libStorageDirect.so`), which is the client library, not the model. The main container's EngineCore process (`pid=235`) opens `libStorageDirect.so` itself via the run:ai model streamer plugin API (`RUNAI_STREAMER_EXPERIMENTAL_AZURE_CACHE_LIB`), not via `LD_PRELOAD`, and calls `cache-sample-discovery.dacs-cache-system.svc:9065` directly. The sidecar's job is to pre-warm the cache-server SSD; the main container reads from that same cache-server independently.
+
+2. **The 3.17 GiB/s Phase 2 throughput is not "pure network."** `cache-sample-0` and the inference pod land on the same node (`aks-wsc281c546e-15491801-vmss000000`), so main-container → cache-server traffic is same-node pod-to-pod (veth/bridge in the kernel, not the physical NIC). A 25G NIC caps at 3.125 GiB/s, so 3.17 GiB/s could only come from the same-node fast path plus the cache-server's local NVMe (`/var/lib/ssd/cacheserver` on the node's 880 GB NVMe). Cross-node DACS reads would fall back to NIC-bound speeds (~1.5–2 GiB/s realistic), so DACS's advantage over the no-DACS baseline (1.83 GiB/s) is **conditional on same-node cache-server co-location**. Main-container log confirms 99% RemoteCache hits (24902/25164 chunks) and RemoteClient=0 (zero direct Blob reads), so the sidecar warm-up did land.
 
 ### C.2 Time cost
 
