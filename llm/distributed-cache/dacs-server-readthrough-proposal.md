@@ -799,3 +799,112 @@ no CPU/memory limits set on the sidecar, ~20 config knobs, one
 always-on container per pod, and an independent per-pod IMDS/Entra
 token loop — for a measured user-visible startup speedup of **0 s**
 versus the no-DACS baseline on this workload.
+
+## Appendix D — Cross-node cache read: the network cost moves to the cache-holder node (2026-09-01)
+
+The measured 3.17 GiB/s Phase 2 throughput on `lxg9q-0` was achieved
+only because `cache-sample-0` and the inference pod were scheduled to
+the **same node** (`aks-wsc281c546e-15491801-vmss000000`), so the
+main-container → cache-server traffic went through the kernel
+veth/bridge fast path and never touched a physical NIC. This appendix
+analyzes what happens once the cache holder and the reader are on
+**different** GPU nodes — the common case in production as the fleet
+scales past one GPU node.
+
+### D.1 The bandwidth arithmetic
+
+| Item | Value |
+|---|---|
+| Model size (Qwen3-Coder-30B safetensors) | 56.9 GiB |
+| Typical AKS GPU-SKU NIC (Standard NC/ND non-IB) | 25 Gbps = ~3.125 GiB/s single-port |
+| `run:ai` streamer peak read throughput observed | ~2.5–3 GiB/s single pod, single reader |
+| Time for one cross-node cold read at 25 Gbps NIC saturation | ~20–25 s |
+
+A **single** GPU-node cold start reading a 30 GiB model from a
+cross-node cache holder saturates 80–100% of the cache-holder node's
+NIC egress for ~20–25 s. Two concurrent cold starts halve throughput
+for both and roughly double the wall-clock (fair-share on the shared
+link), so an HPA burst that scales out N inference pods against one
+cache-holder node produces `N × 20–25 s` of saturation, not a
+fixed 20 s window.
+
+### D.2 What actually gets hurt on the cache-holder node
+
+Steady-state LLM inference **traffic itself** is small (KB-per-request
+in, token-stream KB/s out), so the ~25 Gbps egress spike does *not*
+directly damage in-flight inference streams beyond adding tens of ms
+of TCP-fair-share latency. The real casualties are everything else
+that shares the host NIC:
+
+| Component | Impact | Reason |
+|---|---|---|
+| kubelet ↔ apiserver | mild latency | shares hostNetwork on the same NIC |
+| CNI / kube-proxy | mild | same NIC |
+| Prometheus scrape / Geneva agent | scrape misses | timeouts under congestion |
+| **Health/readiness probes on the node** | **can fail** | probe timeout + SYN retransmit under congestion → kubelet marks pod Unhealthy |
+| **Container image pulls for other pods** | slow | same NIC |
+| **KV-cache offload / P2P transfers** (if enabled) | severe | competes for the same egress budget as cache reads |
+| **Any subsequent DACS cache miss from pods on this node** | blocks | `libStorageDirect.so` requests queue behind the saturated link |
+
+Steady-state inference on already-loaded models (weights already in
+GPU HBM) is fine; anything that requires a **fresh read** through the
+node's NIC — LoRA hot-swap, prefill KV load, model swap, image pull,
+probe — is at risk during the saturation window.
+
+### D.3 Why the current experiment does not surface this
+
+The measured runs on this cluster have:
+
+- `cache-sample-0` and `lxg9q-0` **co-located on the same node**
+  (kernel veth path, zero NIC traffic).
+- `raw-5xt9x-0` bypasses DACS entirely (Blob-direct, no cache-holder
+  involved).
+
+Neither run exercises the cross-node cache-read path, so the NIC
+saturation risk is invisible today. It becomes visible as soon as (a)
+the fleet grows past a single GPU node, (b) the cache is not
+DaemonSet-deployed, and (c) an HPA / rollout triggers cold starts on
+GPU nodes that do not host a cache replica.
+
+### D.4 The architectural implication
+
+A single-replica DACS cache **moves the network bottleneck from Azure
+Blob egress onto the cache-holder GPU node's NIC**. That is a strictly
+worse failure mode than Blob-direct in one respect: Blob egress is a
+central shared resource with independent scaling, while a GPU node's
+NIC is co-located with running inference workloads and safety-critical
+control-plane traffic (kubelet, probes, monitoring). Under contention,
+Blob returns HTTP 503 with backoff — predictable and retriable. Under
+NIC saturation, health probes fail and pods get marked Unhealthy —
+unpredictable and hard to distinguish from a real fault.
+
+### D.5 Mitigations, ranked
+
+| Approach | Effect | Cost |
+|---|---|---|
+| **Cache-server as DaemonSet on every GPU node** | Every read is same-node veth; no cross-node NIC pressure | N × 57 GiB SSD; first-warm Blob egress × N (or P2P) |
+| **Per-zone cache replicas + consistent-hash routing** | Bounds fan-out; keeps intra-AZ | Complexity; cross-AZ egress charges |
+| **Cache server on non-GPU node** | Removes interference with inference workloads | Cache-side NIC still a bottleneck; extra SKU cost |
+| **Client-side rate cap in `libStorageDirect.so`** | Protects cache-node NIC from saturation | Linear increase in cold-start time |
+| **QoS / `tc` shaping on the cache-holder node** | Preserves kubelet / probe / monitoring | Needs host privilege + tuning |
+| **Accelerated Networking / SR-IOV VF isolation for cache-server pod** | Separates DACS egress from host NIC contention | SKU restrictions |
+| **Move to InfiniBand SKUs (ND_H100_v5 etc.)** | 200 Gbps ceiling; no realistic saturation | SKU cost; not universally available |
+| **Admission control on concurrent cold starts** | Bounds HPA burst | Adds cold-start queueing delay |
+
+**Cleanest default: DaemonSet cache-server**, so every reader hits the
+local-node fast path unconditionally. This is orthogonal to the
+read-through change proposed in §4 — they compose: DaemonSet
+removes cross-node NIC pressure on cache hits, read-through removes
+the per-pod warmer sidecar on cache misses.
+
+### D.6 One-line summary
+
+A single-replica DACS cache trades Azure Blob egress bandwidth for GPU
+node NIC bandwidth on the cache-holder. A single cross-node cold start
+saturates a 25 Gbps NIC for ~20–25 s; concurrent cold starts (HPA
+burst) scale that window linearly. In-flight inference on
+already-loaded weights survives, but probes, monitoring, image pulls,
+and any subsequent cache miss on that node do not — which is why
+production DACS deployments need either DaemonSet placement or
+per-zone replicas with consistent-hash routing.
+
