@@ -143,6 +143,11 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
 **Dates:** November 9–12, 2026
 **Venue:** [Salt Palace Convention Center](https://www.visitsaltlake.com/salt-palace-convention-center/attend/), 90 South West Temple, Salt Lake City, UT 84101
 
+### Official Schedule Links
+
+- **CNCF-hosted Co-located Schedule:** <https://events.linuxfoundation.org/kubecon-cloudnativecon-north-america/co-located-events/cncf-hosted-co-located-schedule/>
+- **Main Conference Schedule:** <https://events.linuxfoundation.org/kubecon-cloudnativecon-north-america/program/schedule/>
+
 ### Official Room Block Hotels
 
 All hotels below are part of the official KubeCon NA 2026 room block (discounted rates) and are within walking distance of the Salt Palace Convention Center. Taxes ~17.52% unless noted. Book early — room blocks close mid-to-late October 2026.
