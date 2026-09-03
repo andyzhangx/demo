@@ -1,5 +1,12 @@
 # KubeCon + CloudNativeCon China 2026 (Shanghai) — CFP Submission
 
+## Event Info
+
+- **Event:** KubeCon + CloudNativeCon + OpenInfra Summit + PyTorch Conference China 2026
+- **Location:** Shanghai International Convention Center
+- **Address:** No. 2727 Riverside Avenue, Pudong, Shanghai, China
+- **Schedule:** https://www.lfopensource.cn/kubecon-cloudnativecon-openinfra-summit-pytorch-conference-china/program/schedule/
+
 ---
 
 ## Title
