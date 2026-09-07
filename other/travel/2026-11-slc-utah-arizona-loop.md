@@ -31,7 +31,7 @@
 - 当天入住：
   - **Capitol Reef Resort, Utah 24, Torrey, UT**
 - 说明：
-  - 如果当天出发时间较早、土路条件也可以，可以把 Hanksville 一带的景观点尽量安排在这一天完成。
+  - 如果当天土路条件也可以，可以把 Hanksville 一带的景观点尽量安排在这一天完成。
   - 若遇到雨雪或路况一般，建议优先保留主线行程，土路点位保守处理。
 
 ### 11.14（周六）｜Capitol Reef Resort → Capitol Reef National Park → Bryce Canyon National Park
@@ -133,7 +133,7 @@
 
 ## 出行备注
 
-- 11 月中旬白天较短，建议每天出发不要太晚。
+- 11 月中旬白天较短，安排行程时要给日照时间留足余量。
 - **Bryce Canyon** 是这条线路里最可能遇到低温、结冰、降雪的点。
 - **Hanksville / Moonscape / Factory Butte / Long Dong Silver** 一带土路条件变化较大，遇到雨雪时建议保守。
 - **Angels Landing** 需要 permit，建议提前确认；没有 permit 时可将 **Scout Lookout** 作为替代方案。
