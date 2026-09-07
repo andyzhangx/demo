@@ -41,6 +41,12 @@
 - 说明：
   - Capitol Reef 可优先安排 **Visitor Center（游客中心）**、**Fruita Historic District（Fruita 历史聚落）** 一带和 **Scenic Drive（景观公路）**。
   - 下午或傍晚进入 Bryce，适合看主要观景点。
+- Bryce 徒步可优先考虑：
+  - **Queen’s/Navajo Combination Loop（皇后花园 + 纳瓦霍组合环线）**：约 **4.6 km**，约 **2–3 小时**，是最经典、最适合第一次去 Bryce 的线路。
+  - 体力保守版可拆成两段：
+    - **Navajo Loop（纳瓦霍环线）**：约 **2.2 km**，约 **1–2 小时**。
+    - **Queen’s Garden（皇后花园步道，非环线）**：约 **2.9 km**，约 **1–2 小时**。
+  - 如果只是补一个轻松步行观景点，可走 **Sunset Point → Sunrise Point（落日点到日出点 Rim Trail）**：约 **1.6 km**，约 **1 小时**，基本最省力。
 
 ### 11.15（周日）｜Bryce Canyon City → Zion National Park（锡安国家公园） → Springdale
 - 这一天从 **Bryce Canyon（布莱斯峡谷）** 转去 **Zion（锡安）**，再住到 **Springdale（斯普林代尔）**。
@@ -57,6 +63,10 @@
 - 说明：
   - 如果当天早上还想在 Zion 安排主徒步，可优先考虑 **Angels Landing（天使降临峰）**（有 permit 时）或 **Scout Lookout（侦察台）**（无 permit 时）。
   - 下午到达 Page 后，可视时间安排 **Horseshoe Bend（马蹄湾）**。
+- Zion 徒步建议：
+  - **Angels Landing（天使降临峰）**：约 **5.4 mi / 8.7 km 往返**，累计爬升约 **1488 ft / 454 m**，多数人约 **4 小时**；**需要 permit**。
+  - **Scout Lookout（侦察台）**：从 **The Grotto（Shuttle Stop #6）** 出发，约 **2.25 mi / 3.62 km 单程**，往返通常按 **7.2 km 左右** 估算，约 **3–4 小时**；不需要 Angels Landing permit，也是最自然的替代线。
+  - 路线特点：前段会经过 **Refrigerator Canyon（冰箱峡谷）**，后段是 **Walter’s Wiggles（21 个之字形回头弯）**，全程爬升明显，11 月早晚温差会比较大。
 
 ### 11.17（周二）｜Page（佩吉）
 - 这一天为 **Page（佩吉）本地活动日**。
@@ -66,6 +76,10 @@
   - **Antelope Canyon（羚羊峡谷）**（建议提前预约）
   - **Glen Canyon Dam Overlook（格伦峡谷大坝观景点）**
   - 如前一天没去成，可补 **Horseshoe Bend（马蹄湾）**
+- 羚羊谷步行信息（以 tour operator 公布信息为准）：
+  - **Upper Antelope Canyon（上羚羊谷）**：常见 tour 标注约 **1.6 km / 1 mile 步行**，总时长约 **1 小时 40 分**，以平缓步行为主，通常更容易出片。
+  - **Lower Antelope Canyon（下羚羊谷）**：常见 tour 标注约 **1.8 km / 1.1 miles 往返步行**，总时长约 **1 小时 30 分**，需要更多上下台阶/梯子，体力要求略高。
+  - 这里不是常规意义上的自助徒步，基本都按 **guided tour（导览团）** 走，实际集合时间、车接驳、等候和峡谷内停留时长会因运营商而变化。
 
 ### 11.18（周三）｜Page（佩吉） → Forrest Gump Point（阿甘打卡点） → Moab（摩押）
 - 这一天从 Page 继续北上，经 **Forrest Gump Point（阿甘打卡点）** 前往 **Moab（摩押）**。
@@ -118,6 +132,41 @@
 - **Salt Lake City International Airport（盐湖城国际机场）**
 
 ---
+
+## 重点徒步 / 步行路线补充
+
+> 以下距离和耗时以 **官方 / 景区公开页面的常见标注** 为准，实际会受停车、shuttle、permit、天气、冰雪和现场限流影响。
+
+### Bryce Canyon National Park（布莱斯峡谷国家公园）
+- **首选**：**Queen’s/Navajo Combination Loop（皇后花园 + 纳瓦霍组合环线）**
+  - 距离：约 **4.6 km**
+  - 耗时：约 **2–3 小时**
+  - 特点：第一次去 Bryce 最值得走的一条，能同时看到 **Queen’s Garden（皇后花园）**、**Wall Street / Two Bridges（华尔街 / 双桥）** 一带的典型地貌。
+- **轻量版**：**Sunset Point → Sunrise Point（落日点到日出点 Rim Trail）**
+  - 距离：约 **1.6 km**
+  - 耗时：约 **1 小时**
+  - 特点：主要沿 rim 看 hoodoos（石林尖塔），省体力，适合天气差或只想轻松走走时。
+
+### Zion National Park（锡安国家公园）
+- **有 permit 时首选**：**Angels Landing（天使降临峰）**
+  - 距离：约 **8.7 km 往返**
+  - 耗时：约 **4 小时**
+  - 特点：经典线路，但暴露感强，最后带铁链的 ridge 段需要 permit。
+- **无 permit 时首选**：**Scout Lookout（侦察台） / West Rim Trail 前段**
+  - 距离：约 **3.62 km 单程**，往返通常按 **7.2 km 左右** 估算
+  - 耗时：约 **3–4 小时**
+  - 特点：景观已经很强，也是去 Angels Landing 前的大平台；不进最后铁链段也很值。
+
+### Antelope Canyon（羚羊峡谷）
+- **Upper Antelope Canyon（上羚羊谷）**
+  - 步行：约 **1.6 km / 1 mile**
+  - 总时长：约 **1 小时 40 分**
+  - 特点：步行相对平缓，拍光影更友好。
+- **Lower Antelope Canyon（下羚羊谷）**
+  - 步行：约 **1.8 km / 1.1 miles 往返**
+  - 总时长：约 **1 小时 30 分**
+  - 特点：需要更多台阶和梯子，线路更像“峡谷穿行”。
+- 备注：羚羊谷通常按 **导览团** 进入，不是普通 trailhead 自助徒步；当天请把 **签到、接驳、等待** 时间也算进总安排里。
 
 ## 主要景点参考海拔（米）
 
