@@ -119,6 +119,28 @@
 
 ---
 
+## 主要景点参考海拔（米）
+
+> 以下海拔为 **近似值**，统一使用 **米（m）** 表示；优先按常用游客中心、停车点、观景点或公开坐标附近的海拔整理，主要用于判断温差、低温和路况风险。
+
+- **Long Dong Silver Trailhead（长东银步道起点）**：约 **1366 m**
+- **Moonscape Overlook（月球地貌观景点）**：约 **1500 m**
+- **Factory Butte（工厂孤峰）**：约 **1807 m**
+- **Capitol Reef Visitor Center / Fruita 一带（圆顶礁游客中心 / Fruita 区域）**：约 **1678 m**
+- **Bryce Canyon City（布莱斯峡谷城）**：约 **2339 m**
+- **Bryce Point / Bryce Rim（布莱斯主要观景缘）**：约 **2485 m**
+- **Zion Canyon Visitor Center（锡安峡谷游客中心）**：约 **1203 m**
+- **Angels Landing（天使降临峰）**：约 **1760 m**
+- **Page（佩吉）**：约 **1325 m**
+- **Antelope Canyon（羚羊峡谷）**：约 **1165 m**
+- **Horseshoe Bend（马蹄湾）**：约 **1119 m**
+- **Glen Canyon Dam Overlook（格伦峡谷大坝观景点）**：约 **1196 m**
+- **Forrest Gump Point（阿甘打卡点）**：约 **1562 m**
+- **Monument Valley Visitor Center（纪念碑谷游客中心）**：约 **1711 m**
+- **Moab（摩押）**：约 **1240 m**
+
+---
+
 ## 天气 / 路况查询网站
 
 - 美国国家气象局 **NWS / weather.gov**：<https://www.weather.gov/>
