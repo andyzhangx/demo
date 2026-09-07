@@ -1,177 +1,121 @@
-# 2026 年 11 月中旬｜盐湖城出发 8 天 Utah / Arizona 环线
+# 2026 年 11 月中旬｜盐湖城出发 Utah / Arizona 8 天行程
 
-这是一份适合 **11 月中旬** 的 8 天自驾环线草案，起点和终点都在 **Salt Lake City（盐湖城）**。行程以“景观公路 + 中等强度徒步 + 尽量不太赶”为目标，并纳入了你特别提到的这些点：
+这是一份按既定住宿点和路线整理的 8 天自驾行程，起点和终点分别为 **Salt Lake City** 和 **Salt Lake City International Airport**。
 
-- **Long Dong Silver Trailhead**
-- **Moonscape Overlook**
-- **Factory Butte**
-- **Capitol Reef National Park**
-- **Bryce Canyon National Park**
-- **Zion National Park**
-- **Page**
-- **Antelope Canyon**
-- **Horseshoe Bend**
-- **Glen Canyon Dam Overlook**
-- **Forrest Gump Point**
-- **Monument Valley**
+本版以你确认的安排为准，并删除了此前表格中的“建议日出点”。
 
 ---
 
-## 行程假设
+## 行程总表
 
-- 出发 / 返回城市：**Salt Lake City（SLC）**
-- 总时长：**8 天**
-- 季节：**11 月中旬**
-- Zion 玩法：**不去 The Narrows**，优先考虑 **Angels Landing**；若没有 permit，则以 **Scout Lookout** 作为替代
-- 风格：以自驾观景和轻中度徒步为主，不按极限赶路版本来设计
-
----
-
-## 出行前的重要提醒
-
-- **Angels Landing 最后链条段需要 permit**。如果没有 permit，走到 **Scout Lookout** 也很值得。
-- **Bryce Canyon** 是全程里最冷、也最容易遇到雪或结冰的地方。
-- **Moonscape Overlook / Factory Butte / Long Dong Silver Trailhead** 一带对土路条件比较敏感；如果前一天下雨、下雪或融雪，建议保守处理。
-- **Antelope Canyon** 建议提前预约。
-- 文中里程和徒步距离都是 **实用估算值**，不是逐点精确导航距离。
+| 日期 | 星期 | 路线 | 参考里程 / 车程 | 住宿 |
+|---|---|---|---|---|
+| 11.13 | 周五 | Salt Lake City → Capitol Reef NP；沿途可看 **Long Dong Silver Trailhead, Hanksville**、**Moonscape Overlook, F526+39, Hanksville** | **5 hr 17 min (471 km)** via **US-6 E** | **Capitol Reef Resort**, Utah 24, Torrey, UT |
+| 11.14 | 周六 | Capitol Reef Resort → Capitol Reef National Park → Bryce Canyon National Park | **2 hr 30 min (205 km)** via **UT-24 E** | **Best Western Plus Bryce Canyon Grand Hotel**, 30 N 100 E, Bryce Canyon City |
+| 11.15 | 周日 | Bryce Canyon City → Zion National Park → Springdale | **1 hr 51 min (135 km)** via **US-89 S** | **Hyatt Place Springdale / Zion National Park**, 1215 Zion Park Blvd, Springdale |
+| 11.16 | 周一 | Springdale → Page | **2 hr 21 min (189 km)** via **US-89 S** | **Page** |
+| 11.17 | 周二 | Page | 本地活动日 | **Page** |
+| 11.18 | 周三 | Page → Forrest Gump Point → Moab | **4 hr 28 min (430 km)** via **AZ-98 E** | **Moab** |
+| 11.19 | 周四 | Moab | 本地活动日 | **Moab** |
+| 11.20 | 周五 | Moab → Salt Lake City International Airport | **3 hr 48 min (382 km)** | —— |
 
 ---
 
-## 8 天行程总表
+## 每天的安排建议
 
-| 天数 | 路线 | 住宿 | 开车公里数 | 徒步公里数 | 建议出发时间 | 建议日出点 | 建议日落点 | 当天重点 |
-|---|---|---|---:|---:|---|---|---|---|
-| Day 1 | Salt Lake City -> Hanksville / Factory Butte / Long Dong Silver / Moonscape Overlook | Hanksville | 380-500 | 3-6 | 07:00-08:00 | 不强求 | **Moonscape Overlook** | 先走 Hanksville 一带土路景观点 |
-| Day 2 | Hanksville -> Capitol Reef -> Torrey | Torrey | 120-180 | 3-6 | 08:30 左右 | 可选 Hanksville 周边晨光 | Capitol Reef Scenic Drive / Fruita 一带 | Capitol Reef 轻松观景日 |
-| Day 3 | Torrey -> Bryce Canyon | Bryce Canyon City / Tropic | 180-220 | 3-6 | 08:30-09:00 | 不强求 | **Sunset Point / Inspiration Point** | Bryce 观景点为主 |
-| Day 4 | Bryce Canyon -> Zion | Springdale | 140-170 | 3-5 | 07:30 左右 | **Bryce Canyon** | Zion 园内灵活安排 | Bryce 日出 + Zion 轻量日 |
-| Day 5 | Zion（Angels Landing / Scout Lookout）-> Page | Page | 190-220 | 7-9 | **06:30-07:00** | Zion 峡谷晨光 | **Horseshoe Bend** | Zion 主徒步日 |
-| Day 6 | Page 周边一整天 | Page | 40-90 | 3-6 | 08:00-09:00 | 不强求 | 可补拍 Horseshoe Bend / 湖边视角 | Antelope Canyon + Glen Canyon Dam Overlook |
-| Day 7 | Page -> Forrest Gump Point -> Monument Valley -> Blanding / Moab | Blanding 或 Moab | 320-520 | 2-5 | 07:30-08:00 | 不强求 | **Monument Valley** | 长距离景观转场日 |
-| Day 8 | Blanding / Moab -> Salt Lake City | Salt Lake City | 380-520 | 0-2 | 08:00 左右 | 不强求 | 不强求 | 返回盐湖城 |
+### 11.13（周五）｜Salt Lake City → Capitol Reef NP
+- 这是第一天的长距离转场日。
+- 按你给的路线，沿途可重点关注：
+  - **Long Dong Silver Trailhead, Hanksville**
+  - **Moonscape Overlook, F526+39, Hanksville**
+- 当天入住：
+  - **Capitol Reef Resort, Utah 24, Torrey, UT**
+- 说明：
+  - 如果当天出发时间较早、土路条件也可以，可以把 Hanksville 一带的景观点尽量安排在这一天完成。
+  - 若遇到雨雪或路况一般，建议优先保留主线行程，土路点位保守处理。
 
----
+### 11.14（周六）｜Capitol Reef Resort → Capitol Reef National Park → Bryce Canyon National Park
+- 这一天以 **Capitol Reef** + **Bryce Canyon** 为主。
+- 当天入住：
+  - **Best Western Plus Bryce Canyon Grand Hotel, 30 N 100 E, Bryce Canyon City**
+- 说明：
+  - Capitol Reef 可优先安排 Visitor Center、Fruita 一带和 Scenic Drive。
+  - 下午或傍晚进入 Bryce，适合看主要观景点。
 
-## 每天的细化说明
+### 11.15（周日）｜Bryce Canyon City → Zion National Park → Springdale
+- 这一天从 Bryce 转去 Zion，再住到 Springdale。
+- 当天入住：
+  - **Hyatt Place Springdale / Zion National Park, 1215 Zion Park Blvd, Springdale**
+- 说明：
+  - Bryce 早上可继续补观景点。
+  - 下午到 Zion 后，建议以轻量活动为主，为后续 Zion 徒步留体力。
 
-### Day 1｜盐湖城 -> Hanksville / Factory Butte / Long Dong Silver / Moonscape Overlook
-- 这一天按“先把 Hanksville 一带完成”的思路安排。
-- 如果出发够早，可以把重点放在：
-  1. **Factory Butte**
-  2. **Long Dong Silver Trailhead**
-  3. **Moonscape Overlook**（尽量卡日落）
-- 建议总徒步量：**3-6 km**
-- 住宿建议：**Hanksville**
-- 备注：这一天对天气和土路条件最敏感，如果前一天下雨或融雪，宁可少跑一些土路点位，也不要硬开。
+### 11.16（周一）｜Springdale → Page
+- 这一天是从 Zion / Springdale 转场去 Page。
+- 当天入住：
+  - **Page**
+- 说明：
+  - 如果当天早上还想在 Zion 安排主徒步，可优先考虑 **Angels Landing**（有 permit 时）或 **Scout Lookout**（无 permit 时）。
+  - 下午到达 Page 后，可视时间安排 **Horseshoe Bend**。
 
-### Day 2｜Hanksville -> Capitol Reef -> Torrey
-- 这一天改成更轻松的 Capitol Reef 观景日。
+### 11.17（周二）｜Page
+- 这一天为 **Page 本地活动日**。
+- 当天入住：
+  - **Page**
 - 建议安排：
-  - Capitol Reef Visitor Center
-  - Fruita Historic District / Gifford House 一带
-  - Scenic Drive 各个 pullout
-- 建议总徒步量：**3-6 km**
-- 住宿建议：**Torrey**
-- 这一天整体是节奏恢复日，也方便给后面的 Bryce 和 Zion 留体力。
-
-### Day 3｜Torrey -> Bryce Canyon
-- 这一天以 Bryce 各大观景点为主，不建议一上来就安排太重的 trail。
-- 推荐点位：
-  - Sunset Point
-  - Sunrise Point
-  - Inspiration Point
-  - Bryce Point（可选）
-- 建议总徒步量：**3-6 km**
-
-### Day 4｜Bryce Canyon -> Zion
-- 如果天气允许，建议把 **Bryce 日出** 放在这天早上。
-- 到 Zion 后，建议轻量活动即可，给 Day 5 的主徒步留体力。
-- 建议总徒步量：**3-5 km**
-
-### Day 5｜Zion 主徒步日 -> Page
-- 这一天是 Zion 的主力徒步日。
-- 优先级：
-  - **Angels Landing**（有 permit 时）
-  - **Scout Lookout**（无 permit / 天气不适合时）
-- 建议徒步量：
-  - 走 Angels Landing：**8-9 km**
-  - 走到 Scout Lookout：**6-7 km**
-- 下午开去 Page，傍晚争取赶上 **Horseshoe Bend 日落**。
-
-### Day 6｜Page 本地日
-- 主要安排：
-  - **Antelope Canyon**
+  - **Antelope Canyon**（建议提前预约）
   - **Glen Canyon Dam Overlook**
-  - 如果前一天天气一般，可补拍 **Horseshoe Bend**
-- 建议总徒步量：**3-6 km**
-- 备注：Antelope Canyon 以你预订的 tour company 集合点为准。
+  - 如前一天没去成，可补 **Horseshoe Bend**
 
-### Day 7｜Page -> Forrest Gump Point -> Monument Valley -> Blanding / Moab
-- 路上先停：**Forrest Gump Point**
-- 核心目标：**Monument Valley 日落**
-- 如果更在意 Day 8 回程轻松，建议住 **Moab**；如果更想让 Day 7 不那么赶，建议住 **Blanding**。
-- 建议总徒步量：**2-5 km**
+### 11.18（周三）｜Page → Forrest Gump Point → Moab
+- 这一天从 Page 继续北上，经 **Forrest Gump Point** 前往 **Moab**。
+- 当天入住：
+  - **Moab**
+- 说明：
+  - 如果时间允许，也可以结合当日体力和天气，考虑 Monument Valley 一带的停留时间。
+  - 这一天整体仍属于景观转场日，建议不要额外塞过多徒步。
 
-### Day 8｜Blanding / Moab -> 盐湖城
-- 作为纯返程日看待即可。
-- 如果 Day 7 已经很满，Day 8 尽量不要再强行加大的徒步安排。
+### 11.19（周四）｜Moab
+- 这一天为 **Moab 本地活动日**。
+- 当天入住：
+  - **Moab**
+- 说明：
+  - 这一整天建议保留弹性，可以根据天气、体力、摄影计划再决定具体去哪些点。
 
----
-
-## 每天停车点 / Trailhead 清单
-
-### Day 1
-- [ ] Factory Butte roadside pullout / viewpoints
-- [ ] Long Dong Silver Trailhead
-- [ ] Moonscape Overlook access road / parking area
-
-### Day 2
-- [ ] Capitol Reef Visitor Center
-- [ ] Capitol Reef Scenic Drive
-- [ ] Fruita Historic District / Gifford House area
-
-### Day 3
-- [ ] Sunset Point
-- [ ] Sunrise Point
-- [ ] Inspiration Point
-- [ ] Bryce Point（可选）
-
-### Day 4
-- [ ] Bryce Sunrise Point / Sunset Point
-- [ ] Zion Visitor Center / shuttle area
-- [ ] Canyon Junction（可选）
-
-### Day 5
-- [ ] The Grotto（Angels Landing / Scout Lookout 起点）
-- [ ] Horseshoe Bend Parking Lot
-
-### Day 6
-- [ ] Antelope Canyon tour operator check-in point
-- [ ] Glen Canyon Dam Overlook Trailhead
-- [ ] Horseshoe Bend Parking Lot（可选补拍）
-
-### Day 7
-- [ ] Forrest Gump Point roadside pullout
-- [ ] Monument Valley Visitor Center
-- [ ] West Mitten / East Mitten 观景点（时间允许时）
-
-### Day 8
-- [ ] 无强制点位，以返程为主
+### 11.20（周五）｜Moab → Salt Lake City International Airport
+- 最后一天返回机场。
+- 参考车程：
+  - **3 hr 48 min (382 km)**
+- 建议：
+  - 返程当天尽量不要再安排重徒步，给开车和机场时间留足缓冲。
 
 ---
 
-## 最值得优先保留的日出 / 日落点
+## 重点地点清单
 
-### 日出优先级高
-- **Bryce Canyon**
-- **Moonscape Overlook**
-- **Monument Valley**
+### Hanksville / Capitol Reef 一段
+- Long Dong Silver Trailhead, Hanksville
+- Moonscape Overlook, F526+39, Hanksville
+- Capitol Reef National Park
+- Capitol Reef Resort, Torrey
 
-### 日落优先级高
-- **Moonscape Overlook**
-- **Horseshoe Bend**
-- **Monument Valley**
-- Capitol Reef 若天气好也很适合看傍晚光线
+### Bryce / Zion 一段
+- Bryce Canyon National Park
+- Springdale
+- Hyatt Place Springdale / Zion National Park
+- Zion National Park
+- Angels Landing / Scout Lookout（按 permit 情况决定）
+
+### Page 一段
+- Page
+- Antelope Canyon
+- Horseshoe Bend
+- Glen Canyon Dam Overlook
+
+### 北返一段
+- Forrest Gump Point
+- Moab
+- Salt Lake City International Airport
 
 ---
 
@@ -184,33 +128,13 @@
 - Capitol Reef 当前情况：<https://www.nps.gov/care/planyourvisit/conditions.htm>
 - Bryce 当前情况：<https://www.nps.gov/brca/planyourvisit/conditions.htm>
 - Zion 当前情况：<https://www.nps.gov/zion/planyourvisit/conditions.htm>
-- Monument Valley Navajo Tribal Park：<https://navajonationparks.org/navajo-tribal-parks/monument-valley/>
 
 ---
 
-## 建议加入 Google Maps 收藏的点
+## 出行备注
 
-- Capitol Reef Visitor Center
-- Capitol Reef Scenic Drive
-- Fruita Historic District / Gifford House
-- Factory Butte
-- Long Dong Silver Trailhead
-- Moonscape Overlook
-- Sunrise Point Bryce Canyon
-- Sunset Point Bryce Canyon
-- Inspiration Point Bryce Canyon
-- The Grotto Zion
-- Horseshoe Bend Parking Lot
-- Glen Canyon Dam Overlook Trailhead
-- Antelope Canyon tour check-in point
-- Forrest Gump Point
-- Monument Valley Visitor Center
-
----
-
-## 最后几点实用建议
-
-- 11 月中旬白天短，不建议每天塞太多点。
-- **Bryce 的雪 / 冰** 和 **Hanksville 土路条件** 是这条线路里最值得提前重点确认的两个变量。
-- 如果 Moonscape / Factory Butte 当天土路状态不佳，可以果断缩短，不建议为了“打卡完整”去冒险。
-- Zion 的 **Scout Lookout** 应该默认当成 Angels Landing 的可靠备选方案。
+- 11 月中旬白天较短，建议每天出发不要太晚。
+- **Bryce Canyon** 是这条线路里最可能遇到低温、结冰、降雪的点。
+- **Hanksville / Moonscape / Factory Butte / Long Dong Silver** 一带土路条件变化较大，遇到雨雪时建议保守。
+- **Angels Landing** 需要 permit，建议提前确认；没有 permit 时可将 **Scout Lookout** 作为替代方案。
+- **Antelope Canyon** 建议提前预订具体 tour 和集合点。
