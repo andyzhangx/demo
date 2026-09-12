@@ -1542,3 +1542,101 @@ steady-state throughput, as expected.
   - **Second and later pods** on the same model hit the ~3.3 GiB/s
     DACS-warm path (see 08-29 `lxg9q-0` interpretation above),
     dramatically faster than repeatedly re-downloading from Blob
+
+---
+
+## 2026-09-12 follow-up — two `qwen3-coder-30b-a3b-instruct` warm-cache pods on `andy-aks135`
+
+A later run on the same cluster produced two more
+`qwen3-coder-30b-a3b-instruct` pods in `default`:
+
+- `qwen3-coder-30b-a3b-instruct-zcbc2-0`
+- `qwen3-coder-30b-a3b-instruct-9gvk7-0`
+
+Both pods were DACS-injected (`dacs.azure.com/inject: "true"`) and both
+used the same model source:
+
+- `az://pvc-58e234e9-ebc3-4dda-b4c6-451243e48251/Qwen/Qwen3-Coder-30B-A3B-Instruct`
+
+As before, the main container was launched with
+`load_format=runai_streamer`, and the DACS client logs confirmed the
+same wiring:
+
+```text
+blob_read: using cache discovery API at cache-sample-discovery.dacs-cache-system.svc.cluster.local
+blob_read: distributed cache enabled (port=9065)
+blob_read: SI config using Azure Identity SDK (DefaultAzureCredential)
+```
+
+### Key result
+
+Both pods loaded the **same 56.87 GiB** (`TotalBytes=61066575656`) model
+from the **cache path**, not directly from Azure Blob:
+
+- `RemoteClient=0` in both pods
+- `RemoteCache≈38k` in both pods
+- RunAI Streamer reported:
+  - `zcbc2-0`: **25.26 s, 2.3 GiB/s**
+  - `9gvk7-0`: **31.21 s, 1.8 GiB/s**
+
+### Why the throughput differed
+
+The difference was **cache locality**, not model size or a warm-vs-cold
+change:
+
+| Pod | Client node | `cache-sample-0` node | Locality | Stream throughput | Cache latency |
+|---|---|---|---|---:|---|
+| `zcbc2-0` | `aks-ws2f6561c46-70749140-vmss000000` | same node | **host-local warm** | **2.3 GiB/s** | P50 **0–1 ms**, P95 **2–4 ms** |
+| `9gvk7-0` | `aks-ws318a76fd9-18596061-vmss000000` | `aks-ws2f6561c46-70749140-vmss000000` | **cross-node warm** | **1.8 GiB/s** | P50 **21–28 ms**, P95 **55–77 ms** |
+
+`cache-sample-0` was running on `aks-ws2f6561c46-70749140-vmss000000`,
+which is the same node as `zcbc2-0` and a different node from
+`9gvk7-0`. So although both pods were warm-cache hits, they exercised
+**different warm paths**:
+
+- **`zcbc2-0`**: host-local warm path (client pod and cache server on the
+  same node)
+- **`9gvk7-0`**: cross-node warm path (client pod reads warm cache over
+  the network from another node)
+
+This is visible directly in the DACS shutdown histograms:
+
+```text
+zcbc2-0:
+  ReadChunk stats: Total=38333 PrefetchCache=170 RemoteCache=38163 RemoteClient=0 ZeroCopy=785 SubChunk=33764
+  ReadFile requested stats: TotalReads=18929 ... TotalBytes=61066575656
+  Download latencies (ms) from Cache: Samples=1000 Min=0 Max=6 Avg=0 P50=0 P95=2
+  [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 25.26s, 2.3 GiB/s
+
+9gvk7-0:
+  ReadChunk stats: Total=38333 PrefetchCache=132 RemoteCache=38201 RemoteClient=0 ZeroCopy=785 SubChunk=33764
+  ReadFile requested stats: TotalReads=18929 ... TotalBytes=61066575656
+  Download latencies (ms) from Cache: Samples=1000 Min=1 Max=120 Avg=24 P50=21 P95=55
+  [RunAI Streamer] Overall time to stream 56.9 GiB of all files to cpu: 31.21s, 1.8 GiB/s
+```
+
+### Interpretation
+
+This pair is a clean confirmation of the earlier pattern in this note:
+
+- **Warmth alone is not the whole story** — warm **host-local** cache is
+  faster than warm **cross-node** cache.
+- Both pods avoided Azure Blob on the main data path (`RemoteClient=0`),
+  so the throughput delta is not a cold-path penalty.
+- The ~25% drop in throughput (2.3 → 1.8 GiB/s) lines up with the jump
+  in cache-read latency from sub-millisecond / low-single-digit ms to
+  tens of milliseconds per sampled chunk.
+
+### Sidecar prewarm timings (different metric)
+
+For completeness: the injected `dacs-model-warmer` init flow itself also
+showed different completion times:
+
+- `zcbc2-0`: `completed ... elapsed_seconds=49.06`
+- `9gvk7-0`: `completed ... elapsed_seconds=26.39`
+
+That metric is **not** the same as the RunAI Streamer throughput above.
+The warmer measures the sidecar's prefetch/fill step, while the
+`Overall time to stream ...` line measures the main container's actual
+model-read path during vLLM initialization. For locality analysis, the
+main-container streamer numbers are the authoritative comparison.
