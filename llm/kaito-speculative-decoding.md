@@ -670,6 +670,19 @@ runai_streamer_loader.py
 RuntimeError: Cannot find any safetensors model weights with '/root/.cache/vllm/assets/model_streamer/bc8a14aa'
 ```
 
+For reference, here is the most useful error sequence from the live pod logs:
+
+```text
+INFO 09-15 06:51:20 inference_api.py:557] Starting server on port 5000
+INFO 09-15 06:51:40 [model.py:619] Resolved architecture: MiMoForCausalLM
+INFO 09-15 06:51:52 [model.py:619] Resolved architecture: MiMoMTPModel
+(EngineCore pid=301) INFO 09-15 06:52:05 [core.py:114] Initializing a V1 LLM engine (v0.25.1) with config: model='/root/.cache/vllm/assets/model_streamer/bc8a14aa', speculative_config=SpeculativeConfig(method='mtp', model='/root/.cache/vllm/assets/model_streamer/bc8a14aa', num_spec_tokens=1), load_format=runai_streamer
+(EngineCore pid=301) Loading safetensors using Runai Model Streamer: 100% Completed | 451/451
+(EngineCore pid=301) INFO 09-15 06:52:18 file_streamer.py:69] [RunAI Streamer] Overall time to stream 14.6 GiB of all files to cpu: 8.26s, 1.8 GiB/s
+(EngineCore pid=301) RuntimeError: Cannot find any safetensors model weights with '/root/.cache/vllm/assets/model_streamer/bc8a14aa'
+(APIServer pid=45) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+```
+
 The outer API server then died with the usual wrapper error:
 
 ```text
