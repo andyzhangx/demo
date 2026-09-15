@@ -830,73 +830,66 @@ This matters because it separates two questions:
    - `--speculative-config='{"method":"mtp","num_speculative_tokens":1}'`
 2. Port-forward the serving endpoint locally.
 3. Run a warmup request.
-4. Run **6 fixed prompts** sequentially against the OpenAI-compatible
-   `/v1/chat/completions` endpoint with:
+4. Run **100 measured requests** sequentially against the OpenAI-compatible
+   `/v1/chat/completions` endpoint using a fixed prompt set in a loop, with:
    - `temperature=0`
    - `max_tokens=256`
 5. Record per-request latency and token usage returned by the API.
 6. Patch the same StatefulSet again to **remove** `--speculative-config`.
 7. Wait for the replacement pod to become `Ready`.
-8. Run the **same warmup + same 6 prompts** again.
+8. Run the **same warmup + same 100 measured requests** again.
 9. Restore `--speculative-config` and confirm the pod becomes `Ready` again.
-10. Run one more confirmation pass after restore.
 
 #### Test scale / workload size
 
-The benchmark was intentionally **small-scale and latency-oriented**, not a
-full throughput sweep:
+The benchmark was intentionally **single-replica and latency-oriented**, not a
+full multi-client throughput sweep:
 
 - **1 pod**
 - **1 GPU-backed serving replica**
-- **6 measured requests** per condition
-- **256 completion tokens per request** (all six requests hit the length cap)
-- roughly **48 prompt tokens on average** per request
+- **100 measured requests** per condition
+- **256 completion tokens per request** (all measured requests hit the length cap)
+- **48.36 prompt tokens on average** per request
 - one warmup request before each measured run
+- same fixed prompt set reused in a loop across the 100 requests
 
-This is a reasonable shape for validating **interactive request latency** and
-steady per-request completion speed, but it is **not** enough to claim a full
-cluster-wide QPS curve.
+This is still not a full cluster-wide QPS study, but it is much stronger than
+an anecdotal spot check and is enough to characterize stable single-request
+latency and steady completion speed on this workload.
 
 ### Measured results
 
-#### Speculative decoding ON (steady state, before turning it off)
+#### Speculative decoding ON
 
-- average latency: **1.71s**
-- p50 latency: **1.74s**
-- max latency: **1.77s**
-- aggregate completion throughput: **150.0 tokens/s**
+- measured requests: **100**
+- average latency: **1.7440s**
+- p50 latency: **1.7404s**
+- p95 latency: **1.7947s**
+- p99 latency: **1.8141s**
+- max latency: **1.8225s**
+- aggregate completion throughput: **146.7848 tokens/s**
 
 #### Speculative decoding OFF
 
-- average latency: **2.78s**
-- p50 latency: **2.78s**
-- max latency: **2.80s**
-- aggregate completion throughput: **92.0 tokens/s**
-
-#### Speculative decoding ON again (after restore)
-
-The first post-restore warmup path was cold and noticeably slower, so the
-cleanest comparison is the restored **steady-state** run excluding the first
-measured request after the pod restart:
-
-- average latency: **1.75s**
-- p50 latency: **1.76s**
-- max latency: **1.77s**
-- aggregate completion throughput: **146.4 tokens/s**
+- measured requests: **100**
+- average latency: **2.8055s**
+- p50 latency: **2.8049s**
+- p95 latency: **2.8146s**
+- p99 latency: **2.8212s**
+- max latency: **2.8367s**
+- aggregate completion throughput: **91.2486 tokens/s**
 
 ### Performance delta
 
-Using the initial steady-state `speculative on` run versus the `speculative
-off` run:
+Using the 100-request `speculative on` run versus the 100-request
+`speculative off` run:
 
-- **average latency improved by ~38.7%**
-- **aggregate completion throughput improved by ~63.1%**
-
-Using the restored steady-state `speculative on` run versus the `speculative
-off` run:
-
-- **average latency improved by ~37.2%**
-- **aggregate completion throughput improved by ~59.2%**
+- **average latency improved by ~37.8%**
+- **p50 latency improved by ~38.0%**
+- **p95 latency improved by ~36.2%**
+- **aggregate completion throughput improved by ~60.9%**
+- absolute average latency reduction: **~1.06s per request**
+- absolute aggregate completion throughput gain: **~55.54 tokens/s**
 
 So the practical result on this cluster is:
 
@@ -910,8 +903,9 @@ For `XiaomiMiMo/MiMo-7B-Base`, the evidence now supports a more precise claim:
 
 - `mtp + runai_streamer` can fail at startup
 - `mtp` **without** `runai_streamer` can start successfully
-- and in this single-replica interactive benchmark, `mtp` delivered roughly
-  **37–39% lower latency** and **59–63% higher completion throughput**
+- and in this 100-request single-replica interactive benchmark, `mtp`
+  delivered roughly **36–38% lower tail/median latency** and **~60.9% higher
+  aggregate completion throughput**
 
 That is strong enough to justify a model-specific workaround such as:
 
