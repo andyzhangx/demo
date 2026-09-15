@@ -707,6 +707,53 @@ More precisely:
   the streamed local cache directory produced by `runai_streamer` for this
   model.
 
+### Is this already known upstream?
+
+Yes — **this appears to match a known upstream issue class**, specifically
+around the combination of **`runai_streamer` + MTP speculative decoding**.
+
+The strongest public match is vLLM issue
+[`vllm-project/vllm#42060`](https://github.com/vllm-project/vllm/issues/42060),
+titled:
+
+> **[Bug]: `runai_streamer` + MTP drafter fails to load weights from
+> `model_streamer` local cache**
+
+That issue reports the same overall pattern seen in the live KAITO pod here:
+
+- base model loads successfully through `runai_streamer`
+- enabling `"method":"mtp"` makes engine initialization fail
+- the failure occurs while loading the draft/speculator model
+- the concrete error is the same family of message:
+  `RuntimeError: Cannot find any safetensors model weights with
+  '/root/.cache/vllm/assets/model_streamer/<hash>'`
+
+So while the reproduction in #42060 used a different MTP-capable model, the
+symptom strongly suggests that the bug is **not MiMo-specific**. The more
+likely scope is:
+
+- **generic problem class**: vLLM MTP/speculator loading from a
+  `runai_streamer`-produced local cache path
+- **this document's concrete reproduction**: `XiaomiMiMo/MiMo-7B-Base`
+
+There was an initial upstream fix attempt in
+[`vllm-project/vllm#42079`](https://github.com/vllm-project/vllm/pull/42079),
+which was merged, but later follow-up discussion indicated that it did not
+fully cover real `runai_streamer` environments in all cases.
+
+That is why a second follow-up PR,
+[`vllm-project/vllm#48023`](https://github.com/vllm-project/vllm/pull/48023),
+was opened to address the remaining draft-model `model_weights` inheritance
+problem for object-storage / streamer-backed models.
+
+The implication for KAITO is important:
+
+- this is **not just a local YAML mistake** in the Workspace,
+- and it is **not evidence that MiMo MTP is fundamentally unsupported**, since
+  MiMo MTP works once `runai_streamer` is removed (see the benchmark below),
+- it is better understood as an **upstream runtime compatibility issue** in the
+  `runai_streamer + mtp` path.
+
 ### Best current mitigation
 
 If the immediate goal is to get the Workspace healthy, the safest workaround is:
