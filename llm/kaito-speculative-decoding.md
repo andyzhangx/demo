@@ -741,3 +741,135 @@ For at least `MiMo-7B-Base`, KAITO should document that:
 - but enabling `mtp` on top may still fail during vLLM engine startup,
 - so model-by-model runtime validation is required before claiming the
   combination is supported.
+
+### Follow-up benchmark on the same cluster: MTP still helps once `runai_streamer` is removed
+
+After confirming the crash was specific to the `mtp + runai_streamer`
+combination, I ran an A/B benchmark on the **same live cluster** after
+patching the `xiaomi` StatefulSet to:
+
+- **disable `runai_streamer`**
+- keep the model as `XiaomiMiMo/MiMo-7B-Base`
+- keep **speculative decoding MTP enabled** via:
+
+```bash
+--speculative-config='{"method":"mtp","num_speculative_tokens":1}'
+```
+
+This matters because it separates two questions:
+
+1. does `runai_streamer` conflict with MiMo MTP? (**yes, in this case**)
+2. does MiMo MTP itself still help when loaded normally from Hugging Face?
+   (**also yes, based on the measurements below**)
+
+### Benchmark setup
+
+#### Test environment
+
+- Cluster: `andy-aks135`
+- Namespace / workload: `default/xiaomi`
+- Workload shape: **1 StatefulSet replica** (`xiaomi-0`)
+- Model: `XiaomiMiMo/MiMo-7B-Base`
+- Runtime: vLLM `0.25.1`
+- GPU SKU from the Workspace: `Standard_NC24ads_A100_v4`
+- Parallelism: single-pod / single-rank path (`tensor-parallel-size=1`)
+- Model loading path during the benchmark: **direct HF model path**
+  (`--model=XiaomiMiMo/MiMo-7B-Base`), **not** `runai_streamer`
+
+#### Test procedure
+
+1. Start from the patched `xiaomi` StatefulSet with:
+   - `runai_streamer` removed
+   - `--speculative-config='{"method":"mtp","num_speculative_tokens":1}'`
+2. Port-forward the serving endpoint locally.
+3. Run a warmup request.
+4. Run **6 fixed prompts** sequentially against the OpenAI-compatible
+   `/v1/chat/completions` endpoint with:
+   - `temperature=0`
+   - `max_tokens=256`
+5. Record per-request latency and token usage returned by the API.
+6. Patch the same StatefulSet again to **remove** `--speculative-config`.
+7. Wait for the replacement pod to become `Ready`.
+8. Run the **same warmup + same 6 prompts** again.
+9. Restore `--speculative-config` and confirm the pod becomes `Ready` again.
+10. Run one more confirmation pass after restore.
+
+#### Test scale / workload size
+
+The benchmark was intentionally **small-scale and latency-oriented**, not a
+full throughput sweep:
+
+- **1 pod**
+- **1 GPU-backed serving replica**
+- **6 measured requests** per condition
+- **256 completion tokens per request** (all six requests hit the length cap)
+- roughly **48 prompt tokens on average** per request
+- one warmup request before each measured run
+
+This is a reasonable shape for validating **interactive request latency** and
+steady per-request completion speed, but it is **not** enough to claim a full
+cluster-wide QPS curve.
+
+### Measured results
+
+#### Speculative decoding ON (steady state, before turning it off)
+
+- average latency: **1.71s**
+- p50 latency: **1.74s**
+- max latency: **1.77s**
+- aggregate completion throughput: **150.0 tokens/s**
+
+#### Speculative decoding OFF
+
+- average latency: **2.78s**
+- p50 latency: **2.78s**
+- max latency: **2.80s**
+- aggregate completion throughput: **92.0 tokens/s**
+
+#### Speculative decoding ON again (after restore)
+
+The first post-restore warmup path was cold and noticeably slower, so the
+cleanest comparison is the restored **steady-state** run excluding the first
+measured request after the pod restart:
+
+- average latency: **1.75s**
+- p50 latency: **1.76s**
+- max latency: **1.77s**
+- aggregate completion throughput: **146.4 tokens/s**
+
+### Performance delta
+
+Using the initial steady-state `speculative on` run versus the `speculative
+off` run:
+
+- **average latency improved by ~38.7%**
+- **aggregate completion throughput improved by ~63.1%**
+
+Using the restored steady-state `speculative on` run versus the `speculative
+off` run:
+
+- **average latency improved by ~37.2%**
+- **aggregate completion throughput improved by ~59.2%**
+
+So the practical result on this cluster is:
+
+> **MiMo MTP is beneficial once `runai_streamer` is removed.**
+> The failure was not "MTP is bad"; the failure was the specific
+> `runai_streamer + mtp` runtime combination.
+
+### Operational takeaway from the A/B test
+
+For `XiaomiMiMo/MiMo-7B-Base`, the evidence now supports a more precise claim:
+
+- `mtp + runai_streamer` can fail at startup
+- `mtp` **without** `runai_streamer` can start successfully
+- and in this single-replica interactive benchmark, `mtp` delivered roughly
+  **37–39% lower latency** and **59–63% higher completion throughput**
+
+That is strong enough to justify a model-specific workaround such as:
+
+- disable `runai_streamer` for MiMo MTP workloads, or
+- block the unsupported `runai_streamer + mtp` combination until the runtime
+  issue is fixed upstream or in KAITO
+
+while still keeping speculative decoding enabled where it demonstrably helps.
