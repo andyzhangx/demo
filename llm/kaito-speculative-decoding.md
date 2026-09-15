@@ -591,3 +591,140 @@ code-completion / RAG / agent workloads.
 - **The per-preset config is not user-tunable by design.** Users who need
   that keep using the existing `inference_config.yaml` ConfigMap
   passthrough.
+
+---
+
+## 10. Runtime finding — `MiMo-7B-Base` can crash with `mtp` + `runai_streamer`
+
+On 2026-09-15 I checked a live KAITO Workspace (`default/xiaomi`) whose pod
+`xiaomi-0` was stuck in `CrashLoopBackOff`. This turned out to be a useful
+real-world correction to the mostly code-level discussion above:
+
+> **The flags do not conflict syntactically, but `MiMo-7B-Base` running with
+> both speculative decoding (`mtp`) and model streaming (`runai_streamer`)
+> crashed at runtime during engine initialization.**
+
+### Workspace / pod configuration observed
+
+The Workspace had speculative decoding explicitly enabled:
+
+```yaml
+metadata:
+  annotations:
+    kaito.sh/enable-speculative-decoding: "true"
+```
+
+And the pod command confirmed that KAITO enabled both features at once:
+
+```bash
+python3 /workspace/vllm/inference_api.py \
+  --load-format=runai_streamer \
+  --model=az://.../XiaomiMiMo/MiMo-7B-Base \
+  --speculative-config='{"method":"mtp","num_speculative_tokens":1}'
+```
+
+So this was not a theory exercise — the failing pod really was launched with
+**streaming + MTP together**.
+
+### What succeeded
+
+The main model weights were streamed successfully by Run:ai Model Streamer:
+
+```text
+Loading safetensors using Runai Model Streamer: 100% Completed | 451/451
+[RunAI Streamer] Overall time to stream 14.6 GiB of all files to cpu: 8.26s
+```
+
+That rules out the most obvious classes of failure:
+
+- not a blob download/auth problem for the main model,
+- not a generic `runai_streamer` startup failure,
+- not a simple "weights never arrived" issue.
+
+### Where it failed
+
+vLLM then resolved both the base model and the MTP model path:
+
+```text
+Resolved architecture: MiMoForCausalLM
+Resolved architecture: MiMoMTPModel
+```
+
+The engine config in logs also showed that speculative decoding was wired to
+use the streamed local cache path:
+
+```text
+speculative_config=SpeculativeConfig(
+  method='mtp',
+  model='/root/.cache/vllm/assets/model_streamer/bc8a14aa',
+  num_spec_tokens=1)
+load_format=runai_streamer
+```
+
+The actual crash happened while vLLM was loading the MTP speculator:
+
+```text
+self.speculator.load_model(self.model)
+...
+runai_streamer_loader.py
+RuntimeError: Cannot find any safetensors model weights with '/root/.cache/vllm/assets/model_streamer/bc8a14aa'
+```
+
+The outer API server then died with the usual wrapper error:
+
+```text
+RuntimeError: Engine core initialization failed. See root cause above.
+```
+
+### Conclusion
+
+For this concrete runtime combination:
+
+- model: `XiaomiMiMo/MiMo-7B-Base`
+- speculative decoding: `mtp`
+- model loading: `runai_streamer`
+
+**there is a real runtime incompatibility today.**
+
+More precisely:
+
+- **code/config layer**: KAITO successfully injects both flags and they do not
+  overwrite each other;
+- **runtime layer**: vLLM's MTP/speculator loading path fails when pointed at
+  the streamed local cache directory produced by `runai_streamer` for this
+  model.
+
+### Best current mitigation
+
+If the immediate goal is to get the Workspace healthy, the safest workaround is:
+
+1. **Disable speculative decoding** for this Workspace
+   (`kaito.sh/enable-speculative-decoding: "false"` or remove the annotation)
+2. Keep model streaming enabled
+
+Why this is the best first move:
+
+- the streamer clearly succeeded,
+- the crash happened later in the MTP/speculator path,
+- disabling MTP isolates the failure without giving up the streaming benefit.
+
+### Recommended follow-up experiments
+
+To tighten the RCA, run these two A/B checks:
+
+1. **Streaming on, MTP off**
+   - expected: pod should start successfully
+2. **Streaming off, MTP on**
+   - determines whether the problem is specific to the `runai_streamer + mtp`
+     combination, versus a broader MiMo MTP issue
+
+### Practical takeaway for KAITO docs / rollout
+
+The earlier statement "`mtp` and `runai_streamer` do not conflict" is only true
+at the **flag wiring** level. It is **not** sufficient as an operational claim.
+For at least `MiMo-7B-Base`, KAITO should document that:
+
+- `runai_streamer` can successfully load the base model,
+- but enabling `mtp` on top may still fail during vLLM engine startup,
+- so model-by-model runtime validation is required before claiming the
+  combination is supported.
