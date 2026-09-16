@@ -482,7 +482,7 @@ shows up upstream.
 | DeepSeek-V3.2 (`deepseek-v3.2`) | `v0.25.0` | ✅ Yes | ✅ Yes | Explicitly added to the vLLM model zoo in the `v0.25.0` release line; same DeepSeek-family MTP direction. |
 | GLM-5.2 (`zai-org/GLM-5.2-FP8`) | `v0.25.0` | ✅ Yes | ✅ Yes | `v0.25.0` release notes explicitly mention GLM-5 / GLM-5.2 support and GLM MTP fixes. |
 | Qwen3.5 / Qwen3.6 family (`qwen3.5-*`, `qwen3.6-*`) | `v0.17.0` | ✅ Yes | ✅ Yes | In `v0.25.1`, KAITO's Qwen3.5/3.6 presets resolve through the shared upstream `qwen3_5_mtp.py` path. |
-| Gemma 4 family (`gemma-4-{E2B,E4B,12B,26B-A4B,31B}-it`) | `v0.21.0` | ✅ Yes | ✅ Yes | Supported through Gemma 4 assistant checkpoints; unlike DeepSeek/Qwen/MiMo, MTP needs `speculative_config.model=<assistant-checkpoint>`. |
+| Gemma 4 family (`gemma-4-{E2B,E4B,12B,26B-A4B,31B}-it`) | `v0.21.0` | ✅ Yes | ✅ Yes | Supported through Gemma 4 assistant checkpoints; unlike DeepSeek/Qwen/MiMo, MTP needs `speculative_config.model=<assistant-checkpoint>`. **But KAITO's current pin `v0.25.1` still contains a known upstream CUDA-graph-capture bug for the `google/gemma-4-12B-it-assistant` suppress-token path; see the Gemma runtime finding below.** |
 | Nemotron-H family (current KAITO Nemotron presets) | `v0.17.0` | ✅ Yes | ✅ Yes | Upstream has a dedicated `nemotron_h_mtp.py` path, but PR #2312 did not list any Nemotron preset. |
 | MiMo-7B-Base (`XiaomiMiMo/MiMo-7B-Base`) | `v0.9.0` | ❌ No | ✅ Yes (upstream) | Upstream vLLM supports MTP for MiMo; this model was benchmarked in PR #2312 work, but it is not in current KAITO main catalog. |
 | ERNIE-4.5 MTP family | `v0.10.2` | ❌ No | ✅ Yes (upstream) | Upstream has `ernie_mtp.py`; not directly actionable for KAITO main until a preset is added. |
@@ -963,3 +963,112 @@ That is strong enough to justify a model-specific workaround such as:
   issue is fixed upstream or in KAITO
 
 while still keeping speculative decoding enabled where it demonstrably helps.
+
+---
+
+## 11. Runtime finding — `google/gemma-4-12B-it` can crash with assistant-backed `mtp` on KAITO's pinned `vllm==0.25.1`
+
+On 2026-09-16 I checked a live KAITO InferenceSet / Workspace whose pod
+`default/gemma-g6qvt-0` repeatedly failed to become ready after PR #2312
+switched the Gemma e2e coverage to **assistant-backed MTP**.
+
+This was the exact launch shape in the pod command:
+
+```bash
+python3 /workspace/vllm/inference_api.py \
+  ... \
+  --model=az://.../google/gemma-4-12b-it \
+  --speculative-config='{"method":"mtp","model":"google/gemma-4-12B-it-assistant","num_speculative_tokens":1}'
+```
+
+So KAITO had already done the **right thing** for Gemma 4:
+
+- speculative decoding was enabled via `kaito.sh/enable-speculative-decoding: "true"`
+- the resolved method was `mtp`
+- the assistant checkpoint was injected correctly as
+  `google/gemma-4-12B-it-assistant`
+
+### What actually failed
+
+The fatal error came from vLLM engine initialization during CUDA graph capture:
+
+```text
+RuntimeError: Cannot copy between CPU and CUDA tensors during CUDA graph capture
+unless the CPU tensor is pinned. Please use tensor.pin_memory() or allocate the
+tensor with pin_memory=True.
+```
+
+The most useful part of the traceback was:
+
+```text
+self.speculator.capture(attn_states)
+...
+File ".../vllm/v1/worker/gpu/spec_decode/speculator.py", line 258, in _greedy_sample_draft
+  logits = self.model.compute_logits(hidden_states)
+File ".../vllm/model_executor/models/gemma4_mtp.py", line 585, in compute_logits
+  logits[:, self._suppress_token_ids] = -float("inf")
+RuntimeError: Cannot copy between CPU and CUDA tensors during CUDA graph capture
+unless the CPU tensor is pinned.
+```
+
+That means this is **not** a KAITO wiring bug:
+
+- the pod reached the MTP speculator path successfully,
+- the main model and assistant model both resolved,
+- the crash happened **inside upstream vLLM's Gemma4 MTP implementation**.
+
+### Upstream confirmation: this is a known vLLM bug
+
+This exact problem is already documented upstream:
+
+- issue: [vllm-project/vllm#48503](https://github.com/vllm-project/vllm/issues/48503) —
+  *Gemma 4 MTP speculative decoding crashes during CUDA graph capture*
+- first partial fix attempt: [vllm-project/vllm#48509](https://github.com/vllm-project/vllm/pull/48509)
+- follow-up analysis showing the first fix was incomplete:
+  [vllm-project/vllm#48515](https://github.com/vllm-project/vllm/pull/48515)
+- merged upstream fix: [vllm-project/vllm#53884](https://github.com/vllm-project/vllm/pull/53884) —
+  *Make Gemma4 MTP suppress_tokens masking CUDA-graph-safe*
+
+The root cause described upstream matches the live KAITO pod logs: in
+`v0.25.1`, `gemma4_mtp.py` stores `suppress_tokens` in a host-side Python
+list / CPU-side path and then applies it during `compute_logits` in a way that
+triggers an implicit host-to-device copy during CUDA graph capture.
+
+In other words:
+
+> **`google/gemma-4-12B-it` + `google/gemma-4-12B-it-assistant` + MTP is a
+> known upstream vLLM runtime failure on `v0.25.1`.**
+
+### Why this matters for KAITO PR #2312
+
+PR #2312 was still directionally correct to add **Gemma 4 assistant-backed MTP
+wiring**:
+
+- KAITO needs the `speculative_config.model=<assistant-checkpoint>` path to
+  support Gemma 4 at all.
+- The e2e failure above proves that the KAITO wiring works far enough to reach
+  the real Gemma 4 MTP runtime path.
+- But the current KAITO pin (`vllm==0.25.1`) is **not sufficient to claim the
+  Gemma 4 12B assistant-backed MTP path is production-safe today**.
+
+So the most precise statement is:
+
+1. **Gemma 4 is upstream-MTP-capable in principle** and needs assistant-model
+   wiring in KAITO.
+2. **KAITO's current pin `v0.25.1` still carries a known upstream runtime bug**
+   on at least the `google/gemma-4-12B-it-assistant` path.
+3. The long-term fix is **not** to remove Gemma's assistant-model wiring from
+   KAITO, but to pick up the upstream vLLM fix (or avoid that runtime path
+   until the pinned image is updated).
+
+### Practical workaround today
+
+Until KAITO picks up a vLLM version that contains the upstream Gemma 4
+CUDA-graph fix, the safest operational guidance is:
+
+- **do not rely on Gemma 4 assistant-backed MTP on the current `v0.25.1` pin**,
+  especially for `google/gemma-4-12B-it-assistant`
+- if you must run Gemma 4 immediately, disable speculative decoding for that
+  workload or test a runtime mode that avoids the failing capture path
+  (for example eager mode), understanding that this gives up the normal
+  CUDA-graph performance path
