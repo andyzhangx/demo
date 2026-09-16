@@ -468,6 +468,39 @@ against vLLM's speculative-decoding docs
 gives a clear picture of what issue #2286 actually ships versus what could be
 layered on later.
 
+### Quick reference — upstream MTP-capable models vs. KAITO's current vLLM pin
+
+As of today, KAITO main pins **`vllm==0.25.1`** in
+[`presets/workspace/dependencies/requirements.txt`](https://github.com/kaito-project/kaito/blob/main/presets/workspace/dependencies/requirements.txt#L4).
+The table below is a practical shortlist of the **MTP-capable model families
+relevant to KAITO** and the **minimum vLLM version** where that MTP path first
+shows up upstream.
+
+| Model family / KAITO presets | Minimum vLLM version with MTP | In current KAITO catalog? | Covered by current KAITO pin (`0.25.1`)? | Notes |
+|---|---|---|---|---|
+| DeepSeek-V3 / R1 family (`deepseek-r1-0528`, `deepseek-v3-0324`) | `v0.7.3` | ✅ Yes | ✅ Yes | Uses vLLM's `deepseek_mtp.py`; no separate draft checkpoint required. |
+| DeepSeek-V3.2 (`deepseek-v3.2`) | `v0.25.0` | ✅ Yes | ✅ Yes | Explicitly added to the vLLM model zoo in the `v0.25.0` release line; same DeepSeek-family MTP direction. |
+| GLM-5.2 (`zai-org/GLM-5.2-FP8`) | `v0.25.0` | ✅ Yes | ✅ Yes | `v0.25.0` release notes explicitly mention GLM-5 / GLM-5.2 support and GLM MTP fixes. |
+| Qwen3.5 / Qwen3.6 family (`qwen3.5-*`, `qwen3.6-*`) | `v0.17.0` | ✅ Yes | ✅ Yes | In `v0.25.1`, KAITO's Qwen3.5/3.6 presets resolve through the shared upstream `qwen3_5_mtp.py` path. |
+| Gemma 4 family (`gemma-4-{E2B,E4B,12B,26B-A4B,31B}-it`) | `v0.21.0` | ✅ Yes | ✅ Yes | Supported through Gemma 4 assistant checkpoints; unlike DeepSeek/Qwen/MiMo, MTP needs `speculative_config.model=<assistant-checkpoint>`. |
+| Nemotron-H family (current KAITO Nemotron presets) | `v0.17.0` | ✅ Yes | ✅ Yes | Upstream has a dedicated `nemotron_h_mtp.py` path, but PR #2312 did not list any Nemotron preset. |
+| MiMo-7B-Base (`XiaomiMiMo/MiMo-7B-Base`) | `v0.9.0` | ❌ No | ✅ Yes (upstream) | Upstream vLLM supports MTP for MiMo; this model was benchmarked in PR #2312 work, but it is not in current KAITO main catalog. |
+| ERNIE-4.5 MTP family | `v0.10.2` | ❌ No | ✅ Yes (upstream) | Upstream has `ernie_mtp.py`; not directly actionable for KAITO main until a preset is added. |
+
+**How these minimum versions were derived**
+
+- For **DeepSeek / MiMo / Qwen3.5 / Gemma4 / Nemotron / ERNIE**, the floor is
+  the earliest stable vLLM tag that contains the commit introducing the
+  relevant MTP implementation file (for example `deepseek_mtp.py`,
+  `qwen3_5_mtp.py`, `gemma4_mtp.py`, `nemotron_h_mtp.py`).
+- For **DeepSeek-V3.2** and **GLM-5.2**, the floor is the first stable vLLM
+  release that explicitly advertises those model families in release notes
+  together with their MTP-capable model path.
+
+This table is intentionally broader than issue #2286's initial two DeepSeek
+presets: it shows what **current KAITO's pinned vLLM already has upstream**, not
+just what the original issue text committed to wire on day one.
+
 ### 8.1. Committed by issue #2286 (initial preset coverage)
 
 | KAITO preset | HF ID | In KAITO catalog? | Method | `num_speculative_tokens` | Extra memory / download |
