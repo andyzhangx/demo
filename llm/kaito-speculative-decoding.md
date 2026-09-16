@@ -518,28 +518,42 @@ Explicitly out of scope for this issue:
 - EAGLE / Medusa separate-draft-model methods (need checkpoint sourcing).
 - Typed override field on `InferenceSpec` for power users.
 
-### 8.2. Free-to-onboard next (same `mtp` path, still no extra memory / download)
+### 8.2. What PR #2312 did **not** list, even though the current pin already has upstream MTP support
 
-These presets already exist in the KAITO catalog and the vLLM upstream MTP
-docs
-([mtp.md](https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/mtp.md))
-confirm the checkpoint ships an MTP path. The maintainer cost is one
-re-verification against KAITO's pinned vLLM version, then one entry in
-`catalogOverrides`.
+Using today's KAITO main pin (`vllm==0.25.1`) as the ground truth, PR #2312's
+advertised tuned-`mtp` set is **not the full set of realistic MTP candidates**.
+It already called out `deepseek-v3.2`, `zai-org/GLM-5.2-FP8`,
+`nvidia/DeepSeek-V4-Flash-NVFP4`, and `XiaomiMiMo/MiMo-7B-Base`, but it did
+**not** mention the following current-catalog families that upstream vLLM 0.25.1
+already has an MTP path for.
 
-| KAITO preset | HF ID | In KAITO catalog? | Notes / vLLM evidence |
-|---|---|---|---|
-| `deepseek-v3.2` | `deepseek-ai/DeepSeek-V3.2` | ✅ Yes | DeepSeek-V3 family continuation; same MTP path |
-| `gemma-4-E2B-it` | `google/gemma-4-E2B-it` | ✅ Yes | vLLM MTP doc: *"The E2B, E4B, 12B, 26B-A4B, and 31B Gemma 4 IT assistant checkpoints are supported."* Uses `"method":"mtp"` with a Gemma 4 assistant checkpoint in the `model` field. |
-| `gemma-4-E4B-it` | `google/gemma-4-E4B-it` | ✅ Yes | same |
-| `gemma-4-12B-it` | `google/gemma-4-12B-it` | ✅ Yes | same |
-| `gemma-4-26B-A4B-it` | `google/gemma-4-26B-A4B-it` | ✅ Yes | same |
-| `gemma-4-31B-it` | `google/gemma-4-31B-it` | ✅ Yes | same |
+| KAITO preset / family | HF ID | In current KAITO catalog? | Listed in PR #2312? | Why this is a real MTP candidate |
+|---|---|---|---|---|
+| `qwen3.5-*` | `Qwen/Qwen3.5-*` | ✅ Yes | ❌ No | vLLM 0.25.1 already carries the shared `qwen3_5_mtp.py` implementation and KAITO's Qwen3.5 presets resolve to the matching `Qwen3_5ForConditionalGeneration` / `Qwen3_5MoeForConditionalGeneration` architectures. |
+| `qwen3.6-*` | `Qwen/Qwen3.6-*` | ✅ Yes | ❌ No | Same upstream MTP path as Qwen3.5 in current vLLM; KAITO's Qwen3.6 presets share the same Qwen3.5-family architecture line in the catalog. |
+| `gemma-4-E2B-it` | `google/gemma-4-E2B-it` | ✅ Yes | ❌ No | vLLM's MTP doc explicitly says the Gemma 4 E2B/E4B/12B/26B-A4B/31B IT assistant checkpoints are supported. |
+| `gemma-4-E4B-it` | `google/gemma-4-E4B-it` | ✅ Yes | ❌ No | Same Gemma 4 assistant-backed MTP path. |
+| `gemma-4-12B-it` | `google/gemma-4-12B-it` | ✅ Yes | ❌ No | Same Gemma 4 assistant-backed MTP path. |
+| `gemma-4-26B-A4B-it` | `google/gemma-4-26B-A4B-it` | ✅ Yes | ❌ No | Same Gemma 4 assistant-backed MTP path. |
+| `gemma-4-31B-it` | `google/gemma-4-31B-it` | ✅ Yes | ❌ No | Same Gemma 4 assistant-backed MTP path. |
+| current Nemotron presets | `nvidia/NVIDIA-Nemotron-*`, `nvidia/Nemotron-*` | ✅ Yes | ❌ No | vLLM 0.25.1 has a dedicated `nemotron_h_mtp.py` implementation. This is a plausible omission, though it needs more validation than Qwen3.5/3.6 and Gemma 4 because the upstream examples are less KAITO-preset-specific. |
 
-⚠️ Note: the distilled presets
-`DeepSeek-R1-Distill-Llama-8B` and `DeepSeek-R1-Distill-Qwen-14B` are
-**not** MTP candidates — they are Llama / Qwen architectures with no MTP
-head in the checkpoint.
+So the strongest omission summary for PR #2312 is:
+
+1. **Clearly omitted but immediately actionable with the current pin:**
+   **Qwen3.5 / Qwen3.6** and **Gemma 4**.
+2. **Likely omitted upstream-capable family, but with a bigger validation caveat:**
+   **Nemotron-H**.
+
+⚠️ Important nuance: **Gemma 4 is not a one-line map entry in the same shape as
+DeepSeek / Qwen / MiMo**. Its MTP flow requires
+`speculative_config.model=<gemma4-assistant-checkpoint>`, so PR #2312 may have
+skipped it not because upstream lacked support, but because KAITO's current
+injection path only handled the simpler self-contained MTP shape.
+
+⚠️ Also note: the distilled presets `DeepSeek-R1-Distill-Llama-8B` and
+`DeepSeek-R1-Distill-Qwen-14B` are **not** MTP candidates — they are Llama /
+Qwen architectures with no MTP head in the checkpoint.
 
 ### 8.3. Ready to onboard (`dspark`, DeepSeek-V4 family) — presets now in catalog
 
@@ -608,7 +622,9 @@ code-completion / RAG / agent workloads.
 | Bucket | Presets | Status |
 |---|---|---|
 | **Shipping (issue #2286)** | `deepseek-r1-0528`, `deepseek-v3-0324` | `mtp`, `num_speculative_tokens: 3`, in `catalogOverrides` from day one |
-| **Free-to-onboard next (same `mtp` path)** | `deepseek-v3.2`, `gemma-4-{E2B,E4B,12B,26B-A4B,31B}-it` | Needs one re-verification + one `catalogOverrides` entry each |
+| **Already explicitly called out by PR #2312 beyond issue #2286** | `deepseek-v3.2`, `zai-org/GLM-5.2-FP8`, `nvidia/DeepSeek-V4-Flash-NVFP4`, `XiaomiMiMo/MiMo-7B-Base` | Present in the PR's advertised tuned set, though the last two are not current KAITO-main catalog presets |
+| **Omitted by PR #2312 even though current pin already supports upstream MTP** | `qwen3.5-*`, `qwen3.6-*`, `gemma-4-{E2B,E4B,12B,26B-A4B,31B}-it` | These are the strongest current-pin omissions; Qwen is the simplest follow-on, Gemma 4 needs assistant-checkpoint wiring |
+| **Possible additional omission with higher validation risk** | current Nemotron presets | Upstream has `nemotron_h_mtp.py`, but this family needs more KAITO-specific validation before treating it as equal-confidence to Qwen/Gemma |
 | **Ready to onboard (`dspark`)** | `deepseek-v4-flash-0731`, `deepseek-v4-pro` | Presets now in KAITO catalog; needs re-verification + `catalogOverrides` entry |
 | **Deferred (EAGLE / MLP draft)** | Llama-3.1/3.3, Qwen3.*, Mistral-7B, etc. | Out of scope for #2286; needs draft-checkpoint sourcing design |
 | **Universal opt-in (`ngram` / `suffix`)** | Any preset | Not part of #2286 initial commitment |
