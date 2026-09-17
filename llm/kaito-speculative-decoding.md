@@ -966,7 +966,163 @@ while still keeping speculative decoding enabled where it demonstrably helps.
 
 ---
 
-## 11. Runtime finding — `google/gemma-4-12B-it` can crash with assistant-backed `mtp` on KAITO's pinned `vllm==0.25.1`
+## 11. Runtime finding — `Qwen/Qwen3.6-27B` still benefits from MTP, but KAITO's startup benchmark can delay readiness unless reasoning is handled correctly
+
+On 2026-09-17 I ran a second live A/B benchmark on
+`StatefulSet/default/qwen36-8mw8l` after debugging two separate issues on the
+same workload:
+
+1. a bad runtime flag injection (`--model-loader-extra-config='{"distributed": true}'`
+   paired with `--load-format=auto`), which prevented vLLM from starting at all;
+2. KAITO's startup benchmark / readiness path, which repeatedly classified the
+   pod as unhealthy when Qwen returned **reasoning-only output** and vLLM's
+   `delta_gen` metric stayed at zero.
+
+After removing the bad loader flag, the pod was already serving real traffic:
+
+- `/health` returned `200`
+- `/v1/models` returned `200`
+- `/v1/chat/completions` returned `200`
+
+The remaining problem was the startup probe path. For this live test, I patched
+`StatefulSet/default/qwen36-8mw8l` so the startup probe no longer executed
+`python3 /workspace/vllm/benchmark_entrypoint.py` and instead used a plain:
+
+```yaml
+startupProbe:
+  httpGet:
+    path: /health
+    port: 5000
+    scheme: HTTP
+```
+
+That let the replacement pod `default/qwen36-8mw8l-0` finish rolling out and
+become `Ready` without waiting on the benchmark logic.
+
+### Benchmark setup
+
+#### Test environment
+
+- Cluster: `andy-aks135`
+- Namespace / workload: `default/qwen36-8mw8l`
+- Workload shape: **1 StatefulSet replica** (`qwen36-8mw8l-0`)
+- Model: `Qwen/Qwen3.6-27B`
+- Runtime: vLLM `0.25.1`
+- GPU SKU from the Workspace: `Standard_NC24ads_A100_v4`
+- Parallelism: `tensor-parallel-size=2`
+- Model loading path during the benchmark: direct HF model path
+  (`--model=Qwen/Qwen3.6-27B`, `--load-format=auto`)
+
+#### Reasoning-off request shape
+
+For this endpoint, the reliable way to disable Qwen reasoning was **not** the
+simpler top-level `enable_thinking: false`. The request had to use:
+
+```json
+"chat_template_kwargs": {
+  "enable_thinking": false,
+  "preserve_thinking": true
+}
+```
+
+That request shape was verified live before the measured run:
+
+- response `content` was non-null (`'probe-ok'`)
+- `reasoning` / `reasoning_content` were absent
+- API token accounting still worked normally
+
+#### Test procedure
+
+Using the same approach described above for the MiMo benchmark:
+
+1. Wait for `qwen36-8mw8l-0` to become `Ready`.
+2. Port-forward the serving endpoint locally.
+3. Run a warmup request with reasoning disabled via `chat_template_kwargs`.
+4. Run **100 measured requests** sequentially against `/v1/chat/completions`
+   using a fixed prompt set in a loop, with:
+   - `temperature=0`
+   - `max_tokens=256`
+   - reasoning disabled via `chat_template_kwargs.enable_thinking=false`
+5. Record per-request latency and token usage from the API response.
+6. Compare the result with the earlier 100-request run on the same workload
+   shape where **MTP speculative decoding was enabled**.
+
+### Measured results
+
+#### Speculative decoding ON (`mtp`, reasoning off)
+
+- measured requests: **100**
+- failures: **0**
+- average latency: **1.3501s**
+- p50 latency: **1.1520s**
+- p95 latency: **3.0860s**
+- p99 latency: **3.0971s**
+- max latency: **3.1028s**
+- average prompt tokens: **46.8**
+- average completion tokens: **98.2**
+- aggregate completion throughput: **72.7324 tokens/s**
+- aggregate total throughput: **107.3950 tokens/s**
+- reasoning present count: **0**
+- null content responses: **0**
+
+#### Speculative decoding OFF (reasoning off)
+
+This run used the same serving pod shape after confirming the container command
+no longer included `--speculative-config`.
+
+- measured requests: **100**
+- failures: **0**
+- average latency: **2.1460s**
+- p50 latency: **1.7343s**
+- p95 latency: **4.7054s**
+- p99 latency: **4.7144s**
+- max latency: **4.7166s**
+- average prompt tokens: **46.8**
+- average completion tokens: **98.5**
+- aggregate completion throughput: **45.8970 tokens/s**
+- aggregate total throughput: **67.7038 tokens/s**
+- reasoning present count: **0**
+- null content responses: **0**
+
+### Performance delta
+
+Comparing the 100-request `speculative on` reasoning-off run with the
+100-request `speculative off` reasoning-off run:
+
+- **average latency improved by ~59.0% with MTP enabled**
+- **p50 latency improved by ~50.6%**
+- **p95 latency improved by ~52.5%**
+- **p99 latency improved by ~52.2%**
+- **aggregate completion throughput improved by ~36.9%**
+- **aggregate total throughput improved by ~37.0%**
+- absolute average latency reduction: **~0.80s per request**
+- absolute aggregate completion throughput gain: **~26.84 tokens/s**
+
+So the practical result on this cluster is:
+
+> **Qwen3.6 MTP is beneficial on KAITO's pinned vLLM `0.25.1` once the pod is
+> actually serving, but the startup benchmark path can still be misleading when
+> the model defaults to reasoning-mode responses.**
+
+### Operational takeaway from the live Qwen run
+
+For `Qwen/Qwen3.6-27B`, the evidence now supports three distinct conclusions:
+
+- the earlier `distributed=true` loader flag failure was a **bad runtime flag
+  combination**, not a Qwen MTP limitation;
+- the startup benchmark / readiness issue was a **probe-accounting mismatch**,
+  not proof that the model could not serve traffic;
+- and once the model was measured with reasoning disabled, **MTP still produced
+  materially better latency and throughput** than the speculative-off baseline.
+
+That means PR #2312 should treat Qwen MTP support as **functionally useful** on
+vLLM `0.25.1`, while any startup-probe caveat belongs in the separate
+reasoning-benchmark fix path rather than being interpreted as a speculative
+decoding failure.
+
+---
+
+## 12. Runtime finding — `google/gemma-4-12B-it` can crash with assistant-backed `mtp` on KAITO's pinned `vllm==0.25.1`
 
 On 2026-09-16 I checked a live KAITO InferenceSet / Workspace whose pod
 `default/gemma-g6qvt-0` repeatedly failed to become ready after PR #2312
