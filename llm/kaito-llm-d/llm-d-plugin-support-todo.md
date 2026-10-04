@@ -26,8 +26,8 @@ llm-d upstream now documents a **tiered prefix cache** deployment model in
 
 - KV / prefix cache can spill across **HBM -> CPU RAM -> shared filesystem**
 - the router EPP is configured with **two prefix-cache scorers/producers**:
-  - one for accelerator/GPU cache
-  - one for CPU-tier cache
+  - `gpu-prefix-cache-producer` / `gpu-prefix-cache-scorer` for accelerator/GPU cache
+  - `cpu-prefix-cache-producer` / `cpu-prefix-cache-scorer` for CPU-tier cache
 - filesystem-backed offload can further extend the working set and preserve cache across replica restarts / scale events
 
 This is more than a single plugin toggle: it is a **deployment pattern** that combines
@@ -75,7 +75,8 @@ KAITO does not yet expose this as a clear first-class feature set.
 - `always-disagg-pd-decider`
 - `always-disagg-multimodal-decider`
 - tiered prefix-cache routing as a first-class KAITO feature
-  - GPU-tier + CPU-tier dual prefix-cache scorer/producer wiring
+  - `gpu-prefix-cache-producer` + `gpu-prefix-cache-scorer`
+  - `cpu-prefix-cache-producer` + `cpu-prefix-cache-scorer`
   - CPU offload sizing / `lruCapacityPerServer` productization
   - optional filesystem/shared-storage tier exposure
 
@@ -122,7 +123,7 @@ KAITO currently pins the llm-d router chart / EPP image around the `v0.9.0` gene
 | `core-metrics-extractor` | ✅ | ✅ | indirect | ✅ | Standard gateway path already uses it |
 | Tokenizer/render sidecar for precise routing | N/A dependency | ❌ | ❌ | ⚠️ manual future work | Required for `precise-prefix-cache-*` path; see `kaito-project/kaito#2144` |
 | KV-cache indexer / ZMQ event subscription | N/A dependency | ❌ | ❌ | ⚠️ manual future work | Required to make precise prefix-cache routing truly work |
-| Tiered prefix cache deployment pattern (HBM -> CPU RAM -> filesystem) | ✅ | ❌ | ❌ | ⚠️ partial | Upstream guide wires dual GPU/CPU prefix scorers plus vLLM/SGLang offloading; KAITO has no first-class API for this end-to-end pattern |
+| Tiered prefix cache deployment pattern (HBM -> CPU RAM -> filesystem) | ✅ | ❌ | ❌ | ⚠️ partial | Upstream guide wires `gpu-prefix-cache-producer` / `gpu-prefix-cache-scorer` and `cpu-prefix-cache-producer` / `cpu-prefix-cache-scorer`, plus vLLM/SGLang offloading; KAITO has no first-class API for this end-to-end pattern |
 
 ### Matrix legend
 - **✅** = supported / present
@@ -215,7 +216,7 @@ The approximate pipeline does **not** require that extra sidecar.
 ### 4. Productize tiered prefix cache as a KAITO feature
 **Why**
 - llm-d upstream already treats tiered prefix cache as a deployable pattern, not just an isolated plugin.
-- The guide configures the router with separate GPU-tier and CPU-tier prefix-cache producers/scorers, plus model-server KV offload to CPU RAM and optionally a shared filesystem.
+- The guide configures the router with separate GPU-tier and CPU-tier prefix-cache producers/scorers — specifically `gpu-prefix-cache-producer` / `gpu-prefix-cache-scorer` and `cpu-prefix-cache-producer` / `cpu-prefix-cache-scorer` — plus model-server KV offload to CPU RAM and optionally a shared filesystem.
 - This is directly relevant to long-context, multi-turn, and cache-sensitive workloads where KAITO users may want more than HBM-only cache reuse.
 
 **Reference**
@@ -223,7 +224,7 @@ The approximate pipeline does **not** require that extra sidecar.
 
 **To do**
 - Add a KAITO-level feature switch or policy surface for tiered prefix cache.
-- Productize EPP wiring for dual prefix-cache producers/scorers (GPU tier + CPU tier).
+- Productize EPP wiring for dual prefix-cache producers/scorers (`gpu-prefix-cache-producer` / `gpu-prefix-cache-scorer` and `cpu-prefix-cache-producer` / `cpu-prefix-cache-scorer`).
 - Expose CPU cache capacity knobs in a supported way, including `lruCapacityPerServer` alignment with model size / block size.
 - Decide whether and how to expose an optional filesystem/shared-storage tier for deployments that want HBM -> CPU RAM -> filesystem cache expansion.
 - Add docs describing when to use HBM-only, HBM+CPU, or HBM+CPU+filesystem paths.
