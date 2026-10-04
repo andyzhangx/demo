@@ -36,6 +36,21 @@ Running both on the same GPU pool forces a compromise in latency, throughput, an
 
 The main value of **KAITO MultiRoleInference** is that it turns this complexity into a **Kubernetes-native declarative abstraction** built on top of llm-d, Gateway API Inference Extension, and KEDA.
 
+### What KAITO is
+
+For this talk, KAITO should be introduced plainly as:
+
+> **KAITO is a Kubernetes-native AI operator and inference platform abstraction that helps users deploy, scale, and manage model-serving topologies with higher-level APIs instead of hand-wiring all runtime pieces themselves.**
+
+In this specific story, KAITO is not “the model server” and not “the scheduler” by itself. Its value is that it **packages complex inference topology into a declarative Kubernetes UX**:
+
+- model-serving roles are described at the API layer
+- child runtime objects are generated automatically
+- llm-d routing pieces are wired in for scheduling
+- autoscaling and role-specific runtime plumbing are integrated into one workflow
+
+That framing matters for the audience: KAITO should be presented as the **abstraction and orchestration layer**, while llm-d provides the advanced routing/scheduling layer underneath.
+
 ---
 
 ## What to Emphasize in the 20-Minute Version
@@ -95,6 +110,9 @@ By the end of the talk, attendees should remember:
   - P/D is valuable, but the setup complexity blocks mainstream adoption
 
 ### 4) KAITO MultiRoleInference: the abstraction layer (7:00 - 12:30)
+- First explain **what KAITO is**:
+  - a Kubernetes-native abstraction layer for AI model serving and orchestration
+  - not just another model server, but the layer that turns complex inference topologies into declarative APIs
 - Show a simple architecture diagram:
   - client / gateway
   - prefill pool
@@ -138,6 +156,10 @@ By the end of the talk, attendees should remember:
   - sidecar placement rules matter
   - KV transfer path must be validated early
   - autoscaling metrics must be role-specific
+- Add a short **future integration roadmap** for KAITO + llm-d:
+  - enable **precise prefix-cache routing** based on KV events rather than only approximate prefix matching
+  - productize **tiered prefix cache** so routing and runtime can use HBM, CPU RAM, and optional filesystem-backed cache tiers more effectively
+  - support **Wide Expert Parallelism** for larger MoE deployment topologies beyond today's first-class P/D flow
 - Final takeaway:
   - the challenge is no longer whether P/D works
   - the challenge is how to make advanced inference topologies feel native on Kubernetes
@@ -145,6 +167,7 @@ By the end of the talk, attendees should remember:
   - E/P/D
   - speculative decoding
   - more advanced transport / cross-node optimization
+  - deeper KAITO integration with llm-d scheduling capabilities
 
 ---
 
@@ -175,9 +198,11 @@ Speaker note:
 - Dynamo
 - llm-d standalone
 - Need for a Kubernetes-native higher-level abstraction
+- KAITO as the Kubernetes-native abstraction/orchestration layer
 
 Speaker note:
 - Keep this short; do not turn it into a vendor comparison talk.
+- Be explicit that KAITO is the operator/control-plane abstraction, while llm-d contributes the routing/scheduling layer.
 
 ### Slide 5 — P/D architecture on Kubernetes
 - Gateway / routing
@@ -191,6 +216,7 @@ Speaker note:
 ### Slide 6 — What MultiRoleInference generates
 - CRD -> multiple coordinated runtime objects
 - hides the manual plumbing
+- shows what KAITO actually is: a Kubernetes-native abstraction layer, not just a wrapper script
 
 Speaker note:
 - This is where KAITO’s value becomes concrete.
@@ -229,6 +255,9 @@ Speaker note:
 - Declarative Kubernetes abstraction
 
 ### Slide 12 — What’s next
+- enable precise prefix-cache routing based on KV events
+- productize tiered prefix cache
+- support Wide Expert Parallelism
 - E/P/D
 - speculative decoding
 - richer inference topologies
@@ -243,7 +272,7 @@ LLM inference looks like one workload from the outside, but inside it has two ve
 
 ## Suggested Closing (20-30 seconds)
 
-The important shift is not just separating prefill and decode. The bigger shift is making advanced inference topologies first-class citizens on Kubernetes. If training infrastructure can be Kubernetes-native, modern inference infrastructure should be too.
+The important shift is not just separating prefill and decode. The bigger shift is making advanced inference topologies first-class citizens on Kubernetes. KAITO is the abstraction layer that can make those topologies usable, while llm-d keeps expanding the routing and scheduling capabilities underneath. The next step is to close that gap even further with precise prefix-cache routing, tiered prefix cache, and eventually support for topologies like Wide Expert Parallelism.
 
 ---
 
