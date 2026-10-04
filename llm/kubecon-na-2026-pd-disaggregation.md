@@ -42,14 +42,31 @@ For this talk, KAITO should be introduced plainly as:
 
 > **KAITO is a Kubernetes-native AI operator and inference platform abstraction that helps users deploy, scale, and manage model-serving topologies with higher-level APIs instead of hand-wiring all runtime pieces themselves.**
 
-In this specific story, KAITO is not “the model server” and not “the scheduler” by itself. Its value is that it **packages complex inference topology into a declarative Kubernetes UX**:
+In this specific story, KAITO is **not**:
+
+- the base model server runtime itself
+- the low-level routing scheduler itself
+- a one-off demo script around vLLM
+
+Its value is that it **packages complex inference topology into a declarative Kubernetes UX**:
 
 - model-serving roles are described at the API layer
 - child runtime objects are generated automatically
 - llm-d routing pieces are wired in for scheduling
 - autoscaling and role-specific runtime plumbing are integrated into one workflow
+- users reason about topology and policy, not every individual sidecar, port, label, and service object
 
-That framing matters for the audience: KAITO should be presented as the **abstraction and orchestration layer**, while llm-d provides the advanced routing/scheduling layer underneath.
+A good short phrasing for the talk is:
+
+> **llm-d provides the advanced routing and scheduling layer; KAITO provides the Kubernetes-native abstraction and orchestration layer on top.**
+
+If time allows, also mention that KAITO is meant to make advanced serving patterns look like normal Kubernetes operations:
+
+- declare desired serving topology
+- let controllers synthesize the lower-level objects
+- keep the platform extensible as routing capabilities evolve underneath
+
+That framing matters for the audience, because otherwise people may confuse KAITO with the runtime or with llm-d itself.
 
 ---
 
@@ -173,6 +190,8 @@ By the end of the talk, attendees should remember:
 
 ## Suggested Slide-by-Slide Story
 
+For a 20-minute co-located talk, **20-22 slides is reasonable** as long as most slides carry one idea and use diagrams or short bullets rather than dense text. Below is a **20-slide structure**.
+
 ### Slide 1 — Title
 **Prefill Here, Decode There**  
 Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
@@ -180,87 +199,159 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 Speaker note:
 - Start with the operational problem, not the project names.
 
-### Slide 2 — One request, two very different phases
-- Prefill: compute-bound, latency-sensitive
-- Decode: memory-bandwidth-bound, throughput-sensitive
+### Slide 2 — One user request, two different systems problems
+- LLM inference looks like one workload from the outside
+- Internally it splits into prefill and decode
 
 Speaker note:
-- This is the foundational idea for the whole talk.
+- This is the setup slide for the rest of the talk.
 
-### Slide 3 — Why colocated serving wastes GPUs
-- Same GPU pool must satisfy two conflicting objectives
-- Results in either overprovisioning or poor TTFT
+### Slide 3 — Prefill characteristics
+- compute-bound
+- latency-sensitive
+- bursty under prompt-heavy traffic
 
 Speaker note:
-- Make this intuitive for non-specialists.
+- Keep this concrete and intuitive.
 
-### Slide 4 — Today’s landscape
-- Dynamo
+### Slide 4 — Decode characteristics
+- memory-bandwidth-bound
+- KV-cache-sensitive
+- throughput-oriented
+
+Speaker note:
+- Make the contrast with prefill visually obvious.
+
+### Slide 5 — Why one shared GPU pool is a bad compromise
+- two bottlenecks sharing one pool
+- either overprovisioning or poor TTFT / throughput
+
+Speaker note:
+- This is the "why care" slide.
+
+### Slide 6 — What P/D disaggregation changes
+- prefill and decode run on separate pools
+- capacity can scale independently
+- KV cache has to move between roles
+
+Speaker note:
+- Introduce the benefit and the new complexity at the same time.
+
+### Slide 7 — Why this is still hard on Kubernetes
+- routing
+- KV handoff
+- role-specific services
+- labels, ports, sidecars, startup ordering
+
+Speaker note:
+- Explain that the hard part is orchestration, not the idea.
+
+### Slide 8 — Existing paths in the ecosystem
+- NVIDIA Dynamo
 - llm-d standalone
-- Need for a Kubernetes-native higher-level abstraction
-- KAITO as the Kubernetes-native abstraction/orchestration layer
+- need for a higher-level Kubernetes-native abstraction
 
 Speaker note:
-- Keep this short; do not turn it into a vendor comparison talk.
-- Be explicit that KAITO is the operator/control-plane abstraction, while llm-d contributes the routing/scheduling layer.
+- Keep this brief; this is not a comparison talk.
 
-### Slide 5 — P/D architecture on Kubernetes
-- Gateway / routing
-- Prefill pool
+### Slide 9 — What KAITO is
+- Kubernetes-native AI operator / abstraction layer
+- turns serving topology into declarative APIs
+- generates lower-level runtime objects automatically
+
+Speaker note:
+- Be explicit that KAITO is the control-plane abstraction.
+
+### Slide 10 — What llm-d brings to the stack
+- routing and scheduling plugins
+- role-aware endpoint selection
+- prefix/cache-aware decisions
+
+Speaker note:
+- Be explicit that llm-d is the routing/scheduling layer underneath.
+
+### Slide 11 — KAITO + llm-d together
+- KAITO expresses topology
+- llm-d drives routing decisions
+- Gateway API / InferencePool / sidecars connect the pieces
+
+Speaker note:
+- This slide should answer "why both?".
+
+### Slide 12 — P/D architecture on Kubernetes
+- client / gateway
+- prefill pool
 - KV cache transfer
-- Decode pool
+- decode pool
 
 Speaker note:
-- This diagram is the heart of the talk.
+- This is the central architecture diagram slide.
 
-### Slide 6 — What MultiRoleInference generates
-- CRD -> multiple coordinated runtime objects
-- hides the manual plumbing
-- shows what KAITO actually is: a Kubernetes-native abstraction layer, not just a wrapper script
+### Slide 13 — What one MultiRoleInference CRD generates
+- prefill StatefulSet
+- decode StatefulSet
+- llm-d routing pieces
+- InferencePool / Gateway integration
+- per-role autoscaling objects
 
 Speaker note:
 - This is where KAITO’s value becomes concrete.
 
-### Slide 7 — Independent autoscaling by role
-- Prefill scales on one signal
-- Decode scales on another
-- Better behavior under bursty traffic
+### Slide 14 — Request flow
+- request enters gateway
+- EPP decides prefill/decode path
+- sidecar coordinates prefill
+- KV moves to decode
+- decode streams response
+
+Speaker note:
+- Walk through one request, step by step.
+
+### Slide 15 — Why the decode-side sidecar matters
+- keeps the user-facing entrypoint stable
+- hides prefill orchestration from clients
+- lets decode remain the serving endpoint
+
+Speaker note:
+- Good place for one simple sequence diagram.
+
+### Slide 16 — Independent autoscaling by role
+- prefill scales on one pressure signal
+- decode scales on another
+- better behavior under bursty or asymmetric traffic
 
 Speaker note:
 - Connect architecture to operational outcomes.
 
-### Slide 8 — Evaluation results
-- TTFT
-- throughput
-- utilization
+### Slide 17 — Evaluation results: TTFT
+- compare colocated vs disaggregated TTFT
+- explain what workload shape benefits most
 
 Speaker note:
-- Use only 2-3 charts and explain them clearly.
+- One chart, one message.
 
-### Slide 9 — When to use P/D
-- good fit / bad fit matrix
-
-Speaker note:
-- This is important for audience trust.
-
-### Slide 10 — Production lessons
-- orchestration details matter more than the concept
+### Slide 18 — Evaluation results: throughput / utilization
+- throughput comparison
+- GPU utilization under mixed load
 
 Speaker note:
-- Give pragmatic advice, not just theory.
+- Avoid chart overload; use only the most persuasive evidence.
 
-### Slide 11 — Key takeaways
-- Two workloads
-- Separate GPU pools
-- Declarative Kubernetes abstraction
+### Slide 19 — When to use P/D, and when not to
+- good fit: long prompts, bursty prefill, interactive latency goals
+- not always worth it: tiny PoCs, short prompts, low concurrency
 
-### Slide 12 — What’s next
+Speaker note:
+- This is important for credibility and audience trust.
+
+### Slide 20 — What’s next for KAITO + llm-d
 - enable precise prefix-cache routing based on KV events
 - productize tiered prefix cache
 - support Wide Expert Parallelism
-- E/P/D
-- speculative decoding
-- richer inference topologies
+- E/P/D, speculative decoding, richer inference topologies
+
+Speaker note:
+- End with a roadmap that feels concrete, not generic.
 
 ---
 
