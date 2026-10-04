@@ -190,168 +190,341 @@ By the end of the talk, attendees should remember:
 
 ## Suggested Slide-by-Slide Story
 
-For a 20-minute co-located talk, **20-22 slides is reasonable** as long as most slides carry one idea and use diagrams or short bullets rather than dense text. Below is a **20-slide structure**.
+For a 20-minute co-located talk, **~30 slides can still work well** if most slides carry a single idea, use diagrams or short bullets, and advance quickly. That often feels better than 12-15 overloaded slides. Below is a **30-slide structure** that is closer to an actual deck draft: each slide includes the core message, a suggested visual, and the intended speaker emphasis.
 
 ### Slide 1 — Title
 **Prefill Here, Decode There**  
 Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
-Speaker note:
+**Suggested visual:** clean title slide with one simple split-GPU illustration: left = prefill, right = decode.
+
+**Speaker note:**
 - Start with the operational problem, not the project names.
+- The title should make people expect an architecture story, not a vendor pitch.
 
-### Slide 2 — One user request, two different systems problems
-- LLM inference looks like one workload from the outside
-- Internally it splits into prefill and decode
+### Slide 2 — The core question
+- Why does one LLM request behave like two different systems problems?
 
-Speaker note:
-- This is the setup slide for the rest of the talk.
+**Suggested visual:** one large user request arrow splitting into two colored branches.
 
-### Slide 3 — Prefill characteristics
+**Speaker note:**
+- Set up curiosity immediately.
+- Tell the audience the whole talk is basically answering this one question.
+
+### Slide 3 — One request, two phases
+- prefill
+- decode
+
+**Suggested visual:** very simple request timeline with prefill then decode.
+
+**Speaker note:**
+- Keep this simple and visual.
+- Do not go deep into internals yet.
+
+### Slide 4 — Prefill profile
 - compute-bound
 - latency-sensitive
-- bursty under prompt-heavy traffic
+- prompt-heavy bursts hurt
 
-Speaker note:
-- Keep this concrete and intuitive.
+**Suggested visual:** icon row or radar chart showing compute-heavy / latency-sensitive.
 
-### Slide 4 — Decode characteristics
+**Speaker note:**
+- Make it feel operational, not academic.
+- Prefill is where prompt length hurts first.
+
+### Slide 5 — Decode profile
 - memory-bandwidth-bound
 - KV-cache-sensitive
 - throughput-oriented
 
-Speaker note:
-- Make the contrast with prefill visually obvious.
+**Suggested visual:** mirror of Slide 4 so the contrast is obvious.
 
-### Slide 5 — Why one shared GPU pool is a bad compromise
-- two bottlenecks sharing one pool
-- either overprovisioning or poor TTFT / throughput
+**Speaker note:**
+- Contrast directly with prefill.
+- This makes clear why a single optimization strategy is awkward.
 
-Speaker note:
-- This is the "why care" slide.
+### Slide 6 — Why shared GPU pools are a compromise
+- one pool, two conflicting optimization goals
 
-### Slide 6 — What P/D disaggregation changes
-- prefill and decode run on separate pools
-- capacity can scale independently
-- KV cache has to move between roles
+**Suggested visual:** one shared GPU pool being pulled in two directions.
 
-Speaker note:
-- Introduce the benefit and the new complexity at the same time.
+**Speaker note:**
+- This is the first “pain” slide.
+- Land the message: one workload, two resource profiles, one unhappy pool.
 
-### Slide 7 — Why this is still hard on Kubernetes
+### Slide 7 — What goes wrong in practice
+- overprovisioning
+- unstable TTFT
+- poor utilization under mixed traffic
+
+**Suggested visual:** 3-callout layout with TTFT spike, low utilization, wasted headroom.
+
+**Speaker note:**
+- Make the problem concrete for platform teams.
+- Use examples they would recognize from dashboards.
+
+### Slide 8 — What P/D disaggregation changes
+- separate prefill and decode pools
+- independent scaling
+- KV handoff becomes required
+
+**Suggested visual:** before/after architecture mini-diagram.
+
+**Speaker note:**
+- Introduce both the benefit and the cost.
+- Do not oversell; mention the KV handoff complexity immediately.
+
+### Slide 9 — Why P/D is still hard on Kubernetes
 - routing
-- KV handoff
-- role-specific services
-- labels, ports, sidecars, startup ordering
+- KV transfer
+- per-role services
+- autoscaling signals
+- startup ordering
 
-Speaker note:
-- Explain that the hard part is orchestration, not the idea.
+**Suggested visual:** checklist or layered stack with many moving parts.
 
-### Slide 8 — Existing paths in the ecosystem
+**Speaker note:**
+- Emphasize orchestration complexity.
+- This sets up why an abstraction layer matters.
+
+### Slide 10 — Existing approaches in the ecosystem
 - NVIDIA Dynamo
 - llm-d standalone
-- need for a higher-level Kubernetes-native abstraction
+- need for a Kubernetes-native abstraction layer
 
-Speaker note:
-- Keep this brief; this is not a comparison talk.
+**Suggested visual:** simple ecosystem map, not a competitive matrix.
 
-### Slide 9 — What KAITO is
-- Kubernetes-native AI operator / abstraction layer
-- turns serving topology into declarative APIs
-- generates lower-level runtime objects automatically
+**Speaker note:**
+- Keep this balanced and brief.
+- The point is not who is better; the point is where the abstraction gap still exists.
 
-Speaker note:
-- Be explicit that KAITO is the control-plane abstraction.
+### Slide 11 — What KAITO is
+- Kubernetes-native AI operator
+- control-plane abstraction for serving topologies
+- API-first workflow for model serving
 
-### Slide 10 — What llm-d brings to the stack
+**Suggested visual:** KAITO logo / box sitting above multiple runtime objects.
+
+**Speaker note:**
+- This is the first real KAITO definition slide.
+- Say clearly that KAITO is the Kubernetes-facing abstraction layer.
+
+### Slide 12 — What KAITO is not
+- not the model server runtime itself
+- not the low-level scheduler itself
+- not just a YAML bundle around vLLM
+
+**Suggested visual:** “KAITO is not...” three-column anti-confusion slide.
+
+**Speaker note:**
+- This avoids audience confusion early.
+- It also protects you from people mentally flattening KAITO and llm-d together.
+
+### Slide 13 — Why KAITO matters here
+- turns topology into declarative APIs
+- synthesizes lower-level objects automatically
+- integrates scaling and routing workflow
+
+**Suggested visual:** CRD -> generated objects pipeline.
+
+**Speaker note:**
+- Explain the operator value.
+- This is where you shift from problem framing to product value.
+
+### Slide 14 — What llm-d brings to the stack
 - routing and scheduling plugins
 - role-aware endpoint selection
-- prefix/cache-aware decisions
+- cache-aware decisions
+- future advanced scheduling surface
 
-Speaker note:
-- Be explicit that llm-d is the routing/scheduling layer underneath.
+**Suggested visual:** llm-d EPP box with plugin labels around it.
 
-### Slide 11 — KAITO + llm-d together
-- KAITO expresses topology
-- llm-d drives routing decisions
-- Gateway API / InferencePool / sidecars connect the pieces
+**Speaker note:**
+- Explain llm-d as the scheduling layer underneath.
+- Mention that this gives KAITO room to grow into richer inference topologies later.
 
-Speaker note:
-- This slide should answer "why both?".
+### Slide 15 — KAITO + llm-d: division of labor
+- KAITO = abstraction / orchestration
+- llm-d = routing / scheduling
+- Gateway API / InferencePool connect the layers
 
-### Slide 12 — P/D architecture on Kubernetes
-- client / gateway
+**Suggested visual:** layered diagram with explicit separation of concerns.
+
+**Speaker note:**
+- This slide should answer “why both?” very clearly.
+- If the audience only remembers one stack diagram, let it be this one or Slide 16.
+
+### Slide 16 — End-to-end architecture diagram
+- client
+- gateway
+- llm-d EPP
 - prefill pool
-- KV cache transfer
 - decode pool
+- KV path
 
-Speaker note:
-- This is the central architecture diagram slide.
+**Suggested visual:** full architecture diagram; this is one of the anchor slides.
 
-### Slide 13 — What one MultiRoleInference CRD generates
+**Speaker note:**
+- This is the main reference diagram for the rest of the talk.
+- Keep returning to it when later slides discuss request flow or autoscaling.
+
+### Slide 17 — What MultiRoleInference declares
+- one logical inference service
+- two roles
+- role-specific scaling and runtime behavior
+
+**Suggested visual:** small YAML snippet or CRD field summary.
+
+**Speaker note:**
+- Show the API intent before the generated objects.
+- Focus on user intent, not every field.
+
+### Slide 18 — What MultiRoleInference generates
 - prefill StatefulSet
 - decode StatefulSet
+- InferencePool
 - llm-d routing pieces
-- InferencePool / Gateway integration
-- per-role autoscaling objects
+- autoscaling objects
 
-Speaker note:
-- This is where KAITO’s value becomes concrete.
+**Suggested visual:** generated-object tree or exploded diagram from the CRD.
 
-### Slide 14 — Request flow
+**Speaker note:**
+- Show what KAITO creates for the user.
+- This is one of the strongest “abstraction value” slides in the deck.
+
+### Slide 19 — Why the decode-side sidecar exists
+- stable client-facing entrypoint
+- internal prefill coordination
+- local decode remains stream owner
+
+**Suggested visual:** decode pod diagram with sidecar and local vLLM ports.
+
+**Speaker note:**
+- This is a good concrete implementation slide.
+- Explain why the sidecar placement is deliberate, not accidental.
+
+### Slide 20 — Request flow, part 1
 - request enters gateway
-- EPP decides prefill/decode path
+- EPP decides whether prefill work is needed
+- decode endpoint is selected
+
+**Suggested visual:** sequence diagram, phase 1 only.
+
+**Speaker note:**
+- Animate this if possible.
+- Keep this slide narrowly focused on entry, decision, and endpoint choice.
+
+### Slide 21 — Request flow, part 2
 - sidecar coordinates prefill
+- prefill builds KV cache
 - KV moves to decode
-- decode streams response
+- decode streams output
 
-Speaker note:
-- Walk through one request, step by step.
+**Suggested visual:** sequence diagram, phase 2 continuation.
 
-### Slide 15 — Why the decode-side sidecar matters
-- keeps the user-facing entrypoint stable
-- hides prefill orchestration from clients
-- lets decode remain the serving endpoint
+**Speaker note:**
+- Keep it stepwise, not all at once.
+- This is where the audience should see why the topology is helpful but nontrivial.
 
-Speaker note:
-- Good place for one simple sequence diagram.
+### Slide 22 — Why KV transfer matters
+- P/D is only useful if KV movement is fast and reliable
+- validate this path early in production
 
-### Slide 16 — Independent autoscaling by role
-- prefill scales on one pressure signal
-- decode scales on another
-- better behavior under bursty or asymmetric traffic
+**Suggested visual:** KV transfer path callout, maybe with “critical path” highlighted.
 
-Speaker note:
-- Connect architecture to operational outcomes.
+**Speaker note:**
+- This is a good operational-truth slide.
+- Explicitly say this is one of the first things to validate in real deployments.
 
-### Slide 17 — Evaluation results: TTFT
-- compare colocated vs disaggregated TTFT
-- explain what workload shape benefits most
+### Slide 23 — Independent autoscaling by role
+- prefill scale signal
+- decode scale signal
+- better fit for asymmetric traffic
 
-Speaker note:
-- One chart, one message.
+**Suggested visual:** two side-by-side scaling graphs or two KEDA callouts.
 
-### Slide 18 — Evaluation results: throughput / utilization
-- throughput comparison
-- GPU utilization under mixed load
+**Speaker note:**
+- Connect architecture to platform operations.
+- This is where the “Kubernetes-native” claim starts paying off in operator language.
 
-Speaker note:
-- Avoid chart overload; use only the most persuasive evidence.
+### Slide 24 — Why this abstraction helps operators
+- fewer manually coordinated objects
+- fewer implicit contracts around ports/labels/env
+- easier to reason about desired topology
 
-### Slide 19 — When to use P/D, and when not to
-- good fit: long prompts, bursty prefill, interactive latency goals
-- not always worth it: tiny PoCs, short prompts, low concurrency
+**Suggested visual:** “manual plumbing” vs “declarative abstraction” comparison.
 
-Speaker note:
-- This is important for credibility and audience trust.
+**Speaker note:**
+- Bring the value back to the platform team audience.
+- Mention that abstraction is not about hiding power; it is about making the topology operable.
 
-### Slide 20 — What’s next for KAITO + llm-d
-- enable precise prefix-cache routing based on KV events
-- productize tiered prefix cache
-- support Wide Expert Parallelism
+### Slide 25 — Evaluation results: TTFT
+- colocated vs disaggregated
+- explain which workloads gain most
+
+**Suggested visual:** one clean TTFT chart with 1-2 highlighted takeaways.
+
+**Speaker note:**
+- One chart, one interpretation.
+- Resist the urge to explain every line.
+
+### Slide 26 — Evaluation results: throughput
+- compare throughput under mixed load
+
+**Suggested visual:** throughput chart with one highlighted region where separation helps.
+
+**Speaker note:**
+- Keep narration high signal.
+- Tie the result back to earlier “two workloads, one pool” framing.
+
+### Slide 27 — Evaluation results: utilization / efficiency
+- show GPU utilization or capacity efficiency under asymmetric traffic
+
+**Suggested visual:** utilization bars, efficiency table, or stacked pool usage chart.
+
+**Speaker note:**
+- Reinforce the “why separate pools” message.
+- This is the business/operations payoff slide.
+
+### Slide 28 — When to use P/D, and when not to
+- good fit: long prompts, bursty prefill, latency-sensitive interactive traffic
+- not always worth it: tiny PoCs, low concurrency, short prompts
+
+**Suggested visual:** 2-column “good fit / not worth it yet” matrix.
+
+**Speaker note:**
+- This improves trust with the audience.
+- Explicitly saying “not for everyone” makes the talk more credible.
+
+### Slide 29 — Production lessons
+- startup ordering matters
+- sidecar placement rules matter
+- autoscaling metrics must be role-specific
+- KV transfer path must be verified early
+
+**Suggested visual:** four callout boxes or checklist slide.
+
+**Speaker note:**
+- Give practical advice, not just architecture.
+- This is a strong slide to leave platform engineers with something usable.
+
+### Slide 30 — What’s next for KAITO + llm-d
+- precise prefix-cache routing based on KV events
+- tiered prefix cache
+- Wide Expert Parallelism
 - E/P/D, speculative decoding, richer inference topologies
 
-Speaker note:
-- End with a roadmap that feels concrete, not generic.
+**Suggested visual:** roadmap slide with “current / next / later” swimlanes.
+
+**Speaker note:**
+- End with a concrete roadmap, not a vague future-work cloud.
+- This is where you connect today’s P/D story to tomorrow’s richer inference topologies.
+
+### Deck production notes
+- Keep most slides to **one sentence headline + one diagram/chart + 2-3 bullets max**.
+- Slides 16, 20, 21, and 25-27 are the likely visual anchors of the deck.
+- If time runs short, Slides 12, 24, and part of 27 can be compressed quickly without losing the main story.
+- If the benchmark section is weak, spend more time on Slides 15-24 and make the architecture story the center of gravity.
 
 ---
 
