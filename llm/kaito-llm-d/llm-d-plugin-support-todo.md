@@ -19,6 +19,21 @@ llm-d upstream already supports a fairly rich scheduling/plugin model across fil
 
 This document tracks the gap between **llm-d upstream capability** and **KAITO first-class support**.
 
+### Additional upstream capability to account for: tiered prefix cache
+
+llm-d upstream now documents a **tiered prefix cache** deployment model in
+[`guides/tiered-prefix-cache`](https://github.com/llm-d/llm-d/tree/main/guides/tiered-prefix-cache), where:
+
+- KV / prefix cache can spill across **HBM -> CPU RAM -> shared filesystem**
+- the router EPP is configured with **two prefix-cache scorers/producers**:
+  - one for accelerator/GPU cache
+  - one for CPU-tier cache
+- filesystem-backed offload can further extend the working set and preserve cache across replica restarts / scale events
+
+This is more than a single plugin toggle: it is a **deployment pattern** that combines
+router plugin wiring, model-server KV offloading configuration, and optional shared-storage plumbing.
+KAITO does not yet expose this as a clear first-class feature set.
+
 ---
 
 ## Current State Summary
@@ -59,6 +74,10 @@ This document tracks the gap between **llm-d upstream capability** and **KAITO f
 - `encode-filter`
 - `always-disagg-pd-decider`
 - `always-disagg-multimodal-decider`
+- tiered prefix-cache routing as a first-class KAITO feature
+  - GPU-tier + CPU-tier dual prefix-cache scorer/producer wiring
+  - CPU offload sizing / `lruCapacityPerServer` productization
+  - optional filesystem/shared-storage tier exposure
 
 ### Important version note
 KAITO currently pins the llm-d router chart / EPP image around the `v0.9.0` generation, so some newer upstream plugins or capabilities may exist in llm-d but are not automatically available in KAITO yet.
@@ -103,6 +122,7 @@ KAITO currently pins the llm-d router chart / EPP image around the `v0.9.0` gene
 | `core-metrics-extractor` | ✅ | ✅ | indirect | ✅ | Standard gateway path already uses it |
 | Tokenizer/render sidecar for precise routing | N/A dependency | ❌ | ❌ | ⚠️ manual future work | Required for `precise-prefix-cache-*` path; see `kaito-project/kaito#2144` |
 | KV-cache indexer / ZMQ event subscription | N/A dependency | ❌ | ❌ | ⚠️ manual future work | Required to make precise prefix-cache routing truly work |
+| Tiered prefix cache deployment pattern (HBM -> CPU RAM -> filesystem) | ✅ | ❌ | ❌ | ⚠️ partial | Upstream guide wires dual GPU/CPU prefix scorers plus vLLM/SGLang offloading; KAITO has no first-class API for this end-to-end pattern |
 
 ### Matrix legend
 - **✅** = supported / present
@@ -192,7 +212,29 @@ The approximate pipeline does **not** require that extra sidecar.
 
 ## Medium-Priority TODOs
 
-### 4. Add first-class session affinity support
+### 4. Productize tiered prefix cache as a KAITO feature
+**Why**
+- llm-d upstream already treats tiered prefix cache as a deployable pattern, not just an isolated plugin.
+- The guide configures the router with separate GPU-tier and CPU-tier prefix-cache producers/scorers, plus model-server KV offload to CPU RAM and optionally a shared filesystem.
+- This is directly relevant to long-context, multi-turn, and cache-sensitive workloads where KAITO users may want more than HBM-only cache reuse.
+
+**Reference**
+- Guide: <https://github.com/llm-d/llm-d/tree/main/guides/tiered-prefix-cache>
+
+**To do**
+- Add a KAITO-level feature switch or policy surface for tiered prefix cache.
+- Productize EPP wiring for dual prefix-cache producers/scorers (GPU tier + CPU tier).
+- Expose CPU cache capacity knobs in a supported way, including `lruCapacityPerServer` alignment with model size / block size.
+- Decide whether and how to expose an optional filesystem/shared-storage tier for deployments that want HBM -> CPU RAM -> filesystem cache expansion.
+- Add docs describing when to use HBM-only, HBM+CPU, or HBM+CPU+filesystem paths.
+- Add benchmark coverage focused on cache eviction / reload behavior, not just steady-state throughput.
+
+**Acceptance criteria**
+- KAITO can enable tiered prefix cache without raw EPP YAML surgery.
+- Router and model-server configuration stay aligned for GPU-tier and CPU-tier cache awareness.
+- Optional shared-storage integration is clearly documented as an advanced mode rather than an implicit default.
+
+### 5. Add first-class session affinity support
 **Why**
 - Upstream llm-d already supports `session-affinity-scorer`, and newer versions also support `session-affinity-filter`.
 - This is useful for multi-turn chat, cache stickiness, and lowering repeated prefill cost.
@@ -207,7 +249,7 @@ The approximate pipeline does **not** require that extra sidecar.
 
 ---
 
-### 5. Add first-class latency/SLO-aware scheduling support
+### 6. Add first-class latency/SLO-aware scheduling support
 **Why**
 - Upstream llm-d has `latency-scorer` and `slo-headroom-tier-filter`.
 - This is important for production environments where routing must honor latency objectives, not just queue depth or cache affinity.
@@ -222,7 +264,7 @@ The approximate pipeline does **not** require that extra sidecar.
 
 ---
 
-### 6. Add support for richer picker strategies
+### 7. Add support for richer picker strategies
 **Why**
 - KAITO MRI currently defaults to `max-score-picker`.
 - Some workloads may benefit from `weighted-random-picker` to reduce hot-spotting.
@@ -236,7 +278,7 @@ The approximate pipeline does **not** require that extra sidecar.
 
 ---
 
-### 7. Evaluate `no-hit-lru-scorer` and cold-request spreading
+### 8. Evaluate `no-hit-lru-scorer` and cold-request spreading
 **Why**
 - For cold prompts, `no-hit-lru-scorer` can help distribute prefill-heavy misses more evenly.
 - This may complement existing load-aware routing in large clusters.
@@ -247,7 +289,7 @@ The approximate pipeline does **not** require that extra sidecar.
 
 ---
 
-### 8. Evaluate `lora-affinity-scorer` support
+### 9. Evaluate `lora-affinity-scorer` support
 **Why**
 - If KAITO wants to support richer LoRA-heavy multi-tenant serving, affinity to already-loaded LoRA adapters becomes important.
 
@@ -260,7 +302,7 @@ The approximate pipeline does **not** require that extra sidecar.
 
 ## Longer-Term TODOs
 
-### 9. Extend MRI beyond P/D to E/P/D
+### 10. Extend MRI beyond P/D to E/P/D
 **Why**
 - llm-d upstream already has `always-disagg-multimodal-decider` and `encode-filter` related patterns.
 - KAITO today is centered on P/D, not multimodal encode-prefill-decode orchestration.
@@ -275,7 +317,7 @@ The approximate pipeline does **not** require that extra sidecar.
 
 ---
 
-### 10. Support alternate decider strategies for benchmarking and experimentation
+### 11. Support alternate decider strategies for benchmarking and experimentation
 **Why**
 - `always-disagg-pd-decider` is useful for testing and controlled experiments.
 - It may also simplify debugging when trying to isolate routing effects.
@@ -299,10 +341,11 @@ The approximate pipeline does **not** require that extra sidecar.
 - Enable precise prefix-cache as opt-in
 
 ### Phase 3
+- Productize tiered prefix cache (GPU + CPU aware routing, optional filesystem tier)
 - Productize session affinity and picker selection
-- Add latency/SLO-aware routing support
 
 ### Phase 4
+- Add latency/SLO-aware routing support
 - Expand MRI to E/P/D and multimodal scheduling
 - Evaluate LoRA-aware routing and experimental deciders
 
