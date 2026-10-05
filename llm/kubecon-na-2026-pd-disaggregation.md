@@ -34,7 +34,7 @@ Running both on the same GPU pool forces a compromise in latency, throughput, an
 
 **Prefill/decode disaggregation** fixes this by placing the two phases on separate GPU pools. The challenge is not the idea itself — the challenge is the orchestration complexity: topology-aware routing, KV cache transfer protocols and data paths, decode-side sidecars, per-role autoscaling, targetPorts, env vars, label contracts, and startup ordering.
 
-The main value of **KAITO MultiRoleInference** is that it turns this complexity into a **Kubernetes-native declarative abstraction** built on top of llm-d, Gateway API Inference Extension, and KEDA.
+The main value of **KAITO MultiRoleInference** is that it turns this complexity into a **Kubernetes-native declarative abstraction** built on top of the llm-d Router, Gateway API Inference Extension, and KEDA.
 
 ### What KAITO is
 
@@ -58,7 +58,7 @@ Its value is that it **packages complex inference topology into a declarative Ku
 
 A good short phrasing for the talk is:
 
-> **llm-d provides the advanced routing and scheduling layer; KAITO provides the Kubernetes-native abstraction and orchestration layer on top.**
+> **The llm-d Router provides the EPP-based routing and scheduling layer; KAITO provides the Kubernetes-native abstraction and orchestration layer on top.**
 
 If time allows, also mention that KAITO is meant to make advanced serving patterns look like normal Kubernetes operations:
 
@@ -130,23 +130,27 @@ By the end of the talk, attendees should remember:
 - First explain **what KAITO is**:
   - a Kubernetes-native abstraction layer for AI model serving and orchestration
   - not just another model server, but the layer that turns complex inference topologies into declarative APIs
+- Introduce **Gateway API Inference Extension + llm-d Router** plainly:
+  - InferencePool represents model-serving backends
+  - the llm-d Router supplies the EPP that performs model-aware endpoint selection
+  - its plugin chain adds KV-cache-aware routing and P/D-aware scheduling on top of the base Gateway pattern
 - Show a simple architecture diagram:
   - client / gateway
+  - InferencePool / llm-d Router EPP
   - prefill pool
   - KV cache handoff
   - decode pool
-- Explain what a single MultiRoleInference CRD generates:
-  - prefill StatefulSet with role-specific runtime config
-  - decode StatefulSet with decode-only sidecar injection
-  - InferencePool / Gateway API integration with the correct targetPort wiring
-  - llm-d routing and EPP plugin chain
-  - KEDA ScaledObjects per role
+- Explain the concrete user experience of a single MultiRoleInference resource:
+  - users create one MRI object with prefill and decode roles
+  - KAITO creates child InferenceSets for each role
+  - decode pods get an injected llm-d routing sidecar
+  - KAITO creates one InferencePool + EPP for the overall service
 - Highlight the design value:
   - users declare the topology they want
   - KAITO wires the plumbing automatically
 - Mention a few implementation details only as proof points:
   - decode-only sidecar placement
-  - port conventions and targetPort rules
+  - targetPort and port conventions
   - label contracts and NIXL env wiring
 
 ### 5) Results: when P/D helps and when it does not (12:30 - 16:30)
@@ -175,6 +179,10 @@ By the end of the talk, attendees should remember:
   - KV transfer path and side-channel setup must be validated early
   - autoscaling metrics must be role-specific
   - service / targetPort / label contracts are easy to get wrong
+- Explain the current KAITO autoscaling support path and the better P/D UX direction:
+  - today, KEDA integrates naturally with InferenceSet
+  - for P/D, the clean UX is for MRI to propagate per-role autoscaling annotations to child InferenceSets
+  - that allows prefill and decode to keep different metrics and thresholds without asking users to hand-author per-role ScaledObjects
 - Add a short **future integration roadmap** for KAITO + llm-d:
   - **near term:** precise prefix-cache routing based on KV events; productized tiered prefix cache across HBM, CPU RAM, and optional filesystem tiers
   - **next topology:** E/P/D and speculative decoding
@@ -332,73 +340,80 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Explain the operator value.
 - This is where you shift from problem framing to product value.
 
-### Slide 14 — What llm-d brings to the stack
-- routing and scheduling plugins
-- role-aware endpoint selection
-- cache-aware decisions
+### Slide 14 — What the llm-d Router brings to the stack
+- EPP for Gateway API Inference Extension
+- model-aware and role-aware endpoint selection
+- KV-cache-aware and P/D-aware plugin chain
 - future advanced scheduling surface
 
-**Suggested visual:** llm-d EPP box with plugin labels around it.
+**Suggested visual:** llm-d Router EPP box with plugin labels around it.
 
 **Speaker note:**
-- Explain llm-d as the scheduling layer underneath.
+- Explain that Gateway API Inference Extension gives the abstraction pattern, and the llm-d Router provides the advanced EPP implementation KAITO uses.
 - Mention that this gives KAITO room to grow into richer inference topologies later.
 
-### Slide 15 — KAITO + llm-d: division of labor
+### Slide 15 — KAITO + llm-d Router + GWIE: division of labor
 - KAITO = declarative abstraction / orchestration
-- llm-d = routing / scheduling substrate
-- Gateway API / InferencePool connect the layers
+- Gateway API Inference Extension = inference routing contract
+- llm-d Router = routing / scheduling substrate
+- InferencePool connects the gateway and the serving backends
 
 **Suggested visual:** layered diagram with explicit separation of concerns.
 
 **Speaker note:**
-- This slide should answer “why both?” very clearly.
-- Say explicitly: llm-d provides the scheduling logic, KAITO makes the topology operable for platform teams.
+- This slide should answer “why all three?” very clearly.
+- Say explicitly: GWIE gives the Kubernetes-native routing pattern, llm-d Router supplies the smart EPP, and KAITO makes the topology operable for platform teams.
 - If the audience only remembers one stack diagram, let it be this one or Slide 16.
 
 ### Slide 16 — End-to-end architecture diagram
 - client
 - gateway
-- llm-d EPP
-- prefill pool
-- decode pool
+- InferencePool
+- llm-d Router EPP
+- prefill child InferenceSet
+- decode child InferenceSet
 - KV path
 
 **Suggested visual:** full architecture diagram; this is one of the anchor slides.
 
 **Speaker note:**
 - This is the main reference diagram for the rest of the talk.
+- Make the child InferenceSets visible so the audience sees the real KAITO object model.
 - Keep returning to it when later slides discuss request flow or autoscaling.
 
 ### Slide 17 — What MultiRoleInference declares
 - one logical inference service
 - two roles
 - role-specific scaling and runtime behavior
+- a single user-facing object for the whole P/D topology
 
 **Suggested visual:** small YAML snippet or CRD field summary.
 
 **Speaker note:**
 - Show the API intent before the generated objects.
 - Focus on user intent, not every field.
+- This is a good place to say the user experience starts with one object, not a pile of hand-wired components.
 
 ### Slide 18 — What MultiRoleInference generates
-- prefill StatefulSet with role-specific runtime config
-- decode StatefulSet with decode-only sidecar
-- InferencePool with correct targetPort wiring
-- llm-d routing pieces and EPP plugin chain
-- KEDA autoscaling objects per role
+- child InferenceSet for prefill
+- child InferenceSet for decode
+- decode-side llm-d routing sidecar injection
+- one InferencePool with correct targetPort wiring
+- llm-d Router EPP deployment and plugin chain
+- per-role autoscaling hooks via child InferenceSets
 
 **Suggested visual:** generated-object tree or exploded diagram from the CRD.
 
 **Speaker note:**
 - Show what KAITO creates for the user.
 - This is where “one CRD generates the stack” should feel real.
+- If possible, visually distinguish “user creates one MRI” from “KAITO synthesizes multiple child objects.”
 - This is one of the strongest “abstraction value” slides in the deck.
 
 ### Slide 19 — Why the decode-side sidecar exists
-- stable client-facing entrypoint
+- stable client-facing entrypoint on port 5000
 - internal prefill coordination
-- local decode remains stream owner
+- local decode remains stream owner on vLLM port 5001
 
 **Suggested visual:** decode pod diagram with sidecar and local vLLM ports.
 
@@ -409,7 +424,8 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
 ### Slide 20 — Request flow, part 1
 - request enters gateway
-- EPP decides whether prefill work is needed
+- gateway targets the InferencePool
+- llm-d Router EPP decides whether prefill work is needed
 - decode endpoint is selected
 
 **Suggested visual:** sequence diagram, phase 1 only.
@@ -417,18 +433,20 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 **Speaker note:**
 - Animate this if possible.
 - Keep this slide narrowly focused on entry, decision, and endpoint choice.
+- Mention the P/D-aware scheduling profile and decider only briefly, as proof that the routing logic is specialized.
 
 ### Slide 21 — Request flow, part 2
-- sidecar coordinates prefill
+- decode-side sidecar coordinates prefill
 - prefill builds KV cache
-- KV moves to decode
-- decode streams output
+- KV moves pod-to-pod via NIXL
+- local decode streams output
 
 **Suggested visual:** sequence diagram, phase 2 continuation.
 
 **Speaker note:**
 - Keep it stepwise, not all at once.
 - This is where the audience should see why the topology is helpful but nontrivial.
+- Make clear that the gateway is not shuttling KV cache; the data path is directly between pods.
 
 ### Slide 22 — Why KV transfer matters
 - P/D is only useful if KV movement is fast and reliable
@@ -442,20 +460,22 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - If this path is wrong, the theoretical benefit of P/D disappears quickly.
 
 ### Slide 23 — Independent autoscaling by role
+- today, KEDA scales standard InferenceSet replicas naturally
+- for P/D, MRI should propagate per-role KEDA settings to child InferenceSets
 - prefill scales on queue depth / pending prefill pressure
 - decode scales on KV-cache utilization / decode-side saturation
-- better fit for asymmetric traffic
 
 **Suggested visual:** two side-by-side scaling graphs or two KEDA callouts.
 
 **Speaker note:**
 - Connect architecture to platform operations.
 - This is where the “Kubernetes-native” claim starts paying off in operator language.
-- The point is not just independent scaling; it is metric-appropriate independent scaling.
+- The point is not just independent scaling; it is metric-appropriate independent scaling with a clean UX instead of hand-authored per-role ScaledObjects.
 
 ### Slide 24 — Why this abstraction helps operators
 - fewer manually coordinated objects
 - fewer implicit contracts around ports / labels / env / targetPort wiring
+- one user-facing MRI object instead of hand-wired child resources
 - easier to reason about desired topology
 
 **Suggested visual:** “manual plumbing” vs “declarative abstraction” comparison.
@@ -543,13 +563,13 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
 ## Suggested Opening (30 seconds)
 
-LLM inference looks like one workload from the outside, but inside it has two very different phases. Prefill wants raw compute and low latency. Decode wants memory bandwidth and steady throughput. If we force both into one GPU pool, we compromise both. In this talk, we’ll show why prefill/decode disaggregation helps, why it is still hard to operate on Kubernetes, and how KAITO plus llm-d turns that topology into something declarative and production-friendly.
+LLM inference looks like one workload from the outside, but inside it has two very different phases. Prefill wants raw compute and low latency. Decode wants memory bandwidth and steady throughput. If we force both into one GPU pool, we compromise both. In this talk, we’ll show why prefill/decode disaggregation helps, why it is still hard to operate on Kubernetes, and how KAITO plus Gateway API Inference Extension and the llm-d Router turn that topology into something declarative and production-friendly.
 
 ---
 
 ## Suggested Closing (20-30 seconds)
 
-The important shift is not just separating prefill and decode. The bigger shift is making advanced inference topologies first-class citizens on Kubernetes. KAITO is the abstraction layer that can make those topologies usable, while llm-d keeps expanding the routing and scheduling capabilities underneath. The next step is to close that gap even further with precise prefix-cache routing, tiered prefix cache, and eventually support for topologies like Wide Expert Parallelism.
+The important shift is not just separating prefill and decode. The bigger shift is making advanced inference topologies first-class citizens on Kubernetes. KAITO is the abstraction layer that can make those topologies usable, while Gateway API Inference Extension and the llm-d Router provide the routing contract and scheduling substrate underneath. The next step is to close that gap even further with precise prefix-cache routing, tiered prefix cache, cleaner per-role autoscaling UX, and eventually support for topologies like Wide Expert Parallelism.
 
 ---
 
