@@ -32,7 +32,7 @@ LLM inference has two very different phases:
 
 Running both on the same GPU pool forces a compromise in latency, throughput, and utilization.
 
-**Prefill/decode disaggregation** fixes this by placing the two phases on separate GPU pools. The challenge is not the idea itself — the challenge is the orchestration complexity: routing, KV cache transfer, sidecars, per-role autoscaling, ports, labels, and startup ordering.
+**Prefill/decode disaggregation** fixes this by placing the two phases on separate GPU pools. The challenge is not the idea itself — the challenge is the orchestration complexity: topology-aware routing, KV cache transfer protocols and data paths, decode-side sidecars, per-role autoscaling, targetPorts, env vars, label contracts, and startup ordering.
 
 The main value of **KAITO MultiRoleInference** is that it turns this complexity into a **Kubernetes-native declarative abstraction** built on top of llm-d, Gateway API Inference Extension, and KEDA.
 
@@ -115,14 +115,14 @@ By the end of the talk, attendees should remember:
 
 ### 3) Why existing P/D solutions are still hard to use on Kubernetes (4:00 - 7:00)
 - Brief landscape:
-  - NVIDIA Dynamo: powerful, but more tightly coupled to the NVIDIA stack
-  - llm-d standalone: Kubernetes-native direction, but still operationally manual
+  - NVIDIA Dynamo: powerful runtime-level disaggregation, but more tightly coupled to the NVIDIA stack
+  - llm-d standalone: Kubernetes-native routing and scheduling, but still operationally manual
 - Emphasize the real source of complexity:
-  - topology-aware routing
-  - KV cache transfer
-  - sidecar lifecycle
-  - role-specific autoscaling
-  - port/env/label contracts
+  - topology-aware routing and endpoint selection
+  - KV cache transfer protocol and data path validation
+  - decode-side sidecar lifecycle
+  - per-role targetPort / env / label contracts
+  - role-specific autoscaling and startup ordering
 - Key message:
   - P/D is valuable, but the setup complexity blocks mainstream adoption
 
@@ -136,32 +136,33 @@ By the end of the talk, attendees should remember:
   - KV cache handoff
   - decode pool
 - Explain what a single MultiRoleInference CRD generates:
-  - prefill StatefulSet
-  - decode StatefulSet
-  - llm-d routing pieces
-  - InferencePool / Gateway API integration
+  - prefill StatefulSet with role-specific runtime config
+  - decode StatefulSet with decode-only sidecar injection
+  - InferencePool / Gateway API integration with the correct targetPort wiring
+  - llm-d routing and EPP plugin chain
   - KEDA ScaledObjects per role
 - Highlight the design value:
   - users declare the topology they want
   - KAITO wires the plumbing automatically
 - Mention a few implementation details only as proof points:
   - decode-only sidecar placement
-  - port conventions
-  - label contracts
+  - port conventions and targetPort rules
+  - label contracts and NIXL env wiring
 
 ### 5) Results: when P/D helps and when it does not (12:30 - 16:30)
 - Show only the most convincing evaluation outputs:
   - TTFT comparison
-  - throughput comparison
-  - GPU utilization under mixed load
+  - throughput comparison under mixed load
+  - GPU utilization / capacity efficiency under asymmetric traffic
 - Interpret the data rather than dumping charts
 - Make the talk more credible by saying explicitly:
   - P/D is not automatically better for every workload
+  - the break-even point depends on prompt length, concurrency, and workload shape
 - Good fit:
   - long prompts
   - prefill-heavy or bursty traffic
   - TTFT-sensitive interactive workloads
-  - environments where GPU efficiency matters
+  - environments where GPU efficiency or fewer total GPUs matters
 - Not always worth it:
   - small PoCs
   - short-prompt low-concurrency workloads
@@ -170,21 +171,20 @@ By the end of the talk, attendees should remember:
 ### 6) Production lessons + closing (16:30 - 20:00)
 - Share a short list of practical lessons:
   - startup ordering matters
-  - sidecar placement rules matter
-  - KV transfer path must be validated early
+  - decode-side sidecar placement rules matter
+  - KV transfer path and side-channel setup must be validated early
   - autoscaling metrics must be role-specific
+  - service / targetPort / label contracts are easy to get wrong
 - Add a short **future integration roadmap** for KAITO + llm-d:
-  - enable **precise prefix-cache routing** based on KV events rather than only approximate prefix matching
-  - productize **tiered prefix cache** so routing and runtime can use HBM, CPU RAM, and optional filesystem-backed cache tiers more effectively
-  - support **Wide Expert Parallelism** for larger MoE deployment topologies beyond today's first-class P/D flow
+  - **near term:** precise prefix-cache routing based on KV events; productized tiered prefix cache across HBM, CPU RAM, and optional filesystem tiers
+  - **next topology:** E/P/D and speculative decoding
+  - **larger-scale systems:** Wide Expert Parallelism and deeper transport / cross-node optimization
 - Final takeaway:
   - the challenge is no longer whether P/D works
   - the challenge is how to make advanced inference topologies feel native on Kubernetes
 - Close with next steps:
-  - E/P/D
-  - speculative decoding
-  - more advanced transport / cross-node optimization
   - deeper KAITO integration with llm-d scheduling capabilities
+  - richer inference topologies without hand-wired plumbing
 
 ---
 
@@ -275,22 +275,23 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Do not oversell; mention the KV handoff complexity immediately.
 
 ### Slide 9 — Why P/D is still hard on Kubernetes
-- routing
-- KV transfer
-- per-role services
-- autoscaling signals
-- startup ordering
+- topology-aware routing and endpoint selection
+- KV transfer protocol and data path validation
+- decode-side sidecar lifecycle
+- targetPort / env / label contracts
+- role-specific autoscaling and startup ordering
 
 **Suggested visual:** checklist or layered stack with many moving parts.
 
 **Speaker note:**
 - Emphasize orchestration complexity.
+- Make this sound concrete, not abstract: this is where manual wiring starts to hurt.
 - This sets up why an abstraction layer matters.
 
 ### Slide 10 — Existing approaches in the ecosystem
-- NVIDIA Dynamo
-- llm-d standalone
-- need for a Kubernetes-native abstraction layer
+- NVIDIA Dynamo: powerful, but tightly coupled to the NVIDIA stack
+- llm-d standalone: Kubernetes-native, but still operationally manual
+- need for a declarative Kubernetes abstraction layer on top
 
 **Suggested visual:** simple ecosystem map, not a competitive matrix.
 
@@ -344,14 +345,15 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Mention that this gives KAITO room to grow into richer inference topologies later.
 
 ### Slide 15 — KAITO + llm-d: division of labor
-- KAITO = abstraction / orchestration
-- llm-d = routing / scheduling
+- KAITO = declarative abstraction / orchestration
+- llm-d = routing / scheduling substrate
 - Gateway API / InferencePool connect the layers
 
 **Suggested visual:** layered diagram with explicit separation of concerns.
 
 **Speaker note:**
 - This slide should answer “why both?” very clearly.
+- Say explicitly: llm-d provides the scheduling logic, KAITO makes the topology operable for platform teams.
 - If the audience only remembers one stack diagram, let it be this one or Slide 16.
 
 ### Slide 16 — End-to-end architecture diagram
@@ -380,16 +382,17 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Focus on user intent, not every field.
 
 ### Slide 18 — What MultiRoleInference generates
-- prefill StatefulSet
-- decode StatefulSet
-- InferencePool
-- llm-d routing pieces
-- autoscaling objects
+- prefill StatefulSet with role-specific runtime config
+- decode StatefulSet with decode-only sidecar
+- InferencePool with correct targetPort wiring
+- llm-d routing pieces and EPP plugin chain
+- KEDA autoscaling objects per role
 
 **Suggested visual:** generated-object tree or exploded diagram from the CRD.
 
 **Speaker note:**
 - Show what KAITO creates for the user.
+- This is where “one CRD generates the stack” should feel real.
 - This is one of the strongest “abstraction value” slides in the deck.
 
 ### Slide 19 — Why the decode-side sidecar exists
@@ -402,6 +405,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 **Speaker note:**
 - This is a good concrete implementation slide.
 - Explain why the sidecar placement is deliberate, not accidental.
+- Say that this is one of those details that is easy to hand-wire incorrectly and valuable to standardize.
 
 ### Slide 20 — Request flow, part 1
 - request enters gateway
@@ -428,17 +432,18 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
 ### Slide 22 — Why KV transfer matters
 - P/D is only useful if KV movement is fast and reliable
-- validate this path early in production
+- validate the transfer path and side-channel setup early in production
 
 **Suggested visual:** KV transfer path callout, maybe with “critical path” highlighted.
 
 **Speaker note:**
 - This is a good operational-truth slide.
 - Explicitly say this is one of the first things to validate in real deployments.
+- If this path is wrong, the theoretical benefit of P/D disappears quickly.
 
 ### Slide 23 — Independent autoscaling by role
-- prefill scale signal
-- decode scale signal
+- prefill scales on queue depth / pending prefill pressure
+- decode scales on KV-cache utilization / decode-side saturation
 - better fit for asymmetric traffic
 
 **Suggested visual:** two side-by-side scaling graphs or two KEDA callouts.
@@ -446,10 +451,11 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 **Speaker note:**
 - Connect architecture to platform operations.
 - This is where the “Kubernetes-native” claim starts paying off in operator language.
+- The point is not just independent scaling; it is metric-appropriate independent scaling.
 
 ### Slide 24 — Why this abstraction helps operators
 - fewer manually coordinated objects
-- fewer implicit contracts around ports/labels/env
+- fewer implicit contracts around ports / labels / env / targetPort wiring
 - easier to reason about desired topology
 
 **Suggested visual:** “manual plumbing” vs “declarative abstraction” comparison.
@@ -457,6 +463,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 **Speaker note:**
 - Bring the value back to the platform team audience.
 - Mention that abstraction is not about hiding power; it is about making the topology operable.
+- This is a good place to say the user should reason about topology and policy, not every plumbing detail.
 
 ### Slide 25 — Evaluation results: TTFT
 - colocated vs disaggregated
@@ -466,6 +473,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
 **Speaker note:**
 - One chart, one interpretation.
+- Highlight prompt-length-sensitive gain rather than narrating every series.
 - Resist the urge to explain every line.
 
 ### Slide 26 — Evaluation results: throughput
@@ -476,6 +484,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 **Speaker note:**
 - Keep narration high signal.
 - Tie the result back to earlier “two workloads, one pool” framing.
+- Mixed-load behavior matters more here than peak synthetic throughput.
 
 ### Slide 27 — Evaluation results: utilization / efficiency
 - show GPU utilization or capacity efficiency under asymmetric traffic
@@ -484,35 +493,39 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
 **Speaker note:**
 - Reinforce the “why separate pools” message.
+- Tie this to capacity efficiency and, if the data supports it, fewer total GPUs needed.
 - This is the business/operations payoff slide.
 
 ### Slide 28 — When to use P/D, and when not to
 - good fit: long prompts, bursty prefill, latency-sensitive interactive traffic
 - not always worth it: tiny PoCs, low concurrency, short prompts
+- break-even depends on prompt length, concurrency, and workload shape
 
 **Suggested visual:** 2-column “good fit / not worth it yet” matrix.
 
 **Speaker note:**
 - This improves trust with the audience.
 - Explicitly saying “not for everyone” makes the talk more credible.
+- If possible, give one simple break-even rule of thumb rather than a vague warning.
 
 ### Slide 29 — Production lessons
 - startup ordering matters
-- sidecar placement rules matter
-- autoscaling metrics must be role-specific
-- KV transfer path must be verified early
+- decode-side sidecar placement rules matter
+- service / targetPort / label contracts matter
+- KV transfer path and side-channel setup must be verified early
 
 **Suggested visual:** four callout boxes or checklist slide.
 
 **Speaker note:**
 - Give practical advice, not just architecture.
+- Make this feel like “here is what we learned the hard way.”
 - This is a strong slide to leave platform engineers with something usable.
 
 ### Slide 30 — What’s next for KAITO + llm-d
-- precise prefix-cache routing based on KV events
-- tiered prefix cache
-- Wide Expert Parallelism
-- E/P/D, speculative decoding, richer inference topologies
+- near term: precise prefix-cache routing based on KV events
+- near term: tiered prefix cache across HBM, CPU RAM, and optional filesystem tiers
+- next topology: E/P/D and speculative decoding
+- larger-scale systems: Wide Expert Parallelism and richer cross-node transport optimization
 
 **Suggested visual:** roadmap slide with “current / next / later” swimlanes.
 
