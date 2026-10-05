@@ -620,6 +620,42 @@ Recommendation: use **Variant A** for the actual co-located talk.
 
 ---
 
+## Reference Docs to Keep This Deck Aligned with KAITO
+
+These are the official KAITO docs that should continue to anchor this deck's terminology, architecture, and user-experience claims:
+
+1. **Gateway API Inference Extension with llm-d Router**  
+   <https://kaito-project.github.io/kaito/docs/gateway-api-inference-extension>
+   - Use this as the source for how to describe:
+     - `InferencePool`
+     - Gateway API Inference Extension (GWIE)
+     - the llm-d Router as the EPP implementation
+     - model-aware / cache-aware endpoint selection
+
+2. **Prefill/Decode Disaggregation**  
+   <https://kaito-project.github.io/kaito/docs/prefill-decode-disaggregation>
+   - Use this as the source for how to describe:
+     - `MultiRoleInference`
+     - child `InferenceSet` generation for prefill and decode
+     - decode-side routing sidecar behavior
+     - NIXL-based pod-to-pod KV transfer
+     - the concrete request flow and port model
+
+3. **KEDA Auto-Scaler for inference workloads**  
+   <https://kaito-project.github.io/kaito/docs/keda-autoscaler-inference>
+   - Use this as the source for how to describe:
+     - `InferenceSet` as the natural autoscaling target
+     - KEDA + keda-kaito-scaler integration
+     - metric-based scaling UX
+     - why P/D should expose clean per-role autoscaling through child `InferenceSet`s instead of forcing users to hand-author role-specific `ScaledObject`s
+
+### Where these references should show up in the deck
+
+- **Slides 14-16** → GWIE + llm-d Router positioning
+- **Slides 17-21** → MultiRoleInference user experience and request flow
+- **Slides 23-24** → KEDA / autoscaling UX for P/D
+- **Slides 29-30** → production lessons and future integration direction
+
 ## Next Draft Ideas
 
 Possible follow-up artifacts from this outline:
