@@ -328,43 +328,71 @@ From `pd-working-config.md`:
 ---
 
 ### Slide 18 — Benchmark / break-even analysis *(NEW)*
-**Important**
-This should be a **new data slide**, not a recycled llm-d benchmark page.
+**Recommended slide title**
 
-**What to show**
-At minimum, compare:
-- colocated serving
-- P/D disaggregation
+**When Does P/D Disaggregation Pay Off?**
 
-**Metrics**
-- TTFT
-- TPOT / inter-token latency
-- throughput
-- GPU utilization
-- total GPU count needed for a target SLO
+**Recommended subtitle**
 
-**Suggested x-axes**
-Pick one:
-1. prompt length
-2. cache hit ratio
-3. prefill-heavy vs decode-heavy workload mix
+P/D wins once prefill pressure dominates and KV transfer overhead is smaller than the saved prefill compute.
 
-**Suggested framing**
-> P/D wins only beyond a certain prompt length / cache-miss / prefill-pressure threshold.
+**Recommended layout: one chart + one summary table**
 
-**If real numbers are not ready yet**
-Leave this as a draft chart slide with placeholders rather than inventing numbers.
+#### Left chart
+**Chart title:** P95 TTFT vs. Prompt Length
+
+- **X-axis:** prompt length (input tokens)
+- **Y-axis:** P95 TTFT (seconds)
+- **Series 1:** Colocated serving
+- **Series 2:** P/D disaggregation
+- **Optional vertical marker:** break-even point at **~[X] input tokens**
+
+**Chart annotation copy**
+- **Short prompts:** colocated is competitive because routing + KV-transfer overhead is not yet amortized
+- **Break-even zone:** around **[X] input tokens** / **[Y]% cache miss rate**, P/D starts to reduce TTFT consistently
+- **Long prompts:** P/D separates prefill pressure from decode throughput, so TTFT grows more slowly
+
+#### Right-side summary table
+
+| Workload region | Winner | Why |
+|---|---|---|
+| Short prompts / high cache hit | Colocated or near-tie | Little prefill to offload; extra coordination can dominate |
+| Medium prompts / mixed cache hit | Break-even zone | Routing quality and KV-transfer efficiency decide the outcome |
+| Long prompts / prefill-heavy | **P/D disaggregation** | Prefill no longer steals decode capacity |
+
+**Recommended metric row below the chart**
+- **Primary metric:** P95 TTFT
+- **Secondary metrics:** throughput, TPOT / ITL, GPU utilization, GPUs needed for the same SLO
+
+**Recommended speaker line**
+> P/D is not a universal win. It becomes compelling when prompt length, cache-miss rate, or prefill concurrency is high enough that separating prefill from decode recovers more GPU efficiency than the extra coordination costs.
+
+**Ready-to-paste takeaway box**
+> **Break-even rule of thumb:** below the break-even point, keep it simple; above it, P/D buys lower TTFT and better decode stability.
+
+**Figure caption template**
+Benchmark setup: same model, same total GPU budget, same request distribution; only serving topology changes (colocated vs. P/D).
+
+**If the real benchmark is not ready yet**
+Use the exact structure above with placeholders like **[X]**, **[Y]**, and **[model / GPU SKU]**. Do **not** invent numbers.
 
 ---
 
 ### Slide 19 — AKS / production lessons learned *(NEW)*
-**Suggested bullets**
-- Sidecar placement matters: decode-only is the stable pattern
-- Port contracts matter: wrong targetPort breaks prefill routing silently
-- Pod labels are part of the routing API surface
-- NIXL env wiring must be automated by the controller
-- Observability is split across EPP, vLLM, and KV-transfer signals
-- CPU-only E2E and mocked node flows are critical to move fast safely
+**Recommended slide title**
+
+**AKS Lessons Learned: The Hard Part Is the Contracts**
+
+**Final bullet wording**
+- **Use a decode-only sidecar.** Putting the routing sidecar on prefill pods added instability and unnecessary memory pressure; the stable pattern is sidecar on decode, no sidecar on prefill.
+- **Treat ports as API contracts.** `InferencePool.targetPort`, decode sidecar port, and prefill vLLM port must line up exactly, or routing fails in ways that look like runtime bugs.
+- **Treat labels as routing inputs.** `kaito.sh/inference-role=prefill|decode` is not cosmetic metadata — the EPP depends on it to select the right workers.
+- **Automate NIXL endpoint wiring in the controller.** `VLLM_NIXL_SIDE_CHANNEL_HOST=status.podIP` must be correct on both prefill and decode pods, otherwise KV handshakes fail across pods.
+- **Observe the stack at three layers.** You need EPP routing signals, vLLM inference metrics, and KV-transfer / KV-event visibility together; none of them alone is enough to debug P/D.
+- **Invest in CPU-only E2E before scaling out GPU tests.** GPU node mocker and mocked NodeClaim → Node → Pod flows are what make fast iteration and safe regression testing practical on AKS.
+
+**Optional closing line at bottom of slide**
+> P/D disaggregation is easy to explain on a whiteboard. Making the contracts reliable in a real AKS deployment is the real engineering work.
 
 **Best source**
 - `llm/pd-disaggregation/kaito/README.md`
