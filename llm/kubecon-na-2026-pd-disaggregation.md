@@ -57,18 +57,23 @@ That lets you explain KAITO as more than “an operator”:
 - it adds scale, routing, and autoscaling as first-class Kubernetes objects
 - it then extends naturally into distributed inference patterns like P/D
 
-In this specific story, KAITO is **not**:
-
-- the base model server runtime itself
-- the low-level routing scheduler itself
-- a one-off demo script around vLLM
-
 Its value is that it **packages increasingly complex inference topology into a declarative Kubernetes UX**:
 
 - users begin with higher-level APIs instead of hand-built runtime objects
 - child resources are synthesized automatically
 - routing and autoscaling become part of the platform model
 - advanced topologies like P/D still look like Kubernetes operations, not bespoke glue code
+
+Another good way to explain KAITO is by capability layers:
+
+- **Serving layer** — `Workspace` gets a model workload running on Kubernetes
+- **Scaling layer** — `InferenceSet` turns one serving workload into a scalable replica set
+- **Routing layer** — `InferencePool` integrates the workload with inference-aware request routing
+- **Topology layer** — `MultiRoleInference` lets one logical service expand into role-specific backends such as prefill and decode
+
+That gives you a more concrete speaker message:
+
+> **KAITO is not just a deployment helper. It is an inference platform API that adds serving, scaling, routing, and topology as first-class Kubernetes concepts.**
 
 A good short phrasing for the talk is:
 
@@ -419,22 +424,24 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Say clearly that KAITO is the Kubernetes-facing abstraction layer.
 - A nice line here is: “KAITO is not just for serving one model; it gives you an upgrade path from basic serving to richer inference topologies.”
 
-### Slide 12 — What KAITO is not
-- not the model server runtime itself
-- not the low-level scheduler itself
-- not just a YAML bundle around vLLM
+### Slide 12 — KAITO’s object model in one view
+- `Workspace` = run a model workload
+- `InferenceSet` = scale replicas and attach autoscaling
+- `InferencePool` = connect serving backends to inference-aware routing
+- `MultiRoleInference` = express richer topologies like P/D as one logical service
 
-**Suggested visual:** “KAITO is not...” three-column anti-confusion slide.
+**Suggested visual:** a 4-layer ladder or staircase: serving -> scaling -> routing -> topology.
 
 **Speaker note:**
-- This avoids audience confusion early.
-- It also protects you from people mentally flattening KAITO and llm-d together.
+- This page should make KAITO feel concrete.
+- Instead of saying what KAITO is not, show how its API surface grows with the problem.
+- A good line here is: “KAITO adds higher-level Kubernetes objects as the serving topology gets more sophisticated.”
 
 ### Slide 13 — Why KAITO matters here
 - turns topology into declarative APIs
 - gives users a continuous path from `Workspace` to `InferenceSet` to `InferencePool` to `MultiRoleInference`
 - synthesizes lower-level objects automatically
-- integrates scaling and routing workflow
+- keeps the same platform model even as the topology becomes distributed
 
 **Suggested visual:** CRD progression or pipeline: `Workspace` -> `InferenceSet` -> `InferencePool` -> `MultiRoleInference` -> generated child objects.
 
@@ -442,6 +449,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Explain the operator value.
 - This is where you shift from problem framing to product value.
 - The important framing is not just “KAITO hides complexity”; it is “KAITO gives you a clean Kubernetes path as the inference topology gets more advanced.”
+- That continuity is what makes P/D feel like an extension of serving, not a completely separate system.
 
 ### Slide 14 — What the llm-d Router brings to the stack
 - EPP for Gateway API Inference Extension
