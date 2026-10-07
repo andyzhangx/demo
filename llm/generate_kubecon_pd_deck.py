@@ -15,6 +15,10 @@ from pptx.util import Inches, Pt
 ROOT = Path(__file__).resolve().parent
 MD_PATH = ROOT / "kubecon-na-2026-pd-disaggregation.md"
 OUT_PATH = ROOT / "kubecon-na-2026-pd-disaggregation.pptx"
+ASSET_DIR = ROOT / "deck-assets"
+KAITO_LOGO = ASSET_DIR / "kaito-logo.png"
+KAITO_DOCS_ARCH = ASSET_DIR / "kaito-docs-arch.png"
+KEDA_KAITO_ARCH = ASSET_DIR / "keda-kaito-scaler-arch.png"
 
 TITLE = "Prefill Here, Decode There"
 SUBTITLE = "Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d"
@@ -124,6 +128,15 @@ def add_connector(slide, x1, y1, x2, y2, color=BLUE, width=2.5):
     return conn
 
 
+def add_picture(slide, path: Path, x, y, w=None, h=None):
+    kwargs = {}
+    if w is not None:
+        kwargs['width'] = w
+    if h is not None:
+        kwargs['height'] = h
+    return slide.shapes.add_picture(str(path), x, y, **kwargs)
+
+
 def add_header(slide, title: str, num: int | None = None, accent=BLUE):
     add_shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, 0, 0, Inches(13.333), Inches(0.85), fill=NAVY, line=False)
     add_shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, Inches(0), Inches(0.82), Inches(13.333), Inches(0.04), fill=accent, line=False)
@@ -211,6 +224,8 @@ def add_title_slide(prs: Presentation):
     add_textbox(slide, Inches(0.86), Inches(4.10), Inches(5.6), Inches(1.25),
                 "A Kubernetes-native story about KAITO, llm-d,\nprefill/decode disaggregation, and inference-aware autoscaling.",
                 17, False, WHITE, line=False, fill=False)
+    if KAITO_LOGO.exists():
+        add_picture(slide, KAITO_LOGO, Inches(6.95), Inches(5.95), h=Inches(0.55))
     chip_y = Inches(5.72)
     chips = [("KAITO", BLUE_SOFT, BLUE), ("llm-d", ORANGE_SOFT, ORANGE), ("GWIE", GREEN_SOFT, GREEN), ("KEDA", PURPLE_SOFT, PURPLE)]
     cx = Inches(0.86)
@@ -254,28 +269,21 @@ def add_kaito_overview_slide(prs: Presentation, section: SlideSection):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide)
     add_header(slide, section.title, deck_no(section), accent=GREEN)
-    add_textbox(slide, Inches(0.85), Inches(1.35), Inches(11.8), Inches(0.95),
+    add_textbox(slide, Inches(0.85), Inches(1.20), Inches(11.8), Inches(0.86),
                 "KAITO is the Kubernetes control-plane layer that takes you from model serving to distributed inference.",
-                24, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    items = [
-        ("Workspace", "run one model workload", BLUE_SOFT, BLUE),
-        ("InferenceSet", "replicas + autoscaling", GREEN_SOFT, GREEN),
-        ("InferencePool", "inference-aware routing", ORANGE_SOFT, ORANGE),
-        ("MultiRoleInference", "distributed topology", PURPLE_SOFT, PURPLE),
-    ]
-    x = Inches(0.82)
-    y = Inches(3.0)
-    box_w = Inches(2.75)
-    gap = Inches(0.32)
-    prev = None
-    for i, (name, desc, fill, line) in enumerate(items):
-        bx = x + i * (box_w + gap)
-        add_textbox(slide, bx, y, box_w, Inches(1.8), f"{name}\n{desc}", 22 if i < 3 else 20, True, NAVY, PP_ALIGN.CENTER, fill=fill, line=line, radius=True)
-        if prev is not None:
-            add_connector(slide, prev, y + Inches(0.9), bx, y + Inches(0.9), BLUE, 3)
-        prev = bx + box_w
-    add_textbox(slide, Inches(1.25), Inches(5.35), Inches(10.9), Inches(0.8),
-                "Same platform. Higher-level objects as the serving problem gets harder.", 18, True, SLATE, PP_ALIGN.CENTER, fill=False, line=False)
+                22, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.82), Inches(2.20), Inches(4.10), Inches(3.95), fill=WHITE, line=False)
+    if KAITO_LOGO.exists():
+        add_picture(slide, KAITO_LOGO, Inches(1.05), Inches(2.45), h=Inches(0.60))
+    add_textbox(slide, Inches(1.0), Inches(3.20), Inches(3.65), Inches(2.45),
+                "• Start with Workspace for one model workload\n\n• Add InferenceSet for replicas and autoscaling\n\n• Add InferencePool for inference-aware routing\n\n• Use MultiRoleInference for richer distributed topology",
+                18, False, SLATE, line=False, fill=False)
+    if KAITO_DOCS_ARCH.exists():
+        add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(5.15), Inches(2.20), Inches(7.25), Inches(3.95), fill=WHITE, line=False)
+        add_picture(slide, KAITO_DOCS_ARCH, Inches(5.35), Inches(2.42), w=Inches(6.85), h=Inches(3.45))
+    add_textbox(slide, Inches(0.95), Inches(6.35), Inches(11.4), Inches(0.34),
+                "Docs architecture view: KAITO packages serving, routing, and operations into one Kubernetes-native platform model.",
+                13, False, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
 
 
 def add_object_model_slide(prs: Presentation, section: SlideSection):
@@ -364,21 +372,18 @@ def add_keda_slide(prs: Presentation, section: SlideSection):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide)
     add_header(slide, section.title, deck_no(section), accent=GREEN)
-    add_textbox(slide, Inches(4.85), Inches(2.55), Inches(3.6), Inches(1.2), "KEDA", 30, True, WHITE, PP_ALIGN.CENTER, fill=BLUE, line=False, radius=True)
-    sources = [
-        (Inches(0.95), Inches(1.55), "external metrics"),
-        (Inches(0.95), Inches(4.55), "cron triggers"),
-        (Inches(9.85), Inches(1.55), "scale decisions"),
-        (Inches(9.85), Inches(4.55), "inference workloads"),
-    ]
-    for x, y, label in sources:
-        add_textbox(slide, x, y, Inches(2.55), Inches(0.95), label, 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
-    add_connector(slide, Inches(3.50), Inches(2.05), Inches(4.85), Inches(2.95), GREEN, 2.5)
-    add_connector(slide, Inches(3.50), Inches(5.05), Inches(4.85), Inches(3.35), GREEN, 2.5)
-    add_connector(slide, Inches(8.45), Inches(2.95), Inches(9.85), Inches(2.05), GREEN, 2.5)
-    add_connector(slide, Inches(8.45), Inches(3.35), Inches(9.85), Inches(5.05), GREEN, 2.5)
-    add_textbox(slide, Inches(2.0), Inches(6.0), Inches(9.4), Inches(0.55),
-                "KEDA shifts autoscaling from generic resource proxies to workload-aware external signals.", 16, True, SLATE, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(0.82), Inches(1.18), Inches(11.75), Inches(0.80),
+                "KEDA fits LLM inference because it scales on external workload signals, not just CPU and memory proxies.",
+                21, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+    if KEDA_KAITO_ARCH.exists():
+        add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.95), Inches(2.10), Inches(7.95), Inches(4.15), fill=WHITE, line=False)
+        add_picture(slide, KEDA_KAITO_ARCH, Inches(1.15), Inches(2.35), w=Inches(7.55), h=Inches(3.70))
+    add_card(slide, Inches(9.15), Inches(2.20), Inches(3.30), Inches(3.95), "Why it matters", [
+        "Metric-based scaling for inference queues",
+        "Time-based scaling for predictable traffic",
+        "InferenceSet as the scaling boundary",
+        "Dedicated KAITO scaler removes extra Prometheus dependency for this flow",
+    ], fill=WHITE, line=GREEN)
 
 
 def add_kaito_keda_flow(prs: Presentation, section: SlideSection):
