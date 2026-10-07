@@ -203,18 +203,29 @@ def add_title_slide(prs: Presentation):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide, NAVY)
     add_shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, 0, Inches(0), Inches(13.333), Inches(0.14), fill=ORANGE, line=False)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.75), Inches(0.95), Inches(7.4), Inches(1.25), fill=False, line=False)
-    add_textbox(slide, Inches(0.82), Inches(1.0), Inches(7.3), Inches(1.0), TITLE, 30, True, WHITE, line=False, fill=False, font_name="Aptos Display")
-    add_textbox(slide, Inches(0.84), Inches(2.05), Inches(8.4), Inches(0.9), SUBTITLE, 21, False, RGBColor(201, 214, 255), line=False, fill=False)
-    add_textbox(slide, Inches(0.86), Inches(3.18), Inches(4.7), Inches(1.9),
-                f"{EVENT}\n\nKAITO · llm-d · GWIE · KEDA\nGenerated directly from the markdown deck outline", 16, False, WHITE, line=False, fill=False)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(7.45), Inches(1.55), Inches(4.9), Inches(3.6), fill=WHITE, line=False)
-    add_textbox(slide, Inches(7.75), Inches(1.9), Inches(4.2), Inches(0.55), "Serving topology", 16, True, BLUE, PP_ALIGN.CENTER, fill=False, line=False)
-    add_textbox(slide, Inches(8.0), Inches(2.55), Inches(3.7), Inches(0.70), "prefill", 24, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(8.0), Inches(3.55), Inches(3.7), Inches(0.70), "KV handoff", 24, True, NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-    add_textbox(slide, Inches(8.0), Inches(4.55), Inches(3.7), Inches(0.70), "decode", 24, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_connector(slide, Inches(9.85), Inches(3.25), Inches(9.85), Inches(3.55), PURPLE, 3)
-    add_connector(slide, Inches(9.85), Inches(4.25), Inches(9.85), Inches(4.55), PURPLE, 3)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, Inches(8.9), Inches(0.14), Inches(4.45), Inches(7.36), fill=RGBColor(22, 32, 58), line=False)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.82), Inches(0.90), Inches(0.98), Inches(0.42), fill=WHITE, line=False)
+    add_textbox(slide, Inches(0.90), Inches(0.955), Inches(0.82), Inches(0.22), "KubeCon '26", 12, True, NAVY, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(0.82), Inches(1.45), Inches(7.65), Inches(1.15), TITLE, 32, True, WHITE, line=False, fill=False, font_name="Aptos Display")
+    add_textbox(slide, Inches(0.84), Inches(2.62), Inches(7.9), Inches(0.86), SUBTITLE, 20, False, RGBColor(201, 214, 255), line=False, fill=False)
+    add_textbox(slide, Inches(0.86), Inches(4.10), Inches(5.6), Inches(1.25),
+                "A Kubernetes-native story about KAITO, llm-d,\nprefill/decode disaggregation, and inference-aware autoscaling.",
+                17, False, WHITE, line=False, fill=False)
+    chip_y = Inches(5.72)
+    chips = [("KAITO", BLUE_SOFT, BLUE), ("llm-d", ORANGE_SOFT, ORANGE), ("GWIE", GREEN_SOFT, GREEN), ("KEDA", PURPLE_SOFT, PURPLE)]
+    cx = Inches(0.86)
+    for label, fill, line in chips:
+        add_textbox(slide, cx, chip_y, Inches(1.22), Inches(0.46), label, 13, True, NAVY, PP_ALIGN.CENTER, fill=fill, line=line, radius=True)
+        cx += Inches(1.38)
+    add_textbox(slide, Inches(0.86), Inches(6.48), Inches(4.9), Inches(0.45), EVENT, 13, False, RGBColor(201, 214, 255), line=False, fill=False)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(9.35), Inches(1.05), Inches(3.15), Inches(5.20), fill=WHITE, line=False)
+    add_textbox(slide, Inches(9.65), Inches(1.38), Inches(2.55), Inches(0.42), "Serving topology", 15, True, BLUE, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(9.72), Inches(2.08), Inches(2.40), Inches(0.62), "prefill", 22, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
+    add_textbox(slide, Inches(9.72), Inches(3.12), Inches(2.40), Inches(0.62), "KV handoff", 22, True, NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
+    add_textbox(slide, Inches(9.72), Inches(4.16), Inches(2.40), Inches(0.62), "decode", 22, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
+    add_connector(slide, Inches(10.92), Inches(2.70), Inches(10.92), Inches(3.12), PURPLE, 3)
+    add_connector(slide, Inches(10.92), Inches(3.74), Inches(10.92), Inches(4.16), PURPLE, 3)
+    add_textbox(slide, Inches(9.52), Inches(5.18), Inches(2.82), Inches(0.66), "independent scaling\n+ direct KV path", 13, False, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
 
 
 def add_core_question_slide(prs: Presentation, section: SlideSection):
@@ -271,13 +282,23 @@ def add_object_model_slide(prs: Presentation, section: SlideSection):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide, BG_ALT)
     add_header(slide, section.title, deck_no(section), accent=PURPLE)
-    add_card(slide, Inches(0.85), Inches(1.5), Inches(2.75), Inches(4.7), "Workspace", ["Run a model workload", "Serving or tuning", "Basic building block"], fill=WHITE, line=BLUE)
-    add_card(slide, Inches(3.75), Inches(2.15), Inches(2.75), Inches(4.05), "InferenceSet", ["Replica management", "Autoscaling boundary", "Scale-out for inference"], fill=WHITE, line=GREEN)
-    add_card(slide, Inches(6.65), Inches(2.80), Inches(2.75), Inches(3.40), "InferencePool", ["Inference-aware routing", "Gateway-facing backend set", "Connects serving to GWIE"], fill=WHITE, line=ORANGE)
-    add_card(slide, Inches(9.55), Inches(3.45), Inches(2.75), Inches(2.75), "MultiRoleInference", ["One logical service", "Role-specific backends", "P/D and richer topology"], fill=WHITE, line=PURPLE)
-    add_connector(slide, Inches(3.60), Inches(3.75), Inches(3.75), Inches(4.10), BLUE, 3)
-    add_connector(slide, Inches(6.50), Inches(4.10), Inches(6.65), Inches(4.45), BLUE, 3)
-    add_connector(slide, Inches(9.40), Inches(4.45), Inches(9.55), Inches(4.80), BLUE, 3)
+    add_textbox(slide, Inches(0.88), Inches(1.25), Inches(11.7), Inches(0.62),
+                "KAITO grows in layers: serving -> scaling -> routing -> distributed topology", 21, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+    cols = [
+        (Inches(0.95), Inches(2.15), Inches(2.55), Inches(3.95), "Serving", "Workspace", ["Run a model workload", "Serving or tuning", "The basic workload entrypoint"], BLUE_SOFT, BLUE),
+        (Inches(3.70), Inches(2.50), Inches(2.55), Inches(3.60), "Scaling", "InferenceSet", ["Replica management", "Autoscaling boundary", "Scale-out for inference"], GREEN_SOFT, GREEN),
+        (Inches(6.45), Inches(2.85), Inches(2.55), Inches(3.25), "Routing", "InferencePool", ["Inference-aware routing", "Gateway-facing backend set", "Connects serving to GWIE"], ORANGE_SOFT, ORANGE),
+        (Inches(9.20), Inches(3.20), Inches(2.55), Inches(2.90), "Topology", "MultiRoleInference", ["One logical service", "Role-specific backends", "P/D and richer topology"], PURPLE_SOFT, PURPLE),
+    ]
+    for x, y, w, h, tag, title, lines, fill, line in cols:
+        add_textbox(slide, x, y - Inches(0.42), w, Inches(0.32), tag, 12, True, line, PP_ALIGN.CENTER, fill=False, line=False)
+        add_card(slide, x, y, w, h, title, lines, fill=WHITE, line=line)
+        add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, x + Inches(0.18), y + Inches(0.18), w - Inches(0.36), Inches(0.16), fill=fill, line=False)
+    add_connector(slide, Inches(3.50), Inches(4.25), Inches(3.70), Inches(4.25), BLUE, 3)
+    add_connector(slide, Inches(6.25), Inches(4.60), Inches(6.45), Inches(4.60), BLUE, 3)
+    add_connector(slide, Inches(9.00), Inches(4.95), Inches(9.20), Inches(4.95), BLUE, 3)
+    add_textbox(slide, Inches(1.75), Inches(6.42), Inches(9.9), Inches(0.40),
+                "The object model stays consistent even as the inference topology becomes more advanced.", 14, False, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
 
 
 def add_division_of_labor_slide(prs: Presentation, section: SlideSection):
@@ -295,40 +316,48 @@ def add_architecture_slide(prs: Presentation, section: SlideSection):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide, BG_ALT)
     add_header(slide, section.title, deck_no(section), accent=ORANGE)
-    add_textbox(slide, Inches(0.55), Inches(3.0), Inches(1.2), Inches(0.8), "Client", 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
-    add_textbox(slide, Inches(1.95), Inches(3.0), Inches(1.5), Inches(0.8), "Gateway", 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
-    add_textbox(slide, Inches(3.75), Inches(2.7), Inches(2.2), Inches(1.4), "InferencePool\n+ llm-d EPP", 19, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_textbox(slide, Inches(6.45), Inches(1.75), Inches(2.6), Inches(1.35), "Prefill\nchild InferenceSet", 19, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(6.45), Inches(4.25), Inches(2.6), Inches(1.35), "Decode\nchild InferenceSet", 19, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(9.75), Inches(2.7), Inches(2.6), Inches(1.4), "KV handoff\nNIXL + sidecar", 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=PURPLE, radius=True)
-    add_connector(slide, Inches(1.75), Inches(3.4), Inches(1.95), Inches(3.4), BLUE, 3)
-    add_connector(slide, Inches(3.45), Inches(3.4), Inches(3.75), Inches(3.4), BLUE, 3)
-    add_connector(slide, Inches(5.95), Inches(3.1), Inches(6.45), Inches(2.45), ORANGE, 2)
-    add_connector(slide, Inches(5.95), Inches(3.7), Inches(6.45), Inches(4.95), BLUE, 2)
-    add_connector(slide, Inches(9.05), Inches(2.45), Inches(9.75), Inches(3.05), PURPLE, 2)
-    add_connector(slide, Inches(9.05), Inches(4.95), Inches(9.75), Inches(3.75), PURPLE, 2)
-    add_textbox(slide, Inches(3.7), Inches(5.95), Inches(6.0), Inches(0.55), "Gateway routes requests; KV data moves directly between pods.", 16, True, SLATE, PP_ALIGN.CENTER, fill=False, line=False)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.80), Inches(1.45), Inches(11.85), Inches(4.95), fill=WHITE, line=False)
+    add_textbox(slide, Inches(1.05), Inches(1.72), Inches(1.2), Inches(0.28), "request path", 12, True, BLUE, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(1.05), Inches(5.15), Inches(1.2), Inches(0.28), "KV path", 12, True, PURPLE, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(1.05), Inches(2.25), Inches(1.10), Inches(0.78), "Client", 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
+    add_textbox(slide, Inches(2.35), Inches(2.25), Inches(1.45), Inches(0.78), "Gateway", 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
+    add_textbox(slide, Inches(4.05), Inches(2.05), Inches(2.15), Inches(1.18), "InferencePool\n+ llm-d EPP", 18, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
+    add_textbox(slide, Inches(6.65), Inches(1.55), Inches(2.45), Inches(1.08), "Prefill\nchild InferenceSet", 18, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
+    add_textbox(slide, Inches(6.65), Inches(3.55), Inches(2.45), Inches(1.08), "Decode\nchild InferenceSet", 18, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
+    add_textbox(slide, Inches(9.55), Inches(2.48), Inches(2.30), Inches(1.00), "Routing sidecar\n+ local vLLM", 17, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=PURPLE, radius=True)
+    add_connector(slide, Inches(2.15), Inches(2.64), Inches(2.35), Inches(2.64), BLUE, 3)
+    add_connector(slide, Inches(3.80), Inches(2.64), Inches(4.05), Inches(2.64), BLUE, 3)
+    add_connector(slide, Inches(6.20), Inches(2.40), Inches(6.65), Inches(2.05), BLUE, 2.5)
+    add_connector(slide, Inches(6.20), Inches(2.88), Inches(6.65), Inches(4.05), BLUE, 2.5)
+    add_connector(slide, Inches(9.10), Inches(4.05), Inches(9.55), Inches(2.98), BLUE, 2.5)
+    add_connector(slide, Inches(9.10), Inches(2.05), Inches(9.55), Inches(2.98), PURPLE, 2.5)
+    add_textbox(slide, Inches(6.80), Inches(5.15), Inches(4.75), Inches(0.70), "Gateway routes requests; KV data moves directly between prefill and decode workers.", 15, True, SLATE, PP_ALIGN.CENTER, fill=False, line=False)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.00), Inches(4.95), Inches(4.70), Inches(0.72), fill=GRAY_SOFT, line=False)
+    add_textbox(slide, Inches(1.15), Inches(5.10), Inches(4.40), Inches(0.36), "Data-plane split: request path and KV-transfer path are different", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
 
 
 def add_compare_signals_slide(prs: Presentation, section: SlideSection):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide)
     add_header(slide, section.title, deck_no(section), accent=RED)
-    add_textbox(slide, Inches(0.75), Inches(1.35), Inches(12.0), Inches(0.9),
-                "Traditional CPU-based autoscaling proxies do not capture GPU-bound inference pain.", 24, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_card(slide, Inches(0.85), Inches(2.5), Inches(5.6), Inches(3.15), "Classic web-service HPA", [
+    add_textbox(slide, Inches(0.75), Inches(1.30), Inches(12.0), Inches(0.82),
+                "CPU-era autoscaling logic came from web workloads, not GPU-bound inference systems.", 24, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+    add_card(slide, Inches(0.88), Inches(2.30), Inches(5.25), Inches(3.30), "Classic web-service HPA", [
         "CPU utilization",
         "memory utilization",
         "request-per-pod as a rough proxy",
-        "works for stateless request/response services",
+        "good enough for stateless request/response services",
     ], fill=WHITE, line=MID)
-    add_card(slide, Inches(6.9), Inches(2.5), Inches(5.6), Inches(3.15), "LLM inference autoscaling", [
+    add_textbox(slide, Inches(5.55), Inches(3.02), Inches(2.22), Inches(1.48), "same CPU\nvery different\nuser pain", 19, True, WHITE, PP_ALIGN.CENTER, fill=RED, line=False, radius=True)
+    add_card(slide, Inches(7.18), Inches(2.30), Inches(5.25), Inches(3.30), "LLM inference autoscaling", [
         "waiting requests",
         "token generation pressure",
         "active KV memory",
         "prompt / generation mix",
         "CPU can look fine while TTFT is already bad",
     ], fill=WHITE, line=BLUE)
+    add_textbox(slide, Inches(2.25), Inches(6.02), Inches(8.85), Inches(0.46),
+                "The autoscaler needs workload-aware signals, not generic resource proxies.", 15, True, SLATE, PP_ALIGN.CENTER, fill=False, line=False)
 
 
 def add_keda_slide(prs: Presentation, section: SlideSection):
@@ -397,20 +426,23 @@ def add_matrix_slide(prs: Presentation, section: SlideSection):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide, BG_ALT)
     add_header(slide, section.title, deck_no(section), accent=ORANGE)
-    add_textbox(slide, Inches(4.05), Inches(1.10), Inches(5.2), Inches(0.50), "KV transfer cost / fabric quality", 18, True, NAVY, PP_ALIGN.CENTER, fill=False, line=False)
-    add_textbox(slide, Inches(0.16), Inches(3.0), Inches(1.0), Inches(1.6), "Prefill / decode difference", 15, True, NAVY, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(3.95), Inches(1.10), Inches(5.4), Inches(0.50), "KV transfer cost / fabric quality", 18, True, NAVY, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(0.18), Inches(2.95), Inches(0.98), Inches(1.75), "Prefill / decode difference", 15, True, NAVY, PP_ALIGN.CENTER, fill=False, line=False)
+    # quadrant labels
+    add_textbox(slide, Inches(1.30), Inches(1.35), Inches(5.05), Inches(0.32), "transfer expensive / weak", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(6.95), Inches(1.35), Inches(5.05), Inches(0.32), "transfer cheap / strong", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(0.18), Inches(2.35), Inches(0.95), Inches(0.68), "similar", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(0.10), Inches(4.85), Inches(1.05), Inches(0.92), "meaningfully\ndifferent", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
     cells = [
-        (Inches(1.25), Inches(1.85), Inches(5.2), Inches(2.0), RED_SOFT, RED, "Stay aggregated", "Small models, short prompts, low concurrency, simple traffic."),
-        (Inches(6.75), Inches(1.85), Inches(5.2), Inches(2.0), WHITE, MID, "Usually stay aggregated", "You can try P/D, but the operational gain is often limited."),
-        (Inches(1.25), Inches(4.20), Inches(5.2), Inches(2.0), ORANGE_SOFT, ORANGE, "Maybe later", "There may be value, but a weak transfer path will erase it."),
-        (Inches(6.75), Inches(4.20), Inches(5.2), Inches(2.0), GREEN_SOFT, GREEN, "Strong candidate for P/D", "Long prompts, retrieval-heavy traffic, long generations, high concurrency, or different scaling / parallelism needs."),
+        (Inches(1.30), Inches(1.85), Inches(5.05), Inches(1.95), RED_SOFT, RED, "Stay aggregated", "Small models, short prompts, low concurrency, simple traffic."),
+        (Inches(6.95), Inches(1.85), Inches(5.05), Inches(1.95), WHITE, MID, "Usually stay aggregated", "You can try P/D, but the operational gain is often limited."),
+        (Inches(1.30), Inches(4.15), Inches(5.05), Inches(1.95), ORANGE_SOFT, ORANGE, "Maybe later", "There may be value, but a weak transfer path will erase it."),
+        (Inches(6.95), Inches(4.15), Inches(5.05), Inches(1.95), GREEN_SOFT, GREEN, "Strong candidate for P/D", "Long prompts, retrieval-heavy traffic, long generations, high concurrency, or different scaling / parallelism needs."),
     ]
     for x, y, w, h, fill, line, head, body in cells:
         add_card(slide, x, y, w, h, head, [body], fill=fill, line=line)
-    add_textbox(slide, Inches(1.25), Inches(1.35), Inches(5.2), Inches(0.35), "transfer expensive / weak", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
-    add_textbox(slide, Inches(6.75), Inches(1.35), Inches(5.2), Inches(0.35), "transfer cheap / strong", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
-    add_textbox(slide, Inches(0.16), Inches(2.35), Inches(0.95), Inches(0.7), "similar", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
-    add_textbox(slide, Inches(0.10), Inches(4.75), Inches(1.05), Inches(0.95), "meaningfully\ndifferent", 13, True, MUTED, PP_ALIGN.CENTER, fill=False, line=False)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(6.88), Inches(4.08), Inches(5.19), Inches(2.09), fill=False, line=GREEN)
+    add_textbox(slide, Inches(8.20), Inches(6.32), Inches(2.60), Inches(0.34), "recommended starting point", 12, True, GREEN, PP_ALIGN.CENTER, fill=False, line=False)
 
 
 def add_generic_slide(prs: Presentation, section: SlideSection):
