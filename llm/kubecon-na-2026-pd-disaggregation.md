@@ -68,6 +68,84 @@ If time allows, also mention that KAITO is meant to make advanced serving patter
 
 That framing matters for the audience, because otherwise people may confuse KAITO with the runtime or with llm-d itself.
 
+### KAITO: the version that sounds good on stage
+
+A more natural way to explain KAITO in the talk is:
+
+> **KAITO is the Kubernetes control-plane layer for AI serving. It lets you describe the topology you want, and it generates and manages the lower-level pieces for you.**
+
+If you want one extra sentence after that, use this:
+
+> **llm-d is the smart routing and scheduling layer underneath; KAITO is the layer that makes it feel like a normal Kubernetes workflow.**
+
+Then break it down very simply:
+
+- **At the API layer**, users work with `InferenceSet` and `MultiRoleInference`, not a pile of hand-wired objects.
+- **At the routing layer**, KAITO integrates with GWIE and the llm-d Router EPP for model-aware, cache-aware, and P/D-aware routing.
+- **At the topology layer**, one MRI expands into separate prefill and decode backends, with the right sidecars, ports, labels, and config wired automatically.
+- **At the operations layer**, the whole thing becomes easier to reason about, observe, and scale.
+
+Speaker note:
+- Don’t over-explain KAITO.
+- The audience mostly needs to understand that **KAITO is the abstraction**, not the model server and not the scheduler.
+- The punchline is: **KAITO turns advanced inference topology into a Kubernetes-native UX.**
+
+### P/D disaggregation scenarios worth explaining explicitly
+
+This section should sound practical, not theoretical. A simple way to say it is:
+
+- If prompts are long, or the traffic is **retrieval-heavy**, **prefill gets expensive fast**.
+- If generations are long, or concurrency is high, **decode becomes the bottleneck**.
+- If you want **different scaling behavior** for prompt processing and token generation, P/D starts to make sense.
+- If the model or topology wants **different parallelism choices** for prefill and decode, that is another strong reason to split them.
+- If the workload is small and simple, **P/D may not be worth the extra moving parts**.
+
+You can summarize the value in one line:
+
+> **P/D helps when prefill and decode need different resource shapes, different scaling behavior, or different parallelism choices.**
+
+Then connect it back to infrastructure:
+
+- prefill can scale for **compute and latency**
+- decode can scale for **memory bandwidth, active KV memory, and steady throughput**
+- the real win is **independent capacity shaping**, not just a benchmark number
+- but you only get that win if the **KV-transfer path is fast enough**
+
+A good caution line, adapted from the NVIDIA Dynamo guidance, is:
+
+> **P/D is not automatically better. For small models, short prompts, low concurrency, or clusters without a fast KV-transfer fabric, an aggregated deployment is often simpler and sometimes faster.**
+
+Speaker note:
+- This is a good place to sound opinionated.
+- Say clearly that P/D is **not** the right answer for every workload.
+- If useful, give the audience a concrete mental model: single-node multi-GPU with fast GPU-to-GPU transfer is the easiest place to win; cross-node P/D raises the bar because the KV path matters much more.
+
+### Autoscaling story for P/D: what exists today and what the talk should recommend
+
+This should be explained in a very direct way:
+
+- **Today, KEDA already works well with KAITO `InferenceSet`.**
+- KAITO docs already show both **cron-based scaling** and **metric-based scaling**.
+- The useful metric example today is `vllm:num_requests_waiting`.
+
+For the P/D story, the key point is simple:
+
+> **Once MRI creates separate prefill and decode child `InferenceSet`s, the natural autoscaling boundary is per role, not one global knob for the whole service.**
+
+Then make the scaling split concrete:
+
+- **Prefill** should scale on prompt pressure, for example waiting requests, because that is what protects TTFT.
+- **Decode** should scale on longer-lived saturation signals, like KV/cache pressure or steady decode load, because that is what protects throughput.
+
+The recommendation for the talk should be blunt:
+
+> **The right UX is not asking users to hand-author multiple ScaledObjects. The right UX is letting one MRI express per-role scaling intent and having KAITO push that down into the generated child InferenceSets.**
+
+Speaker note:
+- Keep the message operational.
+- “Independent scaling” by itself is not the whole story.
+- The real point is **metric-appropriate independent scaling with a clean Kubernetes UX**.
+
 ---
 
 ## What to Emphasize in the 20-Minute Version
@@ -90,7 +168,8 @@ By the end of the talk, attendees should remember:
 1. **Prefill and decode are fundamentally different workloads.**
 2. **P/D disaggregation can improve TTFT, throughput, and GPU efficiency for the right workloads.**
 3. **The hard part is orchestration, and KAITO provides a higher-level Kubernetes abstraction for it.**
-4. **Not every workload needs P/D; there is a clear break-even point.**
+4. **Per-role autoscaling is part of the value proposition, not an afterthought.**
+5. **Not every workload needs P/D; there is a clear break-even point.**
 
 ---
 
@@ -198,7 +277,7 @@ By the end of the talk, attendees should remember:
 
 ## Suggested Slide-by-Slide Story
 
-For a 20-minute co-located talk, **~30 slides can still work well** if most slides carry a single idea, use diagrams or short bullets, and advance quickly. That often feels better than 12-15 overloaded slides. Below is a **30-slide structure** that is closer to an actual deck draft: each slide includes the core message, a suggested visual, and the intended speaker emphasis.
+For a 20-minute co-located talk, the slide count should be **flexible**. If slides are light and visual, a longer deck can work; if the diagrams are dense, a shorter deck is better. In practice, something like **18-30 slides** is a reasonable range, and adjacent ideas can be merged freely. Below is a **reference slide structure**, not a hard page-count target: each slide includes the core message, a suggested visual, and the intended speaker emphasis.
 
 ### Slide 1 — Title
 **Prefill Here, Decode There**  
@@ -460,17 +539,18 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - If this path is wrong, the theoretical benefit of P/D disappears quickly.
 
 ### Slide 23 — Independent autoscaling by role
-- today, KEDA scales standard InferenceSet replicas naturally
-- for P/D, MRI should propagate per-role KEDA settings to child InferenceSets
-- prefill scales on queue depth / pending prefill pressure
-- decode scales on KV-cache utilization / decode-side saturation
+- today, KEDA already scales standard InferenceSet replicas well
+- KAITO docs already show cron-based and metric-based autoscaling
+- in P/D, prefill and decode should not share one scaling signal
+- prefill example metric: `vllm:num_requests_waiting`
+- decode example signals: KV/cache pressure or sustained decode saturation
 
-**Suggested visual:** two side-by-side scaling graphs or two KEDA callouts.
+**Suggested visual:** two side-by-side scaling graphs, plus a small “MRI -> child InferenceSets -> ScaledObjects” flow.
 
 **Speaker note:**
-- Connect architecture to platform operations.
-- This is where the “Kubernetes-native” claim starts paying off in operator language.
-- The point is not just independent scaling; it is metric-appropriate independent scaling with a clean UX instead of hand-authored per-role ScaledObjects.
+- Keep this very practical.
+- Say: “once prefill and decode are separate backends, they should scale like separate backends.”
+- Then add the UX point: users should express that once at the MRI layer, not by hand-authoring multiple ScaledObjects.
 
 ### Slide 24 — Why this abstraction helps operators
 - fewer manually coordinated objects
@@ -517,16 +597,28 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - This is the business/operations payoff slide.
 
 ### Slide 28 — When to use P/D, and when not to
-- good fit: long prompts, bursty prefill, latency-sensitive interactive traffic
-- not always worth it: tiny PoCs, low concurrency, short prompts
-- break-even depends on prompt length, concurrency, and workload shape
 
-**Suggested visual:** 2-column “good fit / not worth it yet” matrix.
+Use a real decision matrix here instead of a generic pros/cons list.
+
+**Recommended 2x2:**
+- **X-axis:** KV-transfer cost / fabric quality
+  - left = transfer is expensive, cross-node, or unreliable
+  - right = transfer is cheap and fast enough
+- **Y-axis:** how different prefill and decode really are
+  - bottom = similar bottlenecks / similar scaling behavior
+  - top = different bottlenecks, scaling behavior, or parallelism choices
+
+|  | **KV transfer expensive / weak** | **KV transfer cheap / strong** |
+|---|---|---|
+| **Prefill and decode are similar** | **Stay aggregated**<br>Small models, short prompts, low concurrency, simple traffic. | **Usually stay aggregated**<br>You can try P/D, but the operational gain is often limited. |
+| **Prefill and decode are meaningfully different** | **Maybe later / only with topology improvements**<br>There may be value in P/D, but the transfer path is likely to erase it. First improve locality, transport, or keep prefill/decode on the same node. | **Strong candidate for P/D**<br>Long prompts, retrieval-heavy traffic, long generations, high concurrency, or different scaling/parallelism needs. |
+
+**Suggested visual:** a clean 2x2 matrix with the top-right quadrant highlighted in green and the bottom-left quadrant greyed out.
 
 **Speaker note:**
-- This improves trust with the audience.
-- Explicitly saying “not for everyone” makes the talk more credible.
-- If possible, give one simple break-even rule of thumb rather than a vague warning.
+- This is a better trust-building slide than a blanket recommendation.
+- The audience should leave with one rule of thumb: **use P/D when prefill and decode want different shapes, and KV transfer is cheap enough not to erase the gain.**
+- If you want one practical simplification: **single-node multi-GPU is the easiest place to win first; cross-node P/D raises the bar because the KV path matters much more.**
 
 ### Slide 29 — Production lessons
 - startup ordering matters
@@ -555,7 +647,9 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
 ### Deck production notes
 - Keep most slides to **one sentence headline + one diagram/chart + 2-3 bullets max**.
+- Treat the numbered slides below as **modular blocks**, not a fixed page count.
 - Slides 16, 20, 21, and 25-27 are the likely visual anchors of the deck.
+- If you want a shorter version, the easiest merges are: 3+4+5, 10+11+12, 20+21, and 25+26+27.
 - If time runs short, Slides 12, 24, and part of 27 can be compressed quickly without losing the main story.
 - If the benchmark section is weak, spend more time on Slides 15-24 and make the architecture story the center of gravity.
 
@@ -563,13 +657,13 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
 ## Suggested Opening (30 seconds)
 
-LLM inference looks like one workload from the outside, but inside it has two very different phases. Prefill wants raw compute and low latency. Decode wants memory bandwidth and steady throughput. If we force both into one GPU pool, we compromise both. In this talk, we’ll show why prefill/decode disaggregation helps, why it is still hard to operate on Kubernetes, and how KAITO plus Gateway API Inference Extension and the llm-d Router turn that topology into something declarative and production-friendly.
+From the outside, LLM inference looks like one workload. But operationally, it’s really two different problems. Prefill wants compute and low latency. Decode wants memory bandwidth and steady throughput. If we force both into one GPU pool, we end up compromising both. So the question for this talk is: can we separate those phases in a way that actually feels native on Kubernetes? That’s where KAITO, GWIE, and llm-d come in.
 
 ---
 
 ## Suggested Closing (20-30 seconds)
 
-The important shift is not just separating prefill and decode. The bigger shift is making advanced inference topologies first-class citizens on Kubernetes. KAITO is the abstraction layer that can make those topologies usable, while Gateway API Inference Extension and the llm-d Router provide the routing contract and scheduling substrate underneath. The next step is to close that gap even further with precise prefix-cache routing, tiered prefix cache, cleaner per-role autoscaling UX, and eventually support for topologies like Wide Expert Parallelism.
+The big idea here is not just that prefill and decode can be separated. It’s that advanced inference topologies need to become normal, operable Kubernetes patterns. KAITO is the layer that makes that possible. GWIE and llm-d provide the routing contract and the scheduling intelligence underneath. And from here, the direction is pretty clear: better cache-aware routing, cleaner per-role autoscaling, and support for even richer topologies beyond basic P/D.
 
 ---
 
