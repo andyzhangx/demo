@@ -434,10 +434,44 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 
 **Speaker note:**
 - This page should make KAITO feel concrete.
-- Instead of saying what KAITO is not, show how its API surface grows with the problem.
+- Show how its API surface grows with the problem instead of just calling it “an operator.”
 - A good line here is: “KAITO adds higher-level Kubernetes objects as the serving topology gets more sophisticated.”
 
-### Slide 13 — Why KAITO matters here
+### Slide 13 — KAITO starts with serving: `Workspace`
+- the basic workload entrypoint for model serving and tuning
+- good mental model: one model workload, one Kubernetes object
+- the place where KAITO begins before scaling and routing enter the picture
+
+**Suggested visual:** one `Workspace` object mapping to one serving workload.
+
+**Speaker note:**
+- Keep this simple.
+- The audience should understand that KAITO does not start with P/D; it starts with ordinary model serving.
+- That makes the later distributed-inference story feel like an extension, not a different product.
+
+### Slide 14 — KAITO scales serving: `InferenceSet` + `InferencePool`
+- `InferenceSet` adds replicas and autoscaling
+- `InferencePool` adds inference-aware routing through GWIE
+- together, they move KAITO from “run a model” to “operate a serving system”
+
+**Suggested visual:** one `Workspace` expanding into an `InferenceSet`, then attaching to an `InferencePool`.
+
+**Speaker note:**
+- This is where KAITO starts to look like a serving platform, not just a deployment helper.
+- Emphasize that routing and scaling are first-class objects, not afterthought YAML.
+
+### Slide 15 — KAITO extends naturally to distributed inference
+- `MultiRoleInference` is the object for richer topologies
+- one logical service can expand into prefill and decode backends
+- the same Kubernetes object model continues even when the topology becomes distributed
+
+**Suggested visual:** `Workspace` -> `InferenceSet` / `InferencePool` -> `MultiRoleInference` with prefill/decode branches.
+
+**Speaker note:**
+- This is the transition slide from “what KAITO is” to “why KAITO matters for P/D.”
+- The key idea is continuity: same platform, richer topology.
+
+### Slide 16 — Why KAITO matters here
 - turns topology into declarative APIs
 - gives users a continuous path from `Workspace` to `InferenceSet` to `InferencePool` to `MultiRoleInference`
 - synthesizes lower-level objects automatically
@@ -451,7 +485,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - The important framing is not just “KAITO hides complexity”; it is “KAITO gives you a clean Kubernetes path as the inference topology gets more advanced.”
 - That continuity is what makes P/D feel like an extension of serving, not a completely separate system.
 
-### Slide 14 — What the llm-d Router brings to the stack
+### Slide 17 — What the llm-d Router brings to the stack
 - EPP for Gateway API Inference Extension
 - model-aware and role-aware endpoint selection
 - KV-cache-aware and P/D-aware plugin chain
@@ -463,7 +497,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Explain that Gateway API Inference Extension gives the abstraction pattern, and the llm-d Router provides the advanced EPP implementation KAITO uses.
 - Mention that this gives KAITO room to grow into richer inference topologies later.
 
-### Slide 15 — KAITO + llm-d Router + GWIE: division of labor
+### Slide 18 — KAITO + llm-d Router + GWIE: division of labor
 - KAITO = declarative abstraction / orchestration
 - Gateway API Inference Extension = inference routing contract
 - llm-d Router = routing / scheduling substrate
@@ -474,9 +508,9 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 **Speaker note:**
 - This slide should answer “why all three?” very clearly.
 - Say explicitly: GWIE gives the Kubernetes-native routing pattern, llm-d Router supplies the smart EPP, and KAITO makes the topology operable for platform teams.
-- If the audience only remembers one stack diagram, let it be this one or Slide 16.
+- If the audience only remembers one stack diagram, let it be this one or Slide 19.
 
-### Slide 16 — End-to-end architecture diagram
+### Slide 19 — End-to-end architecture diagram
 - client
 - gateway
 - InferencePool
@@ -492,7 +526,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Make the child InferenceSets visible so the audience sees the real KAITO object model.
 - Keep returning to it when later slides discuss request flow or autoscaling.
 
-### Slide 17 — What MultiRoleInference declares
+### Slide 20 — What MultiRoleInference declares
 - one logical inference service
 - two roles
 - role-specific scaling and runtime behavior
@@ -505,7 +539,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Focus on user intent, not every field.
 - This is a good place to say the user experience starts with one object, not a pile of hand-wired components.
 
-### Slide 18 — What MultiRoleInference generates
+### Slide 21 — What MultiRoleInference generates
 - child InferenceSet for prefill
 - child InferenceSet for decode
 - decode-side llm-d routing sidecar injection
@@ -521,7 +555,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - If possible, visually distinguish “user creates one MRI” from “KAITO synthesizes multiple child objects.”
 - This is one of the strongest “abstraction value” slides in the deck.
 
-### Slide 19 — Why the decode-side sidecar exists
+### Slide 22 — Why the decode-side sidecar exists
 - stable client-facing entrypoint on port 5000
 - internal prefill coordination
 - local decode remains stream owner on vLLM port 5001
@@ -533,7 +567,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Explain why the sidecar placement is deliberate, not accidental.
 - Say that this is one of those details that is easy to hand-wire incorrectly and valuable to standardize.
 
-### Slide 20 — Request flow, part 1
+### Slide 23 — Request flow, part 1
 - request enters gateway
 - gateway targets the InferencePool
 - llm-d Router EPP decides whether prefill work is needed
@@ -546,7 +580,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Keep this slide narrowly focused on entry, decision, and endpoint choice.
 - Mention the P/D-aware scheduling profile and decider only briefly, as proof that the routing logic is specialized.
 
-### Slide 21 — Request flow, part 2
+### Slide 24 — Request flow, part 2
 - decode-side sidecar coordinates prefill
 - prefill builds KV cache
 - KV moves pod-to-pod via NIXL
@@ -559,7 +593,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - This is where the audience should see why the topology is helpful but nontrivial.
 - Make clear that the gateway is not shuttling KV cache; the data path is directly between pods.
 
-### Slide 22 — Why KV transfer matters
+### Slide 25 — Why KV transfer matters
 - P/D is only useful if KV movement is fast and reliable
 - validate the transfer path and side-channel setup early in production
 
@@ -570,12 +604,49 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Explicitly say this is one of the first things to validate in real deployments.
 - If this path is wrong, the theoretical benefit of P/D disappears quickly.
 
-### Slide 23 — Independent autoscaling by role
-- today, KEDA already scales standard InferenceSet replicas well
-- KAITO docs already show cron-based and metric-based autoscaling
+### Slide 26 — Why CPU-era autoscaling breaks for LLM inference
+- traditional Kubernetes autoscaling often assumes CPU or memory are the main pressure signals
+- LLM serving is usually bottlenecked by queue depth, token generation pressure, active KV memory, and prompt/generation mix
+- you can have low CPU and still have terrible TTFT or blocked requests
+- scaling on CPU alone misses the actual user-facing bottleneck
+
+**Suggested visual:** side-by-side: classic web-service HPA signals vs LLM inference signals.
+
+**Speaker note:**
+- This is the key motivation slide for the autoscaler section.
+- Be direct: CPU-era autoscaling logic came from web workloads, not GPU-bound inference systems.
+- A useful line is: “LLM serving fails in ways CPU graphs often do not show.”
+
+### Slide 27 — Why KEDA fits modern inference workloads
+- KEDA is event-driven and works with external metrics and triggers
+- that makes it a much better fit for inference queues and model-serving signals than CPU-only scaling
+- it can support both metric-based scaling and time-based scaling
+- this is the reason KAITO leans on KEDA for inference autoscaling
+
+**Suggested visual:** KEDA in the middle with external metrics / cron triggers feeding scaling decisions.
+
+**Speaker note:**
+- Don’t get too deep into KEDA internals.
+- The audience mainly needs the conceptual shift: from generic resource proxies to workload-aware scaling signals.
+
+### Slide 28 — How the KAITO KEDA scaler works
+- the scaling target is `InferenceSet`
+- the KEDA KAITO scaler can auto-provision a `ScaledObject` from `InferenceSet` annotations
+- it directly scrapes inference metrics from vLLM pods
+- it removes the need for a separate Prometheus dependency for this flow
+
+**Suggested visual:** `InferenceSet` -> annotations -> KEDA KAITO scaler -> `ScaledObject` / HPA -> replicas.
+
+**Speaker note:**
+- This is the implementation slide for autoscaling.
+- Mention the practical point from the docs: the dedicated scaler simplifies configuration and directly uses inference metrics.
+- Good concrete example: `vllm:num_requests_waiting`.
+
+### Slide 29 — Independent autoscaling by role in P/D
 - in P/D, prefill and decode should not share one scaling signal
 - prefill example metric: `vllm:num_requests_waiting`
 - decode example signals: KV/cache pressure or sustained decode saturation
+- the clean UX is for MRI to express per-role intent and map it to child `InferenceSet`s
 
 **Suggested visual:** two side-by-side scaling graphs, plus a small “MRI -> child InferenceSets -> ScaledObjects” flow.
 
@@ -584,7 +655,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Say: “once prefill and decode are separate backends, they should scale like separate backends.”
 - Then add the UX point: users should express that once at the MRI layer, not by hand-authoring multiple ScaledObjects.
 
-### Slide 24 — Why this abstraction helps operators
+### Slide 30 — Why this abstraction helps operators
 - fewer manually coordinated objects
 - fewer implicit contracts around ports / labels / env / targetPort wiring
 - one user-facing MRI object instead of hand-wired child resources
@@ -597,7 +668,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Mention that abstraction is not about hiding power; it is about making the topology operable.
 - This is a good place to say the user should reason about topology and policy, not every plumbing detail.
 
-### Slide 25 — Evaluation results: TTFT
+### Slide 31 — Evaluation results: TTFT
 - colocated vs disaggregated
 - explain which workloads gain most
 
@@ -608,7 +679,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Highlight prompt-length-sensitive gain rather than narrating every series.
 - Resist the urge to explain every line.
 
-### Slide 26 — Evaluation results: throughput
+### Slide 32 — Evaluation results: throughput
 - compare throughput under mixed load
 
 **Suggested visual:** throughput chart with one highlighted region where separation helps.
@@ -618,7 +689,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Tie the result back to earlier “two workloads, one pool” framing.
 - Mixed-load behavior matters more here than peak synthetic throughput.
 
-### Slide 27 — Evaluation results: utilization / efficiency
+### Slide 33 — Evaluation results: utilization / efficiency
 - show GPU utilization or capacity efficiency under asymmetric traffic
 
 **Suggested visual:** utilization bars, efficiency table, or stacked pool usage chart.
@@ -628,7 +699,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Tie this to capacity efficiency and, if the data supports it, fewer total GPUs needed.
 - This is the business/operations payoff slide.
 
-### Slide 28 — When to use P/D, and when not to
+### Slide 34 — When to use P/D, and when not to
 
 Use a real decision matrix here instead of a generic pros/cons list.
 
@@ -652,7 +723,7 @@ Use a real decision matrix here instead of a generic pros/cons list.
 - The audience should leave with one rule of thumb: **use P/D when prefill and decode want different shapes, and KV transfer is cheap enough not to erase the gain.**
 - If you want one practical simplification: **single-node multi-GPU is the easiest place to win first; cross-node P/D raises the bar because the KV path matters much more.**
 
-### Slide 29 — Production lessons
+### Slide 35 — Production lessons
 - startup ordering matters
 - decode-side sidecar placement rules matter
 - service / targetPort / label contracts matter
@@ -665,7 +736,7 @@ Use a real decision matrix here instead of a generic pros/cons list.
 - Make this feel like “here is what we learned the hard way.”
 - This is a strong slide to leave platform engineers with something usable.
 
-### Slide 30 — What’s next for KAITO + llm-d
+### Slide 36 — What’s next for KAITO + llm-d
 - near term: precise prefix-cache routing based on KV events
 - near term: tiered prefix cache across HBM, CPU RAM, and optional filesystem tiers
 - next topology: E/P/D and speculative decoding
@@ -680,10 +751,10 @@ Use a real decision matrix here instead of a generic pros/cons list.
 ### Deck production notes
 - Keep most slides to **one sentence headline + one diagram/chart + 2-3 bullets max**.
 - Treat the numbered slides below as **modular blocks**, not a fixed page count.
-- Slides 16, 20, 21, and 25-27 are the likely visual anchors of the deck.
-- If you want a shorter version, the easiest merges are: 3+4+5, 10+11+12, 20+21, and 25+26+27.
-- If time runs short, Slides 12, 24, and part of 27 can be compressed quickly without losing the main story.
-- If the benchmark section is weak, spend more time on Slides 15-24 and make the architecture story the center of gravity.
+- Slides 19, 23, 24, and 31-33 are the likely visual anchors of the deck.
+- If you want a shorter version, the easiest merges are: 11+12, 13+14+15, 23+24, 26+27+28, and 31+32+33.
+- If time runs short, Slides 15, 30, and part of 33 can be compressed quickly without losing the main story.
+- If the benchmark section is weak, spend more time on Slides 16-30 and make the architecture + autoscaling story the center of gravity.
 
 ---
 
@@ -720,6 +791,8 @@ Do not cut these:
 - why colocated serving is suboptimal
 - why orchestration complexity is the blocker
 - what KAITO MultiRoleInference abstracts away
+- why CPU-era autoscaling is a poor fit for LLM inference
+- why KEDA / KAITO autoscaling is part of the story, not an appendix
 - at least one page of evaluation results
 - explicit guidance on when to use P/D
 
