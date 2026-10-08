@@ -45,7 +45,7 @@ In this talk, we share what comes next for **KAITO** and **llm-d** after a worki
 
 P/D disaggregation improves LLM serving, but it also makes the platform harder to operate. Once requests are split across prefill and decode, teams need better answers for scaling, routing, cache management, and day-2 operations.
 
-This session shares practical lessons from running **KAITO** with **llm-d** on Kubernetes. We show how the design moved from the earlier Gateway API Inference Extension (GWIE)-based path to `llm-d-router`, why KAITO built on a Kubernetes-native routing and scheduling layer, why prefill and decode need different autoscaling policies, how the current sidecar-heavy P/D integration shapes lifecycle and operability tradeoffs, how live cache state can improve request placement, and how tiered prefix-cache routing plus KV offload across HBM, CPU RAM, and optional filesystem tiers changes both cost and performance.
+This session shares practical lessons from running **KAITO** with **llm-d** on Kubernetes. We show how the design moved from the earlier Gateway API Inference Extension (GWIE)-based path to `llm-d-router`, why KAITO built on a Kubernetes-native routing and scheduling layer, why prefill and decode need different autoscaling policies, how the current P/D integration model shapes lifecycle and operability tradeoffs, how live cache state can improve request placement, and how tiered prefix-cache routing plus KV offload across HBM, CPU RAM, and optional filesystem tiers changes both cost and performance.
 
 The goal is not to present a distant roadmap. It is to give platform engineers a clear design framework for the next stage of Kubernetes-native inference: what belongs in the model server, what belongs in the router, and what should become a first-class Kubernetes control-plane concept.
 
@@ -61,7 +61,7 @@ Attendees will learn:
 
 3. **Why KAITO built on llm-d’s routing layer** — Why KAITO favored a Kubernetes-native routing and scheduling layer, and how that choice affects extensibility, control-plane boundaries, and ecosystem fit.
 
-4. **What changed in the routing architecture** — Why the integration moved from the earlier GWIE-based path to `llm-d-router`, what the current sidecar-heavy P/D design gets right, and where it still creates operational friction today.
+4. **What changed in the routing architecture** — Why the integration moved from the earlier GWIE-based path to `llm-d-router`, what the current P/D design gets right, and where it still creates operational friction today.
 
 5. **How precise prefix-aware routing should evolve** — Why rough prefix heuristics are not enough, how KV events enable more accurate routing, and why this matters for TTFT, throughput, and cache locality.
 
@@ -97,7 +97,7 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
    - How the current `llm-d-router`-based design supports separate autoscaling for the two roles
 
 5. **Next Step #2: Routing Architecture Tradeoffs** (4 min)
-   - What the current sidecar-heavy integration gets right
+   - What the current P/D integration model gets right
    - Where it creates lifecycle and operability challenges today
    - Which parts should stay in the current design and which parts should move as router capabilities mature
 
@@ -151,6 +151,6 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
 - This CFP also avoids making E/P/D a primary storyline, to keep the session focused on the stronger platform arc: **platform architecture choice, autoscaling, routing precision, and cache hierarchy**.
 - Suggested visual for the end of the talk: a roadmap slide with **past / current / next** swimlanes:
   - past: earlier GWIE-based path
-  - current: `llm-d-router` with sidecar-heavy P/D integration
+  - current: `llm-d-router` with the current P/D integration model
   - next: role-aware autoscaling, more precise prefix-cache routing, and tiered prefix cache
-- Consistent session framing: the talk should present `llm-d-router` plus sidecar-heavy P/D integration as the **current** design, not as a fully completed future-state architecture.
+- Consistent session framing: the talk should present `llm-d-router` plus the current P/D integration model as the **current** design, not as a fully completed future-state architecture.
