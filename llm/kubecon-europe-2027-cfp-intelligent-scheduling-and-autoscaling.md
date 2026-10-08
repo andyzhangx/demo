@@ -37,7 +37,7 @@ Intermediate
 
 Prefill/decode disaggregation showed that LLM inference on Kubernetes is not one workload. Prefill and decode have different bottlenecks, different scaling signals, and different placement needs. Once that split works, the next challenge is no longer just model serving performance. It is platform design.
 
-In this talk, we share what comes next for **KAITO** and **llm-d** after a working P/D deployment: **how we moved from the earlier Gateway API Inference Extension (GWIE)-based path to `llm-d-router`**, **why KAITO chose to integrate llm-d rather than adopt a more vertically integrated runtime such as Dynamo**, **how to support separate autoscaling for prefill and decode roles**, **how live cache signals can improve request placement**, and **how cache tiers can extend beyond GPU memory**. We focus on practical platform lessons from the current system, which still uses sidecar-heavy integration for P/D today.
+In this talk, we share what comes next for **KAITO** and **llm-d** after a working P/D deployment: **how we moved from the earlier Gateway API Inference Extension (GWIE)-based path to `llm-d-router`**, **why KAITO built on a Kubernetes-native routing and scheduling layer instead of a more vertically integrated runtime path such as Dynamo**, **how to support separate autoscaling for prefill and decode roles**, **how live cache signals can improve request placement**, and **how cache tiers can extend beyond GPU memory**. We focus on practical platform lessons from the current system, which still uses sidecar-heavy integration for P/D today.
 
 ---
 
@@ -45,7 +45,7 @@ In this talk, we share what comes next for **KAITO** and **llm-d** after a worki
 
 P/D disaggregation improves LLM serving, but it also makes the platform harder to operate. Once requests are split across prefill and decode, teams need better answers for scaling, routing, cache management, and day-2 operations.
 
-This session shares practical lessons from running **KAITO** with **llm-d** on Kubernetes. We show how the design moved from the earlier Gateway API Inference Extension (GWIE)-based path to `llm-d-router`, why KAITO chose an external routing/scheduling layer instead of a more vertically integrated runtime such as Dynamo, why prefill and decode need different autoscaling policies, how the current sidecar-heavy P/D integration shapes lifecycle and operability tradeoffs, how live cache state can improve request placement, and why extending cache beyond GPU memory changes both cost and performance.
+This session shares practical lessons from running **KAITO** with **llm-d** on Kubernetes. We show how the design moved from the earlier Gateway API Inference Extension (GWIE)-based path to `llm-d-router`, why KAITO built on a Kubernetes-native routing and scheduling layer instead of a more vertically integrated runtime path such as Dynamo, why prefill and decode need different autoscaling policies, how the current sidecar-heavy P/D integration shapes lifecycle and operability tradeoffs, how live cache state can improve request placement, and why extending cache beyond GPU memory changes both cost and performance.
 
 The goal is not to present a distant roadmap. It is to give platform engineers a clear design framework for the next stage of Kubernetes-native inference: what belongs in the model server, what belongs in the router, and what should become a first-class Kubernetes control-plane concept.
 
@@ -59,7 +59,7 @@ Attendees will learn:
 
 2. **Why autoscaling must become role-aware** — Prefill and decode experience different bottlenecks and queue dynamics, so they cannot be scaled well by a single generic policy. We will show the concrete support model discussed after the move from the earlier GWIE-based path to `llm-d-router`.
 
-3. **Why KAITO integrated llm-d instead of Dynamo** — Why KAITO favored an external, Kubernetes-aligned routing/scheduling layer over a more vertically integrated runtime, and how that choice affects extensibility, control-plane boundaries, and ecosystem fit.
+3. **Why KAITO built on llm-d’s routing layer** — Why KAITO favored a Kubernetes-native routing and scheduling layer over a more vertically integrated runtime path, and how that choice affects extensibility, control-plane boundaries, and ecosystem fit.
 
 4. **What changed in the routing architecture** — Why the integration moved from the earlier GWIE-based path to `llm-d-router`, what the current sidecar-heavy P/D design gets right, and where it still creates operational friction today.
 
@@ -86,10 +86,10 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
    - KV-transfer validation and side-channel pitfalls
    - Service, targetPort, env var, and label contracts
 
-3. **Why KAITO Integrated llm-d Instead of Dynamo** (5 min)
-   - Why KAITO favored a Kubernetes-aligned external routing/scheduling layer
-   - What that preserves at the control-plane boundary versus a more vertically integrated runtime
-   - What that choice enables for platform evolution and ecosystem integration
+3. **Why KAITO Built on llm-d’s Routing Layer** (5 min)
+   - NVIDIA Dynamo is a powerful runtime-level disaggregation path, but more tightly coupled to the NVIDIA stack
+   - llm-d provides a Kubernetes-native routing and scheduling layer that fits KAITO’s control-plane model better
+   - What that choice preserves at the control-plane boundary and enables for ecosystem integration
 
 4. **Next Step #1: Autoscaling for Prefill / Decode** (5 min)
    - Why prefill and decode have different queueing and saturation signals
