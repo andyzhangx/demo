@@ -37,7 +37,7 @@ Intermediate
 
 Prefill/decode disaggregation showed that LLM inference on Kubernetes is not one workload. Prefill and decode have different bottlenecks, different scaling signals, and different placement needs. Once that split works, the next challenge is no longer just model serving performance. It is platform design.
 
-In this talk, we share what comes next for **KAITO** and **llm-d** after a working P/D deployment: **role-aware autoscaling**, **a cleaner router architecture beyond today’s sidecar-heavy integration**, **more accurate request placement using live cache signals**, and **cache tiers that extend beyond GPU memory**. We focus on practical platform lessons: what should live in the runtime, what belongs in the routing layer, and what Kubernetes needs to manage cleanly.
+In this talk, we share what comes next for **KAITO** and **llm-d** after a working P/D deployment: **how we moved from the earlier GWIE-based path to `llm-d-router`**, **how to support separate autoscaling for prefill and decode roles**, **how live cache signals can improve request placement**, and **how cache tiers can extend beyond GPU memory**. We focus on practical platform lessons from the current system, which still uses sidecar-heavy integration for P/D today.
 
 ---
 
@@ -45,7 +45,7 @@ In this talk, we share what comes next for **KAITO** and **llm-d** after a worki
 
 P/D disaggregation improves LLM serving, but it also makes the platform harder to operate. Once requests are split across prefill and decode, teams need better answers for scaling, routing, cache management, and day-2 operations.
 
-This session shares practical lessons from running **KAITO** with **llm-d** on Kubernetes. We show why prefill and decode need different autoscaling policies, why early routing sidecars become an operational burden as the system grows, how live cache state can improve request placement, and why extending cache beyond GPU memory changes both cost and performance.
+This session shares practical lessons from running **KAITO** with **llm-d** on Kubernetes. We show how the design moved from the earlier GWIE-based path to `llm-d-router`, why prefill and decode need different autoscaling policies, how the current sidecar-heavy P/D integration shapes lifecycle and operability tradeoffs, how live cache state can improve request placement, and why extending cache beyond GPU memory changes both cost and performance.
 
 The goal is not to present a distant roadmap. It is to give platform engineers a clear design framework for the next stage of Kubernetes-native inference: what belongs in the model server, what belongs in the router, and what should become a first-class Kubernetes control-plane concept.
 
@@ -57,9 +57,9 @@ Attendees will learn:
 
 1. **Why P/D is only the beginning** — Prefill/decode disaggregation is the first useful distributed inference topology, but not the end state. It creates the foundation for more intelligent routing, autoscaling, cache hierarchy, and larger-scale serving patterns.
 
-2. **Why autoscaling must become role-aware** — Prefill and decode experience different bottlenecks and queue dynamics, so they cannot be scaled well by a single generic policy.
+2. **Why autoscaling must become role-aware** — Prefill and decode experience different bottlenecks and queue dynamics, so they cannot be scaled well by a single generic policy. We will show the concrete support model discussed after the move from the earlier GWIE-based path to `llm-d-router`.
 
-3. **How llm-d router integration should evolve** — Why early sidecar-centric integration is useful, where it creates operational friction, and what a cleaner router migration path looks like.
+3. **What changed in the routing architecture** — Why the integration moved from the earlier GWIE-based path to `llm-d-router`, what the current sidecar-heavy P/D design gets right, and where it still creates operational friction.
 
 4. **How precise prefix-aware routing should evolve** — Why rough prefix heuristics are not enough, how KV events enable more accurate routing, and why this matters for TTFT, throughput, and cache locality.
 
@@ -79,20 +79,20 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
    - Why this is now a platform problem, not just a model-server problem
 
 2. **Production Lessons from Running P/D on Kubernetes** (6 min)
-   - Routing sidecars and decode-side placement rules
+   - The move from the earlier GWIE-based path to `llm-d-router`
+   - Routing sidecars and decode-side placement rules in the current design
    - KV-transfer validation and side-channel pitfalls
    - Service, targetPort, env var, and label contracts
-   - Why per-role autoscaling matters operationally
 
 3. **Next Step #1: Autoscaling for Prefill / Decode** (5 min)
    - Why prefill and decode have different queueing and saturation signals
    - Why a single autoscaler policy is not enough
-   - How KAITO + KEDA-style control loops can evolve for role-aware scaling
+   - How the `llm-d-router`-based design enables separate autoscaling support for the two roles
 
-4. **Next Step #2: llm-d Router Migration Path** (5 min)
-   - What today’s integration gets right
-   - Where sidecar-heavy routing creates lifecycle and operability challenges
-   - What a cleaner migration path looks like as router capabilities mature
+4. **Next Step #2: Routing Architecture Tradeoffs** (5 min)
+   - What the current sidecar-heavy integration gets right
+   - Where it creates lifecycle and operability challenges
+   - What a cleaner future migration path could look like as router capabilities mature
 
 5. **Next Step #3: Precise Prefix-Cache Routing from KV Events** (6 min)
    - Limits of approximate prefix heuristics
@@ -141,8 +141,8 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
 ## Notes
 
 - This CFP intentionally does **not** center speculative decoding, because KAITO already supports it and it is no longer the most important differentiator for this talk.
-- This CFP also avoids making E/P/D a primary storyline, to keep the session focused on the stronger platform arc: **autoscaling, router evolution, routing precision, and cache hierarchy**.
-- Suggested visual for the end of the talk: a roadmap slide with **current / next / later** swimlanes:
-  - current: P/D disaggregation
-  - next: role-aware autoscaling; llm-d router migration; precise prefix-cache routing
-  - later: tiered prefix cache; WEP and deeper cross-node transport optimization
+- This CFP also avoids making E/P/D a primary storyline, to keep the session focused on the stronger platform arc: **autoscaling, routing architecture, routing precision, and cache hierarchy**.
+- Suggested visual for the end of the talk: a roadmap slide with **past / current / next** swimlanes:
+  - past: earlier GWIE-based path
+  - current: `llm-d-router` with sidecar-heavy P/D integration
+  - next: role-aware autoscaling, more precise prefix-cache routing, and tiered prefix cache
