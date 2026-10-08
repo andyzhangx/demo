@@ -4,17 +4,17 @@
 
 ## Title
 
-**Beyond Prefill/Decode: Autoscaling, Router Migration, and the Next Kubernetes-Native Inference Platform**
+**Beyond Prefill/Decode: Intelligent Inference Scheduling and the Next Kubernetes-Native Inference Platform**
 
 <details>
 <summary>Alternate titles considered</summary>
 
-- After P/D: Autoscaling, Router Migration, and Tiered KV Cache for Kubernetes-Native LLM Inference
-- From Prefill/Decode to Production Platform: Routing, Autoscaling, and Scale with KAITO and llm-d
+- After P/D: Intelligent Inference Scheduling, Autoscaling, and Tiered KV Cache for Kubernetes-Native LLM Inference
+- From Prefill/Decode to Production Platform: Scheduling, Autoscaling, and Scale with KAITO and llm-d
 - Beyond One Inference Topology: Evolving Kubernetes-Native LLM Serving with KAITO and llm-d
-- Kubernetes-Native Distributed Inference After P/D: Router Evolution, Cache Tiers, and Platform Design
+- Kubernetes-Native Distributed Inference After P/D: Intelligent Scheduling, Cache Tiers, and Platform Design
 - What Comes After Prefill/Decode? Building Smarter LLM Platforms on Kubernetes
-- From P/D to Platform: Autoscaling, Prefix Routing, and Large-Scale Inference on Kubernetes
+- From P/D to Platform: Intelligent Scheduling, Prefix Routing, and Large-Scale Inference on Kubernetes
 </details>
 
 ---
