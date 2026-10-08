@@ -37,7 +37,7 @@ Intermediate
 
 Prefill/decode disaggregation showed that LLM inference on Kubernetes is not one workload. Prefill and decode have different bottlenecks, different scaling signals, and different placement needs. Once that split works, the next challenge is no longer just model serving performance. It is platform design.
 
-In this talk, we share what comes next for **KAITO** and **llm-d** after a working P/D deployment: **how we moved from the earlier Gateway API Inference Extension (GWIE)-based path to `llm-d-router`**, **why KAITO built on a Kubernetes-native routing and scheduling layer**, **how to support separate autoscaling for prefill and decode roles**, **how live cache signals can improve request placement**, and **how tiered prefix cache can expand the effective cache working set across HBM, CPU RAM, and optional filesystem tiers**. We focus on practical platform lessons from the current system, which still uses sidecar-heavy integration for P/D today.
+In this talk, we share what comes next for **KAITO** and **llm-d** after a working P/D deployment: **how we moved from the earlier Gateway API Inference Extension (GWIE)-based path to `llm-d-router`**, **why KAITO built on a Kubernetes-native routing and scheduling layer**, **how to support separate autoscaling for prefill and decode roles**, **how live cache signals can improve request placement**, and **how tiered prefix cache can expand the effective cache working set across HBM, CPU RAM, and optional filesystem tiers**. We focus on practical platform lessons from running this system on Kubernetes.
 
 ---
 
