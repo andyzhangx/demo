@@ -4,7 +4,7 @@
 
 ## Title
 
-**Beyond Prefill/Decode: Intelligent Scheduling and Autoscaling for LLM Inference on Kubernetes**
+**Beyond Prefill/Decode: Intelligent Scheduling and Autoscaling for LLM Inference on Kubernetes with llm-d**
 
 <details>
 <summary>Alternate titles considered</summary>
