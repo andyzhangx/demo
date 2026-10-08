@@ -59,13 +59,13 @@ Attendees will learn:
 
 2. **Why autoscaling must become role-aware** — Prefill and decode experience different bottlenecks and queue dynamics, so they cannot be scaled well by a single generic policy. We will show the concrete support model discussed after the move from the earlier GWIE-based path to `llm-d-router`.
 
-3. **What changed in the routing architecture** — Why the integration moved from the earlier GWIE-based path to `llm-d-router`, what the current sidecar-heavy P/D design gets right, and where it still creates operational friction.
+3. **What changed in the routing architecture** — Why the integration moved from the earlier GWIE-based path to `llm-d-router`, what the current sidecar-heavy P/D design gets right, and where it still creates operational friction today.
 
 4. **How precise prefix-aware routing should evolve** — Why rough prefix heuristics are not enough, how KV events enable more accurate routing, and why this matters for TTFT, throughput, and cache locality.
 
 5. **Why tiered prefix cache changes serving economics** — How HBM, CPU RAM, and optional filesystem tiers extend the effective cache working set and improve long-context and multi-turn workloads.
 
-6. **Why Kubernetes needs a control-plane abstraction here** — What belongs in the model server, what belongs in llm-d's routing layer, and why KAITO should expose these capabilities as declarative platform APIs instead of hand-built runtime glue.
+6. **Why Kubernetes needs a control-plane abstraction here** — What belongs in the model server, what belongs in llm-d's routing layer, and why KAITO should expose these capabilities as declarative platform APIs instead of hand-built runtime glue over time.
 
 All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inference Extension (K8s SIG), and KEDA (CNCF Graduated).
 
@@ -87,12 +87,12 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
 3. **Next Step #1: Autoscaling for Prefill / Decode** (5 min)
    - Why prefill and decode have different queueing and saturation signals
    - Why a single autoscaler policy is not enough
-   - How the `llm-d-router`-based design enables separate autoscaling support for the two roles
+   - How the current `llm-d-router`-based design supports separate autoscaling for the two roles
 
 4. **Next Step #2: Routing Architecture Tradeoffs** (5 min)
    - What the current sidecar-heavy integration gets right
-   - Where it creates lifecycle and operability challenges
-   - What a cleaner future migration path could look like as router capabilities mature
+   - Where it creates lifecycle and operability challenges today
+   - Which parts should stay in the current design and which parts should move as router capabilities mature
 
 5. **Next Step #3: Precise Prefix-Cache Routing from KV Events** (6 min)
    - Limits of approximate prefix heuristics
@@ -107,7 +107,7 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
 7. **Closing: What the Kubernetes Abstraction Should Look Like** (3 min)
    - KAITO as the control-plane layer
    - llm-d as the routing/scheduling layer
-   - A concrete roadmap from today’s P/D to tomorrow’s larger distributed inference platform
+   - A concrete roadmap from the earlier GWIE-based path, to today’s `llm-d-router` integration, to the next platform improvements around autoscaling, routing precision, and cache tiers
 
 ---
 
@@ -146,3 +146,4 @@ All components are open source: KAITO (CNCF Sandbox), llm-d, Gateway API Inferen
   - past: earlier GWIE-based path
   - current: `llm-d-router` with sidecar-heavy P/D integration
   - next: role-aware autoscaling, more precise prefix-cache routing, and tiered prefix cache
+- Consistent session framing: the talk should present `llm-d-router` plus sidecar-heavy P/D integration as the **current** design, not as a fully completed future-state architecture.
