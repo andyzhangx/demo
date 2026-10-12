@@ -4,6 +4,10 @@
 
 Design a **minimal-change POC** for KAITO to support a CPU model path.
 
+Implemented branch reference:
+
+- `https://github.com/andyzhangx/kaito/tree/andyzhangx/kaito-cpu-poc-minimal-cpu-model`
+
 This POC is intentionally narrow:
 
 - prove KAITO can launch a CPU-served model successfully
@@ -16,6 +20,39 @@ The main question is not "how should long-term CPU support look", but:
 > What is the smallest set of code and config changes needed to make a CPU model run successfully in KAITO?
 
 ---
+
+## PR-Style Summary for the Implemented Branch
+
+### Title
+
+`feat: add minimal CPU custom model POC`
+
+### What this branch changes
+
+This branch adds the smallest practical set of changes needed to prove KAITO can run a CPU-served custom model:
+
+- adds a new CPU-only base image build path:
+  - `docker/presets/models/tfs-cpu/Dockerfile`
+  - `presets/workspace/dependencies/requirements-cpu.txt`
+  - `make docker-build-kaito-base-cpu`
+- adds a CPU custom model example:
+  - `examples/custom-model-integration/custom-model-deployment-cpu.yaml`
+- updates the workspace controller so template-based inference can use `resource.count` directly instead of the GPU/vLLM node estimator
+- adds/updates controller tests for the new template-based target node count behavior
+- documents the CPU-only custom-model POC in `website/docs/custom-model.md`
+
+### Why this is minimal
+
+The branch deliberately avoids introducing:
+
+- new CRD fields
+- runtime profile redesign
+- preset CPU support
+- CPU auto provisioning
+- llama.cpp support
+- benchmark/autoscaling changes
+
+It only proves that a custom Hugging Face model can be launched on a CPU node using the existing custom Workspace path.
 
 ## Scope
 
@@ -160,29 +197,95 @@ This is the only controller behavior change needed for the POC.
 
 ---
 
-## User Flow
+## How to Use This POC
 
-### Step 1: Build a CPU image
+## Prerequisites
 
-Introduce a new build target for a CPU-only base image.
+Before using this POC, assume all of the following are true:
 
-Example target:
+- you are running KAITO in **BYO mode**
+- `disableNodeAutoProvisioning=true`
+- you already have at least one Kubernetes node with enough CPU and memory for the model
+- that node is intended for CPU inference only
+- you are using a Hugging Face model that can run via `transformers` on CPU
+
+## Recommended model for the POC
+
+The example branch uses:
+
+- `microsoft/Phi-3-mini-4k-instruct`
+
+Why this model was chosen:
+
+- it is a recognizable Hugging Face causal LM
+- it works with the existing `transformers`-style serving flow
+- it demonstrates the CPU custom-model path without introducing a new runtime or model format
+
+However, for an actual CPU-only smoke test, you may want to start with a **smaller** model if your node is resource-constrained. The important point for the POC is not model quality, but verifying that the end-to-end CPU serving path works.
+
+## Step 1: Build the CPU image
+
+From the `kaito` repo branch:
 
 ```bash
 make docker-build-kaito-base-cpu REGISTRY=<your-registry> OUTPUT_TYPE=type=docker
 ```
 
-### Step 2: Prepare a CPU node
+If you want to push the image to a registry, use an output mode appropriate for your environment, for example:
 
-User provides a CPU node manually and labels it:
+```bash
+make docker-build-kaito-base-cpu \
+  REGISTRY=<your-registry> \
+  OUTPUT_TYPE=type=registry
+```
+
+The image name introduced by this POC is:
+
+- `kaito-base-cpu`
+
+The Dockerfile is:
+
+- `docker/presets/models/tfs-cpu/Dockerfile`
+
+The CPU-specific Python dependency file is:
+
+- `presets/workspace/dependencies/requirements-cpu.txt`
+
+## Step 2: Prepare a CPU node
+
+Label a CPU node so the Workspace can select it explicitly:
 
 ```bash
 kubectl label node <cpu-node-name> kaito.sh/cpu-inference=true
 ```
 
-### Step 3: Apply a custom Workspace YAML
+This is important because the POC intentionally does **not** implement CPU auto provisioning or CPU-specific scheduler logic beyond label-based selection.
 
-Example shape:
+## Step 3: Use the provided config file
+
+The branch adds this example manifest:
+
+- `examples/custom-model-integration/custom-model-deployment-cpu.yaml`
+
+This is the intended starting point for the POC.
+
+### What this config does
+
+The example manifest:
+
+- creates a `Workspace`
+- sets `kaito.sh/runtime: transformers`
+- requires `resource.count: 1`
+- selects a labeled BYO CPU node with:
+  - `kaito.sh/cpu-inference: "true"`
+- uses the CPU image:
+  - `mcr.microsoft.com/aks/kaito/kaito-base-cpu:0.0.1`
+- launches the existing inference server script:
+  - `/workspace/tfs/inference_api.py`
+- forces CPU execution with:
+  - `--device_map cpu`
+
+### Example config shape
 
 ```yaml
 apiVersion: kaito.sh/v1beta1
@@ -198,10 +301,15 @@ resource:
       kaito.sh/cpu-inference: "true"
 inference:
   template:
+    metadata:
+      labels:
+        apps: custom-llm-cpu
     spec:
       containers:
         - name: custom-llm-cpu
           image: mcr.microsoft.com/aks/kaito/kaito-base-cpu:0.0.1
+          ports:
+            - containerPort: 5000
           resources:
             requests:
               cpu: "8"
@@ -209,27 +317,63 @@ inference:
             limits:
               cpu: "8"
               memory: 32Gi
-          command: ["python3"]
+          command:
+            - "python3"
           args:
-            - /workspace/tfs/inference_api.py
-            - --pipeline
-            - text-generation
-            - --pretrained_model_name_or_path
-            - microsoft/Phi-3-mini-4k-instruct
-            - --torch_dtype
-            - float32
-            - --device_map
-            - cpu
+            - "/workspace/tfs/inference_api.py"
+            - "--pipeline"
+            - "text-generation"
+            - "--allow_remote_files"
+            - "--pretrained_model_name_or_path"
+            - "microsoft/Phi-3-mini-4k-instruct"
+            - "--torch_dtype"
+            - "float32"
+            - "--device_map"
+            - "cpu"
 ```
 
-### Step 4: Validate service health
+## Step 4: Update the image reference if needed
 
-Success means:
+If you built and pushed the image to your own registry, change:
 
-- pod is scheduled onto the labeled CPU node
-- container starts successfully
-- readiness/liveness pass
-- model accepts at least one successful inference request
+```yaml
+image: mcr.microsoft.com/aks/kaito/kaito-base-cpu:0.0.1
+```
+
+to your actual published image, for example:
+
+```yaml
+image: <your-registry>/kaito-base-cpu:v0.0.1
+```
+
+## Step 5: Apply the Workspace
+
+```bash
+kubectl apply -f examples/custom-model-integration/custom-model-deployment-cpu.yaml
+```
+
+Or apply your modified copy if you changed the image or model.
+
+## Step 6: Validate the POC
+
+This POC should be considered successful if all of the following happen:
+
+- the pod lands on the labeled CPU node
+- the container starts successfully
+- readiness and liveness probes pass
+- the model downloads and initializes successfully
+- at least one inference request succeeds
+
+## Why this usage flow matters
+
+This usage pattern matches the exact intent of the branch:
+
+- **no preset path**
+- **no GPU estimator for template-based CPU inference**
+- **no CPU auto provisioning**
+- **no new runtime abstraction**
+
+It is the narrowest possible path that still proves KAITO can run a CPU model.
 
 ---
 
