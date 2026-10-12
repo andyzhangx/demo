@@ -327,6 +327,60 @@ If compatibility matters, keep:
 
 ## Proposed Runtime Support Matrix
 
+## Runtime recommendation for mainstream Hugging Face CPU models
+
+If the question is "which runtime is most suitable today for mainstream, general-purpose CPU models on Hugging Face", the practical answer is:
+
+- **Primary default:** `transformers-cpu`
+- **Specialized CPU LLM path:** `llama-cpp-cpu`
+- **Optional later / not phase-1 default:** `vllm-cpp-cpu`
+
+### Why `transformers-cpu` should be the default
+
+For the majority of mainstream Hugging Face models, the native distribution format is still:
+
+- `transformers`
+- PyTorch / safetensors
+- `AutoModel*` / `pipeline` loading patterns
+
+That means `transformers-cpu` provides the widest coverage with the least friction for:
+
+- text generation with small or medium causal LMs
+- embeddings
+- rerankers
+- classifiers
+- encoder/decoder models
+- most custom/BYO Hugging Face models
+
+This is the best phase-1 default for a minimal KAITO CPU POC because it:
+
+- reuses the existing Hugging Face-style serving path
+- avoids introducing a new model format requirement
+- minimizes controller and image changes
+- matches the most common user expectation for "run a Hugging Face model on CPU"
+
+### Where `llama-cpp-cpu` fits
+
+`llama-cpp-cpu` is highly relevant for:
+
+- GGUF models
+- quantized CPU-first LLM serving
+- cost-sensitive, low-throughput chat/inference scenarios on CPU
+
+However, it should be treated as a **specialized LLM runtime**, not the default answer for mainstream Hugging Face CPU model support, because it usually requires a different model format and does not cover the full breadth of Hugging Face-native model types.
+
+### Where `vllm-cpp-cpu` fits
+
+`vllm-cpp-cpu` is better treated as an optional later exploration. It is not the broadest-coverage or lowest-risk starting point for CPU support, and it should not be the default for a minimal CPU POC.
+
+### Recommended phase-1 default
+
+If phase 1 must optimize for **minimum code change** and **maximum compatibility with mainstream Hugging Face CPU workloads**, the initial default should be:
+
+- **Phase-1 default runtime:** `transformers-cpu`
+- **Optional later addition for quantized LLMs:** `llama-cpp-cpu`
+- **Deferred:** `vllm-cpp-cpu`
+
 ### Phase 1
 
 | Scenario | Support | Recommended runtime |
