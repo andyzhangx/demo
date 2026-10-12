@@ -364,6 +364,181 @@ This POC should be considered successful if all of the following happen:
 - the model downloads and initializes successfully
 - at least one inference request succeeds
 
+## Copy-paste command checklist
+
+The following sequence is intended to be executable with minimal editing. Replace the placeholder values first:
+
+- `<your-registry>`
+- `<cpu-node-name>`
+- `<your-image>`
+
+### 1. Build and push the CPU image
+
+```bash
+cd <path-to-kaito-repo>
+git checkout andyzhangx/kaito-cpu-poc-minimal-cpu-model
+
+make docker-build-kaito-base-cpu \
+  REGISTRY=<your-registry> \
+  OUTPUT_TYPE=type=registry
+```
+
+This produces and pushes an image equivalent to:
+
+```text
+<your-registry>/kaito-base-cpu:v0.0.1
+```
+
+### 2. Label a CPU node
+
+```bash
+kubectl label node <cpu-node-name> kaito.sh/cpu-inference=true --overwrite
+```
+
+### 3. Copy and patch the example manifest
+
+```bash
+cd <path-to-kaito-repo>
+cp examples/custom-model-integration/custom-model-deployment-cpu.yaml /tmp/custom-model-deployment-cpu.yaml
+sed -i 's#mcr.microsoft.com/aks/kaito/kaito-base-cpu:0.0.1#<your-image>#' /tmp/custom-model-deployment-cpu.yaml
+```
+
+Example image value:
+
+```text
+<your-registry>/kaito-base-cpu:v0.0.1
+```
+
+### 4. Apply the Workspace
+
+```bash
+kubectl apply -f /tmp/custom-model-deployment-cpu.yaml
+```
+
+### 5. Watch the pod and Workspace
+
+```bash
+kubectl get workspace workspace-custom-llm-cpu -o yaml
+kubectl get pods -l apps=custom-llm-cpu -w
+```
+
+### 6. Inspect logs if startup takes time
+
+```bash
+kubectl logs -l apps=custom-llm-cpu --tail=200 -f
+```
+
+### 7. Verify the pod landed on the intended CPU node
+
+```bash
+kubectl get pod -l apps=custom-llm-cpu -o wide
+```
+
+### 8. Port-forward and run a smoke request
+
+```bash
+kubectl port-forward pod/$(kubectl get pod -l apps=custom-llm-cpu -o jsonpath='{.items[0].metadata.name}') 5000:5000
+```
+
+In another terminal:
+
+```bash
+curl -s http://127.0.0.1:5000/health
+```
+
+If the server exposes OpenAI-style generation endpoints through the existing script wiring, you can also try a small generation request after the model is ready. The exact request shape depends on the inference script behavior in your branch, so the minimum required smoke check for this POC is the health endpoint plus successful model initialization in logs.
+
+## Common failure modes / troubleshooting
+
+### 1. Pod stays Pending
+
+Typical causes:
+
+- no node has `kaito.sh/cpu-inference=true`
+- the labeled node does not have enough CPU or memory
+- other node selectors / taints block placement
+
+Checks:
+
+```bash
+kubectl get nodes --show-labels | grep kaito.sh/cpu-inference
+kubectl describe pod -l apps=custom-llm-cpu
+```
+
+### 2. Image pull failure
+
+Typical causes:
+
+- the image was not pushed successfully
+- the image reference in the YAML still points at the default MCR placeholder
+- the cluster cannot pull from your private registry
+
+Checks:
+
+```bash
+kubectl describe pod -l apps=custom-llm-cpu
+```
+
+Look for errors such as:
+
+- `ImagePullBackOff`
+- `ErrImagePull`
+- authentication failures against the registry
+
+### 3. Model download hangs or fails
+
+Typical causes:
+
+- outbound network restrictions to Hugging Face
+- gated/private model without token
+- model too large for the available node memory or disk
+
+Checks:
+
+```bash
+kubectl logs -l apps=custom-llm-cpu --tail=200
+```
+
+If a Hugging Face token is required, uncomment and populate the example `HF_TOKEN` env block in the manifest.
+
+### 4. Container starts but health probes fail
+
+Typical causes:
+
+- model initialization is still in progress
+- CPU node is too small, so startup is extremely slow
+- the model choice is too large for the machine
+
+Actions:
+
+- wait longer and continue watching logs
+- try a smaller model first
+- increase CPU and memory requests/limits
+
+### 5. The wrong estimator path is still being used
+
+This POC depends on the controller branch containing the minimal target-node-count logic change.
+
+Make sure you are actually running KAITO built from the branch that contains the CPU POC changes:
+
+- `andyzhangx/kaito-cpu-poc-minimal-cpu-model`
+
+If you are running an older controller image/build, the template-based inference workload may still flow through GPU-oriented logic.
+
+### 6. CPU model works but is too slow
+
+That is expected for this POC.
+
+This design intentionally does **not** optimize for:
+
+- throughput
+- latency
+- quantization strategy
+- autoscaling
+- large-model CPU serving efficiency
+
+If the goal changes from “prove it works” to “make it practical,” that is the point where a follow-up design should evaluate `llama-cpp-cpu`, preset support, or broader runtime/profile work.
+
 ## Why this usage flow matters
 
 This usage pattern matches the exact intent of the branch:
