@@ -539,6 +539,95 @@ This design intentionally does **not** optimize for:
 
 If the goal changes from “prove it works” to “make it practical,” that is the point where a follow-up design should evaluate `llama-cpp-cpu`, preset support, or broader runtime/profile work.
 
+## Expected output / 成功时你会看到什么
+
+如果这个 POC 按预期工作，通常会看到下面这些现象。
+
+### 1. Workspace 已创建且 target node count 合理
+
+```bash
+kubectl get workspace workspace-custom-llm-cpu -o yaml
+```
+
+你应该能看到：
+
+- Workspace 对象存在
+- `status.targetNodeCount` 被设置为你在 manifest 里指定的 `resource.count`
+- 没有因为 GPU estimator 失败而报错
+
+### 2. Pod 被调度到你打了 label 的 CPU 节点
+
+```bash
+kubectl get pod -l apps=custom-llm-cpu -o wide
+```
+
+你应该看到：
+
+- pod 状态从 `Pending` 进入 `Running`
+- `NODE` 列是你打过 `kaito.sh/cpu-inference=true` 的节点
+
+### 3. 容器日志显示模型正在下载和初始化
+
+```bash
+kubectl logs -l apps=custom-llm-cpu --tail=200 -f
+```
+
+常见的成功信号包括：
+
+- Hugging Face 模型开始下载
+- tokenizer / weights 被加载
+- 推理服务启动
+- 没有持续性的 Python traceback 或 OOM 错误
+
+### 4. Readiness / liveness probe 通过
+
+```bash
+kubectl describe pod -l apps=custom-llm-cpu
+```
+
+你应该看到：
+
+- 没有反复的 probe failure 事件
+- container 没有陷入重启循环
+- pod 最终进入 Ready 状态
+
+### 5. health endpoint 返回成功
+
+完成 port-forward 后：
+
+```bash
+curl -s http://127.0.0.1:5000/health
+```
+
+你应该看到：
+
+- 返回成功响应（例如 `200 OK`，或脚本定义的健康检查内容）
+- 不会出现连接拒绝、超时或 5xx
+
+### 6. 至少一次推理请求成功
+
+最小成功标准不是高性能，而是：
+
+- 服务已经起来
+- 模型已经完成初始化
+- 至少有一次推理请求能成功返回
+
+即使吞吐低、延迟高，只要完成这一步，这个 POC 的核心目标就达成了。
+
+### 7. 这是一个“能跑通”的成功，不是“性能达标”的成功
+
+这个 POC 成功时的意义是：
+
+- KAITO 可以通过最小改动跑通 CPU custom model 路径
+- 现有 custom Workspace + transformers serving 路径可以被 CPU image 复用
+- controller 只需要很小的逻辑修正就能避开 GPU estimator 问题
+
+它**不**意味着：
+
+- CPU 性能已经足够好
+- 大模型在 CPU 上已经 practical
+- preset / autoscaling / advanced features 已经支持
+
 ## Why this usage flow matters
 
 This usage pattern matches the exact intent of the branch:
