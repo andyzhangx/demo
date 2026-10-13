@@ -40,18 +40,27 @@ Today, KAITO does not provide a clean first-class experience for CPU-based model
 3. Keep the GPU path stable and backward compatible.
 4. Avoid overloading the existing CUDA `kaito-base` with CPU semantics.
 
-## Non-Goals (Phase 1)
+## Phase 1 Scope
 
-The initial CPU support should **not** try to support all GPU-era features.
+Phase 1 is intentionally narrow.
 
-Phase 1 non-goals:
+### In scope
 
-- MultiRoleInference P/D disaggregation on CPU
+- CPU custom/BYO model support
+- `kaito.sh/runtime: transformers` as the default CPU path
+- optional `kaito.sh/runtime: vllm` on CPU, only if KAITO explicitly supports and validates that path
+- CPU-aware validation, image selection, and scheduling/provisioning
+- the new CPU images needed for those runtime paths
+
+### Out of scope
+
+- MultiRoleInference / P/D disaggregation on CPU
 - speculative decoding on CPU
 - DeepGEMM / CUDA toolkit provisioning on CPU
 - NIXL-based distributed runtime features
-- full parity with all GPU presets
+- full preset parity on CPU
 - aggressive CPU autoscaling optimization
+- new runtime APIs or new CPU runtime families beyond the existing `transformers` / `vllm` choices
 
 ---
 
@@ -137,38 +146,17 @@ That existing annotation is enough for the initial CPU support scope, as long as
 
 ### Why this is enough for Phase 1
 
-The current Phase 1 goal is not to introduce new runtime families such as:
+The immediate goal is to make the existing runtime choices work cleanly for CPU scenarios, not to expand KAITO's runtime surface area.
 
-- GGUF-specific runners
-- other AIKit-aligned CPU backends
-- other CPU-specialized serving stacks beyond the existing `transformers` and `vllm` choices
-
-Instead, the immediate goal is narrower:
-
-- support **CPU custom/BYO models** using the existing `transformers` runtime
-- optionally support a **CPU vLLM path** if KAITO decides to productize that path
-- keep using the current `kaito.sh/runtime` selector rather than adding a second runtime API
-
-In other words, the main problem is not “KAITO lacks a runtime field.”
-The main problem is that KAITO's implementation is still GPU/CUDA-first.
+In other words, the main problem is not “KAITO lacks a runtime field.” The main problem is that KAITO's implementation around `transformers` and `vllm` is still GPU/CUDA-first.
 
 ### Phase 1 supported combinations
-
-Phase 1 should continue to use the existing runtime annotation and add CPU-aware behavior around it.
-
-Supported combinations:
 
 - `kaito.sh/runtime: transformers` + CPU scheduling/resources
 - `kaito.sh/runtime: vllm` + GPU scheduling/resources
 - optionally `kaito.sh/runtime: vllm` + CPU scheduling/resources, if that path is explicitly supported
 
-Phase 1 should **not** introduce:
-
-- `runtimeProfile`
-- a separate `accelerator` API field
-- new CPU-specific runtime family names beyond the existing `transformers` and `vllm` choices
-
-Those can be revisited later if KAITO eventually needs to expose more than the current `transformers` and `vllm` choices.
+Anything beyond that should be treated as later-phase work.
 
 ---
 
@@ -431,23 +419,15 @@ This matters because the current POC proves the minimum-change **transformers on
 
 ### Phase 1 support matrix
 
-| Scenario | Support | Recommended runtime |
+| Scenario | Status | Runtime |
 |---|---|---|
-| CPU custom Hugging Face model | yes | `kaito.sh/runtime: transformers` |
-| CPU embeddings / rerankers / classifiers | yes | `kaito.sh/runtime: transformers` |
+| CPU custom Hugging Face model | supported | `kaito.sh/runtime: transformers` |
+| CPU embeddings / rerankers / classifiers | supported | `kaito.sh/runtime: transformers` |
 | CPU vLLM workspace | optional | `kaito.sh/runtime: vllm` |
-| CPU preset LLM | limited/no | later |
-| CPU MultiRoleInference | no | out of scope |
-| CPU speculative decoding | no | out of scope |
+| CPU presets | later | n/a |
+| CPU MRI / speculative decoding | out of scope | n/a |
 
-### Phase 2 and later
-
-Later phases can expand CPU support more broadly, for example:
-
-- selected CPU presets
-- better CPU benchmark/readiness behavior
-- optional AIKit-aligned CPU runner integration
-- additional CPU-specialized runtime families if KAITO broadens beyond `transformers` and `vllm`
+Later phases can expand beyond this narrow scope.
 
 ---
 
@@ -455,23 +435,7 @@ Later phases can expand CPU support more broadly, for example:
 
 ## 1. API / CRD changes
 
-Phase 1 does **not** need a new `runtimeProfile` field.
-
-It should continue to use the existing runtime selector:
-
-```yaml
-metadata:
-  annotations:
-    kaito.sh/runtime: transformers
-```
-
-or:
-
-```yaml
-metadata:
-  annotations:
-    kaito.sh/runtime: vllm
-```
+Phase 1 does **not** need a new `runtimeProfile` field. It should keep using the existing `kaito.sh/runtime` annotation.
 
 ### Expected code touchpoints
 
@@ -532,35 +496,13 @@ This logic should be centralized, not scattered across custom-model and preset f
 
 ## 5. Benchmark and readiness behavior
 
-The current benchmark flow is vLLM-centric.
-
-### Recommendation
-
-Phase 1:
-
-- disable benchmark by default for CPU runtime paths
-- or implement a lightweight CPU-specific smoke benchmark only
-
-### Why
-
-Because throughput/latency expectations and CLI behavior differ significantly between vLLM CUDA and CPU-serving backends.
+The current benchmark flow is vLLM-centric. For Phase 1, disable benchmark by default for CPU runtime paths, or keep only a lightweight CPU smoke benchmark.
 
 ---
 
 ## 6. Model format support
 
-CPU support should be explicit about model formats.
-
-### Recommended Phase 1 formats
-
-- small/medium Hugging Face transformer models via the transformers CPU path
-- optionally selected models via the CPU vLLM path, if KAITO explicitly supports that runtime
-
-### Not recommended as phase-1 default
-
-- large BF16 GPU-oriented checkpoints directly on CPU
-- CPU support that depends on CUDA-built vLLM image reuse
-- introducing GGUF / `llama.cpp` as part of the initial CPU scope
+Phase 1 should focus on standard Hugging Face model flows on CPU, with optional CPU vLLM support only where KAITO explicitly validates it. Large GPU-oriented checkpoints on CPU, CUDA-image reuse, and broader CPU model-format expansion should stay out of scope for this phase.
 
 ---
 
@@ -582,11 +524,7 @@ CPU support should be explicit about model formats.
 - deploy a custom Hugging Face model on CPU using `kaito.sh/runtime: transformers`
 - optionally deploy a CPU vLLM workspace using `kaito.sh/runtime: vllm`, if that path is intentionally supported
 
-### Explicit exclusions
-
-- no MRI/PD disaggregation
-- no speculative decoding
-- no CPU preset parity
+See **Phase 1 Scope** above for exclusions.
 
 ---
 
@@ -618,7 +556,7 @@ CPU support should be explicit about model formats.
 
 If CPU is added without clear runtime-specific rules, logic can spread across annotations and special cases.
 
-**Mitigation:** keep Phase 1 narrow, centralize effective runtime/image selection, and clearly document the supported CPU runtime combinations.
+**Mitigation:** keep Phase 1 narrow, centralize effective runtime/image selection, and enforce the scoped combinations listed earlier.
 
 ## 2. Image sprawl
 
@@ -655,15 +593,12 @@ CPU inference for LLMs will often be much slower than GPU inference.
 
 The recommended path is:
 
-1. **Do not treat current `kaito-base` as the official CPU solution.**
-2. **Do not rename `kaito-base` to `kaito-base-cuda` in this phase.**
-3. **Add two new CPU images aligned to the two supported CPU runtime paths:**
-   - `kaito-base-tfs-cpu`
-   - `kaito-base-vllm-cpu`
-4. **Make validation + scheduling + provisioning CPU-aware.**
-5. **Ship CPU custom model support first, then add preset support later.**
+1. keep `kaito-base` unchanged for the existing GPU path
+2. add `kaito-base-tfs-cpu` and `kaito-base-vllm-cpu`
+3. make validation, image selection, and scheduling/provisioning CPU-aware
+4. ship the narrow Phase 1 scope first, then expand later
 
-This preserves backward compatibility for the current GPU image name while making the CPU runtime split explicit and maintainable.
+This preserves backward compatibility while making the CPU runtime split explicit and maintainable.
 
 ---
 
@@ -704,6 +639,8 @@ At minimum:
 - node provisioning/scheduling changes
 - benchmark/feature gating changes
 - docs/examples updates
+
+All of these should stay within the narrow Phase 1 scope defined above.
 
 ### What new images need to be built?
 
