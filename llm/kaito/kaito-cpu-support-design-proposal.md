@@ -381,6 +381,57 @@ If phase 1 must optimize for **minimum code change** and **maximum compatibility
 - **Optional later addition for quantized LLMs:** `llama-cpp-cpu`
 - **Deferred:** `vllm-cpp-cpu`
 
+### How the current CPU example maps to these three runtime choices
+
+The example at:
+
+- `examples/custom-model-integration/custom-model-deployment-cpu.yaml`
+
+is best classified as **`transformers-cpu`**, not `llama-cpp-cpu` or `vllm-cpp-cpu`.
+
+Why:
+
+- it sets `kaito.sh/runtime: transformers`
+- it launches a Python entrypoint:
+  - `/workspace/tfs/inference_api.py`
+- it loads a standard Hugging Face model ID directly:
+  - `microsoft/Phi-3-mini-4k-instruct`
+- it forces CPU execution using:
+  - `--device_map cpu`
+- it uses a CPU-oriented KAITO base image rather than a llama.cpp server image
+
+That means the current POC is effectively:
+
+- **backend family:** Hugging Face `transformers`
+- **hardware target:** CPU
+- **practical classification:** `transformers-cpu`
+
+It is **not** `llama-cpp-cpu` because it does not:
+
+- use GGUF
+- use a llama.cpp runtime/server
+- use llama.cpp-style model loading or serving flags
+
+It is **not** `vllm-cpp-cpu` because it does not:
+
+- use a vLLM CPU runner
+- use a vLLM-style serving entrypoint
+- rely on a vLLM-specific CPU execution stack
+
+This is an important distinction for the design proposal:
+
+- the current example proves the **minimum-change `transformers-cpu` path** is viable
+- it does **not** yet prove the `llama-cpp-cpu` path
+- it does **not** yet justify `vllm-cpp-cpu` as the default CPU runtime
+
+### Comparison of the three CPU runtime directions
+
+| Runtime | Best fit | Strengths | Main limitations | Recommended role |
+|---|---|---|---|---|
+| `transformers-cpu` | Mainstream Hugging Face native models | broadest compatibility, no model format conversion, easiest phase-1 integration | slower CPU LLM serving, less optimized for quantized chat models | **phase-1 default** |
+| `llama-cpp-cpu` | GGUF and quantized CPU-first LLMs | practical CPU LLM serving, better fit for quantized low-cost chat inference | narrower model-format coverage, not a generic Hugging Face model runtime | **specialized CPU LLM path** |
+| `vllm-cpp-cpu` | future AIKit/runtime alignment exploration | possible long-term runtime-family consistency | not the lowest-risk starting point, not yet the broadest or simplest CPU path | **optional later** |
+
 ### Phase 1
 
 | Scenario | Support | Recommended runtime |
