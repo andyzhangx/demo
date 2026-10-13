@@ -999,6 +999,33 @@ Using the earlier experimental vLLM CPU benchmark in this document as the baseli
 - So for this exact CPU-only Qwen experiment, the main takeaway is:
   - **both paths work**, but the experimental vLLM CPU path was faster than the transformers CPU rerun for the same prompt shapes.
 
+### Same-model CPU runtime comparison summary (Qwen2.5-0.5B-Instruct)
+
+For the same `Qwen/Qwen2.5-0.5B-Instruct` model, on the same request set and the same general node shape, the current measured result is:
+
+- **vLLM CPU is faster than transformers CPU**
+
+#### Side-by-side summary
+
+| Request type | Runtime | Success rate | Avg latency | P95 latency | Throughput |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Short request | vLLM CPU | 100% | 759.10 ms | 779.63 ms | 27.67 tok/s |
+| Short request | transformers CPU | 100% | 840.24 ms | 899.56 ms | 25.03 tok/s |
+| Long request | vLLM CPU | 100% | 6838.10 ms | 6943.23 ms | 37.44 tok/s |
+| Long request | transformers CPU | 100% | 9354.59 ms | 9482.73 ms | 27.37 tok/s |
+
+#### Comparison takeaway
+
+- For this exact CPU-only Qwen experiment:
+  - both runtimes worked
+  - both were stable
+  - **vLLM CPU delivered lower latency and higher token throughput**
+- The gap was modest on the short-request case, but much more visible on the long-request case.
+- So if the question is simply:
+  - “for the same Qwen CPU model, which runtime performed better in this test?”
+- the answer is:
+  - **vLLM CPU performed better than transformers CPU in this benchmark.**
+
 ### What the original transformers benchmark numbers mean
 
 For `microsoft/Phi-3-mini-4k-instruct` on the original transformers-based CPU POC shape:
