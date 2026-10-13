@@ -628,6 +628,144 @@ curl -s http://127.0.0.1:5000/health
 - 大模型在 CPU 上已经 practical
 - preset / autoscaling / advanced features 已经支持
 
+## Validation and benchmark results
+
+The following results were captured from a real AKS cluster using the CPU POC branch and example Workspace.
+
+### Test environment
+
+- KAITO branch:
+  - `https://github.com/andyzhangx/kaito/tree/andyzhangx/kaito-cpu-poc-minimal-cpu-model`
+- Example manifest:
+  - `examples/custom-model-integration/custom-model-deployment-cpu.yaml`
+- Model:
+  - `microsoft/Phi-3-mini-4k-instruct`
+- Runtime:
+  - `transformers`
+- Model launch args:
+  - `--pipeline text-generation`
+  - `--allow_remote_files`
+  - `--torch_dtype float32`
+  - `--device_map cpu`
+- Pod resources:
+  - `requests.cpu=8`
+  - `limits.cpu=8`
+  - `requests.memory=32Gi`
+  - `limits.memory=32Gi`
+- Actual worker node used by the test:
+  - `Standard_D16s_v5`
+- Observed node allocatable:
+  - `15740m` CPU
+  - `60565128Ki` memory
+
+### Functional validation summary
+
+The CPU POC worked end to end on the AKS cluster.
+
+Observed success signals:
+
+- `Workspace` reached `Ready`
+- `InferenceReady=True`
+- `WorkspaceSucceeded=True`
+- Pod `workspace-custom-llm-cpu-0` reached `Running/Ready`
+- `/health` returned success
+- `/v1/models` returned the served model successfully
+- repeated inference requests returned valid completions
+
+Example `/v1/models` result:
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "microsoft/Phi-3-mini-4k-instruct",
+      "object": "model",
+      "owned_by": "kaito"
+    }
+  ]
+}
+```
+
+### Resource observations during the test
+
+- `kubectl top pod` showed memory around `15786Mi`
+- the server `/metrics` endpoint reported host memory usage around `17.3GB`-`17.5GB` during the long-request test
+- the server `/metrics` endpoint reported CPU load around `51%`-`56%` during the long-request test
+
+This is enough to show the CPU path is viable for a POC, though not optimized.
+
+### Benchmark request shapes
+
+#### Short request
+
+Prompt:
+
+```text
+Give me a one-sentence summary of Azure Kubernetes Service.
+```
+
+Parameters:
+
+- `max_tokens=64`
+- `temperature=0`
+
+Observed token pattern:
+
+- prompt tokens: `17`
+- completion tokens: `39`
+- total tokens: `56`
+
+#### Long request
+
+Prompt:
+
+```text
+Explain what Azure Kubernetes Service is, then list five practical use cases and one caveat for each. Keep it concise but complete.
+```
+
+Parameters:
+
+- `max_tokens=256`
+- `temperature=0`
+
+Observed token pattern:
+
+- prompt tokens: `32`
+- completion tokens: `256`
+- total tokens: `288`
+- finish reason: `length`
+
+### Benchmark summary table
+
+| Request type | Samples | Success rate | Avg latency | P50 | P90 | P95 | P99 | Max | Avg output tokens | Throughput |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Short request | 83 | 100% | 7188.48 ms | 7184.88 ms | 7250.36 ms | 7284.21 ms | 7385.80 ms | 7478.96 ms | 39 | 5.425 tok/s |
+| Short request rerun | 20 | 100% | 7188.04 ms | 7185.40 ms | 7260.79 ms | 7281.07 ms | 7294.51 ms | 7297.87 ms | 39 | 5.426 tok/s |
+| Long request | 20 | 100% | 46244.53 ms | 46233.62 ms | 46496.71 ms | 46647.01 ms | 46702.87 ms | 46716.83 ms | 256 | 5.536 tok/s |
+
+### Direct takeaways
+
+- The CPU POC is **functionally stable** for repeated single-request inference.
+- Short requests are consistently about **7.2s** end to end.
+- A 256-token long response is consistently about **46.2s** end to end.
+- Output throughput stays very stable at roughly **5.4-5.5 tokens/sec**.
+- This is good enough for:
+  - smoke tests
+  - functional validation
+  - demos
+  - low-frequency internal experiments
+- This is **not** a low-latency production serving result.
+
+### What these benchmark numbers mean
+
+For `microsoft/Phi-3-mini-4k-instruct` on this CPU POC shape:
+
+- the path definitely works
+- latency is predictable
+- performance is far below a GPU-backed path
+- the main value of this POC is proof of correctness and integration simplicity, not production-grade CPU serving efficiency
+
 ## Why this usage flow matters
 
 This usage pattern matches the exact intent of the branch:
