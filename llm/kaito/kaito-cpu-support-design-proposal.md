@@ -507,7 +507,7 @@ Phase 1 should focus on standard Hugging Face model flows on CPU and a required 
 
 ## Implementation Plan
 
-## Phase 1: CPU custom model MVP
+## Phase 1: CPU custom/BYO model support
 
 ### Deliverables
 
