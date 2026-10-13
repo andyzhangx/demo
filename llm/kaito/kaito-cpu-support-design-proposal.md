@@ -271,22 +271,51 @@ Use a CPU-oriented image and Python entrypoint for CPU custom models.
 
 ## Image Strategy
 
-## Recommendation: split CPU and CUDA images explicitly
+## Recommendation: keep the current GPU image name and add runtime-specific CPU images
 
 ### Existing image
 
 #### 1. `kaito-base` (current)
-Keep for backward compatibility, but conceptually this is the CUDA-oriented base.
+Keep the existing `kaito-base` image name as-is.
 
-Longer term, it would be cleaner to rename/document it as:
+There is no immediate need to rename it to `kaito-base-cuda`.
 
-- `kaito-base-cuda`
+The important implementation detail is that today's `kaito-base` is already a **combined GPU image**:
 
-while optionally keeping `kaito-base` as a compatibility tag.
+- it carries the Hugging Face / TFS serving path under `/workspace/tfs`
+- it also carries the vLLM serving path under `/workspace/vllm`
+- it installs CUDA-oriented dependencies such as `vllm`, LMCache, NIXL CUDA bindings, Ray, and related GPU runtime helpers
+
+So GPU currently appears to have “only one Dockerfile” not because there is only one runtime, but because both GPU runtime paths are already bundled into the same image.
+
+### Why CPU currently has two Dockerfiles
+
+CPU is different because the two runtime paths are intentionally split:
+
+- `docker/presets/models/tfs-cpu/Dockerfile`
+- `docker/presets/models/vllm-cpu/Dockerfile`
+
+That split exists for practical reasons:
+
+1. **The CPU transformers path is a minimal Python-based image**
+   - starts from a slim Python base
+   - installs a small CPU-focused dependency set
+   - is aimed at custom/BYO Hugging Face model serving
+
+2. **The CPU vLLM path is based on the upstream vLLM CPU image**
+   - starts from `vllm/vllm-openai-cpu`
+   - reuses the upstream CPU vLLM runtime stack directly
+   - is operationally different from the transformers CPU path
+
+3. **Keeping them separate avoids bloating the transformers CPU image**
+   - the minimal transformers CPU image should not be forced to carry the full vLLM CPU runtime stack
+   - the vLLM CPU experiment should not dictate the dependency shape of the generic CPU custom-model image
+
+In other words, CPU has two Dockerfiles today because KAITO is exposing two distinct CPU runtime implementations, while GPU still happens to package both runtime implementations into one combined image.
 
 ### New images required
 
-#### 2. `kaito-base-cpu`
+#### 2. `kaito-base-tfs-cpu`
 
 Purpose:
 
@@ -305,39 +334,28 @@ Suggested contents:
 - no CUDA wheels
 - no NIXL CUDA packages
 
-#### 3. `kaito-runner-llama-cpp-cpu`
+#### 3. `kaito-base-vllm-cpu`
 
 Purpose:
 
-- first-class CPU LLM serving runtime
-- optimized for GGUF / quantized models
+- CPU vLLM runtime image for the experimental or optional vLLM-on-CPU path
+- built around the upstream CPU vLLM runtime stack plus KAITO-specific entrypoints/scripts
 
 Suggested contents:
 
-- llama.cpp CPU build
-- server mode entrypoint
-- OpenAI-compatible API where practical
-- tokenizer/model mount conventions aligned with KAITO
+- upstream `vllm-openai-cpu` base image
+- KAITO vLLM serving scripts
+- CPU-specific environment defaults for the vLLM runtime
 
-#### 4. Optional later: `kaito-runner-vllm-cpp-cpu`
+### Naming strategy
 
-Purpose:
+The image naming scheme for this phase can stay simple:
 
-- align with AIKit CPU runner model if needed
-- not required for phase 1
+- `mcr.microsoft.com/aks/kaito/kaito-base:<tag>` -> existing combined GPU image
+- `mcr.microsoft.com/aks/kaito/kaito-base-tfs-cpu:<tag>` -> transformers CPU image
+- `mcr.microsoft.com/aks/kaito/kaito-base-vllm-cpu:<tag>` -> vLLM CPU image
 
-### Optional tag strategy
-
-A clean image naming scheme could be:
-
-- `mcr.microsoft.com/aks/kaito/kaito-base-cuda:<tag>`
-- `mcr.microsoft.com/aks/kaito/kaito-base-cpu:<tag>`
-- `mcr.microsoft.com/aks/kaito/kaito-runner-llama-cpp-cpu:<tag>`
-- `mcr.microsoft.com/aks/kaito/kaito-runner-vllm-cpp-cpu:<tag>`
-
-If compatibility matters, keep:
-
-- `mcr.microsoft.com/aks/kaito/kaito-base:<tag>` -> same as current CUDA image
+This preserves backward compatibility for the existing GPU path while making the new CPU runtime split explicit.
 
 ---
 
@@ -544,9 +562,9 @@ Currently image assumptions are tied to the current base image and runtime. This
 
 ### Example behavior
 
-- `vllm-cuda` -> `kaito-base` / CUDA runtime image
-- `transformers-cpu` -> `kaito-base-cpu`
-- `llama-cpp-cpu` -> `kaito-runner-llama-cpp-cpu`
+- `kaito.sh/runtime: vllm` on GPU -> `kaito-base`
+- `kaito.sh/runtime: transformers` on CPU -> `kaito-base-tfs-cpu`
+- `kaito.sh/runtime: vllm` on CPU -> `kaito-base-vllm-cpu` (only if KAITO explicitly supports that path)
 
 This logic should be centralized, not scattered across custom-model and preset flows.
 
@@ -591,13 +609,14 @@ CPU support should be explicit about model formats.
 
 ### Recommended Phase 1 formats
 
-- GGUF via `llama.cpp`
-- small/medium Hugging Face transformer models via `transformers-cpu`
+- small/medium Hugging Face transformer models via the transformers CPU path
+- optionally selected models via the CPU vLLM path, if KAITO explicitly supports that runtime
 
 ### Not recommended as phase-1 default
 
 - large BF16 GPU-oriented checkpoints directly on CPU
 - CPU support that depends on CUDA-built vLLM image reuse
+- introducing GGUF / `llama.cpp` as part of the initial CPU scope
 
 ---
 
@@ -607,17 +626,17 @@ CPU support should be explicit about model formats.
 
 ### Deliverables
 
-1. New runtime profile abstraction
-2. New `kaito-base-cpu` image
-3. New `kaito-runner-llama-cpp-cpu` image
+1. Reuse the existing `kaito.sh/runtime` annotation
+2. New `kaito-base-tfs-cpu` image
+3. New `kaito-base-vllm-cpu` image
 4. CPU-aware validation
 5. CPU-aware scheduling/provisioning
 6. CPU custom model examples and docs
 
 ### User-visible scenarios
 
-- deploy a GGUF model on CPU using `llama-cpp-cpu`
-- deploy an embedding/reranker/classifier model on CPU using `transformers-cpu`
+- deploy a custom Hugging Face model on CPU using `kaito.sh/runtime: transformers`
+- optionally deploy a CPU vLLM workspace using `kaito.sh/runtime: vllm`, if that path is intentionally supported
 
 ### Explicit exclusions
 
@@ -653,9 +672,9 @@ CPU support should be explicit about model formats.
 
 ## 1. Feature fragmentation
 
-If CPU is added without a clean runtime profile model, logic will spread across annotations and special cases.
+If CPU is added without clear runtime-specific rules, logic can spread across annotations and special cases.
 
-**Mitigation:** add a first-class runtime profile abstraction early.
+**Mitigation:** keep Phase 1 narrow, centralize effective runtime/image selection, and clearly document the supported CPU runtime combinations.
 
 ## 2. Image sprawl
 
@@ -663,8 +682,10 @@ More images increase release complexity.
 
 **Mitigation:** keep phase 1 minimal:
 
-- one CPU Python base
-- one CPU llama.cpp runtime image
+- preserve the existing combined GPU image as `kaito-base`
+- add only two CPU images aligned to the two currently relevant runtimes
+  - `kaito-base-tfs-cpu`
+  - `kaito-base-vllm-cpu`
 
 ## 3. User confusion around “CPU support”
 
@@ -690,15 +711,15 @@ CPU inference for LLMs will often be much slower than GPU inference.
 
 The recommended path is:
 
-1. **Do not treat current CUDA `kaito-base` as the official CPU solution.**
-2. **Introduce a first-class runtime profile abstraction.**
-3. **Build two new CPU images first:**
-   - `kaito-base-cpu`
-   - `kaito-runner-llama-cpp-cpu`
+1. **Do not treat current `kaito-base` as the official CPU solution.**
+2. **Do not rename `kaito-base` to `kaito-base-cuda` in this phase.**
+3. **Add two new CPU images aligned to the two supported CPU runtime paths:**
+   - `kaito-base-tfs-cpu`
+   - `kaito-base-vllm-cpu`
 4. **Make validation + scheduling + provisioning CPU-aware.**
 5. **Ship CPU custom model support first, then add preset support later.**
 
-This is the smallest design that is technically clean, operationally maintainable, and consistent with KAITO’s long-term architecture.
+This preserves backward compatibility for the current GPU image name while making the CPU runtime split explicit and maintainable.
 
 ---
 
@@ -710,8 +731,8 @@ This is the smallest design that is technically clean, operationally maintainabl
 - reject unsupported CPU+MRI combinations
 
 ### PR 2: CPU image pipeline
-- add `kaito-base-cpu` Dockerfile/build target
-- add `kaito-runner-llama-cpp-cpu` Dockerfile/build target
+- add `kaito-base-tfs-cpu` Dockerfile/build target
+- add `kaito-base-vllm-cpu` Dockerfile/build target
 - document tags and release flow
 
 ### PR 3: controller + scheduling
@@ -744,14 +765,14 @@ At minimum:
 
 Required:
 
-- `kaito-base-cpu`
-- `kaito-runner-llama-cpp-cpu`
+- `kaito-base-tfs-cpu`
+- `kaito-base-vllm-cpu`
 
 Optional later:
 
-- `kaito-runner-vllm-cpp-cpu`
-- explicit `kaito-base-cuda` naming/tagging cleanup
+- additional CPU-specialized runtime images if KAITO broadens beyond the current transformers/vLLM scope
+- possible Dockerfile-source consolidation, while still keeping separate CPU runtime images
 
-### What is the implication of current CUDA-based `kaito-base`?
+### What is the implication of current `kaito-base`?
 
-It confirms that current KAITO inference packaging is GPU-oriented. CPU support should therefore be implemented as a deliberate runtime/image split, not as a soft extension of the existing base image.
+It confirms that current KAITO inference packaging is GPU-oriented and already bundles both GPU runtime paths into one combined image. CPU support should therefore be implemented as an explicit runtime/image split, not as a soft extension of the existing base image.
