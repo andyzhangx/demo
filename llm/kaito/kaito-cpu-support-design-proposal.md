@@ -9,7 +9,6 @@ Based on recent source/doc inspection:
 - KAITO `kaito-base` is currently built from `docker/presets/models/tfs/Dockerfile`.
 - That Dockerfile installs CUDA 12.9 variants of torch/vLLM/LMCache and includes CUDA-specific runtime provisioning logic.
 - KAITO custom model examples still point to `mcr.microsoft.com/aks/kaito/kaito-base:<tag>` and commonly use GPU SKUs.
-- AIKit already contains CPU-oriented runner patterns that may be relevant for later phases.
 - KAITO runtime selection today is mostly expressed as `transformers` vs `vllm`, not as a first-class CPU/GPU execution target.
 
 This means CPU support should be treated as a productized design change, not just “run current image on a CPU node”.
@@ -536,7 +535,6 @@ See **Phase 1 Scope** above for exclusions.
 1. mark selected presets as CPU-compatible
 2. define preset-specific CPU requests/limits, memory sizing, ephemeral-storage sizing, and preferred CPU node classes for CPU-compatible preset models referenced through `inference.preset.name`
 3. improve benchmark/readiness support
-4. add optional AIKit runner alignment if needed
 
 ---
 
