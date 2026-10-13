@@ -766,6 +766,106 @@ For `microsoft/Phi-3-mini-4k-instruct` on this CPU POC shape:
 - performance is far below a GPU-backed path
 - the main value of this POC is proof of correctness and integration simplicity, not production-grade CPU serving efficiency
 
+## How to estimate CPU and memory requirements for a CPU model
+
+There is usually no single official source that tells you the exact CPU and memory requirements for an arbitrary Hugging Face model on CPU. In practice, you estimate the requirements from a combination of model size, dtype, runtime choice, and benchmark results.
+
+### Memory is usually easier to estimate than CPU
+
+Memory sizing starts from the model parameter count.
+
+For example, `microsoft/Phi-3-mini-4k-instruct` is a roughly **3.8B parameter** model.
+
+If the model is loaded with:
+
+- `float32`
+
+then a rough lower-bound estimate for model weights alone is:
+
+- `3.8B * 4 bytes ~= 15.2 GB`
+
+However, that is only the weight footprint. Real runtime memory also includes:
+
+- tokenizer/runtime overhead
+- Python / FastAPI / torch / transformers process overhead
+- temporary buffers
+- KV cache
+- memory fragmentation and safety margin
+
+That is why a practical POC allocation is larger than the raw weight size. In this POC, `32Gi` memory was chosen as a conservative working value rather than a theoretical minimum.
+
+### CPU is usually a performance-sizing question
+
+CPU core requirements are harder to derive from static model metadata.
+
+Unlike memory, CPU sizing depends heavily on:
+
+- runtime choice (`transformers-cpu` vs `llama-cpp-cpu` vs other stacks)
+- dtype / quantization
+- latency target
+- throughput target
+- prompt length and output length
+- thread efficiency, NUMA topology, and memory bandwidth
+
+So CPU is less about “can the model load at all?” and more about “how fast do we want it to respond?”
+
+### What to check when estimating requirements
+
+A practical estimation flow looks like this:
+
+1. Check the model card / README for:
+   - parameter count
+   - model family
+   - dtype hints
+   - special loading requirements
+2. Check the model config and weight format for clues such as:
+   - `torch_dtype`
+   - safetensors size
+   - GGUF vs standard Hugging Face format
+3. Estimate the lower-bound weight memory footprint.
+4. Add runtime overhead and a safety margin.
+5. Pick a conservative starting point for CPU and memory.
+6. Validate with a real benchmark.
+
+### Where this information usually comes from
+
+Useful sources include:
+
+- Hugging Face model card / README
+- `config.json`
+- total weight file size (for example, safetensors size)
+- runtime documentation (`transformers`, `llama.cpp`, vLLM CPU backend, etc.)
+- real cluster or local benchmark results
+
+### How that applied to this POC
+
+For this POC, the starting point was not derived from a single published “required CPU” value. Instead, it came from:
+
+- model scale: approximately `3.8B`
+- dtype: `float32`
+- runtime: Hugging Face `transformers` on CPU
+- a conservative practical sizing choice for initial success
+
+That led to the initial example values of:
+
+- `cpu: 8`
+- `memory: 32Gi`
+
+The benchmark then validated that this shape was workable on a real AKS cluster.
+
+### Practical interpretation
+
+For CPU models, the best sizing guidance usually comes from combining:
+
+- model metadata for the initial estimate
+- runtime-specific knowledge for expected overhead
+- benchmark measurements for the final answer
+
+In other words:
+
+- **memory** is often estimated first from parameter count and dtype
+- **CPU** is usually finalized through performance testing rather than a single static lookup
+
 ## Why this usage flow matters
 
 This usage pattern matches the exact intent of the branch:
