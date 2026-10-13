@@ -757,9 +757,114 @@ Observed token pattern:
   - low-frequency internal experiments
 - This is **not** a low-latency production serving result.
 
-### What these benchmark numbers mean
+## Additional experimental vLLM CPU workspace benchmark
 
-For `microsoft/Phi-3-mini-4k-instruct` on this CPU POC shape:
+The earlier benchmark in this document validates the **minimal transformers-based CPU POC**.
+
+Separately, I also validated an **experimental vLLM CPU custom Workspace** after fixing the LMCache CPU-runtime startup issue on branch:
+
+- `https://github.com/andyzhangx/kaito/tree/andyzhangx/kaito-cpu-poc-minimal-cpu-model`
+
+This is a different setup from the original transformers CPU POC, so the numbers below should be treated as a **separate experiment**, not a direct apples-to-apples comparison.
+
+### Experimental vLLM CPU test environment
+
+- Workspace: `workspace-custom-vllm-cpu`
+- Pod: `workspace-custom-vllm-cpu-0`
+- Image:
+  - `andyzhangx/kaito-vllm-cpu:v0.0.1`
+- Model:
+  - `Qwen/Qwen2.5-0.5B-Instruct`
+- Served model name:
+  - `qwen2.5-0.5b-instruct-cpu`
+- Runtime family:
+  - `vLLM CPU`
+- Pod resources:
+  - `requests.cpu=8`
+  - `limits.cpu=8`
+  - `requests.memory=32Gi`
+  - `limits.memory=32Gi`
+- Worker node:
+  - `Standard_D16s_v5`
+- Readiness during benchmark:
+  - pod `Running`
+  - pod `Ready=true`
+  - `restartCount=0`
+
+### Experimental vLLM CPU test method
+
+- The benchmark was executed from **inside the serving pod** via `kubectl exec` and called `http://127.0.0.1:5000/v1/chat/completions` directly.
+- This avoids `kubectl port-forward` instability and keeps the measurements focused on model-serving latency rather than tunnel behavior.
+- Requests were sent **serially**, one at a time.
+- Temperature was fixed at `0`.
+- Sample count:
+  - short requests: `20`
+  - long requests: `20`
+
+### Experimental vLLM CPU request shapes
+
+#### Short request
+
+Prompt shape:
+
+```text
+In one short sentence, explain what Kubernetes is.
+```
+
+Parameters:
+
+- `max_tokens=32`
+- `temperature=0`
+
+Observed averages:
+
+- prompt tokens: `51.55`
+- completion tokens: `21`
+
+#### Long request
+
+Prompt shape:
+
+```text
+Explain how Kubernetes handles pod creation from API submission to container start, with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations.
+```
+
+Parameters:
+
+- `max_tokens=256`
+- `temperature=0`
+
+Observed averages:
+
+- prompt tokens: `71.55`
+- completion tokens: `256`
+- finish reason: `length`
+
+### Experimental vLLM CPU benchmark summary table
+
+| Request type | Samples | Success rate | Avg latency | P50 | P95 | Min | Max | Avg output tokens | Throughput |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Short request | 20 | 100% | 759.10 ms | 760.55 ms | 779.63 ms | 730.56 ms | 783.69 ms | 21 | 27.67 tok/s |
+| Long request | 20 | 100% | 6838.10 ms | 6828.32 ms | 6943.23 ms | 6749.47 ms | 6958.07 ms | 256 | 37.44 tok/s |
+
+### Experimental vLLM CPU direct takeaways
+
+- The experimental vLLM CPU workspace was **stable** across all 40 measured requests.
+- Short requests completed in about **0.76s** on average.
+- Long requests that generated **256 output tokens** completed in about **6.84s** on average.
+- Output throughput stayed very stable at about:
+  - **27.7 tok/s** for the short-request shape
+  - **37.4 tok/s** for the long-request shape
+- These numbers are materially better than the earlier transformers CPU POC numbers in this document, but the setup is also different:
+  - different runtime family
+  - much smaller model
+  - different prompt/output shapes
+- So the correct conclusion is **not** “CPU is now fast in general”, but rather:
+  - this specific experimental vLLM CPU workspace shape is viable for small-model single-request serving
+
+### What the original transformers benchmark numbers mean
+
+For `microsoft/Phi-3-mini-4k-instruct` on the original transformers-based CPU POC shape:
 
 - the path definitely works
 - latency is predictable
