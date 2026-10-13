@@ -36,7 +36,7 @@ Today, KAITO does not provide a clean first-class experience for CPU-based model
 1. Add **first-class support for CPU-based model inference** in KAITO.
 2. Support both:
    - **CPU custom/BYO models**
-   - selected **CPU presets** in later phases
+   - selected **CPU-compatible preset models referenced through `inference.preset.name`** in later phases
 3. Keep the GPU path stable and backward compatible.
 4. Avoid overloading the existing CUDA `kaito-base` with CPU semantics.
 
@@ -58,7 +58,7 @@ Phase 1 is intentionally narrow.
 - speculative decoding on CPU
 - DeepGEMM / CUDA toolkit provisioning on CPU
 - NIXL-based distributed runtime features
-- full preset parity on CPU
+- full parity for preset-model flows using `inference.preset.name` on CPU
 - aggressive CPU autoscaling optimization
 - new runtime APIs or new CPU runtime families beyond the existing `transformers` / `vllm` choices
 
@@ -424,7 +424,7 @@ This matters because the current POC proves the minimum-change **transformers on
 | CPU custom Hugging Face model | supported | `kaito.sh/runtime: transformers` |
 | CPU embeddings / rerankers / classifiers | supported | `kaito.sh/runtime: transformers` |
 | CPU vLLM workspace | supported | `kaito.sh/runtime: vllm` |
-| CPU presets | later | n/a |
+| CPU-compatible preset models via `inference.preset.name` | later | n/a |
 | CPU MRI / speculative decoding | out of scope | n/a |
 
 Later phases can expand beyond this narrow scope.
