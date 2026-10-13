@@ -116,70 +116,89 @@ Current code paths strongly suggest GPU assumptions in:
 
 ## Recommended Architecture
 
-## 1. Introduce first-class runtime profiles
+## 1. Reuse the existing runtime annotation in Phase 1
 
-Instead of using only a generic runtime annotation, introduce a first-class profile that captures both backend and execution mode.
+For Phase 1, KAITO does **not** need a new `runtimeProfile` field.
 
-### Proposed API shape
+KAITO already has a runtime selector:
 
 ```yaml
-spec:
-  template:
-    inference:
-      runtimeProfile: llama-cpp-cpu
+apiVersion: kaito.sh/v1beta1
+kind: Workspace
+metadata:
+  name: workspace-custom-llm-cpu
+  annotations:
+    kaito.sh/runtime: transformers
 ```
 
-Example supported values:
+That existing annotation is enough for the initial CPU support scope, as long as Phase 1 only supports the runtimes KAITO already understands:
 
-- `vllm-cuda`
-- `transformers-cpu`
-- `llama-cpp-cpu`
-- `vllm-cpp-cpu` (optional later)
+- `transformers`
+- `vllm`
 
-### Why runtimeProfile is better than only `accelerator: cpu|gpu`
+### Why this is enough for Phase 1
 
-Because CPU/GPU alone is not enough. These are materially different:
+The current Phase 1 goal is not to introduce new runtime families such as:
 
-- vLLM on CUDA
-- transformers on CPU
-- llama.cpp on CPU
+- `llama.cpp`
+- GGUF-specific runners
+- `vllm-cpp-cpu`
+- other AIKit-aligned CPU backends
 
-Each needs different images, args, validation rules, and support boundaries.
+Instead, the immediate goal is narrower:
 
-### Backward compatibility
+- support **CPU custom/BYO models** using the existing `transformers` runtime
+- optionally support a **CPU vLLM path** if KAITO decides to productize that path
+- keep using the current `kaito.sh/runtime` selector rather than adding a second runtime API
 
-Existing behavior can be preserved by defaulting:
+In other words, the main problem is not “KAITO lacks a runtime field.”
+The main problem is that KAITO's implementation is still GPU/CUDA-first.
 
-- preset inference today -> `vllm-cuda` (or current effective behavior)
-- custom transformers path today -> current default behavior until explicitly set
+### Phase 1 supported combinations
+
+Phase 1 should continue to use the existing runtime annotation and add CPU-aware behavior around it.
+
+Supported combinations:
+
+- `kaito.sh/runtime: transformers` + CPU scheduling/resources
+- `kaito.sh/runtime: vllm` + GPU scheduling/resources
+- optionally `kaito.sh/runtime: vllm` + CPU scheduling/resources, if that path is explicitly supported
+
+Phase 1 should **not** introduce:
+
+- `runtimeProfile`
+- a separate `accelerator` API field
+- new runtime family names like `llama-cpp-cpu`
+
+Those can be revisited later if KAITO eventually needs to expose more than the current `transformers` and `vllm` choices.
 
 ---
 
-## 2. Add accelerator-aware validation
+## 2. Add CPU-aware validation around existing runtimes
 
-Admission and validation must reject invalid combinations early.
+Admission and validation must reject invalid combinations early, but this can be done without adding a new runtime field.
 
 ### Examples of validation rules
 
 Allowed:
 
-- `runtimeProfile: transformers-cpu` on CPU nodes
-- `runtimeProfile: llama-cpp-cpu` on CPU nodes
-- `runtimeProfile: vllm-cuda` on GPU nodes
+- `kaito.sh/runtime: transformers` on CPU nodes
+- `kaito.sh/runtime: vllm` on GPU nodes
+- optionally `kaito.sh/runtime: vllm` on CPU nodes, if that path is intentionally supported
 
 Rejected:
 
-- `runtimeProfile: vllm-cuda` with no GPU resource or CPU-only scheduling
-- `runtimeProfile: llama-cpp-cpu` with `nvidia.com/gpu` resource requests
-- `runtimeProfile: transformers-cpu` combined with GPU-only preset assumptions
+- `kaito.sh/runtime: vllm` with GPU-only assumptions but no usable GPU resources
+- `kaito.sh/runtime: transformers` combined with GPU-only preset assumptions
 - MultiRoleInference with CPU runtime in Phase 1
+- any CPU path that still depends on unsupported GPU/CUDA-only features
 
 ### Files likely needing changes
 
 - `api/v1beta1/*validation*.go`
 - `api/v1alpha1/workspace_validation.go`
 - `pkg/inferenceset/inferenceset_custom_model.go`
-- helper functions that compute effective runtime and supported features
+- helper functions that compute the effective runtime and supported feature set
 
 ---
 
@@ -197,10 +216,10 @@ For CPU workloads, KAITO should:
 
 ### Provisioning updates
 
-The node provisioner should branch by runtime profile class:
+The node provisioner should branch by the effective runtime plus hardware requirements:
 
-- **GPU profiles** -> existing GPU SKU and GPU node logic
-- **CPU profiles** -> general-purpose or memory-optimized CPU node logic
+- **GPU workloads** -> existing GPU SKU and GPU node logic
+- **CPU workloads** -> general-purpose or memory-optimized CPU node logic
 
 ### BYO mode updates
 
@@ -208,8 +227,8 @@ In BYO mode, automatic instance/node selection must stop assuming a ready GPU no
 
 Instead:
 
-- CPU runtime profiles should accept CPU nodes that satisfy CPU/memory requirements
-- GPU runtime profiles continue to require GPU nodes
+- CPU runtime selections should accept CPU nodes that satisfy CPU/memory requirements
+- GPU runtime selections should continue to require GPU nodes
 
 ### Likely code areas
 
@@ -222,27 +241,24 @@ Instead:
 
 ## 4. Add backend-specific pod generation
 
-Pod generation must branch by runtime profile rather than trying to run everything through the same image and startup pattern.
+Pod generation must branch by the effective runtime and whether the workload is CPU- or GPU-targeted, rather than trying to run everything through the same image and startup pattern.
 
-### For `vllm-cuda`
-Keep current behavior.
+### For `kaito.sh/runtime: vllm`
+Keep the current GPU path, and add a separate CPU-serving variant only if KAITO explicitly decides to support a CPU vLLM path.
 
-### For `transformers-cpu`
-Use a CPU-oriented image and Python entrypoint.
+### For `kaito.sh/runtime: transformers`
+Use a CPU-oriented image and Python entrypoint for CPU custom models.
 
-### For `llama-cpp-cpu`
-Use a CPU-specific image and dedicated serving entrypoint.
+### Pod-spec differences in Phase 1
 
-### Pod-spec differences by runtime profile
-
-| Area | vLLM CUDA | transformers CPU | llama.cpp CPU |
-|---|---|---|---|
-| image | CUDA base | CPU base | llama.cpp CPU image |
-| GPU request | yes | no | no |
-| node selection | GPU nodes | CPU nodes | CPU nodes |
-| entrypoint | vLLM scripts | Python/FastAPI | llama.cpp server |
-| benchmark path | existing vLLM path | optional/minimal | optional/minimal |
-| P/D support | yes | no (phase 1) | no (phase 1) |
+| Area | `kaito.sh/runtime: vllm` on GPU | `kaito.sh/runtime: transformers` on CPU |
+|---|---|---|
+| image | CUDA/GPU base image | CPU base image |
+| GPU request | yes | no |
+| node selection | GPU nodes | CPU nodes |
+| entrypoint | vLLM scripts | Python/FastAPI |
+| benchmark path | existing vLLM path | optional/minimal |
+| P/D support | yes | no (phase 1) |
 
 ### Likely code areas
 
