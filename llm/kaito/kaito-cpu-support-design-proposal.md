@@ -48,6 +48,7 @@ Phase 1 is intentionally narrow.
 - CPU custom/BYO model support
 - `kaito.sh/runtime: transformers` as the default CPU path
 - `kaito.sh/runtime: vllm` on CPU as a required Phase 1 path
+- a dedicated feature gate, proposed as `enableCPUInference`, to control rollout of the Phase 1 CPU path
 - CPU-aware validation, image selection, and scheduling/provisioning
 - the new CPU images needed for those runtime paths
 
@@ -436,8 +437,11 @@ Later phases can expand beyond this narrow scope.
 
 Phase 1 has no API/CRD changes. It should keep using the existing `kaito.sh/runtime` annotation.
 
+The rollout should be controlled by a feature gate, proposed as `enableCPUInference`, which should default to **false** until the CPU path is validated.
+
 ### Expected code touchpoints
 
+- feature gate plumbing
 - validation/defaulting logic around supported CPU combinations
 - docs/examples
 - controller logic that interprets runtime plus hardware/resource intent
@@ -587,8 +591,9 @@ The recommended path is:
 
 1. keep `kaito-base` unchanged for the existing GPU path
 2. add `kaito-base-tfs-cpu` and `kaito-base-vllm-cpu`
-3. make validation, image selection, and scheduling/provisioning CPU-aware
-4. ship the narrow Phase 1 scope first, then expand later
+3. gate the new CPU path behind `enableCPUInference`
+4. make validation, image selection, and scheduling/provisioning CPU-aware
+5. ship the narrow Phase 1 scope first, then expand later
 
 This preserves backward compatibility while making the CPU runtime split explicit and maintainable.
 
@@ -598,6 +603,7 @@ This preserves backward compatibility while making the CPU runtime split explici
 
 ### PR 1: validation + runtime handling
 - keep using `kaito.sh/runtime`
+- add the `enableCPUInference` feature gate (default off)
 - add validation rules for supported CPU runtime combinations
 - reject unsupported CPU+MRI combinations
 
@@ -626,6 +632,7 @@ This preserves backward compatibility while making the CPU runtime split explici
 At minimum:
 
 - runtime handling based on the existing `kaito.sh/runtime` annotation
+- the `enableCPUInference` feature gate
 - validation changes
 - controller/workspace generation changes
 - node provisioning/scheduling changes
