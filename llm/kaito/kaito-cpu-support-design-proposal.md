@@ -528,20 +528,13 @@ See **Phase 1 Scope** above for exclusions.
 
 ---
 
-## Phase 2: Selected CPU preset support
-
-### Deliverables
-
-1. mark selected presets as CPU-compatible
-2. define preset-specific CPU requests/limits, memory sizing, ephemeral-storage sizing, and preferred CPU node classes for CPU-compatible preset models referenced through `inference.preset.name`
-3. improve benchmark/readiness support
-
----
-
-## Phase 3: Advanced optimization
+## Later Phases: Preset Support and Optimization
 
 ### Possible future work
 
+- mark selected CPU-compatible preset models referenced through `inference.preset.name`
+- define preset-specific CPU requests/limits, memory sizing, ephemeral-storage sizing, and preferred CPU node classes
+- improve benchmark/readiness support
 - CPU autoscaling tuning
 - profile-specific performance presets
 - local weight cache optimization for CPU nodes
