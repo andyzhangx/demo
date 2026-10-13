@@ -48,7 +48,7 @@ Phase 1 is intentionally narrow.
 
 - CPU custom/BYO model support
 - `kaito.sh/runtime: transformers` as the default CPU path
-- optional `kaito.sh/runtime: vllm` on CPU, only if KAITO explicitly supports and validates that path
+- `kaito.sh/runtime: vllm` on CPU as a required Phase 1 path
 - CPU-aware validation, image selection, and scheduling/provisioning
 - the new CPU images needed for those runtime paths
 
@@ -154,7 +154,7 @@ In other words, the main problem is not “KAITO lacks a runtime field.” The m
 
 - `kaito.sh/runtime: transformers` + CPU scheduling/resources
 - `kaito.sh/runtime: vllm` + GPU scheduling/resources
-- optionally `kaito.sh/runtime: vllm` + CPU scheduling/resources, if that path is explicitly supported
+- `kaito.sh/runtime: vllm` + CPU scheduling/resources
 
 Anything beyond that should be treated as later-phase work.
 
@@ -170,7 +170,7 @@ Allowed:
 
 - `kaito.sh/runtime: transformers` on CPU nodes
 - `kaito.sh/runtime: vllm` on GPU nodes
-- optionally `kaito.sh/runtime: vllm` on CPU nodes, if that path is intentionally supported
+- `kaito.sh/runtime: vllm` on CPU nodes
 
 Rejected:
 
@@ -230,7 +230,7 @@ Instead:
 Pod generation must branch by the effective runtime and whether the workload is CPU- or GPU-targeted, rather than trying to run everything through the same image and startup pattern.
 
 ### For `kaito.sh/runtime: vllm`
-Keep the current GPU path, and add a separate CPU-serving variant only if KAITO explicitly decides to support a CPU vLLM path.
+Keep the current GPU path and support a separate CPU-serving variant as part of Phase 1.
 
 ### For `kaito.sh/runtime: transformers`
 Use a CPU-oriented image and Python entrypoint for CPU custom models.
@@ -359,7 +359,7 @@ For this proposal, Phase 1 should stay tightly aligned to the runtime choices KA
 If Phase 1 optimizes for **minimum code change** and **maximum compatibility with mainstream Hugging Face CPU workloads**, the default CPU path should be:
 
 - **default CPU runtime:** `kaito.sh/runtime: transformers`
-- **optional CPU runtime:** `kaito.sh/runtime: vllm`, only if KAITO explicitly supports that path
+- **required additional CPU runtime:** `kaito.sh/runtime: vllm`
 
 ### Why `transformers` should be the default CPU path
 
@@ -386,7 +386,7 @@ It is also the best match for the current CPU POC because it:
 
 ### Where CPU vLLM fits in Phase 1
 
-CPU vLLM is worth supporting only as an explicit, bounded path.
+CPU vLLM should be supported in Phase 1 as an explicit, bounded path.
 
 It should not become the default CPU assumption, because:
 
@@ -397,7 +397,7 @@ It should not become the default CPU assumption, because:
 So the right Phase 1 stance is:
 
 - `transformers` on CPU is the baseline supported path
-- `vllm` on CPU is optional and should be treated as a separately validated path
+- `vllm` on CPU is also required, and should be treated as a separately validated path
 
 ### How the current CPU example should be classified
 
@@ -423,7 +423,7 @@ This matters because the current POC proves the minimum-change **transformers on
 |---|---|---|
 | CPU custom Hugging Face model | supported | `kaito.sh/runtime: transformers` |
 | CPU embeddings / rerankers / classifiers | supported | `kaito.sh/runtime: transformers` |
-| CPU vLLM workspace | optional | `kaito.sh/runtime: vllm` |
+| CPU vLLM workspace | supported | `kaito.sh/runtime: vllm` |
 | CPU presets | later | n/a |
 | CPU MRI / speculative decoding | out of scope | n/a |
 
@@ -472,7 +472,7 @@ Currently image assumptions are tied to the current base image and runtime. This
 
 - `kaito.sh/runtime: vllm` on GPU -> `kaito-base`
 - `kaito.sh/runtime: transformers` on CPU -> `kaito-base-tfs-cpu`
-- `kaito.sh/runtime: vllm` on CPU -> `kaito-base-vllm-cpu` (only if KAITO explicitly supports that path)
+- `kaito.sh/runtime: vllm` on CPU -> `kaito-base-vllm-cpu`
 
 This logic should be centralized, not scattered across custom-model and preset flows.
 
@@ -502,7 +502,7 @@ The current benchmark flow is vLLM-centric. For Phase 1, disable benchmark by de
 
 ## 6. Model format support
 
-Phase 1 should focus on standard Hugging Face model flows on CPU, with optional CPU vLLM support only where KAITO explicitly validates it. Large GPU-oriented checkpoints on CPU, CUDA-image reuse, and broader CPU model-format expansion should stay out of scope for this phase.
+Phase 1 should focus on standard Hugging Face model flows on CPU and a required CPU vLLM path, with both validated explicitly by KAITO. Large GPU-oriented checkpoints on CPU, CUDA-image reuse, and broader CPU model-format expansion should stay out of scope for this phase.
 
 ---
 
@@ -522,7 +522,7 @@ Phase 1 should focus on standard Hugging Face model flows on CPU, with optional 
 ### User-visible scenarios
 
 - deploy a custom Hugging Face model on CPU using `kaito.sh/runtime: transformers`
-- optionally deploy a CPU vLLM workspace using `kaito.sh/runtime: vllm`, if that path is intentionally supported
+- deploy a CPU vLLM workspace using `kaito.sh/runtime: vllm`
 
 See **Phase 1 Scope** above for exclusions.
 
@@ -621,7 +621,7 @@ This preserves backward compatibility while making the CPU runtime split explici
 
 ### PR 4: docs + examples
 - CPU custom model example
-- optional CPU vLLM example if that path is intentionally supported
+- CPU vLLM example
 - transformers CPU embedding example
 - support matrix doc
 
