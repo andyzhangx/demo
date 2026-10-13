@@ -1007,12 +1007,14 @@ For the same `Qwen/Qwen2.5-0.5B-Instruct` model, on the same request set and the
 
 #### Side-by-side summary
 
-| Request type | Runtime | Success rate | Avg latency | P95 latency | Throughput |
-| --- | --- | ---: | ---: | ---: | ---: |
-| Short request | vLLM CPU | 100% | 759.10 ms | 779.63 ms | 27.67 tok/s |
-| Short request | transformers CPU | 100% | 840.24 ms | 899.56 ms | 25.03 tok/s |
-| Long request | vLLM CPU | 100% | 6838.10 ms | 6943.23 ms | 37.44 tok/s |
-| Long request | transformers CPU | 100% | 9354.59 ms | 9482.73 ms | 27.37 tok/s |
+Percentage deltas below use **transformers CPU as the baseline** for the same request type.
+
+| Request type | Runtime | Success rate | Avg latency | Latency vs transformers baseline | P95 latency | Throughput | Throughput vs transformers baseline |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Short request | vLLM CPU | 100% | 759.10 ms | -10.69% | 779.63 ms | 27.67 tok/s | +10.55% |
+| Short request | transformers CPU | 100% | 840.24 ms | baseline (0%) | 899.56 ms | 25.03 tok/s | baseline (0%) |
+| Long request | vLLM CPU | 100% | 6838.10 ms | -26.90% | 6943.23 ms | 37.44 tok/s | +36.79% |
+| Long request | transformers CPU | 100% | 9354.59 ms | baseline (0%) | 9482.73 ms | 27.37 tok/s | baseline (0%) |
 
 #### Comparison takeaway
 
