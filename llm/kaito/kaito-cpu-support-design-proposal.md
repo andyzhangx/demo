@@ -373,6 +373,26 @@ However, it should be treated as a **specialized LLM runtime**, not the default 
 
 `vllm-cpp-cpu` is better treated as an optional later exploration. It is not the broadest-coverage or lowest-risk starting point for CPU support, and it should not be the default for a minimal CPU POC.
 
+### Why `vllm-cpp-cpu` is not the default phase-1 choice
+
+There is real upstream work around **vLLM CPU backend** support, and it is worth tracking. However, it is still not the best default starting point for KAITO CPU support.
+
+Reasons:
+
+- **vLLM is historically GPU-first.** The upstream documentation explicitly notes that the CPU backend differs significantly from the GPU backend because the vLLM architecture was originally optimized for GPU use.
+- **CPU deployment usually requires more tuning.** The documented CPU path depends more heavily on host-level tuning such as OpenMP thread binding, NUMA awareness, allocator choice, and in some environments Intel Extension for PyTorch (IPEX).
+- **It is not the broadest compatibility path.** For mainstream Hugging Face-native models, `transformers-cpu` is still the more natural fit because it works directly with standard `AutoModel*` / safetensors / pipeline loading patterns.
+- **It is not the most CPU-native LLM path either.** For quantized GGUF-style chat serving, `llama-cpp-cpu` is usually a more obvious CPU-specialized choice than a vLLM-family CPU stack.
+- **The operational story is still evolving.** Upstream CPU backend docs, tuning guidance, and issue history all suggest an actively improving path rather than a universally default, low-friction production baseline.
+
+In practice, that means `vllm-cpp-cpu` is better treated as:
+
+- a future exploration path
+- a possible AIKit/runtime-family alignment path
+- an optional optimization path for selected scenarios
+
+rather than the default answer for phase-1 KAITO CPU support.
+
 ### Recommended phase-1 default
 
 If phase 1 must optimize for **minimum code change** and **maximum compatibility with mainstream Hugging Face CPU workloads**, the initial default should be:
