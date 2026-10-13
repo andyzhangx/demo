@@ -517,7 +517,8 @@ Phase 1 should focus on standard Hugging Face model flows on CPU and a required 
 3. New `kaito-base-vllm-cpu` image
 4. CPU-aware validation
 5. CPU-aware scheduling/provisioning
-6. CPU custom model examples and docs
+6. define the minimum CPU sizing/defaulting rules required for CPU-aware scheduling/provisioning
+7. CPU custom model examples and docs
 
 ### User-visible scenarios
 
@@ -533,7 +534,7 @@ See **Phase 1 Scope** above for exclusions.
 ### Deliverables
 
 1. mark selected presets as CPU-compatible
-2. define default CPU requests/limits, memory sizing, ephemeral-storage sizing, and preferred CPU node classes for CPU-compatible preset models referenced through `inference.preset.name`
+2. define preset-specific CPU requests/limits, memory sizing, ephemeral-storage sizing, and preferred CPU node classes for CPU-compatible preset models referenced through `inference.preset.name`
 3. improve benchmark/readiness support
 4. add optional AIKit runner alignment if needed
 
