@@ -434,7 +434,7 @@ Later phases can expand beyond this narrow scope.
 
 ## 1. API / CRD changes
 
-Phase 1 does **not** need a new `runtimeProfile` field. It should keep using the existing `kaito.sh/runtime` annotation.
+Phase 1 has no API/CRD changes. It should keep using the existing `kaito.sh/runtime` annotation.
 
 ### Expected code touchpoints
 
