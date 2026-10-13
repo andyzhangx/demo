@@ -9,9 +9,7 @@ Based on recent source/doc inspection:
 - KAITO `kaito-base` is currently built from `docker/presets/models/tfs/Dockerfile`.
 - That Dockerfile installs CUDA 12.9 variants of torch/vLLM/LMCache and includes CUDA-specific runtime provisioning logic.
 - KAITO custom model examples still point to `mcr.microsoft.com/aks/kaito/kaito-base:<tag>` and commonly use GPU SKUs.
-- AIKit already contains CPU runners such as:
-  - `runners/llama-cpp-cpu.yaml`
-  - `runners/vllm-cpp-cpu.yaml`
+- AIKit already contains CPU-oriented runner patterns that may be relevant for later phases.
 - KAITO runtime selection today is mostly expressed as `transformers` vs `vllm`, not as a first-class CPU/GPU execution target.
 
 This means CPU support should be treated as a productized design change, not just “run current image on a CPU node”.
@@ -26,8 +24,8 @@ Today, KAITO does not provide a clean first-class experience for CPU-based model
    - current `kaito-base` is optimized for GPU runtimes, not CPU-only deployment.
 2. **Controller and provisioning flow are GPU-centric**
    - node selection, instance type assumptions, and sizing logic largely assume GPU workloads.
-3. **Runtime abstraction is incomplete for CPU**
-   - CPU-friendly backends such as `llama.cpp` are not modeled as first-class KAITO runtime choices.
+3. **Runtime handling is still GPU-first for CPU scenarios**
+   - even though KAITO already distinguishes `transformers` vs `vllm`, the surrounding validation, image selection, and scheduling behavior are still biased toward GPU execution.
 4. **Advanced inference features are GPU-driven**
    - speculative decoding, P/D disaggregation, NIXL, DeepGEMM, and some benchmark paths are tightly coupled to vLLM/CUDA.
 
@@ -97,11 +95,12 @@ Current runtime selection in KAITO is centered on:
 - `huggingface/transformers`
 - `vllm`
 
-This is insufficient for CPU because a realistic CPU path often wants:
+For Phase 1, this runtime model is sufficient in principle because KAITO already distinguishes:
 
-- `llama.cpp` for GGUF/quantized CPU inference
-- CPU transformers for embeddings/rerankers/classifiers
-- optionally `vllm-cpp-cpu` or AIKit-aligned CPU runners later
+- `transformers`
+- `vllm`
+
+The gap is not the lack of another runtime name. The gap is that the current implementation around these runtimes is still largely GPU/CUDA-first. CPU support therefore needs CPU-aware validation, image selection, and scheduling around the existing runtime choices.
 
 ### Control plane / scheduling layer
 Current code paths strongly suggest GPU assumptions in:
@@ -140,10 +139,9 @@ That existing annotation is enough for the initial CPU support scope, as long as
 
 The current Phase 1 goal is not to introduce new runtime families such as:
 
-- `llama.cpp`
 - GGUF-specific runners
-- `vllm-cpp-cpu`
 - other AIKit-aligned CPU backends
+- other CPU-specialized serving stacks beyond the existing `transformers` and `vllm` choices
 
 Instead, the immediate goal is narrower:
 
@@ -168,7 +166,7 @@ Phase 1 should **not** introduce:
 
 - `runtimeProfile`
 - a separate `accelerator` API field
-- new runtime family names like `llama-cpp-cpu`
+- new CPU-specific runtime family names beyond the existing `transformers` and `vllm` choices
 
 Those can be revisited later if KAITO eventually needs to expose more than the current `transformers` and `vllm` choices.
 
@@ -361,15 +359,21 @@ This preserves backward compatibility for the existing GPU path while making the
 
 ## Proposed Runtime Support Matrix
 
-## Runtime recommendation for mainstream Hugging Face CPU models
+## Runtime recommendation for Phase 1 CPU support
 
-If the question is "which runtime is most suitable today for mainstream, general-purpose CPU models on Hugging Face", the practical answer is:
+For this proposal, Phase 1 should stay tightly aligned to the runtime choices KAITO already exposes today:
 
-- **Primary default:** `transformers-cpu`
-- **Specialized CPU LLM path:** `llama-cpp-cpu`
-- **Optional later / not phase-1 default:** `vllm-cpp-cpu`
+- `kaito.sh/runtime: transformers`
+- `kaito.sh/runtime: vllm`
 
-### Why `transformers-cpu` should be the default
+### Recommended Phase 1 default
+
+If Phase 1 optimizes for **minimum code change** and **maximum compatibility with mainstream Hugging Face CPU workloads**, the default CPU path should be:
+
+- **default CPU runtime:** `kaito.sh/runtime: transformers`
+- **optional CPU runtime:** `kaito.sh/runtime: vllm`, only if KAITO explicitly supports that path
+
+### Why `transformers` should be the default CPU path
 
 For the majority of mainstream Hugging Face models, the native distribution format is still:
 
@@ -377,133 +381,73 @@ For the majority of mainstream Hugging Face models, the native distribution form
 - PyTorch / safetensors
 - `AutoModel*` / `pipeline` loading patterns
 
-That means `transformers-cpu` provides the widest coverage with the least friction for:
+That makes the existing `transformers` runtime the broadest and lowest-friction starting point for CPU support, especially for:
 
 - text generation with small or medium causal LMs
 - embeddings
 - rerankers
 - classifiers
-- encoder/decoder models
 - most custom/BYO Hugging Face models
 
-This is the best phase-1 default for a minimal KAITO CPU POC because it:
+It is also the best match for the current CPU POC because it:
 
 - reuses the existing Hugging Face-style serving path
 - avoids introducing a new model format requirement
 - minimizes controller and image changes
 - matches the most common user expectation for "run a Hugging Face model on CPU"
 
-### Where `llama-cpp-cpu` fits
+### Where CPU vLLM fits in Phase 1
 
-`llama-cpp-cpu` is highly relevant for:
+CPU vLLM is worth supporting only as an explicit, bounded path.
 
-- GGUF models
-- quantized CPU-first LLM serving
-- cost-sensitive, low-throughput chat/inference scenarios on CPU
+It should not become the default CPU assumption, because:
 
-However, it should be treated as a **specialized LLM runtime**, not the default answer for mainstream Hugging Face CPU model support, because it usually requires a different model format and does not cover the full breadth of Hugging Face-native model types.
+- vLLM remains historically GPU-first
+- the CPU path has different operational and tuning characteristics than the GPU path
+- not every CPU use case needs the extra runtime-specific complexity
 
-### Where `vllm-cpp-cpu` fits
+So the right Phase 1 stance is:
 
-`vllm-cpp-cpu` is better treated as an optional later exploration. It is not the broadest-coverage or lowest-risk starting point for CPU support, and it should not be the default for a minimal CPU POC.
+- `transformers` on CPU is the baseline supported path
+- `vllm` on CPU is optional and should be treated as a separately validated path
 
-### Why `vllm-cpp-cpu` is not the default phase-1 choice
-
-There is real upstream work around **vLLM CPU backend** support, and it is worth tracking. However, it is still not the best default starting point for KAITO CPU support.
-
-Reasons:
-
-- **vLLM is historically GPU-first.** The upstream documentation explicitly notes that the CPU backend differs significantly from the GPU backend because the vLLM architecture was originally optimized for GPU use.
-- **CPU deployment usually requires more tuning.** The documented CPU path depends more heavily on host-level tuning such as OpenMP thread binding, NUMA awareness, allocator choice, and in some environments Intel Extension for PyTorch (IPEX).
-- **It is not the broadest compatibility path.** For mainstream Hugging Face-native models, `transformers-cpu` is still the more natural fit because it works directly with standard `AutoModel*` / safetensors / pipeline loading patterns.
-- **It is not the most CPU-native LLM path either.** For quantized GGUF-style chat serving, `llama-cpp-cpu` is usually a more obvious CPU-specialized choice than a vLLM-family CPU stack.
-- **The operational story is still evolving.** Upstream CPU backend docs, tuning guidance, and issue history all suggest an actively improving path rather than a universally default, low-friction production baseline.
-
-In practice, that means `vllm-cpp-cpu` is better treated as:
-
-- a future exploration path
-- a possible AIKit/runtime-family alignment path
-- an optional optimization path for selected scenarios
-
-rather than the default answer for phase-1 KAITO CPU support.
-
-### Recommended phase-1 default
-
-If phase 1 must optimize for **minimum code change** and **maximum compatibility with mainstream Hugging Face CPU workloads**, the initial default should be:
-
-- **Phase-1 default runtime:** `transformers-cpu`
-- **Optional later addition for quantized LLMs:** `llama-cpp-cpu`
-- **Deferred:** `vllm-cpp-cpu`
-
-### How the current CPU example maps to these three runtime choices
+### How the current CPU example should be classified
 
 The example at:
 
 - `examples/custom-model-integration/custom-model-deployment-cpu.yaml`
 
-is best classified as **`transformers-cpu`**, not `llama-cpp-cpu` or `vllm-cpp-cpu`.
+is a CPU **transformers** example.
 
 Why:
 
 - it sets `kaito.sh/runtime: transformers`
-- it launches a Python entrypoint:
-  - `/workspace/tfs/inference_api.py`
-- it loads a standard Hugging Face model ID directly:
-  - `microsoft/Phi-3-mini-4k-instruct`
-- it forces CPU execution using:
-  - `--device_map cpu`
-- it uses a CPU-oriented KAITO base image rather than a llama.cpp server image
+- it launches `/workspace/tfs/inference_api.py`
+- it loads a standard Hugging Face model ID directly
+- it forces CPU execution with `--device_map cpu`
+- it uses the transformers-oriented CPU image path
 
-That means the current POC is effectively:
+This matters because the current POC proves the minimum-change **transformers on CPU** flow is viable. It does not by itself prove that additional CPU runtime families are needed in Phase 1.
 
-- **backend family:** Hugging Face `transformers`
-- **hardware target:** CPU
-- **practical classification:** `transformers-cpu`
-
-It is **not** `llama-cpp-cpu` because it does not:
-
-- use GGUF
-- use a llama.cpp runtime/server
-- use llama.cpp-style model loading or serving flags
-
-It is **not** `vllm-cpp-cpu` because it does not:
-
-- use a vLLM CPU runner
-- use a vLLM-style serving entrypoint
-- rely on a vLLM-specific CPU execution stack
-
-This is an important distinction for the design proposal:
-
-- the current example proves the **minimum-change `transformers-cpu` path** is viable
-- it does **not** yet prove the `llama-cpp-cpu` path
-- it does **not** yet justify `vllm-cpp-cpu` as the default CPU runtime
-
-### Comparison of the three CPU runtime directions
-
-| Runtime | Performance on CPU | Compatibility | Implementation complexity in KAITO | Best-fit scenarios | Recommended role |
-|---|---|---|---|---|---|
-| `transformers-cpu` | Usually the slowest for CPU LLM generation, but predictable and acceptable for small/medium models, smoke tests, embeddings, rerankers, and classifiers | **Highest** for mainstream Hugging Face-native models (`AutoModel*`, safetensors, pipeline-based loading) | **Lowest**. Reuses the existing Hugging Face-style custom model path with the fewest new abstractions | mainstream Hugging Face CPU models, BYO custom models, embeddings, rerankers, classifiers, minimal-change POCs | **phase-1 default** |
-| `llama-cpp-cpu` | Usually the **best practical CPU LLM path**, especially for GGUF and quantized chat/instruct models on cost-sensitive hardware | **Medium**. Strong for GGUF/quantized LLMs, but not a generic runtime for the full Hugging Face model spectrum | **Medium**. Requires a dedicated runtime image, llama.cpp serving path, and format-aware validation/model handling | quantized CPU-first LLM serving, GGUF chat models, low-throughput cost-sensitive CPU deployments | **specialized CPU LLM path** |
-| `vllm-cpp-cpu` | Potentially better than plain `transformers-cpu` in some serving-oriented cases, but usually more tuning-sensitive and less obviously practical than `llama-cpp-cpu` for CPU-first LLM workloads | **Medium to low** as a phase-1 default. It is not the broadest Hugging Face path and not the most CPU-native quantized path either | **Highest** among the three for a phase-1 rollout. It introduces more runtime-specific operational, tuning, and validation complexity | future AIKit/runtime-family alignment, deeper serving-framework experiments, selected optimized CPU serving scenarios | **optional later** |
-
-### Phase 1
+### Phase 1 support matrix
 
 | Scenario | Support | Recommended runtime |
 |---|---|---|
-| CPU custom LLM (GGUF) | yes | `llama-cpp-cpu` |
-| CPU custom transformers model | yes | `transformers-cpu` |
-| CPU embeddings / rerankers / classifier | yes | `transformers-cpu` |
+| CPU custom Hugging Face model | yes | `kaito.sh/runtime: transformers` |
+| CPU embeddings / rerankers / classifiers | yes | `kaito.sh/runtime: transformers` |
+| CPU vLLM workspace | optional | `kaito.sh/runtime: vllm` |
 | CPU preset LLM | limited/no | later |
 | CPU MultiRoleInference | no | out of scope |
 | CPU speculative decoding | no | out of scope |
 
-### Phase 2
+### Phase 2 and later
 
-| Scenario | Support | Recommended runtime |
-|---|---|---|
-| selected CPU presets | yes | `llama-cpp-cpu` or `transformers-cpu` |
-| AIKit-aligned CPU runner integration | optional | `vllm-cpp-cpu` |
-| CPU benchmark improvements | optional | profile-specific |
+Later phases can expand CPU support more broadly, for example:
+
+- selected CPU presets
+- better CPU benchmark/readiness behavior
+- optional AIKit-aligned CPU runner integration
+- additional CPU-specialized runtime families if KAITO broadens beyond `transformers` and `vllm`
 
 ---
 
@@ -511,46 +455,46 @@ This is an important distinction for the design proposal:
 
 ## 1. API / CRD changes
 
-Add a new runtime profile field or equivalent structured configuration.
+Phase 1 does **not** need a new `runtimeProfile` field.
 
-### Example
+It should continue to use the existing runtime selector:
 
 ```yaml
-spec:
-  template:
-    inference:
-      runtimeProfile: transformers-cpu
+metadata:
+  annotations:
+    kaito.sh/runtime: transformers
 ```
 
-Possible implementation choices:
+or:
 
-- add a new field to the inference template schema
-- or add a new KAITO annotation first as an incremental step
-
-Recommendation: **prefer a structured field** over long-term annotation hacks.
+```yaml
+metadata:
+  annotations:
+    kaito.sh/runtime: vllm
+```
 
 ### Expected code touchpoints
 
-- API types under `api/v1beta1`
-- CRD generation
+- validation/defaulting logic around supported CPU combinations
 - docs/examples
-- defaulting/validation logic
+- controller logic that interprets runtime plus hardware/resource intent
 
 ---
 
 ## 2. Runtime resolution logic
 
-Current logic resolves runtime mostly between vLLM and transformers. That should be extended to resolve:
+Current logic already resolves runtime mostly between vLLM and transformers. For CPU support, that logic should be extended to resolve:
 
-- effective runtime profile
-- execution target characteristics
+- effective runtime (`transformers` or `vllm`)
+- execution target characteristics (CPU vs GPU)
 - supported feature set
+- image selection
 
 ### Add helpers like
 
-- `GetWorkspaceRuntimeProfile(...)`
-- `IsCPURuntimeProfile(...)`
-- `IsGPURuntimeProfile(...)`
+- `GetWorkspaceRuntime(...)`
+- `IsCPURuntime(...)`
+- `RequiresGPU(...)`
 - `SupportsMultiRoleInference(...)`
 - `SupportsSpeculativeDecoding(...)`
 
@@ -594,8 +538,8 @@ The current benchmark flow is vLLM-centric.
 
 Phase 1:
 
-- disable benchmark by default for CPU runtime profiles
-- or implement a lightweight CPU profile-specific smoke benchmark only
+- disable benchmark by default for CPU runtime paths
+- or implement a lightweight CPU-specific smoke benchmark only
 
 ### Why
 
@@ -725,9 +669,9 @@ This preserves backward compatibility for the current GPU image name while makin
 
 ## Proposed Initial Work Breakdown
 
-### PR 1: API + validation
-- add runtime profile field / annotation
-- add validation rules
+### PR 1: validation + runtime handling
+- keep using `kaito.sh/runtime`
+- add validation rules for supported CPU runtime combinations
 - reject unsupported CPU+MRI combinations
 
 ### PR 2: CPU image pipeline
@@ -742,7 +686,7 @@ This preserves backward compatibility for the current GPU image name while makin
 
 ### PR 4: docs + examples
 - CPU custom model example
-- GGUF example
+- optional CPU vLLM example if that path is intentionally supported
 - transformers CPU embedding example
 - support matrix doc
 
@@ -754,7 +698,7 @@ This preserves backward compatibility for the current GPU image name while makin
 
 At minimum:
 
-- API/runtime profile support
+- runtime handling based on the existing `kaito.sh/runtime` annotation
 - validation changes
 - controller/workspace generation changes
 - node provisioning/scheduling changes
