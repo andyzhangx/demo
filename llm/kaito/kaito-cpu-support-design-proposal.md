@@ -446,11 +446,11 @@ This is an important distinction for the design proposal:
 
 ### Comparison of the three CPU runtime directions
 
-| Runtime | Best fit | Strengths | Main limitations | Recommended role |
-|---|---|---|---|---|
-| `transformers-cpu` | Mainstream Hugging Face native models | broadest compatibility, no model format conversion, easiest phase-1 integration | slower CPU LLM serving, less optimized for quantized chat models | **phase-1 default** |
-| `llama-cpp-cpu` | GGUF and quantized CPU-first LLMs | practical CPU LLM serving, better fit for quantized low-cost chat inference | narrower model-format coverage, not a generic Hugging Face model runtime | **specialized CPU LLM path** |
-| `vllm-cpp-cpu` | future AIKit/runtime alignment exploration | possible long-term runtime-family consistency | not the lowest-risk starting point, not yet the broadest or simplest CPU path | **optional later** |
+| Runtime | Performance on CPU | Compatibility | Implementation complexity in KAITO | Best-fit scenarios | Recommended role |
+|---|---|---|---|---|---|
+| `transformers-cpu` | Usually the slowest for CPU LLM generation, but predictable and acceptable for small/medium models, smoke tests, embeddings, rerankers, and classifiers | **Highest** for mainstream Hugging Face-native models (`AutoModel*`, safetensors, pipeline-based loading) | **Lowest**. Reuses the existing Hugging Face-style custom model path with the fewest new abstractions | mainstream Hugging Face CPU models, BYO custom models, embeddings, rerankers, classifiers, minimal-change POCs | **phase-1 default** |
+| `llama-cpp-cpu` | Usually the **best practical CPU LLM path**, especially for GGUF and quantized chat/instruct models on cost-sensitive hardware | **Medium**. Strong for GGUF/quantized LLMs, but not a generic runtime for the full Hugging Face model spectrum | **Medium**. Requires a dedicated runtime image, llama.cpp serving path, and format-aware validation/model handling | quantized CPU-first LLM serving, GGUF chat models, low-throughput cost-sensitive CPU deployments | **specialized CPU LLM path** |
+| `vllm-cpp-cpu` | Potentially better than plain `transformers-cpu` in some serving-oriented cases, but usually more tuning-sensitive and less obviously practical than `llama-cpp-cpu` for CPU-first LLM workloads | **Medium to low** as a phase-1 default. It is not the broadest Hugging Face path and not the most CPU-native quantized path either | **Highest** among the three for a phase-1 rollout. It introduces more runtime-specific operational, tuning, and validation complexity | future AIKit/runtime-family alignment, deeper serving-framework experiments, selected optimized CPU serving scenarios | **optional later** |
 
 ### Phase 1
 
