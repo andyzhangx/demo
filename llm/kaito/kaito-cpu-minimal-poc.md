@@ -862,6 +862,143 @@ Observed averages:
 - So the correct conclusion is **not** “CPU is now fast in general”, but rather:
   - this specific experimental vLLM CPU workspace shape is viable for small-model single-request serving
 
+## Additional transformers CPU rerun on the same Qwen request set
+
+After the experimental vLLM CPU benchmark above, the same live workspace name was reconfigured from the vLLM CPU path to the **transformers CPU** path, still using:
+
+- `Qwen/Qwen2.5-0.5B-Instruct`
+
+The point of this rerun was simple:
+
+- first record the earlier **20 short + 20 long** vLLM CPU results as a baseline
+- then run the **same request shapes** again on the transformers CPU path
+- compare the two results directly
+
+### Transformers CPU rerun environment
+
+- Workspace:
+  - `workspace-custom-vllm-cpu`
+- Runtime annotation:
+  - `transformers`
+- Image:
+  - `andyzhangx/kaito-base-cpu:v0.0.1`
+- Model:
+  - `Qwen/Qwen2.5-0.5B-Instruct`
+- Worker node:
+  - `Standard_D16s_v5`
+- Pod resources:
+  - `requests.cpu=8`
+  - `limits.cpu=8`
+  - `requests.memory=32Gi`
+  - `limits.memory=32Gi`
+- Pod state during benchmark:
+  - `Running`
+  - `Ready=true`
+  - `restartCount=0`
+
+### Transformers CPU rerun method
+
+- The benchmark was executed from **inside the serving pod** via `kubectl exec`.
+- The endpoint was:
+  - `http://127.0.0.1:5000/v1/chat/completions`
+- Requests were sent **serially**, one at a time.
+- Temperature was fixed at `0`.
+- Sample count:
+  - short requests: `20`
+  - long requests: `20`
+
+### Stored request content
+
+The exact 40 test request texts used for the Qwen rerun are stored under:
+
+- `llm/kaito/kaito-cpu-minimal-poc-test/`
+
+Files:
+
+- `llm/kaito/kaito-cpu-minimal-poc-test/short-requests.txt`
+- `llm/kaito/kaito-cpu-minimal-poc-test/long-requests.txt`
+
+### Request shapes reused for the rerun
+
+#### Short request
+
+Prompt shape:
+
+```text
+Request N: In one short sentence, explain what Kubernetes is. Keep it under 20 words.
+```
+
+Parameters:
+
+- `max_tokens=32`
+- `temperature=0`
+
+Observed averages:
+
+- prompt tokens: `51.55`
+- completion tokens: `21`
+
+#### Long request
+
+Prompt shape:
+
+```text
+Request N: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations.
+```
+
+Parameters:
+
+- `max_tokens=256`
+- `temperature=0`
+
+Observed averages:
+
+- prompt tokens: `71.55`
+- completion tokens: `256`
+- finish reason: `length`
+
+### Transformers CPU rerun summary table
+
+| Request type | Samples | Success rate | Avg latency | P50 | P95 | Min | Max | Avg output tokens | Throughput |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Short request | 20 | 100% | 840.24 ms | 826.64 ms | 899.56 ms | 805.56 ms | 953.81 ms | 21 | 25.03 tok/s |
+| Long request | 20 | 100% | 9354.59 ms | 9352.76 ms | 9482.73 ms | 9164.59 ms | 9533.48 ms | 256 | 27.37 tok/s |
+
+### Baseline vs rerun comparison
+
+Using the earlier experimental vLLM CPU benchmark in this document as the baseline:
+
+#### Short request
+
+- avg latency:
+  - baseline vLLM CPU: `759.10 ms`
+  - rerun transformers CPU: `840.24 ms`
+  - delta: `+10.69%`
+- avg throughput:
+  - baseline vLLM CPU: `27.67 tok/s`
+  - rerun transformers CPU: `25.03 tok/s`
+  - delta: `-9.54%`
+
+#### Long request
+
+- avg latency:
+  - baseline vLLM CPU: `6838.10 ms`
+  - rerun transformers CPU: `9354.59 ms`
+  - delta: `+36.80%`
+- avg throughput:
+  - baseline vLLM CPU: `37.44 tok/s`
+  - rerun transformers CPU: `27.37 tok/s`
+  - delta: `-26.90%`
+
+### Transformers CPU rerun direct takeaways
+
+- The rerun was **stable**: all **40/40** requests succeeded.
+- The transformers CPU path for Qwen is now not only functional but also directly benchmarked.
+- On this request set, the transformers CPU path is slower than the earlier experimental vLLM CPU path for the same workspace/model family.
+- The difference is especially visible on the long-request case, where the average latency increased by about **36.8%** and throughput dropped by about **26.9%**.
+- So for this exact CPU-only Qwen experiment, the main takeaway is:
+  - **both paths work**, but the experimental vLLM CPU path was faster than the transformers CPU rerun for the same prompt shapes.
+
 ### What the original transformers benchmark numbers mean
 
 For `microsoft/Phi-3-mini-4k-instruct` on the original transformers-based CPU POC shape:
