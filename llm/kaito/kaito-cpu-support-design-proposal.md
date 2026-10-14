@@ -46,6 +46,7 @@ Phase 1 is intentionally narrow.
 ### In scope
 
 - CPU custom/BYO model support
+- Phase 1 support for both Workspace and InferenceSet
 - single-node CPU inference only in Phase 1
 - `kaito.sh/runtime: transformers` as the default CPU path
 - `kaito.sh/runtime: vllm` on CPU as a required Phase 1 path
@@ -527,8 +528,9 @@ Phase 1 should focus on standard Hugging Face model flows on CPU and a required 
 
 ### User-visible scenarios
 
-- deploy a custom Hugging Face model on CPU using `kaito.sh/runtime: transformers`
-- deploy a CPU vLLM workspace using `kaito.sh/runtime: vllm`
+- deploy a CPU Workspace using `kaito.sh/runtime: transformers`
+- deploy a CPU Workspace using `kaito.sh/runtime: vllm`
+- deploy a CPU InferenceSet using the supported Phase 1 CPU runtime paths
 
 See **Phase 1 Scope** above for exclusions.
 
@@ -636,7 +638,7 @@ At minimum:
 - runtime handling based on the existing `kaito.sh/runtime` annotation
 - the `enableCPUInference` feature gate
 - validation changes
-- controller/workspace generation changes
+- controller/workspace and controller/inferenceset generation changes
 - node provisioning/scheduling changes
 - benchmark/feature gating changes
 - docs/examples updates
