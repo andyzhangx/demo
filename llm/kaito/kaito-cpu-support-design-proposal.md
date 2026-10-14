@@ -152,6 +152,12 @@ The immediate goal is to make the existing runtime choices work cleanly for CPU 
 
 Phase 1 is single-node CPU inference only.
 
+Reference point for current upstream/runtime expectations:
+
+- `transformers` CPU should be treated as single-node only in Phase 1. KAITO's current custom-model documentation already states that multi-node inference is not supported for custom models.
+- `vllm` CPU should also be treated as single-node only in Phase 1. Current upstream vLLM CPU documentation clearly supports basic CPU inferencing/serving, but its distributed-serving guidance is centered on multi-GPU and multi-node multi-GPU deployments rather than a clearly documented, mature CPU multi-node serving path.
+- As a result, CPU multi-node inference should not be assumed to be either supported or the default performance path for Phase 1. Even where it may become technically possible later, it is more likely to serve capacity/fit constraints than to improve single-request latency.
+
 In other words, the main problem is not “KAITO lacks a runtime field.” The main problem is that KAITO's implementation around `transformers` and `vllm` is still GPU/CUDA-first.
 
 ### Phase 1 supported combinations
@@ -578,6 +584,8 @@ Users may assume every existing preset and advanced KAITO feature now works on C
 ## 4. Performance expectations
 
 CPU inference for LLMs will often be much slower than GPU inference.
+
+CPU multi-node inference also should not be assumed to outperform single-node CPU inference by default; in many cases, cross-node coordination overhead can make it a capacity-oriented fallback rather than a latency win.
 
 **Mitigation:** position CPU support primarily for:
 
