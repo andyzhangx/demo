@@ -48,8 +48,8 @@ Phase 1 is intentionally narrow.
 - CPU custom/BYO model support
 - Phase 1 support for both Workspace and InferenceSet
 - single-node CPU inference only in Phase 1
-- `kaito.sh/runtime: transformers` as the default CPU path
-- `kaito.sh/runtime: vllm` on CPU as a required Phase 1 path
+- `kaito.sh/runtime: vllm` as the default CPU path
+- `kaito.sh/runtime: transformers` on CPU as a required Phase 1 path
 - a dedicated feature gate, proposed as `enableCPUInference`, to control rollout of the Phase 1 CPU path
 - CPU-aware validation, image selection, and scheduling/provisioning
 - the new CPU images needed for those runtime paths
@@ -366,48 +366,35 @@ For this proposal, Phase 1 should stay tightly aligned to the runtime choices KA
 
 ### Recommended Phase 1 default
 
-If Phase 1 optimizes for **minimum code change** and **maximum compatibility with mainstream Hugging Face CPU workloads**, the default CPU path should be:
+If Phase 1 optimizes for **minimum code change** and alignment with **KAITO's existing runtime default behavior**, the default CPU path should be:
 
-- **default CPU runtime:** `kaito.sh/runtime: transformers`
-- **required additional CPU runtime:** `kaito.sh/runtime: vllm`
+- **default CPU runtime:** `kaito.sh/runtime: vllm`
+- **required additional CPU runtime:** `kaito.sh/runtime: transformers`
 
-### Why `transformers` should be the default CPU path
+### Why `vllm` should be the default CPU path
 
-For the majority of mainstream Hugging Face models, the native distribution format is still:
+KAITO already defaults to `vllm` when the runtime annotation is omitted and the `vLLM` feature gate is enabled. Keeping that default for Phase 1 CPU support has two practical benefits:
 
-- `transformers`
-- PyTorch / safetensors
-- `AutoModel*` / `pipeline` loading patterns
+- preserves current KAITO runtime resolution behavior
+- minimizes controller/defaulting churn while adding CPU-aware validation and provisioning
+- avoids introducing a CPU-only defaulting rule that diverges from the rest of the product
 
-That makes the existing `transformers` runtime the broadest and lowest-friction starting point for CPU support, especially for:
+Using `vllm` as the default does **not** mean Phase 1 is limited to vLLM-only CPU scenarios. It means the CPU path continues to inherit KAITO's existing runtime default unless users explicitly select `transformers`.
 
-- text generation with small or medium causal LMs
-- embeddings
-- rerankers
-- classifiers
-- most custom/BYO Hugging Face models
+### Where CPU `transformers` fits in Phase 1
 
-It is also the best match for the current CPU POC because it:
+CPU `transformers` should still be supported in Phase 1 as a required, explicitly validated path.
 
-- reuses the existing Hugging Face-style serving path
-- avoids introducing a new model format requirement
-- minimizes controller and image changes
-- matches the most common user expectation for "run a Hugging Face model on CPU"
+This remains important because:
 
-### Where CPU vLLM fits in Phase 1
-
-CPU vLLM should be supported in Phase 1 as an explicit, bounded path.
-
-It should not become the default CPU assumption, because:
-
-- vLLM remains historically GPU-first
-- the CPU path has different operational and tuning characteristics than the GPU path
-- not every CPU use case needs the extra runtime-specific complexity
+- many Hugging Face CPU workloads still map naturally to `transformers`
+- standard PyTorch / safetensors / `AutoModel*` flows are common for BYO models
+- embeddings, rerankers, classifiers, and smaller text-generation models often fit the `transformers` serving path well
 
 So the right Phase 1 stance is:
 
-- `transformers` on CPU is the baseline supported path
-- `vllm` on CPU is also required, and should be treated as a separately validated path
+- `vllm` on CPU is the default path, aligned with current KAITO behavior
+- `transformers` on CPU is also required, and should be treated as a separately validated path
 
 ### How the current CPU example should be classified
 
