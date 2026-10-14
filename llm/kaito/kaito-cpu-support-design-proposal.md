@@ -46,6 +46,7 @@ Phase 1 is intentionally narrow.
 ### In scope
 
 - CPU custom/BYO model support
+- single-node CPU inference only in Phase 1
 - `kaito.sh/runtime: transformers` as the default CPU path
 - `kaito.sh/runtime: vllm` on CPU as a required Phase 1 path
 - a dedicated feature gate, proposed as `enableCPUInference`, to control rollout of the Phase 1 CPU path
@@ -148,13 +149,15 @@ That existing annotation is enough for the initial CPU support scope, as long as
 
 The immediate goal is to make the existing runtime choices work cleanly for CPU scenarios, not to expand KAITO's runtime surface area.
 
+Phase 1 is single-node CPU inference only.
+
 In other words, the main problem is not “KAITO lacks a runtime field.” The main problem is that KAITO's implementation around `transformers` and `vllm` is still GPU/CUDA-first.
 
 ### Phase 1 supported combinations
 
-- `kaito.sh/runtime: transformers` + CPU scheduling/resources
+- `kaito.sh/runtime: transformers` + single-node CPU scheduling/resources
 - `kaito.sh/runtime: vllm` + GPU scheduling/resources
-- `kaito.sh/runtime: vllm` + CPU scheduling/resources
+- `kaito.sh/runtime: vllm` + single-node CPU scheduling/resources
 
 Anything beyond that should be treated as later-phase work.
 
@@ -520,8 +523,7 @@ Phase 1 should focus on standard Hugging Face model flows on CPU and a required 
 3. New `kaito-base-vllm-cpu` image
 4. CPU-aware validation
 5. CPU-aware scheduling/provisioning
-6. define the minimum CPU sizing/defaulting rules required for CPU-aware scheduling/provisioning
-7. CPU custom model examples and docs
+6. CPU custom model examples and docs
 
 ### User-visible scenarios
 
@@ -537,7 +539,7 @@ See **Phase 1 Scope** above for exclusions.
 ### Possible future work
 
 - mark selected CPU-compatible preset models referenced through `inference.preset.name`
-- define preset-specific CPU requests/limits, memory sizing, ephemeral-storage sizing, and preferred CPU node classes
+- optionally define preset-specific CPU requests/limits, memory sizing, ephemeral-storage sizing, and preferred CPU node classes
 - improve benchmark/readiness support
 - CPU autoscaling tuning
 - profile-specific performance presets
