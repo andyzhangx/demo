@@ -201,18 +201,67 @@ By the end of the talk, attendees should remember:
 
 ## Slide-Friendly Agenda
 
-For the deck itself, keep the agenda short, architectural, and easy to scan. A good opening agenda slide should tell the audience that the talk moves from the **problem**, to the **Kubernetes orchestration gap**, to the **KAITO + llm-d solution**, and ends with **practical production tradeoffs**.
+For the deck itself, the agenda slide can stay in English at the section-title level while preserving concise Chinese explanations under each item. That keeps the talk structure easy to scan for a KubeCon audience while still retaining the original nuance in the notes.
 
-**Suggested agenda slide content:**
+### 1) Why P/D Disaggregation?
+- LLM inference 的两个阶段：Prefill vs Decode
+- 为什么同一个 GPU 池同时承载两者会低效
+- 什么场景下 P/D 拆分值得做
 
-1. **Why separate prefill and decode?**
-2. **Why is P/D still hard on Kubernetes?**
-3. **KAITO + llm-d architecture**
-4. **How MultiRoleInference makes P/D declarative**
-5. **Per-role autoscaling**
-6. **Evaluation and tradeoffs**
-7. **Production lessons**
-8. **What comes next**
+### 2) Why It’s Hard on Kubernetes Today
+- 拓扑感知路由
+- KV cache transfer / handoff
+- Sidecar、端口、标签、环境变量编排
+- 按角色独立 autoscaling 的复杂性
+
+### 3) KAITO: From Model Serving to Distributed Inference
+- `Workspace`
+- `InferenceSet`
+- `InferencePool`
+- `MultiRoleInference`
+- KAITO 作为 Kubernetes-native abstraction layer 的定位
+
+### 4) llm-d + Gateway API Inference Extension
+- llm-d Router / EPP 在其中扮演什么角色
+- `InferencePool` 如何对接 inference-aware routing
+- KAITO 和 llm-d 的分工边界
+
+### 5) How MultiRoleInference Makes P/D Declarative
+- 用户只声明一个 `MultiRoleInference`
+- KAITO 自动生成 child `InferenceSet`s
+- 自动完成 prefill / decode wiring
+- decode-side sidecar、端口、label contract 等自动下沉
+
+### 6) Per-Role Autoscaling
+- 为什么 prefill 和 decode 需要不同 scaling signal
+- Prefill 关注 TTFT / waiting requests
+- Decode 关注吞吐、KV/cache pressure
+- 理想 UX：用户表达 intent，KAITO 下推到各角色
+
+### 7) Evaluation and Tradeoffs
+- TTFT 改善
+- Throughput / GPU utilization 提升
+- 但不是所有 workload 都适合 P/D
+- break-even factors: prompt length, concurrency, traffic shape, KV fabric
+
+### 8) Production Lessons Learned
+- startup ordering
+- KV transfer path validation
+- sidecar placement
+- targetPort / service / label contract
+- role-specific metrics and autoscaling
+
+### 9) What’s Next
+- 更精细的 prefix-cache / KV-aware routing
+- tiered cache
+- 更复杂拓扑：E/P/D、speculative decoding
+- 更深的 KAITO + llm-d 集成
+
+### 10) Takeaways
+- Prefill 和 Decode 是两类不同 workload
+- P/D 的核心难点不是 runtime，而是 orchestration
+- KAITO 把复杂 distributed inference topology 变成 Kubernetes-native workflow
+- P/D 是有明确适用边界的，而不是默认答案
 
 ---
 
