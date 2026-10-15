@@ -163,9 +163,13 @@ In other words, the main problem is not “KAITO lacks a runtime field.” The m
 
 ### Phase 1 supported combinations
 
+For **custom template** flows, the core runtime/hardware combinations in Phase 1 are:
+
 - `kaito.sh/runtime: transformers` + single-node CPU scheduling/resources
 - `kaito.sh/runtime: vllm` + GPU scheduling/resources
 - `kaito.sh/runtime: vllm` + single-node CPU scheduling/resources
+
+In addition, Phase 1 also supports a **selected subset of CPU-compatible preset models** referenced through `inference.preset.name`. Those preset flows should resolve onto the same runtime-specific CPU execution paths described in this proposal, rather than introducing a separate CPU runtime family.
 
 Anything beyond that should be treated as later-phase work.
 
@@ -182,11 +186,14 @@ Allowed:
 - `kaito.sh/runtime: transformers` on CPU nodes
 - `kaito.sh/runtime: vllm` on GPU nodes
 - `kaito.sh/runtime: vllm` on CPU nodes
+- a selected CPU-compatible preset on CPU nodes
 
 Rejected:
 
 - `kaito.sh/runtime: vllm` with GPU-only assumptions but no usable GPU resources
 - `kaito.sh/runtime: transformers` combined with GPU-only preset assumptions
+- a preset that is not marked CPU-compatible used on the CPU path
+- a CPU preset path that still requires unsupported GPU-only or distributed features in Phase 1
 - MultiRoleInference with CPU runtime in Phase 1
 - any CPU path that still depends on unsupported GPU/CUDA-only features
 
@@ -240,11 +247,13 @@ Instead:
 
 Pod generation must branch by the effective runtime and whether the workload is CPU- or GPU-targeted, rather than trying to run everything through the same image and startup pattern.
 
+This should apply consistently to **both custom-model and selected preset-model flows**. In other words, preset CPU support in Phase 1 should resolve into the same runtime-specific CPU images and startup patterns, not into a separate preset-only execution path.
+
 ### For `kaito.sh/runtime: vllm`
 Keep the current GPU path and support a separate CPU-serving variant as part of Phase 1.
 
 ### For `kaito.sh/runtime: transformers`
-Use a CPU-oriented image and Python entrypoint for CPU custom models.
+Use a CPU-oriented image and Python entrypoint for CPU custom models and any selected CPU-compatible preset that requires the transformers runtime.
 
 ### Pod-spec differences in Phase 1
 
@@ -526,13 +535,14 @@ Phase 1 should focus on standard Hugging Face model flows on CPU and a required 
 - deploy a CPU Workspace using `kaito.sh/runtime: transformers`
 - deploy a CPU Workspace using `kaito.sh/runtime: vllm`
 - deploy a CPU Workspace using `inference.preset.name` for a supported CPU-compatible preset
-- deploy a CPU InferenceSet using the supported Phase 1 CPU runtime paths
+- deploy a CPU InferenceSet using `inference.preset.name` for a supported CPU-compatible preset
+- deploy a CPU InferenceSet using the supported custom-template Phase 1 CPU runtime paths
 
 See **Phase 1 Scope** above for exclusions.
 
 ---
 
-## Later Phases: Preset Support and Optimization
+## Later Phases: Broader Preset Expansion and Optimization
 
 ### Possible future work
 
@@ -595,7 +605,7 @@ The recommended path is:
 2. add `kaito-base-tfs-cpu` and `kaito-base-vllm-cpu`
 3. gate the new CPU path behind `enableCPUInference`
 4. make validation, image selection, and scheduling/provisioning CPU-aware
-5. ship the narrow Phase 1 scope first, then expand later
+5. ship the narrow Phase 1 scope first, including custom/BYO CPU support and a selected preset subset, then expand later
 
 This preserves backward compatibility while making the CPU runtime split explicit and maintainable.
 
@@ -607,6 +617,7 @@ This preserves backward compatibility while making the CPU runtime split explici
 - keep using `kaito.sh/runtime`
 - add the `enableCPUInference` feature gate (default off)
 - add validation rules for supported CPU runtime combinations
+- add CPU preset eligibility / compatibility validation for selected presets
 - reject unsupported CPU+MRI combinations
 
 ### PR 2: CPU image pipeline
@@ -618,11 +629,14 @@ This preserves backward compatibility while making the CPU runtime split explici
 - CPU-aware image selection
 - CPU-aware resource generation
 - CPU-aware BYO / auto-provision logic
+- preset-to-runtime/image resolution for the selected CPU-compatible preset set
 
 ### PR 4: docs + examples
 - CPU custom model example
 - CPU vLLM example
 - transformers CPU embedding example
+- CPU preset Workspace example
+- CPU preset InferenceSet example
 - support matrix doc
 
 ---
