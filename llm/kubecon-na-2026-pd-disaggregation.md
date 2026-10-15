@@ -199,6 +199,23 @@ By the end of the talk, attendees should remember:
 
 ---
 
+## Slide-Friendly Agenda
+
+For the deck itself, keep the agenda short, architectural, and easy to scan. A good opening agenda slide should tell the audience that the talk moves from the **problem**, to the **Kubernetes orchestration gap**, to the **KAITO + llm-d solution**, and ends with **practical production tradeoffs**.
+
+**Suggested agenda slide content:**
+
+1. **Why separate prefill and decode?**
+2. **Why is P/D still hard on Kubernetes?**
+3. **KAITO + llm-d architecture**
+4. **How MultiRoleInference makes P/D declarative**
+5. **Per-role autoscaling**
+6. **Evaluation and tradeoffs**
+7. **Production lessons**
+8. **What comes next**
+
+---
+
 ## Recommended 20-Minute Agenda
 
 ### 1) Opening + problem framing (0:00 - 0:30)
