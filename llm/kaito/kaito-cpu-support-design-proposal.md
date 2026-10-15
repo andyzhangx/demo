@@ -35,7 +35,7 @@ Today, KAITO does not provide a clean first-class experience for CPU-based model
 1. Add **first-class support for CPU-based model inference** in KAITO.
 2. Support both:
    - **CPU custom/BYO models**
-   - selected **CPU-compatible preset models referenced through `inference.preset.name`** in later phases
+   - selected **CPU-compatible preset models referenced through `inference.preset.name`**
 3. Keep the GPU path stable and backward compatible.
 4. Avoid overloading the existing CUDA `kaito-base` with CPU semantics.
 
@@ -46,6 +46,7 @@ Phase 1 is intentionally narrow.
 ### In scope
 
 - CPU custom/BYO model support
+- selected CPU-compatible preset models referenced through `inference.preset.name`
 - Phase 1 support for both Workspace and InferenceSet
 - single-node CPU inference only in Phase 1
 - `kaito.sh/runtime: vllm` as the default CPU path
@@ -60,7 +61,7 @@ Phase 1 is intentionally narrow.
 - speculative decoding on CPU
 - DeepGEMM / CUDA toolkit provisioning on CPU
 - NIXL-based distributed runtime features
-- full parity for preset-model flows using `inference.preset.name` on CPU
+- full CPU parity across the entire preset catalog
 - aggressive CPU autoscaling optimization
 - new runtime APIs or new CPU runtime families beyond the existing `transformers` / `vllm` choices
 
@@ -81,12 +82,12 @@ CPU support is not just a different node type. It changes:
 ### 2. Do not reuse CUDA `kaito-base` as the official CPU base
 Even if it can sometimes run on CPU nodes, it is too GPU-specific and too heavy to be the maintained CPU solution.
 
-### 3. Start with CPU custom model support first
-The lowest-risk path is:
+### 3. Start with CPU custom model support and selected preset enablement
+The lowest-risk Phase 1 path is:
 
 - enable CPU custom/BYO model serving
 - validate image/runtime scheduling flow
-- add preset support later
+- enable a selected subset of CPU-compatible preset models without attempting full preset-catalog parity
 
 ---
 
@@ -421,7 +422,7 @@ This matters because the current POC proves the minimum-change **transformers on
 | CPU custom Hugging Face model | supported | `kaito.sh/runtime: transformers` |
 | CPU embeddings / rerankers / classifiers | supported | `kaito.sh/runtime: transformers` |
 | CPU vLLM workspace | supported | `kaito.sh/runtime: vllm` |
-| CPU-compatible preset models via `inference.preset.name` | later | n/a |
+| Selected CPU-compatible preset models via `inference.preset.name` | supported | runtime resolved per preset (`vllm` by default, `transformers` where required) |
 | CPU MRI / speculative decoding | out of scope | n/a |
 
 Later phases can expand beyond this narrow scope.
@@ -508,7 +509,7 @@ Phase 1 should focus on standard Hugging Face model flows on CPU and a required 
 
 ## Implementation Plan
 
-## Phase 1: CPU custom/BYO model support
+## Phase 1: CPU custom/BYO model support and selected preset enablement
 
 ### Deliverables
 
@@ -518,11 +519,13 @@ Phase 1 should focus on standard Hugging Face model flows on CPU and a required 
 4. CPU-aware validation
 5. CPU-aware scheduling/provisioning
 6. CPU custom model examples and docs
+7. Support for a selected set of CPU-compatible presets referenced through `inference.preset.name`
 
 ### User-visible scenarios
 
 - deploy a CPU Workspace using `kaito.sh/runtime: transformers`
 - deploy a CPU Workspace using `kaito.sh/runtime: vllm`
+- deploy a CPU Workspace using `inference.preset.name` for a supported CPU-compatible preset
 - deploy a CPU InferenceSet using the supported Phase 1 CPU runtime paths
 
 See **Phase 1 Scope** above for exclusions.
@@ -533,7 +536,7 @@ See **Phase 1 Scope** above for exclusions.
 
 ### Possible future work
 
-- mark selected CPU-compatible preset models referenced through `inference.preset.name`
+- expand beyond the initial selected set of CPU-compatible presets referenced through `inference.preset.name`
 - optionally define preset-specific CPU requests/limits, memory sizing, ephemeral-storage sizing, and preferred CPU node classes
 - improve benchmark/readiness support
 - CPU autoscaling tuning
