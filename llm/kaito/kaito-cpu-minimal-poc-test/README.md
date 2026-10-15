@@ -5,6 +5,7 @@ This folder stores the exact prompt content used for the Qwen CPU rerun benchmar
 ## Files
 - `short-requests.txt`: the 20 short benchmark prompts
 - `long-requests.txt`: the 20 long benchmark prompts
+- `2026-10-15-live-vllm-cpu-benchmark.md`: a fresh live rerun report for the current KAITO CPU vLLM pod using this exact request set
 
 ## Notes
 - The short and long request shapes were intentionally kept identical between the earlier experimental vLLM CPU benchmark and the later transformers CPU rerun so the results could be compared more directly.
