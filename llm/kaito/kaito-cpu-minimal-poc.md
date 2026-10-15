@@ -999,6 +999,57 @@ Using the earlier experimental vLLM CPU benchmark in this document as the baseli
 - So for this exact CPU-only Qwen experiment, the main takeaway is:
   - **both paths work**, but the experimental vLLM CPU path was faster than the transformers CPU rerun for the same prompt shapes.
 
+## Fresh live rerun against the current CPU preset pod (2026-10-15)
+
+After the earlier Qwen CPU comparisons above, I ran a fresh live benchmark against the current KAITO CPU preset pod to confirm the present-day behavior after the recent CPU preset branch fixes.
+
+### Live rerun environment
+
+- InferenceSet / workspace-derived pod:
+  - `qwen-2-5-0-5b-instruct-cpu-vllm-rlcdh-0`
+- Service endpoint inside the pod:
+  - `http://127.0.0.1:5000`
+- Model:
+  - `Qwen/Qwen2.5-0.5B-Instruct`
+- Served model name:
+  - `qwen-2-5-0-5b-instruct-cpu-vllm`
+- Runtime family:
+  - `vLLM CPU`
+- Worker node:
+  - `Standard_D16s_v5`
+- Execution mode:
+  - serial
+  - executed from **inside the pod**
+  - `temperature=0`
+- Request set:
+  - the same 20 prompts from `llm/kaito/kaito-cpu-minimal-poc-test/short-requests.txt`
+  - the same 20 prompts from `llm/kaito/kaito-cpu-minimal-poc-test/long-requests.txt`
+
+### Why this rerun used `/v1/completions`
+
+The current live preset enables Hermes tool parsing and auto tool choice. When the long prompt set was sent to `/v1/chat/completions`, the model often emitted tool-call-shaped output like `<tool_call>...</tool_call>` instead of a normal long-form answer.
+
+That changed the output shape enough to make the long-request latency numbers no longer comparable to the earlier benchmark runs. To preserve the same request texts while forcing a normal generation path for the long case, this rerun used:
+
+- endpoint: `/v1/completions`
+- short requests: `max_tokens=32`
+- long requests: `max_tokens=256`
+
+### Fresh live rerun summary table
+
+| Request type | Samples | Success rate | Avg latency | P50 | P95 | Min | Max | Avg prompt tokens | Avg completion tokens | Avg total tokens | Throughput |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Short request | 20 | 100% | 859.20 ms | 857.10 ms | 866.52 ms | 847.98 ms | 901.69 ms | 22.55 | 32.00 | 54.55 | 37.25 tok/s |
+| Long request | 20 | 100% | 6083.30 ms | 6065.78 ms | 6180.71 ms | 6019.12 ms | 6355.48 ms | 42.55 | 256.00 | 298.55 | 42.09 tok/s |
+
+### Fresh live rerun takeaways
+
+- The current live CPU preset pod was **stable** for all **40/40** serial requests.
+- Short requests completed in about **0.86s** on average.
+- Long requests with **256 generated tokens** completed in about **6.08s** on average.
+- Throughput remained strong and stable, especially on the long case at about **42.1 tok/s**.
+- Compared with the earlier experimental vLLM CPU benchmark in this document, the fresh live rerun is in the same general performance range and slightly faster on the long-request case.
+
 ### Same-model CPU runtime comparison summary (Qwen2.5-0.5B-Instruct)
 
 For the same `Qwen/Qwen2.5-0.5B-Instruct` model, on the same request set and the same general node shape, the current measured result is:
