@@ -1,48 +1,64 @@
-# 2026-10-15 live benchmark for `qwen-2-5-0-5b-instruct-cpu-tfs-lpc7d-0`
+# 2026-10-16 live benchmark for `qwen-2-5-0-5b-instruct-cpu-tfs-25z7m-0`
 
 This note captures a fresh live rerun against the current KAITO pod named:
 
-- pod: `qwen-2-5-0-5b-instruct-cpu-tfs-lpc7d-0`
-- served model name: `qwen-2-5-0-5b-instruct-cpu-tfs`
-- model root: `Qwen/Qwen2.5-0.5B-Instruct`
+- pod: `qwen-2-5-0-5b-instruct-cpu-tfs-25z7m-0`
+- service: `qwen-2-5-0-5b-instruct-cpu-tfs-25z7m`
+- workspace: `qwen-2-5-0-5b-instruct-cpu-tfs-25z7m`
+- served model name: `qwen2.5-0.5b-instruct`
+- model root: `qwen/qwen2.5-0.5b-instruct`
 - node shape: `Standard_D16s_v5`
-- execution mode: **serial**, from **inside the pod**, calling `http://127.0.0.1:5000`
+- actual node: `aks-ws8fbcbc958-30541760-vmss000000`
+- execution mode: **serial**, via `kubectl port-forward`, calling `http://127.0.0.1:18080`
 - request set: the same 20 prompts in `short-requests.txt` and the same 20 prompts in `long-requests.txt`
+- measurement window: `2026-10-16T05:22:04Z` to `2026-10-16T05:36:06Z`
 
-## Important runtime observation
+## Runtime observation
 
-Although the pod name contains `cpu-tfs`, the live container that was actually benchmarked was **not** running a Transformers/TFS serving stack.
+This live pod is running the expected transformers/TFS CPU runtime rather than the earlier mislabeled vLLM CPU path.
 
 Observed runtime signals:
 
 - image:
-  - `andyzhangx/kaito-base-vllm-cpu:0.3.0`
-- command:
-  - `python3 /workspace/vllm/inference_api.py ...`
+  - `andyzhangx/kaito-base-tfs-cpu:0.3.0`
+- container command:
+  - `accelerate launch --num_processes=1 --num_machines=1 --machine_rank=0 --gpu_ids=all /workspace/tfs/inference_api.py --torch_dtype=bfloat16 --pipeline=text-generation --served_model_name=qwen2.5-0.5b-instruct --pretrained_model_name_or_path=qwen/qwen2.5-0.5b-instruct --allow_remote_files`
+- `/health` result:
+  - `{"status":"Healthy"}`
 - `/v1/models` result:
-  - `owned_by: "vllm"`
+  - `owned_by: "kaito"`
 
-So the results below are a benchmark of the **live pod as deployed**, which at measurement time was effectively another **vLLM CPU** serving pod, even though its name suggested a TFS/transformers path.
+## Important API observation
 
-## Why this rerun used `/v1/completions`
+The earlier live CPU report used `/v1/completions` to avoid chat-path behavior differences.
 
-Like the earlier live CPU preset rerun, the current chat-serving path enables Hermes tool parsing and auto tool choice.
+For this pod, that same endpoint is **not implemented**:
 
-When the same long prompts were sent to `/v1/chat/completions`, the model returned tool-call-shaped output instead of a normal long-form answer, and one sampled long request took about **96s** before returning a `<tool_call>...</tool_call>` payload. That output shape is not comparable to the intended long-generation benchmark.
+- `POST /v1/completions` → `404 Not Found`
 
-To keep the request texts the same while forcing a normal generation path, this rerun used:
+The runtime OpenAPI only exposed:
 
-- endpoint: `/v1/completions`
+- `/v1/chat/completions`
+- `/v1/responses`
+- `/v1/models`
+
+So this rerun kept the **same request files**, **same serial execution pattern**, and **same token limits**, but used:
+
+- endpoint: `/v1/chat/completions`
 - `temperature=0`
 - short requests: `max_tokens=32`
 - long requests: `max_tokens=256`
+
+One runtime nuance from the server logs:
+
+- transformers logged that generation flags such as `temperature`, `top_p`, and `top_k` may be ignored by this serving path
 
 ## Summary
 
 | Request type | Samples | Success rate | Avg latency | P50 | P95 | Min | Max | Avg prompt tokens | Avg completion tokens | Avg total tokens | Throughput |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Short request | 20 | 100% | 1079.87 ms | 1076.75 ms | 1113.78 ms | 1065.59 ms | 1114.54 ms | 22.55 | 32.00 | 54.55 | 29.64 tok/s |
-| Long request | 20 | 100% | 7801.13 ms | 7791.47 ms | 7889.30 ms | 7720.94 ms | 7908.21 ms | 42.55 | 256.00 | 298.55 | 32.82 tok/s |
+| Short request | 20 | 100% | 4123.78 ms | 4126.86 ms | 4170.51 ms | 4045.24 ms | 4184.06 ms | 51.55 | 21.00 | 72.55 | 5.09 tok/s |
+| Long request | 20 | 100% | 37772.32 ms | 37757.92 ms | 38275.52 ms | 37347.27 ms | 38349.31 ms | 71.55 | 256.00 | 327.55 | 6.78 tok/s |
 
 ## Request details
 
@@ -58,12 +74,14 @@ Parameters:
 
 - `max_tokens=32`
 - `temperature=0`
+- endpoint: `/v1/chat/completions`
 
 Observed behavior:
 
 - all 20 requests succeeded
-- all 20 finished with `finish_reason=length`
-- average completion length was exactly `32` tokens
+- all 20 finished with `finish_reason=stop`
+- average completion length was exactly `21` tokens
+- prompt token count was `51` for requests `1-9` and `52` for requests `10-20`
 
 ### Long request shape
 
@@ -77,19 +95,61 @@ Parameters:
 
 - `max_tokens=256`
 - `temperature=0`
+- endpoint: `/v1/chat/completions`
 
 Observed behavior:
 
 - all 20 requests succeeded
 - all 20 finished with `finish_reason=length`
 - average completion length was exactly `256` tokens
+- prompt token count was `71` for requests `1-9` and `72` for requests `10-20`
 
 ## Direct takeaways
 
-- The live pod was **stable** for all **40/40** serial requests on `/v1/completions`.
-- Short requests completed in about **1.08s** on average.
-- Long requests with **256 generated tokens** completed in about **7.80s** on average.
+- The live pod was **stable** for all **40/40** serial requests.
+- This pod is a **real transformers/TFS CPU runtime** benchmark, not the earlier mislabeled vLLM CPU path.
+- Short requests completed in about **4.12s** on average.
+- Long requests with **256 generated tokens** completed in about **37.77s** on average.
 - Throughput was stable at about:
-  - **29.6 tok/s** on the short case
-  - **32.8 tok/s** on the long case
-- The pod name currently suggests a TFS/transformers path, but the measured runtime was **actually vLLM CPU**, so these numbers should not be used as a true transformers-vs-vLLM comparison point.
+  - **5.09 tok/s** on the short case
+  - **6.78 tok/s** on the long case
+- Compared with the earlier mislabeled vLLM CPU measurement, this transformers/TFS runtime is substantially slower on both short and long requests, but it was stable across the full 40-request run.
+
+## Comparison vs `2026-10-15-live-vllm-cpu-benchmark.md`
+
+The closest comparison point is:
+
+- `llm/kaito/kaito-cpu-minimal-poc-test/2026-10-15-live-vllm-cpu-benchmark.md`
+
+That vLLM run used the **same short/long request files**, the same serial execution pattern, the same model family, and the same node shape (`Standard_D16s_v5`).
+
+There are still two important caveats:
+
+- the vLLM report used `/v1/completions`, while this TFS run had to use `/v1/chat/completions` because `/v1/completions` returned `404`
+- the short case did **not** generate the same output length on both runtimes:
+  - vLLM short case averaged `32` completion tokens
+  - TFS short case averaged `21` completion tokens
+
+So the **long case** is the cleaner apples-to-apples comparison because both runs generated `256` completion tokens.
+
+| Metric | TFS CPU (this run) | vLLM CPU (prior run) | Relative difference |
+| --- | ---: | ---: | ---: |
+| Short avg latency | 4123.78 ms | 859.20 ms | TFS is **4.80x slower** |
+| Short throughput | 5.09 tok/s | 37.25 tok/s | TFS is **86.3% lower** |
+| Long avg latency | 37772.32 ms | 6083.30 ms | TFS is **6.21x slower** |
+| Long throughput | 6.78 tok/s | 42.09 tok/s | TFS is **83.9% lower** |
+
+### Comparison takeaways
+
+- On the **short case**, TFS was much slower, but that result is also affected by a different response shape (`stop` at ~21 tokens vs `length` at 32 tokens on vLLM).
+- On the **long case**, where both runtimes generated the same `256` completion tokens, the comparison is much cleaner:
+  - TFS latency was about **37.77s** vs **6.08s** for vLLM
+  - TFS throughput was about **6.78 tok/s** vs **42.09 tok/s** for vLLM
+- For this live cluster state and request family, **vLLM CPU clearly outperformed transformers/TFS CPU** on both latency and throughput.
+- The TFS runtime was still **functionally stable** across all `40/40` requests, so the tradeoff here is mainly **performance**, not correctness or stability.
+
+## Artifacts
+
+Raw benchmark output for this rerun was captured in:
+
+- `/home/vibe/.openclaw/workspace/qwen_cpu_tfs_live_benchmark_results.json`
