@@ -4,8 +4,8 @@ This file contains a ready-to-use slide section for explaining how **KAITO + llm
 
 Positioning:
 - `KAITO` = declarative control-plane abstraction and orchestration
-- `GWIE` = Kubernetes-native inference routing contract
-- `llm-d Router` = EPP-based routing and scheduling substrate
+- `GWIE` = Kubernetes-native inference routing contract and API surface
+- `llm-d Router` = EPP-based routing implementation and scheduling substrate
 - `vLLM + NIXL` = runtime execution and KV-cache handoff path
 
 These slides are designed to fit naturally around the current **Slide 18: division of labor** material in `kubecon-na-2026-pd-disaggregation.md`.
@@ -22,12 +22,12 @@ Three layers, three responsibilities, one usable P/D platform.
 
 ### Recommended body
 - **KAITO** = declarative API and Kubernetes orchestration for P/D topology
-- **GWIE** = inference-aware routing contract between gateway and model backends
-- **llm-d Router** = EPP-based endpoint selection and P/D-aware scheduling logic
-- **InferencePool** = binds gateway-facing traffic to the serving backends
+- **GWIE** = Kubernetes-native routing contract between gateway and model backends
+- **llm-d Router** = actual EPP implementation, endpoint selection, and P/D-aware scheduling logic
+- **InferencePool** = binds the gateway-facing contract to the serving backends
 
 ### Bottom takeaway box
-**KAITO makes P/D operable. llm-d makes it routable. GWIE makes it Kubernetes-native.**
+**KAITO makes P/D operable. llm-d provides the routing intelligence. GWIE provides the Kubernetes-native contract.**
 
 ### Suggested visual
 A 3-layer stack:
@@ -46,7 +46,7 @@ A 3-layer stack:
 ### Speaker note
 Use one crisp line here:
 
-> **GWIE defines how inference routing plugs into Kubernetes; llm-d provides the smart EPP; KAITO makes the whole topology declarative and operable.**
+> **GWIE defines how inference routing plugs into Kubernetes; llm-d provides the actual EPP and routing intelligence; KAITO makes the whole topology declarative and operable.**
 
 ---
 
@@ -159,7 +159,7 @@ One endpoint for the user; multiple coordinated steps underneath.
 - **KV transfer is the bridge between the two phases**
 
 ### Bottom takeaway box
-**The user sees one endpoint. The platform coordinates routing, prefill placement, KV movement, and decode execution across multiple pods.**
+**The user sees one endpoint. GWIE carries the gateway-facing contract, llm-d makes the routing decisions, and the platform coordinates prefill placement, KV movement, and decode execution across multiple pods.**
 
 ### Suggested visual
 A left-to-right request flow:

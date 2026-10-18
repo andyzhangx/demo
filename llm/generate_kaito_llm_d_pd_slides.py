@@ -177,7 +177,7 @@ def title_slide():
                 "A Kubernetes-native story about declarative topology,\nrole-aware routing, and direct KV-cache handoff.",
                 18, False, RGBColor(201, 214, 255), fill=None, line=False)
     add_textbox(slide, Inches(0.86), Inches(5.10), Inches(5.6), Inches(1.05),
-                "Control plane: KAITO\nRouting contract: GWIE\nScheduling substrate: llm-d Router\nRuntime + KV path: vLLM + NIXL",
+                "Control plane: KAITO\nGateway-facing contract: GWIE\nRouting intelligence: llm-d Router\nRuntime + KV path: vLLM + NIXL",
                 17, False, WHITE, fill=None, line=False)
     chips = [("KAITO", BLUE_SOFT, BLUE), ("llm-d", ORANGE_SOFT, ORANGE), ("GWIE", GREEN_SOFT, GREEN), ("NIXL", PURPLE_SOFT, PURPLE)]
     cx = Inches(0.88)
@@ -211,14 +211,14 @@ def slide_18_division_of_labor():
              ["declarative abstraction", "Kubernetes orchestration", "child resource ownership", "platform-facing UX"],
              fill=BLUE_SOFT, line=BLUE)
     add_card(slide, Inches(5.05), Inches(2.2), Inches(3.2), Inches(2.55), "GWIE",
-             ["inference routing contract", "InferencePool model", "gateway integration pattern", "Kubernetes-native interface"],
+             ["gateway-facing routing contract", "InferencePool API model", "gateway integration pattern", "Kubernetes-native interface"],
              fill=GREEN_SOFT, line=GREEN)
     add_card(slide, Inches(9.2), Inches(2.2), Inches(3.2), Inches(2.55), "llm-d Router",
              ["EPP implementation", "endpoint selection", "P/D-aware scheduling", "routing execution substrate"],
              fill=ORANGE_SOFT, line=ORANGE)
     add_connector(slide, Inches(4.10), Inches(3.47), Inches(5.00), Inches(3.47), PURPLE, 3)
     add_connector(slide, Inches(8.25), Inches(3.47), Inches(9.15), Inches(3.47), PURPLE, 3)
-    add_note(slide, "KAITO makes P/D operable. llm-d makes it routable. GWIE makes it Kubernetes-native.")
+    add_note(slide, "KAITO makes P/D operable. llm-d provides the routing intelligence. GWIE provides the Kubernetes-native contract.")
 
 
 def slide_19_anchor_architecture():
@@ -226,7 +226,7 @@ def slide_19_anchor_architecture():
     set_bg(slide, BG_ALT)
     add_header(slide, 19, "End-to-End Architecture", accent=ORANGE)
     add_textbox(slide, Inches(0.86), Inches(1.10), Inches(11.65), Inches(0.55),
-                "This is the anchor architecture slide: one user endpoint, one routing surface, two role-specific backends, and a direct KV path.",
+                "This is the anchor architecture slide: one user endpoint, one gateway-facing contract surface, two role-specific backends, and a direct KV path.",
                 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
 
     # Cluster canvas
@@ -237,7 +237,7 @@ def slide_19_anchor_architecture():
     add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.05), Inches(2.22), Inches(10.95), Inches(0.78), fill=GRAY_SOFT, line=False)
     add_textbox(slide, Inches(1.20), Inches(2.40), Inches(1.55), Inches(0.20), "control plane", 12, True, BLUE, fill=None, line=False)
     add_textbox(slide, Inches(2.15), Inches(2.32), Inches(2.45), Inches(0.44), "KAITO\nMultiRoleInference controller", 16, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(4.95), Inches(2.32), Inches(1.90), Inches(0.44), "InferencePool", 16, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
+    add_textbox(slide, Inches(4.72), Inches(2.32), Inches(2.40), Inches(0.44), "InferencePool\n(GWIE CRD)", 15, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
     add_textbox(slide, Inches(7.20), Inches(2.32), Inches(2.65), Inches(0.44), "Gateway API Inference Extension", 15, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
     add_textbox(slide, Inches(10.15), Inches(2.32), Inches(1.40), Inches(0.44), "KEDA", 16, True, NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
 
@@ -274,7 +274,7 @@ def slide_19_anchor_architecture():
                 PP_ALIGN.CENTER, fill=None, line=False)
     add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(6.15), Inches(6.02), Inches(5.70), Inches(0.42), fill=GRAY_SOFT, line=False)
     add_textbox(slide, Inches(6.28), Inches(6.09), Inches(5.42), Inches(0.24),
-                "KAITO owns topology + wiring; llm-d owns EPP decisions; vLLM/NIXL own execution + handoff.",
+                "KAITO owns topology + wiring; GWIE carries the contract; llm-d owns EPP decisions; vLLM/NIXL own execution + handoff.",
                 13, True, MUTED, PP_ALIGN.CENTER, fill=None, line=False)
 
 
@@ -369,7 +369,7 @@ def slide_22_request_flow():
     add_textbox(slide, Inches(9.35), Inches(4.08), Inches(3.0), Inches(1.62),
                 "• Decode is the coordination point\n• Prefill is selected only when it helps\n• KV transfer bridges the two phases",
                 15, False, SLATE, fill=WHITE, line=MID, radius=True)
-    add_note(slide, "The user sees one endpoint. The platform coordinates routing, prefill placement, KV movement, and decode execution across multiple pods.")
+    add_note(slide, "The user sees one endpoint. GWIE carries the gateway-facing contract, llm-d makes the routing decisions, and the platform coordinates prefill placement, KV movement, and decode execution across multiple pods.")
 
 
 def slide_23_sidecar():
