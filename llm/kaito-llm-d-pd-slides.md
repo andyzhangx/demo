@@ -123,17 +123,17 @@ Users declare intent once; the platform expands it into a runnable P/D system.
 apiVersion: kaito.sh/v1alpha1
 kind: MultiRoleInference
 metadata:
-  name: phi-4-mini
+  name: qwen-3-8-27b
 spec:
   model:
-    name: phi-4-mini-instruct
+    name: Qwen/Qwen3.8-27B
   roles:
     - type: prefill
       replicas: 1
       instanceType: Standard_NC24ads_A100_v4
     - type: decode
       replicas: 1
-      instanceType: Standard_NC24ads_A100_v4
+      instanceType: Standard_NC80adis_H100_v5
 ```
 
 ### Callout bullets

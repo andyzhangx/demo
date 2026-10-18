@@ -331,7 +331,7 @@ def slide_20_mri_object():
                 NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
     add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.80), Inches(1.92), Inches(5.18), Inches(4.65), fill=NAVY, line=False)
     add_textbox(slide, Inches(1.02), Inches(2.18), Inches(4.8), Inches(3.9),
-                "apiVersion: kaito.sh/v1alpha1\nkind: MultiRoleInference\nmetadata:\n  name: phi-4-mini\nspec:\n  model:\n    name: phi-4-mini-instruct\n  roles:\n    - type: prefill\n      replicas: 1\n      instanceType: Standard_NC24ads_A100_v4\n    - type: decode\n      replicas: 1\n      instanceType: Standard_NC24ads_A100_v4",
+                "apiVersion: kaito.sh/v1alpha1\nkind: MultiRoleInference\nmetadata:\n  name: qwen-3-8-27b\nspec:\n  model:\n    name: Qwen/Qwen3.8-27B\n  roles:\n    - type: prefill\n      replicas: 1\n      instanceType: Standard_NC24ads_A100_v4\n    - type: decode\n      replicas: 1\n      instanceType: Standard_NC80adis_H100_v5",
                 15, False, WHITE, fill=None, line=False, font="Consolas")
     add_connector(slide, Inches(6.10), Inches(4.05), Inches(7.05), Inches(4.05), GREEN, 4)
     add_textbox(slide, Inches(7.30), Inches(2.10), Inches(2.0), Inches(0.60), "prefill", 20, True,
