@@ -385,9 +385,9 @@ def slide_22_request_flow():
                 NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
     add_textbox(slide, Inches(0.92), Inches(1.72), Inches(1.10), Inches(0.28), "request path", 11, True, BLUE,
                 PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(7.56), Inches(3.03), Inches(1.00), Inches(0.28), "prefill path", 11, True, ORANGE,
+    add_textbox(slide, Inches(7.78), Inches(2.94), Inches(1.05), Inches(0.28), "prefill path", 11, True, ORANGE,
                 PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(8.98), Inches(3.32), Inches(1.00), Inches(0.28), "KV path", 11, True, PURPLE,
+    add_textbox(slide, Inches(9.28), Inches(3.06), Inches(1.00), Inches(0.28), "KV path", 11, True, PURPLE,
                 PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
     labels = [
         ("1  Client", Inches(0.72), Inches(1.98), GREEN_SOFT, GREEN),
@@ -405,9 +405,9 @@ def slide_22_request_flow():
         _, x1, y1, *_ = labels[i]
         _, x2, y2, *_ = labels[i + 1]
         add_connector(slide, x1 + widths[i], y1 + Inches(0.32), x2, y2 + Inches(0.32), BLUE, 2.5)
-    add_textbox(slide, Inches(8.35), Inches(3.30), Inches(1.82), Inches(0.64), "Prefill", 15, True,
+    add_textbox(slide, Inches(8.30), Inches(3.36), Inches(1.82), Inches(0.64), "Prefill", 15, True,
                 NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_connector(slide, Inches(9.28), Inches(2.62), Inches(9.28), Inches(3.30), ORANGE, 2.5)
+    add_connector(slide, Inches(9.28), Inches(2.62), Inches(9.28), Inches(3.36), ORANGE, 2.5)
     add_textbox(slide, Inches(7.85), Inches(2.78), Inches(1.05), Inches(0.24), "dispatches", 10, True, MUTED,
                 PP_ALIGN.CENTER, fill=None, line=False)
     add_connector(slide, Inches(10.17), Inches(3.62), Inches(10.85), Inches(2.62), PURPLE, 2.5)
@@ -437,25 +437,25 @@ def slide_23_sidecar():
     add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
                 "Sidecar placement is an execution design choice, not an incidental implementation detail.",
                 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_bullets(slide, Inches(0.85), Inches(2.05), Inches(5.45), Inches(3.8), [
+    add_bullets(slide, Inches(0.85), Inches(2.05), Inches(5.00), Inches(3.8), [
         "Decode pods are the final response point for user traffic",
         "The routing sidecar receives the EPP decision, coordinates prefill, waits for KV handoff, then forwards to local vLLM",
         "This keeps the external routing contract cleaner: sidecar on 5000, local decode vLLM on 5001",
         "Prefill pods stay simpler and focus only on prompt processing",
     ], size=16)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(7.12), Inches(1.80), Inches(5.10), Inches(4.75), fill=WHITE, line=BLUE, line_width=1.8)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(7.30), Inches(1.80), Inches(4.92), Inches(4.75), fill=WHITE, line=BLUE, line_width=1.8)
     add_textbox(slide, Inches(8.72), Inches(1.98), Inches(2.0), Inches(0.35), "Decode Pod", 21, True,
                 NAVY, PP_ALIGN.CENTER, fill=None, line=False)
-    add_textbox(slide, Inches(7.42), Inches(2.48), Inches(1.08), Inches(0.30), "external request", 11, True,
+    add_textbox(slide, Inches(7.58), Inches(2.48), Inches(1.08), Inches(0.30), "external request", 11, True,
                 GREEN, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_textbox(slide, Inches(11.08), Inches(2.48), Inches(1.00), Inches(0.30), "KV handoff", 11, True,
+    add_textbox(slide, Inches(11.00), Inches(2.48), Inches(1.00), Inches(0.30), "KV handoff", 11, True,
                 ORANGE, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(7.72), Inches(2.95), Inches(3.90), Inches(0.84), "Routing sidecar\nport 5000", 20, True,
+    add_textbox(slide, Inches(7.88), Inches(2.95), Inches(3.72), Inches(0.84), "Routing sidecar\nport 5000", 20, True,
                 NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-    add_textbox(slide, Inches(7.72), Inches(4.42), Inches(3.90), Inches(0.84), "Local decode vLLM\nport 5001", 20, True,
+    add_textbox(slide, Inches(7.88), Inches(4.42), Inches(3.72), Inches(0.84), "Local decode vLLM\nport 5001", 20, True,
                 NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_connector(slide, Inches(6.90), Inches(3.36), Inches(7.72), Inches(3.36), GREEN, 2.8)
-    add_textbox(slide, Inches(6.02), Inches(3.15), Inches(0.82), Inches(0.32), "from EPP", 11, True,
+    add_connector(slide, Inches(7.08), Inches(3.36), Inches(7.88), Inches(3.36), GREEN, 2.8)
+    add_textbox(slide, Inches(6.12), Inches(3.15), Inches(0.82), Inches(0.32), "from EPP", 11, True,
                 NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
     add_connector(slide, Inches(9.67), Inches(3.79), Inches(9.67), Inches(4.42), PURPLE, 3)
     add_textbox(slide, Inches(9.82), Inches(3.96), Inches(1.20), Inches(0.28), "proxy to local", 11, True,
@@ -463,7 +463,7 @@ def slide_23_sidecar():
     add_connector(slide, Inches(11.35), Inches(3.35), Inches(11.78), Inches(4.68), ORANGE, 2.6)
     add_textbox(slide, Inches(11.24), Inches(4.02), Inches(0.90), Inches(0.28), "NIXL KV", 11, True,
                 NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(7.48), Inches(5.58), Inches(4.35), Inches(0.40),
+    add_textbox(slide, Inches(7.58), Inches(5.58), Inches(4.15), Inches(0.40),
                 "decode pod = coordination point + final response point", 14, True,
                 SLATE, PP_ALIGN.CENTER, fill=GRAY_SOFT, line=False, radius=True)
     add_note(slide, "Decode-side sidecar placement turns the decode pod into the coordination point for P/D execution.")
