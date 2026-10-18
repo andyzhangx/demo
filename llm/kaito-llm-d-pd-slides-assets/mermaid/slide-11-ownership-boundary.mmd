@@ -1,23 +1,23 @@
 flowchart LR
-%% pos USER 120 90 420 110
-%% pos USERDETAIL 70 250 520 430
-%% pos BOUND 835 340 530 90
-%% pos PLATFORM 1660 90 420 110
-%% pos PLATFORMDETAIL 1490 250 590 470
+%% pos USER 110 90 430 110
+%% pos USERDETAIL 70 250 560 420
+%% pos BOUND 860 335 500 90
+%% pos PLATFORM 1660 90 430 110
+%% pos PLATFORMDETAIL 1510 250 600 460
 %% pos NOTE 430 810 1340 120
 
-USER["User intent"]:::primary
+USER["Users manage intent"]:::primary
 USERDETAIL["model choice<br/>prefill / decode role definitions<br/>replica intent<br/>instance types<br/>autoscaling intent<br/>policy-level topology decisions"]:::primary2
-BOUND["ownership boundary"]:::teal
-PLATFORM["Platform-managed plumbing"]:::decode
+BOUND["clean ownership boundary"]:::teal
+PLATFORM["Platform manages plumbing"]:::decode
 PLATFORMDETAIL["child InferenceSets and InferencePool<br/>llm-d Router EPP resources<br/>sidecar injection<br/>labels / services / targetPorts<br/>env wiring for NIXL<br/>ownership references and request-path correctness<br/>per-role wiring consistency"]:::blue2
-NOTE["The platform value is not fewer YAML files.<br/>The platform value is a cleaner operational ownership boundary."]:::note
+NOTE["The platform value is not fewer YAML files.<br/>The platform value is a much cleaner operational boundary."]:::note
 
 USER --> USERDETAIL
 USER --> BOUND
 BOUND --> PLATFORM
 PLATFORM --> PLATFORMDETAIL
-PLATFORM -.-> NOTE
+BOUND -.-> NOTE
 
 classDef primary fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:24px,font-weight:bold
 classDef primary2 fill:#EFF6FF,stroke:#93C5FD,color:#1D4ED8,font-size:20px

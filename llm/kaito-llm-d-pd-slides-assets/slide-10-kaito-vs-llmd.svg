@@ -4,42 +4,41 @@
 <marker id="solid1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C2410C" /></marker>
 <marker id="solid2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
 <marker id="solid3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#FDBA74" /></marker>
-<marker id="dash4" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
+<marker id="dash4" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C2410C" /></marker>
+<marker id="dash5" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
+<marker id="dash6" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#CBD5E1" /></marker>
 </defs>
 <rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
-<path d="M 320.0 180.0 L 320.0 210.0 L 350.0 210.0 L 350.0 240.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 320.0 180.0 L 320.0 270.0 L 350.0 270.0 L 350.0 360.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 320.0 180.0 L 320.0 330.0 L 350.0 330.0 L 350.0 480.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 320.0 180.0 L 320.0 390.0 L 350.0 390.0 L 350.0 600.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1880.0 180.0 L 1880.0 210.0 L 1830.0 210.0 L 1830.0 240.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid2)" />
-<path d="M 1880.0 180.0 L 1880.0 270.0 L 1830.0 270.0 L 1830.0 360.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid2)" />
-<path d="M 1880.0 180.0 L 1880.0 330.0 L 1830.0 330.0 L 1830.0 480.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid2)" />
-<path d="M 1880.0 180.0 L 1880.0 390.0 L 1830.0 390.0 L 1830.0 600.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid2)" />
-<path d="M 580.0 285.0 L 1580.0 285.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid3)" />
-<path d="M 580.0 405.0 L 1580.0 405.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid3)" />
-<path d="M 580.0 525.0 L 1580.0 525.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid3)" />
-<path d="M 580.0 645.0 L 1580.0 645.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid3)" />
-<path d="M 1680.0 125.0 L 1680.0 845.0" fill="none" stroke="#2F6FEB" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash4)" />
-<rect x="120.0" y="70.0" width="400.0" height="110.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
-<text x="320.0" y="134.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#C2410C"><tspan x="320.0" dy="0.0">llm-d Router</tspan></text>
-<rect x="1680.0" y="70.0" width="400.0" height="110.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="1880.0" y="134.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1880.0" dy="0.0">KAITO</tspan></text>
-<rect x="120.0" y="240.0" width="460.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
-<text x="350.0" y="292.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#9A3412"><tspan x="350.0" dy="0.0">EPP implementation</tspan></text>
-<rect x="1580.0" y="240.0" width="500.0" height="90.0" rx="18" ry="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="3" />
-<text x="1830.0" y="292.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#1D4ED8"><tspan x="1830.0" dy="0.0">CRD abstraction</tspan></text>
-<rect x="120.0" y="360.0" width="460.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
-<text x="350.0" y="412.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#9A3412"><tspan x="350.0" dy="0.0">endpoint picking</tspan></text>
-<rect x="1580.0" y="360.0" width="500.0" height="90.0" rx="18" ry="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="3" />
-<text x="1830.0" y="412.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#1D4ED8"><tspan x="1830.0" dy="0.0">child resource generation</tspan></text>
-<rect x="120.0" y="480.0" width="460.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
-<text x="350.0" y="532.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#9A3412"><tspan x="350.0" dy="0.0">routing execution</tspan></text>
-<rect x="1580.0" y="480.0" width="500.0" height="90.0" rx="18" ry="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="3" />
-<text x="1830.0" y="532.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#1D4ED8"><tspan x="1830.0" dy="0.0">lifecycle orchestration</tspan></text>
-<rect x="120.0" y="600.0" width="460.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
-<text x="350.0" y="652.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#9A3412"><tspan x="350.0" dy="0.0">future scheduling surface</tspan></text>
-<rect x="1580.0" y="600.0" width="500.0" height="90.0" rx="18" ry="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="3" />
-<text x="1830.0" y="640.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#1D4ED8"><tspan x="1830.0" dy="0.0">integration with InferenceSet /</tspan><tspan x="1830.0" dy="25.0">autoscaling</tspan></text>
-<rect x="520.0" y="780.0" width="1160.0" height="130.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
-<text x="1100.0" y="840.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#111827"><tspan x="1100.0" dy="0.0">KAITO does not replace llm-d.</tspan><tspan x="1100.0" dy="25.0">It operationalizes llm-d inside a Kubernetes-native control plane.</tspan></text>
+<path d="M 350.0 200.0 L 350.0 235.0 L 355.0 235.0 L 355.0 270.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 350.0 200.0 L 350.0 297.5 L 355.0 297.5 L 355.0 395.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 350.0 200.0 L 350.0 360.0 L 355.0 360.0 L 355.0 520.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1850.0 200.0 L 1850.0 235.0 L 1855.0 235.0 L 1855.0 270.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid2)" />
+<path d="M 1850.0 200.0 L 1850.0 297.5 L 1855.0 297.5 L 1855.0 395.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid2)" />
+<path d="M 1850.0 200.0 L 1850.0 360.0 L 1855.0 360.0 L 1855.0 520.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid2)" />
+<path d="M 570.0 315.0 L 1640.0 315.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid3)" />
+<path d="M 570.0 440.0 L 1640.0 440.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid3)" />
+<path d="M 570.0 565.0 L 1640.0 565.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid3)" />
+<path d="M 560.0 145.0 L 722.5 145.0 L 722.5 150.0 L 885.0 150.0" fill="none" stroke="#C2410C" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash4)" />
+<path d="M 1640.0 145.0 L 1477.5 145.0 L 1477.5 150.0 L 1315.0 150.0" fill="none" stroke="#2F6FEB" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash5)" />
+<path d="M 1100.0 190.0 L 1100.0 485.0 L 1110.0 485.0 L 1110.0 780.0" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash6)" />
+<rect x="140.0" y="90.0" width="420.0" height="110.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
+<text x="350.0" y="154.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#C2410C"><tspan x="350.0" dy="0.0">llm-d Router</tspan></text>
+<rect x="1640.0" y="90.0" width="420.0" height="110.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1850.0" y="154.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1850.0" dy="0.0">KAITO</tspan></text>
+<rect x="885.0" y="110.0" width="430.0" height="80.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1100.0" y="156.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827"><tspan x="1100.0" dy="0.0">different layers of the same workflow</tspan></text>
+<rect x="140.0" y="270.0" width="430.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
+<text x="355.0" y="322.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#9A3412"><tspan x="355.0" dy="0.0">EPP implementation</tspan></text>
+<rect x="1640.0" y="270.0" width="430.0" height="90.0" rx="18" ry="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="3" />
+<text x="1855.0" y="322.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#1D4ED8"><tspan x="1855.0" dy="0.0">CRD abstraction</tspan></text>
+<rect x="140.0" y="395.0" width="430.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
+<text x="355.0" y="435.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#9A3412"><tspan x="355.0" dy="0.0">endpoint picking and routing</tspan><tspan x="355.0" dy="25.0">execution</tspan></text>
+<rect x="1640.0" y="395.0" width="430.0" height="90.0" rx="18" ry="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="3" />
+<text x="1855.0" y="435.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#1D4ED8"><tspan x="1855.0" dy="0.0">child resource generation and</tspan><tspan x="1855.0" dy="25.0">orchestration</tspan></text>
+<rect x="140.0" y="520.0" width="430.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
+<text x="355.0" y="572.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#9A3412"><tspan x="355.0" dy="0.0">future scheduling surface</tspan></text>
+<rect x="1640.0" y="520.0" width="430.0" height="90.0" rx="18" ry="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="3" />
+<text x="1855.0" y="560.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#1D4ED8"><tspan x="1855.0" dy="0.0">integration with InferenceSet /</tspan><tspan x="1855.0" dy="25.0">autoscaling</tspan></text>
+<rect x="540.0" y="780.0" width="1140.0" height="125.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<text x="1110.0" y="837.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="400" fill="#111827"><tspan x="1110.0" dy="0.0">KAITO does not replace llm-d.</tspan><tspan x="1110.0" dy="25.0">It packages llm-d into a cleaner Kubernetes-native operating model.</tspan></text>
 </svg>

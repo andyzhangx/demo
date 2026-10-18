@@ -1,25 +1,25 @@
 flowchart TB
-%% pos CONTRACT 690 60 820 110
-%% pos SIDE 100 260 420 120
-%% pos PORTS 560 260 500 120
-%% pos LABELS 1100 260 420 120
-%% pos KVHOST 370 450 500 120
-%% pos TARGET 960 450 540 120
-%% pos EFFECT 470 700 1260 150
+%% pos HEAD 610 70 980 90
+%% pos SIDE 130 270 420 120
+%% pos PORTS 610 270 420 120
+%% pos LABELS 1090 270 420 120
+%% pos KVHOST 370 500 420 120
+%% pos TARGET 850 500 520 120
+%% pos EFFECT 470 780 1260 135
 
-CONTRACT["Controller-enforced runtime contract"]:::primary
-SIDE["Routing sidecar only on decode"]:::decode
-PORTS["Port split:<br/>5000 sidecar / 5001 local vLLM"]:::teal
-LABELS["Role labels:<br/>prefill vs decode"]:::prefill
-KVHOST["Reachable NIXL host:<br/>Pod IP wiring"]:::orange
+HEAD["P/D works when a few runtime contracts stay boringly consistent"]:::primary
+SIDE["Routing sidecar<br/>only on decode"]:::decode
+PORTS["Port split<br/>5000 sidecar / 5001 local vLLM"]:::teal
+LABELS["Role labels<br/>prefill vs decode"]:::prefill
+KVHOST["Reachable NIXL host<br/>Pod IP wiring"]:::orange
 TARGET["Stable InferencePool targetPort"]:::green
-EFFECT["If these contracts are not enforced by the controller,<br/>users debug infrastructure wiring as if it were model behavior."]:::note
+EFFECT["When the controller enforces these contracts, users reason about serving behavior instead of debugging hidden infrastructure wiring."]:::note
 
-CONTRACT --> SIDE
-CONTRACT --> PORTS
-CONTRACT --> LABELS
-CONTRACT --> KVHOST
-CONTRACT --> TARGET
+HEAD --> SIDE
+HEAD --> PORTS
+HEAD --> LABELS
+HEAD --> KVHOST
+HEAD --> TARGET
 SIDE -.-> EFFECT
 PORTS -.-> EFFECT
 LABELS -.-> EFFECT

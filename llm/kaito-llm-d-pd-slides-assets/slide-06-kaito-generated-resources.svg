@@ -2,30 +2,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
 <defs>
 <marker id="solid1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
-<marker id="dash2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
+<marker id="dash2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#CBD5E1" /></marker>
+<marker id="dash3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
 </defs>
 <rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
-<path d="M 930.0 245.0 L 685.0 245.0 L 685.0 170.0 L 440.0 170.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 930.0 245.0 L 685.0 245.0 L 685.0 420.0 L 440.0 420.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1270.0 245.0 L 1465.0 245.0 L 1465.0 170.0 L 1660.0 170.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1270.0 245.0 L 1415.0 245.0 L 1415.0 350.0 L 1560.0 350.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1270.0 245.0 L 1270.0 387.5 L 1520.0 387.5 L 1520.0 530.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1100.0 310.0 L 1100.0 500.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1100.0 310.0 L 1100.0 525.0 L 1130.0 525.0 L 1130.0 740.0" fill="none" stroke="#2F6FEB" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash2)" />
-<rect x="930.0" y="180.0" width="340.0" height="130.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="1100.0" y="254.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1100.0" dy="0.0">MultiRoleInference</tspan></text>
-<rect x="120.0" y="110.0" width="320.0" height="120.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
-<text x="280.0" y="164.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#6D28D9"><tspan x="280.0" dy="0.0">InferenceSet</tspan><tspan x="280.0" dy="27.5">prefill</tspan></text>
-<rect x="120.0" y="360.0" width="320.0" height="120.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="280.0" y="414.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="280.0" dy="0.0">InferenceSet</tspan><tspan x="280.0" dy="27.5">decode</tspan></text>
-<rect x="1660.0" y="110.0" width="320.0" height="120.0" rx="18" ry="18" fill="#E8FFFB" stroke="#0F766E" stroke-width="3" />
-<text x="1820.0" y="178.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F766E"><tspan x="1820.0" dy="0.0">InferencePool</tspan></text>
-<rect x="1560.0" y="290.0" width="420.0" height="120.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
-<text x="1770.0" y="344.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#C2410C"><tspan x="1770.0" dy="0.0">llm-d Router</tspan><tspan x="1770.0" dy="27.5">EPP</tspan></text>
-<rect x="1520.0" y="470.0" width="460.0" height="120.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="1750.0" y="524.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="1750.0" dy="0.0">sidecar</tspan><tspan x="1750.0" dy="27.5">injection</tspan></text>
-<rect x="900.0" y="500.0" width="400.0" height="120.0" rx="18" ry="18" fill="#ECFDF3" stroke="#0F9D58" stroke-width="3" />
-<text x="1100.0" y="568.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F9D58"><tspan x="1100.0" dy="0.0">NIXL env wiring</tspan></text>
-<rect x="630.0" y="740.0" width="1000.0" height="140.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
-<text x="1130.0" y="805.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="19" font-weight="400" fill="#111827"><tspan x="1130.0" dy="0.0">KAITO acts like the control-plane compiler for the topology:</tspan><tspan x="1130.0" dy="23.8">it expands one object into the llm-d-facing resources and wiring P/D needs.</tspan></text>
+<path d="M 920.0 285.0 L 700.0 285.0 L 700.0 210.0 L 480.0 210.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 920.0 285.0 L 700.0 285.0 L 700.0 450.0 L 480.0 450.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1280.0 285.0 L 1475.0 285.0 L 1475.0 210.0 L 1670.0 210.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1280.0 285.0 L 1420.0 285.0 L 1420.0 400.0 L 1560.0 400.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1280.0 285.0 L 1280.0 437.5 L 1510.0 437.5 L 1510.0 590.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1100.0 350.0 L 1100.0 455.0 L 1110.0 455.0 L 1110.0 560.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1110.0 170.0 L 1110.0 195.0 L 1100.0 195.0 L 1100.0 220.0" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash2)" />
+<path d="M 1100.0 350.0 L 1100.0 570.0 L 1120.0 570.0 L 1120.0 790.0" fill="none" stroke="#2F6FEB" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash3)" />
+<rect x="650.0" y="80.0" width="920.0" height="90.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1110.0" y="132.1" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="19" font-weight="700" fill="#111827"><tspan x="1110.0" dy="0.0">KAITO expands one topology object into runnable platform resources</tspan></text>
+<rect x="920.0" y="220.0" width="360.0" height="130.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1100.0" y="294.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1100.0" dy="0.0">MultiRoleInference</tspan></text>
+<rect x="160.0" y="150.0" width="320.0" height="120.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
+<text x="320.0" y="204.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#6D28D9"><tspan x="320.0" dy="0.0">InferenceSet</tspan><tspan x="320.0" dy="27.5">prefill</tspan></text>
+<rect x="160.0" y="390.0" width="320.0" height="120.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="320.0" y="444.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="320.0" dy="0.0">InferenceSet</tspan><tspan x="320.0" dy="27.5">decode</tspan></text>
+<rect x="1670.0" y="150.0" width="320.0" height="120.0" rx="18" ry="18" fill="#E8FFFB" stroke="#0F766E" stroke-width="3" />
+<text x="1830.0" y="218.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F766E"><tspan x="1830.0" dy="0.0">InferencePool</tspan></text>
+<rect x="1560.0" y="340.0" width="430.0" height="120.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
+<text x="1775.0" y="394.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#C2410C"><tspan x="1775.0" dy="0.0">llm-d Router</tspan><tspan x="1775.0" dy="27.5">EPP</tspan></text>
+<rect x="1510.0" y="530.0" width="470.0" height="120.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1745.0" y="598.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="1745.0" dy="0.0">sidecar injection</tspan></text>
+<rect x="900.0" y="560.0" width="420.0" height="120.0" rx="18" ry="18" fill="#ECFDF3" stroke="#0F9D58" stroke-width="3" />
+<text x="1110.0" y="628.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F9D58"><tspan x="1110.0" dy="0.0">NIXL env wiring</tspan></text>
+<rect x="610.0" y="790.0" width="1020.0" height="130.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<text x="1120.0" y="850.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="19" font-weight="400" fill="#111827"><tspan x="1120.0" dy="0.0">KAITO behaves like a control-plane compiler:</tspan><tspan x="1120.0" dy="23.8">it turns user intent into the llm-d-facing resources and wiring P/D actually needs.</tspan></text>
 </svg>
