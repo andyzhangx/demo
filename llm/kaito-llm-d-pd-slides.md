@@ -12,19 +12,48 @@ These slides are designed to fit naturally around the current **Slide 18: divisi
 
 ---
 
-## Slide 18 — KAITO + llm-d + GWIE: division of labor
+## Slide 17 — What the llm-d Router brings to the stack
 
 ### Title
-**KAITO + llm-d + GWIE: Division of Labor**
+**What the llm-d Router Brings to the Stack**
+
+### Subtitle
+The routing intelligence KAITO builds on for P/D.
+
+### Recommended body
+- **EPP implementation** for the GWIE flow
+- **Model-aware and role-aware endpoint selection**
+- **KV-cache-aware and P/D-aware plugin chain**
+- **A scheduling substrate KAITO can build on**
+
+### Bottom takeaway box
+**KAITO is not inventing a new routing brain here. It is building on llm-d Router as the EPP and scheduling substrate.**
+
+### Suggested visual
+An llm-d Router EPP box with plugin labels around it.
+
+### Speaker note
+Use this slide to answer one question only:
+
+> **What new capability does llm-d add?**
+
+Explain that KAITO is not inventing its own routing algorithm here; it is building on llm-d Router as the EPP implementation and scheduling substrate.
+
+---
+
+## Slide 18 — Why all three: KAITO + GWIE + llm-d Router
+
+### Title
+**Why All Three: KAITO + GWIE + llm-d Router**
 
 ### Subtitle
 Three layers, three responsibilities, one usable P/D platform.
 
 ### Recommended body
-- **KAITO** = declarative API and Kubernetes orchestration for P/D topology
-- **GWIE** = Kubernetes-native routing contract between gateway and model backends
-- **llm-d Router** = actual EPP implementation, endpoint selection, and P/D-aware scheduling logic
-- **InferencePool** = binds the gateway-facing contract to the serving backends
+- **KAITO** = declarative abstraction and orchestration
+- **GWIE** = Kubernetes-native contract between gateway and inference backends
+- **llm-d Router** = routing intelligence and P/D-aware scheduling
+- **InferencePool** = the contract surface that binds them together
 
 ### Bottom takeaway box
 **KAITO makes P/D operable. llm-d provides the routing intelligence. GWIE provides the Kubernetes-native contract.**
@@ -46,11 +75,42 @@ A 3-layer stack:
 ### Speaker note
 Use one crisp line here:
 
-> **GWIE defines how inference routing plugs into Kubernetes; llm-d provides the actual EPP and routing intelligence; KAITO makes the whole topology declarative and operable.**
+> **llm-d gives the routing brain, GWIE gives the Kubernetes routing contract, and KAITO turns the whole thing into a usable platform workflow.**
+
+Be precise here: KAITO still uses GWIE objects and integration patterns, but it does **not** rely on GWIE’s reference routing implementation for P/D behavior.
 
 ---
 
-## Slide 19 — One MRI object describes the topology
+## Slide 19 — End-to-end architecture diagram
+
+### Title
+**End-to-End Architecture**
+
+### Subtitle
+One user endpoint, one gateway-facing contract surface, two role-specific backends, and a direct KV path.
+
+### Recommended body
+- **Client request enters through the gateway**
+- **Gateway targets an InferencePool** as the GWIE contract surface
+- **llm-d Router EPP selects decode and, when needed, prefill**
+- **KAITO-managed child InferenceSets** provide the actual prefill/decode backends
+- **KV data moves directly** between prefill and decode
+- **One user endpoint, multiple coordinated runtime paths**
+
+### Bottom takeaway box
+**This is the concrete payoff slide: GWIE carries the contract, llm-d makes the routing decisions, and KAITO owns the topology and wiring.**
+
+### Suggested visual
+A full architecture diagram; this is one of the anchor slides.
+
+### Speaker note
+This is the concrete payoff slide for 17 and 18.
+
+Show the audience where each piece from the previous slides lands in the real architecture. Make the child InferenceSets visible so the audience sees the real KAITO object model.
+
+---
+
+## Slide 20 — One MRI object describes the topology
 
 ### Title
 **One MultiRoleInference Object Describes the Topology**
@@ -95,7 +155,7 @@ This is the abstraction jump:
 
 ---
 
-## Slide 20 — What KAITO synthesizes automatically
+## Slide 21 — What KAITO synthesizes automatically
 
 ### Title
 **What KAITO Automatically Generates for P/D**
@@ -135,7 +195,7 @@ A good punchline here:
 
 ---
 
-## Slide 21 — End-to-end request flow
+## Slide 22 — End-to-end request flow
 
 ### Title
 **How a P/D Request Actually Executes**
@@ -173,7 +233,7 @@ Important clarification:
 
 ---
 
-## Slide 22 — Why the sidecar lives on decode pods
+## Slide 23 — Why the sidecar lives on decode pods
 
 ### Title
 **Why the Routing Sidecar Lives on Decode Pods**
@@ -210,7 +270,7 @@ Good stage line:
 
 ---
 
-## Slide 23 — Runtime contracts that make P/D work
+## Slide 24 — Runtime contracts that make P/D work
 
 ### Title
 **The Runtime Contracts That Make P/D Actually Work**
@@ -248,7 +308,7 @@ And that is exactly why platform automation matters.
 
 ---
 
-## Slide 24 — What llm-d contributes that KAITO does not replace
+## Slide 25 — What llm-d contributes that KAITO does not replace
 
 ### Title
 **KAITO Does Not Replace llm-d — It Operationalizes It**
@@ -279,7 +339,7 @@ This slide prevents a common misunderstanding:
 
 ---
 
-## Slide 25 — What users manage vs. what the platform manages
+## Slide 26 — What users manage vs. what the platform manages
 
 ### Title
 **What Users Manage vs. What the Platform Manages**

@@ -200,10 +200,39 @@ def title_slide():
     add_connector(slide, Inches(10.82), Inches(4.70), Inches(10.82), Inches(5.18), ORANGE, 3)
 
 
+def slide_17_router_value():
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    set_bg(slide)
+    add_header(slide, 17, "What the llm-d Router Brings to the Stack", accent=ORANGE)
+    add_textbox(slide, Inches(0.85), Inches(1.18), Inches(11.7), Inches(0.62),
+                "The routing intelligence KAITO builds on for P/D.", 21, True,
+                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+    add_card(slide, Inches(0.95), Inches(2.15), Inches(2.55), Inches(2.7), "EPP", [
+        "implementation for the GWIE flow",
+        "the runtime hook point for endpoint selection",
+    ], fill=ORANGE_SOFT, line=ORANGE)
+    add_card(slide, Inches(3.78), Inches(2.15), Inches(2.55), Inches(2.7), "Selection", [
+        "model-aware and role-aware",
+        "select decode and, when needed, prefill",
+    ], fill=BLUE_SOFT, line=BLUE)
+    add_card(slide, Inches(6.62), Inches(2.15), Inches(2.55), Inches(2.7), "Plugins", [
+        "KV-cache-aware logic",
+        "P/D-aware scheduling chain",
+    ], fill=GREEN_SOFT, line=GREEN)
+    add_card(slide, Inches(9.45), Inches(2.15), Inches(2.55), Inches(2.7), "Extensibility", [
+        "future advanced scheduling surface",
+        "a substrate KAITO can build on",
+    ], fill=PURPLE_SOFT, line=PURPLE)
+    add_connector(slide, Inches(3.50), Inches(3.50), Inches(3.78), Inches(3.50), ORANGE, 2.8)
+    add_connector(slide, Inches(6.33), Inches(3.50), Inches(6.62), Inches(3.50), ORANGE, 2.8)
+    add_connector(slide, Inches(9.18), Inches(3.50), Inches(9.45), Inches(3.50), ORANGE, 2.8)
+    add_note(slide, "KAITO is not inventing a new routing brain here. It is building on llm-d Router as the EPP and scheduling substrate.")
+
+
 def slide_18_division_of_labor():
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide)
-    add_header(slide, 18, "KAITO + llm-d + GWIE: Division of Labor", accent=GREEN)
+    add_header(slide, 18, "Why All Three: KAITO + GWIE + llm-d Router", accent=GREEN)
     add_textbox(slide, Inches(0.85), Inches(1.18), Inches(11.7), Inches(0.62),
                 "Three layers, three responsibilities, one usable P/D platform.", 21, True,
                 NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
@@ -218,7 +247,7 @@ def slide_18_division_of_labor():
              fill=ORANGE_SOFT, line=ORANGE)
     add_connector(slide, Inches(4.10), Inches(3.47), Inches(5.00), Inches(3.47), PURPLE, 3)
     add_connector(slide, Inches(8.25), Inches(3.47), Inches(9.15), Inches(3.47), PURPLE, 3)
-    add_note(slide, "KAITO makes P/D operable. llm-d provides the routing intelligence. GWIE provides the Kubernetes-native contract.")
+    add_note(slide, "llm-d gives the routing brain, GWIE gives the Kubernetes routing contract, and KAITO turns the whole thing into a usable platform workflow.")
 
 
 def slide_19_anchor_architecture():
@@ -515,6 +544,7 @@ def closing_slide():
 
 def main():
     title_slide()
+    slide_17_router_value()
     slide_18_division_of_labor()
     slide_19_anchor_architecture()
     slide_20_mri_object()
