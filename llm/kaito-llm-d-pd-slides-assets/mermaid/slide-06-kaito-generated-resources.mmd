@@ -1,0 +1,34 @@
+flowchart LR
+%% pos MRI 930 180 340 130
+%% pos PREFILL 120 110 320 120
+%% pos DECODE 120 360 320 120
+%% pos POOL 1660 110 320 120
+%% pos EPP 1560 290 420 120
+%% pos SIDECAR 1520 470 460 120
+%% pos NIXL 900 500 400 120
+%% pos NOTE 630 740 1000 140
+
+MRI["MultiRoleInference"]:::primary
+PREFILL["InferenceSet<br/>prefill"]:::prefill
+DECODE["InferenceSet<br/>decode"]:::decode
+POOL["InferencePool"]:::teal
+EPP["llm-d Router<br/>EPP"]:::orange
+SIDECAR["sidecar<br/>injection"]:::decode
+NIXL["NIXL env wiring"]:::green
+NOTE["KAITO acts like the control-plane compiler for the topology:<br/>it expands one object into the llm-d-facing resources and wiring P/D needs."]:::note
+
+MRI --> PREFILL
+MRI --> DECODE
+MRI --> POOL
+MRI --> EPP
+MRI --> SIDECAR
+MRI --> NIXL
+MRI -.-> NOTE
+
+classDef primary fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:24px,font-weight:bold
+classDef prefill fill:#F3E8FF,stroke:#6D28D9,color:#6D28D9,font-size:22px,font-weight:bold
+classDef decode fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:22px,font-weight:bold
+classDef teal fill:#E8FFFB,stroke:#0F766E,color:#0F766E,font-size:22px,font-weight:bold
+classDef orange fill:#FFF2E8,stroke:#C2410C,color:#C2410C,font-size:22px,font-weight:bold
+classDef green fill:#ECFDF3,stroke:#0F9D58,color:#0F9D58,font-size:22px,font-weight:bold
+classDef note fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:19px

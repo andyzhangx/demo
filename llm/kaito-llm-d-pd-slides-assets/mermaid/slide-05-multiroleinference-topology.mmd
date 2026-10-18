@@ -1,0 +1,25 @@
+flowchart LR
+%% pos MRI 120 250 430 170
+%% pos PREFILL 780 130 320 120
+%% pos DECODE 780 340 320 120
+%% pos POOL 1450 230 390 140
+%% pos NOTE 700 620 900 140
+
+MRI["MultiRoleInference<br/>one object, one topology intent"]:::primary
+PREFILL["prefill role<br/>replicas: 1"]:::prefill
+DECODE["decode role<br/>replicas: 2"]:::decode
+POOL["InferencePool<br/>one logical service surface"]:::teal
+NOTE["Users declare one logical topology.<br/>Controllers expand it into runnable role-specific plumbing."]:::note
+
+MRI --> PREFILL
+MRI --> DECODE
+MRI --> POOL
+PREFILL -.-> POOL
+DECODE -.-> POOL
+MRI -.-> NOTE
+
+classDef primary fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:24px,font-weight:bold
+classDef prefill fill:#F3E8FF,stroke:#6D28D9,color:#6D28D9,font-size:22px,font-weight:bold
+classDef decode fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:22px,font-weight:bold
+classDef teal fill:#E8FFFB,stroke:#0F766E,color:#0F766E,font-size:22px,font-weight:bold
+classDef note fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:20px

@@ -1,0 +1,44 @@
+flowchart LR
+%% pos LLMD 120 70 400 110
+%% pos KAITO 1680 70 400 110
+%% pos L1 120 240 460 90
+%% pos R1 1580 240 500 90
+%% pos L2 120 360 460 90
+%% pos R2 1580 360 500 90
+%% pos L3 120 480 460 90
+%% pos R3 1580 480 500 90
+%% pos L4 120 600 460 90
+%% pos R4 1580 600 500 90
+%% pos NOTE 520 780 1160 130
+
+LLMD["llm-d Router"]:::orange
+KAITO["KAITO"]:::decode
+L1["EPP implementation"]:::orange2
+R1["CRD abstraction"]:::blue2
+L2["endpoint picking"]:::orange2
+R2["child resource generation"]:::blue2
+L3["routing execution"]:::orange2
+R3["lifecycle orchestration"]:::blue2
+L4["future scheduling surface"]:::orange2
+R4["integration with InferenceSet / autoscaling"]:::blue2
+NOTE["KAITO does not replace llm-d.<br/>It operationalizes llm-d inside a Kubernetes-native control plane."]:::note
+
+LLMD --> L1
+LLMD --> L2
+LLMD --> L3
+LLMD --> L4
+KAITO --> R1
+KAITO --> R2
+KAITO --> R3
+KAITO --> R4
+L1 --> R1
+L2 --> R2
+L3 --> R3
+L4 --> R4
+KAITO -.-> NOTE
+
+classDef orange fill:#FFF2E8,stroke:#C2410C,color:#C2410C,font-size:24px,font-weight:bold
+classDef orange2 fill:#FFF7ED,stroke:#FDBA74,color:#9A3412,font-size:20px
+classDef decode fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:24px,font-weight:bold
+classDef blue2 fill:#EFF6FF,stroke:#93C5FD,color:#1D4ED8,font-size:20px
+classDef note fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:20px

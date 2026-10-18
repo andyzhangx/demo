@@ -1,0 +1,35 @@
+flowchart TB
+%% pos CONTRACT 690 60 820 110
+%% pos SIDE 100 260 420 120
+%% pos PORTS 560 260 500 120
+%% pos LABELS 1100 260 420 120
+%% pos KVHOST 370 450 500 120
+%% pos TARGET 960 450 540 120
+%% pos EFFECT 470 700 1260 150
+
+CONTRACT["Controller-enforced runtime contract"]:::primary
+SIDE["Routing sidecar only on decode"]:::decode
+PORTS["Port split:<br/>5000 sidecar / 5001 local vLLM"]:::teal
+LABELS["Role labels:<br/>prefill vs decode"]:::prefill
+KVHOST["Reachable NIXL host:<br/>Pod IP wiring"]:::orange
+TARGET["Stable InferencePool targetPort"]:::green
+EFFECT["If these contracts are not enforced by the controller,<br/>users debug infrastructure wiring as if it were model behavior."]:::note
+
+CONTRACT --> SIDE
+CONTRACT --> PORTS
+CONTRACT --> LABELS
+CONTRACT --> KVHOST
+CONTRACT --> TARGET
+SIDE -.-> EFFECT
+PORTS -.-> EFFECT
+LABELS -.-> EFFECT
+KVHOST -.-> EFFECT
+TARGET -.-> EFFECT
+
+classDef primary fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:24px,font-weight:bold
+classDef prefill fill:#F3E8FF,stroke:#6D28D9,color:#6D28D9,font-size:22px,font-weight:bold
+classDef decode fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:22px,font-weight:bold
+classDef teal fill:#E8FFFB,stroke:#0F766E,color:#0F766E,font-size:22px,font-weight:bold
+classDef orange fill:#FFF2E8,stroke:#C2410C,color:#C2410C,font-size:22px,font-weight:bold
+classDef green fill:#ECFDF3,stroke:#0F9D58,color:#0F9D58,font-size:22px,font-weight:bold
+classDef note fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:20px

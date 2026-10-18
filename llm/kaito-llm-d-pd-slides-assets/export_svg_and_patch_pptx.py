@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import html
-import math
+import re
 import shutil
 import tempfile
 import zipfile
@@ -11,24 +11,30 @@ from xml.etree import ElementTree as ET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ASSET_DIR = Path(__file__).resolve().parent
+MERMAID_DIR = ASSET_DIR / "mermaid"
 DRAWIO_PATH = ASSET_DIR / "kaito-llm-d-pd-slides.drawio"
 PPTX_PATH = REPO_ROOT / "llm" / "kaito-llm-d-pd-slides.pptx"
+CANVAS_W = 2200
+CANVAS_H = 1000
 NS_CT = {"ct": "http://schemas.openxmlformats.org/package/2006/content-types"}
 NS_REL = {"rel": "http://schemas.openxmlformats.org/package/2006/relationships"}
-SLIDE_TO_BASENAME = {
-    4: "slide-04-end-to-end-architecture",
-    5: "slide-05-multiroleinference-topology",
-    6: "slide-06-kaito-generated-resources",
-    7: "slide-07-request-execution-flow",
-    8: "slide-08-decode-sidecar-placement",
-    9: "slide-09-runtime-contracts",
-    10: "slide-10-kaito-vs-llmd",
-    11: "slide-11-ownership-boundary",
+
+SLIDES = {
+    4: {"basename": "slide-04-end-to-end-architecture", "source": "drawio", "drawio_name": "Slide 4 - End-to-End Architecture"},
+    5: {"basename": "slide-05-multiroleinference-topology", "source": "mermaid", "mmd": "slide-05-multiroleinference-topology.mmd"},
+    6: {"basename": "slide-06-kaito-generated-resources", "source": "mermaid", "mmd": "slide-06-kaito-generated-resources.mmd"},
+    7: {"basename": "slide-07-request-execution-flow", "source": "drawio", "drawio_name": "Slide 7 - How a P/D Request Actually Executes"},
+    8: {"basename": "slide-08-decode-sidecar-placement", "source": "drawio", "drawio_name": "Slide 8 - Why the Routing Sidecar Lives on Decode Pods"},
+    9: {"basename": "slide-09-runtime-contracts", "source": "mermaid", "mmd": "slide-09-runtime-contracts.mmd"},
+    10: {"basename": "slide-10-kaito-vs-llmd", "source": "mermaid", "mmd": "slide-10-kaito-vs-llmd.mmd"},
+    11: {"basename": "slide-11-ownership-boundary", "source": "mermaid", "mmd": "slide-11-ownership-boundary.mmd"},
 }
+
 ET.register_namespace("", NS_CT["ct"])
 ET.register_namespace("", NS_REL["rel"])
 
 
+# ---------------- draw.io parsing/rendering ----------------
 def parse_style(style: str) -> dict[str, str]:
     out: dict[str, str] = {}
     for part in (style or "").split(";"):
@@ -81,15 +87,11 @@ def svg_text_block(x: float, y: float, w: float, h: float, text: str, font_size:
     spans = []
     for i, line in enumerate(lines):
         dy = 0 if i == 0 else line_height
-        spans.append(
-            f'<tspan x="{x_text:.1f}" dy="{dy:.1f}">{html.escape(line)}</tspan>'
-        )
+        spans.append(f'<tspan x="{x_text:.1f}" dy="{dy:.1f}">{html.escape(line)}</tspan>')
     return (
         f'<text x="{x_text:.1f}" y="{start_y:.1f}" text-anchor="{anchor}" '
         f'font-family="Aptos, Arial, sans-serif" font-size="{font_size}" '
-        f'font-weight="{weight}" fill="{color}">'
-        + "".join(spans)
-        + "</text>"
+        f'font-weight="{weight}" fill="{color}">' + "".join(spans) + "</text>"
     )
 
 
@@ -120,29 +122,28 @@ def orthogonal_path(start: tuple[float, float], end: tuple[float, float]) -> str
     return f"M {sx:.1f} {sy:.1f} L {sx:.1f} {my:.1f} L {ex:.1f} {my:.1f} L {ex:.1f} {ey:.1f}"
 
 
-def parse_diagrams() -> list[tuple[str, float, float, list[dict], list[dict]]]:
+def parse_drawio_diagrams() -> dict[str, tuple[float, float, list[dict], list[dict]]]:
     root = ET.parse(DRAWIO_PATH).getroot()
-    pages = []
+    pages: dict[str, tuple[float, float, list[dict], list[dict]]] = {}
     for diagram in root.findall("diagram"):
         name = diagram.attrib.get("name", "diagram")
         model = ET.fromstring(diagram.text or "")
         model_root = model.find("root")
         if model_root is None:
             continue
-        width = float(model.attrib.get("pageWidth", "2200"))
-        height = float(model.attrib.get("pageHeight", "1000"))
+        width = float(model.attrib.get("pageWidth", str(CANVAS_W)))
+        height = float(model.attrib.get("pageHeight", str(CANVAS_H)))
         vertices: list[dict] = []
         edges: list[dict] = []
         for cell in model_root.findall("mxCell"):
             attrs = cell.attrib
             geom = cell.find("mxGeometry")
             if attrs.get("vertex") == "1" and geom is not None:
-                style = parse_style(attrs.get("style", ""))
                 vertices.append(
                     {
                         "id": attrs["id"],
                         "text": xml_text_to_plain(attrs.get("value")),
-                        "style": style,
+                        "style": parse_style(attrs.get("style", "")),
                         "x": float(geom.attrib.get("x", "0")),
                         "y": float(geom.attrib.get("y", "0")),
                         "w": float(geom.attrib.get("width", "0")),
@@ -150,27 +151,19 @@ def parse_diagrams() -> list[tuple[str, float, float, list[dict], list[dict]]]:
                     }
                 )
             elif attrs.get("edge") == "1":
-                style = parse_style(attrs.get("style", ""))
-                points = []
-                if geom is not None:
-                    for arr in geom.findall("Array"):
-                        if arr.attrib.get("as") == "points":
-                            for pt in arr.findall("mxPoint"):
-                                points.append((float(pt.attrib["x"]), float(pt.attrib["y"])))
                 edges.append(
                     {
                         "id": attrs["id"],
                         "source": attrs.get("source"),
                         "target": attrs.get("target"),
-                        "style": style,
-                        "points": points,
+                        "style": parse_style(attrs.get("style", "")),
                     }
                 )
-        pages.append((name, width, height, vertices, edges))
+        pages[name] = (width, height, vertices, edges)
     return pages
 
 
-def render_svg(name: str, width: float, height: float, vertices: list[dict], edges: list[dict]) -> str:
+def render_drawio_svg(width: float, height: float, vertices: list[dict], edges: list[dict]) -> str:
     by_id = {v["id"]: v for v in vertices}
     marker_defs: dict[str, str] = {}
     parts: list[str] = [
@@ -180,29 +173,27 @@ def render_svg(name: str, width: float, height: float, vertices: list[dict], edg
     ]
     for edge in edges:
         stroke = edge["style"].get("strokeColor", "#64748B")
-        mid = marker_defs.get(stroke)
-        if mid is None:
+        if stroke not in marker_defs:
             mid = f"arrow{len(marker_defs)+1}"
             marker_defs[stroke] = mid
             parts.append(
                 f'<marker id="{mid}" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">'
-                f'<path d="M 0 0 L 10 5 L 0 10 z" fill="{stroke}" /></marker>'
+                f'<path d="M 0 0 L 10 5 L 0 10 z" fill="{stroke}" /></marker></marker>'
             )
     parts.append('</defs>')
     parts.append(f'<rect x="0" y="0" width="{int(width)}" height="{int(height)}" fill="#FFFFFF"/>')
+    # fix accidental double close from above
+    parts = [p.replace('</marker></marker>', '</marker>') for p in parts]
     for edge in edges:
         src = by_id.get(edge.get("source", ""))
         dst = by_id.get(edge.get("target", ""))
         if not src or not dst:
             continue
         start, end = choose_anchor((src["x"], src["y"], src["w"], src["h"]), (dst["x"], dst["y"], dst["w"], dst["h"]))
-        d = orthogonal_path(start, end)
         stroke = edge["style"].get("strokeColor", "#64748B")
-        stroke_width = float(edge["style"].get("strokeWidth", "4"))
         marker = marker_defs[stroke]
-        parts.append(
-            f'<path d="{d}" fill="none" stroke="{stroke}" stroke-width="{stroke_width}" marker-end="url(#{marker})" />'
-        )
+        stroke_width = float(edge["style"].get("strokeWidth", "4"))
+        parts.append(f'<path d="{orthogonal_path(start, end)}" fill="none" stroke="{stroke}" stroke-width="{stroke_width}" marker-end="url(#{marker})" />')
     for v in vertices:
         style = v["style"]
         fill = style.get("fillColor", "#FFFFFF")
@@ -213,66 +204,239 @@ def render_svg(name: str, width: float, height: float, vertices: list[dict], edg
         bold = style.get("fontStyle") == "1"
         align = style.get("align", "center")
         rx = 18 if rounded else 0
-        parts.append(
-            f'<rect x="{v["x"]:.1f}" y="{v["y"]:.1f}" width="{v["w"]:.1f}" height="{v["h"]:.1f}" '
-            f'rx="{rx}" ry="{rx}" fill="{fill}" stroke="{stroke}" stroke-width="3" />'
-        )
+        parts.append(f'<rect x="{v["x"]:.1f}" y="{v["y"]:.1f}" width="{v["w"]:.1f}" height="{v["h"]:.1f}" rx="{rx}" ry="{rx}" fill="{fill}" stroke="{stroke}" stroke-width="3" />')
         if v["text"]:
             parts.append(svg_text_block(v["x"], v["y"], v["w"], v["h"], v["text"], font_size, font_color, align, bold))
     parts.append('</svg>')
     return "\n".join(parts)
 
 
+# ---------------- Mermaid parsing/rendering ----------------
+EDGE_RE = re.compile(r'^(?P<src>[A-Za-z0-9_]+)\s+(?P<arrow>-\.->|-->)\s+(?P<dst>[A-Za-z0-9_]+)$')
+CLASSDEF_RE = re.compile(r'^classDef\s+(?P<name>[A-Za-z0-9_-]+)\s+(?P<body>.+)$')
+POS_RE = re.compile(r'^%%\s+pos\s+(?P<id>[A-Za-z0-9_]+)\s+(?P<x>\d+)\s+(?P<y>\d+)\s+(?P<w>\d+)\s+(?P<h>\d+)$')
+FLOW_RE = re.compile(r'^(flowchart|graph)\s+(?P<dir>LR|TB)$')
+
+
+def parse_mermaid_style(body: str) -> dict[str, str]:
+    style: dict[str, str] = {}
+    for part in body.split(','):
+        piece = part.strip()
+        if not piece or ':' not in piece:
+            continue
+        key, value = piece.split(':', 1)
+        key = key.strip()
+        value = value.strip().rstrip(';')
+        if key == 'fill':
+            style['fill'] = value
+        elif key == 'stroke':
+            style['stroke'] = value
+        elif key == 'color':
+            style['color'] = value
+        elif key == 'font-size':
+            style['font-size'] = value.replace('px', '')
+        elif key == 'font-weight':
+            style['font-weight'] = value
+    return style
+
+
+def parse_mermaid_node(line: str) -> dict | None:
+    if '["' not in line or '"]' not in line:
+        return None
+    node_id, rest = line.split('["', 1)
+    if not re.fullmatch(r'[A-Za-z0-9_]+', node_id):
+        return None
+    label, tail = rest.split('"]', 1)
+    class_name = 'default'
+    tail = tail.strip()
+    if tail.startswith(':::'):
+        class_name = tail[3:].strip()
+    return {'id': node_id, 'label': label.replace('<br/>', '\n').replace('<br>', '\n'), 'class': class_name}
+
+
+def parse_mermaid(path: Path) -> dict:
+    direction = 'LR'
+    classdefs: dict[str, dict[str, str]] = {}
+    positions: dict[str, tuple[float, float, float, float]] = {}
+    nodes: list[dict] = []
+    edges: list[dict] = []
+    order = 0
+    for raw in path.read_text().splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        m = FLOW_RE.match(line)
+        if m:
+            direction = m.group('dir')
+            continue
+        m = POS_RE.match(line)
+        if m:
+            positions[m.group('id')] = tuple(float(m.group(k)) for k in ('x', 'y', 'w', 'h'))
+            continue
+        if line.startswith('%%'):
+            continue
+        m = CLASSDEF_RE.match(line)
+        if m:
+            classdefs[m.group('name')] = parse_mermaid_style(m.group('body'))
+            continue
+        node = parse_mermaid_node(line)
+        if node is not None:
+            node['order'] = order
+            nodes.append(node)
+            order += 1
+            continue
+        m = EDGE_RE.match(line)
+        if m:
+            edges.append({'src': m.group('src'), 'dst': m.group('dst'), 'dashed': m.group('arrow') == '-.->'})
+            continue
+        raise RuntimeError(f'unhandled Mermaid line in {path.name}: {line}')
+    return {'direction': direction, 'classdefs': classdefs, 'positions': positions, 'nodes': nodes, 'edges': edges}
+
+
+def auto_layout(nodes: list[dict], edges: list[dict], direction: str) -> dict[str, tuple[float, float, float, float]]:
+    level = {n['id']: 0 for n in nodes}
+    changed = True
+    for _ in range(len(nodes)):
+        if not changed:
+            break
+        changed = False
+        for edge in edges:
+            if level[edge['dst']] < level[edge['src']] + 1:
+                level[edge['dst']] = level[edge['src']] + 1
+                changed = True
+    groups: dict[int, list[dict]] = {}
+    for n in sorted(nodes, key=lambda x: (level[x['id']], x['order'])):
+        groups.setdefault(level[n['id']], []).append(n)
+    positions: dict[str, tuple[float, float, float, float]] = {}
+    if direction == 'TB':
+        y = 80.0
+        for lvl in sorted(groups):
+            x = 80.0
+            row = groups[lvl]
+            max_h = 0.0
+            for node in row:
+                lines = node['label'].splitlines() or ['']
+                w = max(260.0, min(560.0, max(len(line) for line in lines) * 13 + 80))
+                h = max(90.0, 46.0 * len(lines) + 36)
+                positions[node['id']] = (x, y, w, h)
+                x += w + 80.0
+                max_h = max(max_h, h)
+            y += max_h + 80.0
+    else:
+        x = 80.0
+        for lvl in sorted(groups):
+            y = 80.0
+            col = groups[lvl]
+            max_w = 0.0
+            for node in col:
+                lines = node['label'].splitlines() or ['']
+                w = max(260.0, min(640.0, max(len(line) for line in lines) * 13 + 80))
+                h = max(90.0, 46.0 * len(lines) + 36)
+                positions[node['id']] = (x, y, w, h)
+                y += h + 60.0
+                max_w = max(max_w, w)
+            x += max_w + 120.0
+    return positions
+
+
+def render_mermaid_svg(model: dict) -> str:
+    classdefs = model['classdefs']
+    nodes = model['nodes']
+    edges = model['edges']
+    positions = auto_layout(nodes, edges, model['direction'])
+    positions.update(model['positions'])
+    by_id = {n['id']: n for n in nodes}
+    marker_solid: dict[str, str] = {}
+    marker_dashed: dict[str, str] = {}
+    parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{CANVAS_W}" height="{CANVAS_H}" viewBox="0 0 {CANVAS_W} {CANVAS_H}">',
+        '<defs>',
+    ]
+    for edge in edges:
+        src_cls = by_id[edge['src']]['class']
+        stroke = classdefs.get(src_cls, {}).get('stroke', '#64748B')
+        target = marker_dashed if edge['dashed'] else marker_solid
+        if stroke not in target:
+            mid = f"{'dash' if edge['dashed'] else 'solid'}{len(marker_solid)+len(marker_dashed)+1}"
+            target[stroke] = mid
+            parts.append(
+                f'<marker id="{mid}" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">'
+                f'<path d="M 0 0 L 10 5 L 0 10 z" fill="{stroke}" /></marker>'
+            )
+    parts.append('</defs>')
+    parts.append(f'<rect x="0" y="0" width="{CANVAS_W}" height="{CANVAS_H}" fill="#FFFFFF"/>')
+
+    # edges first
+    for edge in edges:
+        src_box = positions[edge['src']]
+        dst_box = positions[edge['dst']]
+        stroke = classdefs.get(by_id[edge['src']]['class'], {}).get('stroke', '#64748B')
+        start, end = choose_anchor(src_box, dst_box)
+        dash = ' stroke-dasharray="10 8"' if edge['dashed'] else ''
+        marker = (marker_dashed if edge['dashed'] else marker_solid)[stroke]
+        parts.append(f'<path d="{orthogonal_path(start, end)}" fill="none" stroke="{stroke}" stroke-width="4"{dash} marker-end="url(#{marker})" />')
+
+    # nodes
+    for node in nodes:
+        x, y, w, h = positions[node['id']]
+        style = classdefs.get(node['class'], {})
+        fill = style.get('fill', '#FFFFFF')
+        stroke = style.get('stroke', '#CBD5E1')
+        color = style.get('color', '#111827')
+        font_size = int(float(style.get('font-size', '20')))
+        bold = style.get('font-weight', '').lower() in {'bold', '700'}
+        parts.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="18" ry="18" fill="{fill}" stroke="{stroke}" stroke-width="3" />')
+        parts.append(svg_text_block(x, y, w, h, node['label'], font_size, color, 'center', bold))
+    parts.append('</svg>')
+    return '\n'.join(parts)
+
+
+# ---------------- export + patch ----------------
 def export_svgs() -> None:
-    diagrams = parse_diagrams()
-    for slide_no, basename in SLIDE_TO_BASENAME.items():
-        diagram_name = next((name for name, *_ in diagrams if name.startswith(f"Slide {slide_no} ")), None)
-        if diagram_name is None:
-            raise RuntimeError(f"missing draw.io page for slide {slide_no}")
-        for name, width, height, vertices, edges in diagrams:
-            if name == diagram_name:
-                svg = render_svg(name, width, height, vertices, edges)
-                (ASSET_DIR / f"{basename}.svg").write_text(svg)
-                break
+    drawio_pages = parse_drawio_diagrams()
+    for slide_no, meta in SLIDES.items():
+        out = ASSET_DIR / f"{meta['basename']}.svg"
+        if meta['source'] == 'drawio':
+            page = meta['drawio_name']
+            if page not in drawio_pages:
+                raise RuntimeError(f'missing draw.io page: {page}')
+            width, height, vertices, edges = drawio_pages[page]
+            out.write_text(render_drawio_svg(width, height, vertices, edges))
+        else:
+            mmd_path = MERMAID_DIR / meta['mmd']
+            out.write_text(render_mermaid_svg(parse_mermaid(mmd_path)))
 
 
 def patch_pptx_to_svg() -> None:
     with tempfile.TemporaryDirectory() as td:
         tempdir = Path(td)
-        with zipfile.ZipFile(PPTX_PATH, "r") as zf:
+        with zipfile.ZipFile(PPTX_PATH, 'r') as zf:
             zf.extractall(tempdir)
-        content_types = tempdir / "[Content_Types].xml"
+        content_types = tempdir / '[Content_Types].xml'
         ct_tree = ET.parse(content_types)
         ct_root = ct_tree.getroot()
-        has_svg = any(el.attrib.get("Extension") == "svg" for el in ct_root.findall("ct:Default", NS_CT))
+        has_svg = any(el.attrib.get('Extension') == 'svg' for el in ct_root.findall('ct:Default', NS_CT))
         if not has_svg:
-            ET.SubElement(
-                ct_root,
-                f'{{{NS_CT["ct"]}}}Default',
-                Extension="svg",
-                ContentType="image/svg+xml",
-            )
-            ct_tree.write(content_types, encoding="utf-8", xml_declaration=True)
-
-        for slide_no, basename in SLIDE_TO_BASENAME.items():
-            rel_path = tempdir / "ppt" / "slides" / "_rels" / f"slide{slide_no}.xml.rels"
+            ET.SubElement(ct_root, f'{{{NS_CT["ct"]}}}Default', Extension='svg', ContentType='image/svg+xml')
+            ct_tree.write(content_types, encoding='utf-8', xml_declaration=True)
+        for slide_no, meta in SLIDES.items():
+            rel_path = tempdir / 'ppt' / 'slides' / '_rels' / f'slide{slide_no}.xml.rels'
             rel_tree = ET.parse(rel_path)
             rel_root = rel_tree.getroot()
             image_rels = [
-                el
-                for el in rel_root.findall("rel:Relationship", NS_REL)
-                if el.attrib.get("Type") == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
+                el for el in rel_root.findall('rel:Relationship', NS_REL)
+                if el.attrib.get('Type') == 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'
             ]
             if len(image_rels) != 1:
-                raise RuntimeError(f"expected exactly one image rel for slide {slide_no}, got {len(image_rels)}")
-            target_name = f"{basename}.svg"
-            image_rels[0].attrib["Target"] = f"../media/{target_name}"
-            rel_tree.write(rel_path, encoding="utf-8", xml_declaration=True)
-            shutil.copy2(ASSET_DIR / target_name, tempdir / "ppt" / "media" / target_name)
-
-        rebuilt = tempdir / "rebuilt.pptx"
-        with zipfile.ZipFile(rebuilt, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-            for path in sorted(tempdir.rglob("*")):
+                raise RuntimeError(f'expected exactly one image rel for slide {slide_no}, got {len(image_rels)}')
+            target_name = f"{meta['basename']}.svg"
+            image_rels[0].attrib['Target'] = f'../media/{target_name}'
+            rel_tree.write(rel_path, encoding='utf-8', xml_declaration=True)
+            shutil.copy2(ASSET_DIR / target_name, tempdir / 'ppt' / 'media' / target_name)
+        rebuilt = tempdir / 'rebuilt.pptx'
+        with zipfile.ZipFile(rebuilt, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
+            for path in sorted(tempdir.rglob('*')):
                 if path.is_dir() or path == rebuilt:
                     continue
                 zf.write(path, path.relative_to(tempdir).as_posix())
@@ -280,31 +444,29 @@ def patch_pptx_to_svg() -> None:
 
 
 def update_readme() -> None:
-    readme = ASSET_DIR / "README.md"
-    readme.write_text(
+    (ASSET_DIR / 'README.md').write_text(
         "# kaito-llm-d-pd-slides-assets\n\n"
-        "Draw.io source-of-truth assets for the diagram-heavy slides in `../kaito-llm-d-pd-slides.pptx`.\n\n"
-        "## Contents\n"
-        "- `kaito-llm-d-pd-slides.drawio`: editable diagrams.net source with one page per slide diagram\n"
-        "- `slide-04-*.svg` ... `slide-11-*.svg`: vector exports generated from the draw.io pages and embedded into the PowerPoint deck\n"
-        "- `slide-04-*.png` ... `slide-11-*.png`: raster fallback/reference exports\n"
-        "- `export_svg_and_patch_pptx.py`: exports SVGs from the draw.io XML and rewires the PPTX media relationships to those SVGs\n\n"
+        "Mixed-source diagram assets for `../kaito-llm-d-pd-slides.pptx`.\n\n"
+        "## Source of truth\n"
+        "- `kaito-llm-d-pd-slides.drawio`: main visual / architecture diagrams\n"
+        "  - slide 4: end-to-end architecture\n"
+        "  - slide 7: request execution flow\n"
+        "  - slide 8: decode-side sidecar placement\n"
+        "- `mermaid/*.mmd`: structure / logic diagrams\n"
+        "  - slide 5: MultiRoleInference topology\n"
+        "  - slide 6: KAITO-generated resources\n"
+        "  - slide 9: runtime contracts\n"
+        "  - slide 10: KAITO vs llm-d\n"
+        "  - slide 11: ownership boundary\n\n"
+        "## Generated outputs\n"
+        "- `slide-04-*.svg` ... `slide-11-*.svg`: vector assets embedded into the PowerPoint deck\n"
+        "- `slide-04-*.png` ... `slide-11-*.png`: legacy raster reference exports\n\n"
         "## Regeneration\n"
-        "Run:\n\n"
         "```bash\n"
         "cd llm/kaito-llm-d-pd-slides-assets\n"
         "python3 export_svg_and_patch_pptx.py\n"
         "```\n\n"
-        "This regenerates the slide SVG assets and patches `../kaito-llm-d-pd-slides.pptx` so slides 4-11 reference the SVG media instead of the PNG media.\n\n"
-        "## Slide mapping\n"
-        "- Slide 4: End-to-End Architecture\n"
-        "- Slide 5: One MultiRoleInference Object Describes the Topology\n"
-        "- Slide 6: What KAITO Automatically Generates for P/D\n"
-        "- Slide 7: How a P/D Request Actually Executes\n"
-        "- Slide 8: Why the Routing Sidecar Lives on Decode Pods\n"
-        "- Slide 9: The Runtime Contracts That Make P/D Actually Work\n"
-        "- Slide 10: KAITO Does Not Replace llm-d — It Operationalizes It\n"
-        "- Slide 11: What Users Manage vs. What the Platform Manages\n"
+        "This regenerates the slide SVG assets from the mixed draw.io + Mermaid sources and patches `../kaito-llm-d-pd-slides.pptx` so slides 4-11 reference the SVG media.\n"
     )
 
 
@@ -312,8 +474,8 @@ def main() -> None:
     export_svgs()
     patch_pptx_to_svg()
     update_readme()
-    print(f"updated SVG assets and patched {PPTX_PATH}")
+    print(f'updated mixed draw.io + Mermaid SVG assets and patched {PPTX_PATH}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
