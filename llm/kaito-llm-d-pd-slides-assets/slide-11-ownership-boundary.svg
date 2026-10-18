@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
+<defs>
+</defs>
+<rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
+<rect x="100.0" y="90.0" width="900.0" height="80.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="550.0" y="139.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#111827"><tspan x="550.0" dy="0.0">User intent</tspan></text>
+<rect x="1230.0" y="90.0" width="870.0" height="80.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1665.0" y="139.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#111827"><tspan x="1665.0" dy="0.0">Platform-managed plumbing</tspan></text>
+<rect x="100.0" y="210.0" width="900.0" height="630.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<rect x="1230.0" y="210.0" width="870.0" height="630.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<rect x="1035.0" y="470.0" width="150.0" height="60.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1110.0" y="506.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="16" font-weight="400" fill="#64748B"><tspan x="1110.0" dy="0.0">boundary</tspan></text>
+</svg>

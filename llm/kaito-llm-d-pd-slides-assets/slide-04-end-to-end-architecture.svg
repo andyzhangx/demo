@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
+<defs>
+<marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C2410C" /></marker>
+<marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6D28D9" /></marker>
+</defs>
+<rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
+<path d="M 1060.0 560.0 L 1060.0 680.0 L 1200.0 680.0 L 1200.0 800.0" fill="none" stroke="#C2410C" stroke-width="5.0" marker-end="url(#arrow1)" />
+<path d="M 1350.0 740.0 L 1350.0 620.0" fill="none" stroke="#6D28D9" stroke-width="5.0" marker-end="url(#arrow2)" />
+<rect x="70.0" y="80.0" width="2060.0" height="840.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<rect x="110.0" y="100.0" width="380.0" height="50.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="300.0" y="131.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="16" font-weight="400" fill="#111827"><tspan x="300.0" dy="0.0">AKS / Kubernetes cluster</tspan></text>
+<rect x="1700.0" y="98.0" width="180.0" height="44.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1790.0" y="126.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="16" font-weight="400" fill="#0F2747"><tspan x="1790.0" dy="0.0">user traffic</tspan></text>
+<rect x="1900.0" y="98.0" width="160.0" height="44.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
+<text x="1980.0" y="126.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="16" font-weight="400" fill="#6D28D9"><tspan x="1980.0" dy="0.0">KV handoff</tspan></text>
+<rect x="120.0" y="190.0" width="210.0" height="42.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="225.0" y="216.6" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="15" font-weight="400" fill="#111827"><tspan x="225.0" dy="0.0">control plane</tspan></text>
+<rect x="120.0" y="240.0" width="440.0" height="95.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="340.0" y="268.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="340.0" dy="0.0">KAITO</tspan><tspan x="340.0" dy="27.5">MultiRoleInference</tspan><tspan x="340.0" dy="27.5">controller</tspan></text>
+<rect x="600.0" y="240.0" width="350.0" height="95.0" rx="18" ry="18" fill="#E8FFFB" stroke="#0F766E" stroke-width="3" />
+<text x="775.0" y="282.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F766E"><tspan x="775.0" dy="0.0">InferencePool</tspan><tspan x="775.0" dy="27.5">(GWIE CRD)</tspan></text>
+<rect x="990.0" y="240.0" width="500.0" height="95.0" rx="18" ry="18" fill="#E8FFFB" stroke="#0F766E" stroke-width="3" />
+<text x="1240.0" y="282.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F766E"><tspan x="1240.0" dy="0.0">Gateway API</tspan><tspan x="1240.0" dy="27.5">Inference Extension</tspan></text>
+<rect x="1770.0" y="240.0" width="160.0" height="95.0" rx="18" ry="18" fill="#ECFDF3" stroke="#0F9D58" stroke-width="3" />
+<text x="1850.0" y="295.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F9D58"><tspan x="1850.0" dy="0.0">KEDA</tspan></text>
+<rect x="120.0" y="420.0" width="190.0" height="42.0" rx="18" ry="18" fill="#FFFFFF" stroke="#2F6FEB" stroke-width="3" />
+<text x="215.0" y="446.6" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="15" font-weight="400" fill="#0F2747"><tspan x="215.0" dy="0.0">request path</tspan></text>
+<rect x="120.0" y="500.0" width="200.0" height="120.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="220.0" y="569.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#111827"><tspan x="220.0" dy="0.0">Client</tspan></text>
+<rect x="400.0" y="500.0" width="250.0" height="120.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="525.0" y="569.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#111827"><tspan x="525.0" dy="0.0">Gateway</tspan></text>
+<rect x="730.0" y="500.0" width="330.0" height="120.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
+<text x="895.0" y="554.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#C2410C"><tspan x="895.0" dy="0.0">llm-d Router</tspan><tspan x="895.0" dy="30.0">EPP</tspan></text>
+<rect x="1180.0" y="500.0" width="340.0" height="120.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1350.0" y="569.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1350.0" dy="0.0">Decode sidecar</tspan></text>
+<rect x="1700.0" y="500.0" width="340.0" height="120.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1870.0" y="554.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1870.0" dy="0.0">Local decode</tspan><tspan x="1870.0" dy="30.0">vLLM</tspan></text>
+<rect x="1080.0" y="690.0" width="210.0" height="42.0" rx="18" ry="18" fill="#FFFFFF" stroke="#C2410C" stroke-width="3" />
+<text x="1185.0" y="716.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="14" font-weight="400" fill="#C2410C"><tspan x="1185.0" dy="0.0">optional prefill</tspan></text>
+<rect x="1200.0" y="740.0" width="300.0" height="120.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
+<text x="1350.0" y="794.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#6D28D9"><tspan x="1350.0" dy="0.0">Prefill</tspan><tspan x="1350.0" dy="30.0">InferenceSet</tspan></text>
+<rect x="1500.0" y="690.0" width="220.0" height="42.0" rx="18" ry="18" fill="#FFFFFF" stroke="#6D28D9" stroke-width="3" />
+<text x="1610.0" y="716.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="14" font-weight="400" fill="#6D28D9"><tspan x="1610.0" dy="0.0">NIXL KV handoff</tspan></text>
+<rect x="110.0" y="890.0" width="930.0" height="70.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="575.0" y="931.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="575.0" dy="0.0">Client traffic stays on one stable endpoint.</tspan></text>
+<rect x="1120.0" y="890.0" width="960.0" height="70.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1600.0" y="931.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1600.0" dy="0.0">KV cache moves on a separate direct path between roles.</tspan></text>
+</svg>

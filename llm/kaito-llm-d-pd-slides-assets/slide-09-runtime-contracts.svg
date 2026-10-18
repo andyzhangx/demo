@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
+<defs>
+</defs>
+<rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
+<rect x="80.0" y="80.0" width="450.0" height="70.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<text x="305.0" y="123.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="305.0" dy="0.0">Contract</tspan></text>
+<rect x="530.0" y="80.0" width="260.0" height="70.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<text x="660.0" y="123.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="660.0" dy="0.0">Prefill</tspan></text>
+<rect x="790.0" y="80.0" width="270.0" height="70.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<text x="925.0" y="123.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="925.0" dy="0.0">Decode</tspan></text>
+<rect x="1060.0" y="80.0" width="990.0" height="70.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<text x="1555.0" y="123.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="1555.0" dy="0.0">Why it matters</tspan></text>
+<rect x="80.0" y="160.0" width="450.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="305.0" y="212.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="305.0" dy="0.0">Routing sidecar</tspan></text>
+<rect x="530.0" y="160.0" width="260.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="660.0" y="212.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="660.0" dy="0.0">No</tspan></text>
+<rect x="790.0" y="160.0" width="270.0" height="92.0" rx="18" ry="18" fill="#EAF2FF" stroke="#CBD5E1" stroke-width="3" />
+<text x="925.0" y="212.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#0F2747"><tspan x="925.0" dy="0.0">Yes</tspan></text>
+<rect x="1060.0" y="160.0" width="990.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1555.0" y="212.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1555.0" dy="0.0">Decode is the coordination point</tspan></text>
+<rect x="80.0" y="260.0" width="450.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="305.0" y="312.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="305.0" dy="0.0">vLLM port</tspan></text>
+<rect x="530.0" y="260.0" width="260.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="660.0" y="312.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="660.0" dy="0.0">5000</tspan></text>
+<rect x="790.0" y="260.0" width="270.0" height="92.0" rx="18" ry="18" fill="#EAF2FF" stroke="#CBD5E1" stroke-width="3" />
+<text x="925.0" y="312.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#0F2747"><tspan x="925.0" dy="0.0">5001</tspan></text>
+<rect x="1060.0" y="260.0" width="990.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1555.0" y="312.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1555.0" dy="0.0">Avoid sidecar ↔ local vLLM collision</tspan></text>
+<rect x="80.0" y="360.0" width="450.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="305.0" y="412.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="305.0" dy="0.0">Sidecar ingress port</tspan></text>
+<rect x="530.0" y="360.0" width="260.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="660.0" y="412.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="660.0" dy="0.0">N/A</tspan></text>
+<rect x="790.0" y="360.0" width="270.0" height="92.0" rx="18" ry="18" fill="#EAF2FF" stroke="#CBD5E1" stroke-width="3" />
+<text x="925.0" y="412.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#0F2747"><tspan x="925.0" dy="0.0">5000</tspan></text>
+<rect x="1060.0" y="360.0" width="990.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1555.0" y="412.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1555.0" dy="0.0">Gives decode a stable external entry point</tspan></text>
+<rect x="80.0" y="460.0" width="450.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="305.0" y="512.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="305.0" dy="0.0">Role label</tspan></text>
+<rect x="530.0" y="460.0" width="260.0" height="92.0" rx="18" ry="18" fill="#F3E8FF" stroke="#CBD5E1" stroke-width="3" />
+<text x="660.0" y="512.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#6D28D9"><tspan x="660.0" dy="0.0">prefill</tspan></text>
+<rect x="790.0" y="460.0" width="270.0" height="92.0" rx="18" ry="18" fill="#EAF2FF" stroke="#CBD5E1" stroke-width="3" />
+<text x="925.0" y="512.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#0F2747"><tspan x="925.0" dy="0.0">decode</tspan></text>
+<rect x="1060.0" y="460.0" width="990.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1555.0" y="512.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1555.0" dy="0.0">EPP filters workers by role</tspan></text>
+<rect x="80.0" y="560.0" width="450.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="305.0" y="612.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="305.0" dy="0.0">NIXL side-channel host</tspan></text>
+<rect x="530.0" y="560.0" width="260.0" height="92.0" rx="18" ry="18" fill="#F3E8FF" stroke="#CBD5E1" stroke-width="3" />
+<text x="660.0" y="612.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#6D28D9"><tspan x="660.0" dy="0.0">Pod IP</tspan></text>
+<rect x="790.0" y="560.0" width="270.0" height="92.0" rx="18" ry="18" fill="#EAF2FF" stroke="#CBD5E1" stroke-width="3" />
+<text x="925.0" y="612.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#0F2747"><tspan x="925.0" dy="0.0">Pod IP</tspan></text>
+<rect x="1060.0" y="560.0" width="990.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1555.0" y="612.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1555.0" dy="0.0">KV handoff must advertise a reachable address</tspan></text>
+<rect x="80.0" y="660.0" width="450.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="305.0" y="712.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="305.0" dy="0.0">InferencePool targetPort</tspan></text>
+<rect x="530.0" y="660.0" width="260.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="660.0" y="712.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="660.0" dy="0.0">Shared</tspan></text>
+<rect x="790.0" y="660.0" width="270.0" height="92.0" rx="18" ry="18" fill="#EAF2FF" stroke="#CBD5E1" stroke-width="3" />
+<text x="925.0" y="712.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="925.0" dy="0.0">Shared</tspan></text>
+<rect x="1060.0" y="660.0" width="990.0" height="92.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1555.0" y="712.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1555.0" dy="0.0">Gateway/EPP expect consistent routing semantics</tspan></text>
+<rect x="100.0" y="810.0" width="2000.0" height="140.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+</svg>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
+<defs>
+<marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#64748B" /></marker>
+</defs>
+<rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
+<path d="M 960.0 247.0 L 1420.0 247.0" fill="none" stroke="#64748B" stroke-width="4.0" marker-end="url(#arrow1)" />
+<path d="M 960.0 362.0 L 1420.0 362.0" fill="none" stroke="#64748B" stroke-width="4.0" marker-end="url(#arrow1)" />
+<path d="M 960.0 477.0 L 1420.0 477.0" fill="none" stroke="#64748B" stroke-width="4.0" marker-end="url(#arrow1)" />
+<path d="M 960.0 592.0 L 1420.0 592.0" fill="none" stroke="#64748B" stroke-width="4.0" marker-end="url(#arrow1)" />
+<path d="M 960.0 707.0 L 1420.0 707.0" fill="none" stroke="#64748B" stroke-width="4.0" marker-end="url(#arrow1)" />
+<path d="M 960.0 822.0 L 1420.0 822.0" fill="none" stroke="#64748B" stroke-width="4.0" marker-end="url(#arrow1)" />
+<rect x="120.0" y="80.0" width="840.0" height="80.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
+<text x="540.0" y="129.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#C2410C"><tspan x="540.0" dy="0.0">llm-d Router</tspan></text>
+<rect x="1420.0" y="80.0" width="660.0" height="80.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1750.0" y="129.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1750.0" dy="0.0">KAITO</tspan></text>
+<rect x="980.0" y="95.0" width="330.0" height="50.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1145.0" y="126.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="16" font-weight="400" fill="#64748B"><tspan x="1145.0" dy="0.0">complementary layers</tspan></text>
+<rect x="120.0" y="210.0" width="840.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="540.0" y="253.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="540.0" dy="0.0">EPP implementation</tspan></text>
+<rect x="1420.0" y="210.0" width="660.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1750.0" y="253.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1750.0" dy="0.0">CRD abstraction</tspan></text>
+<rect x="120.0" y="325.0" width="840.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="540.0" y="368.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="540.0" dy="0.0">endpoint picking</tspan></text>
+<rect x="1420.0" y="325.0" width="660.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1750.0" y="368.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1750.0" dy="0.0">child resource generation</tspan></text>
+<rect x="120.0" y="440.0" width="840.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="540.0" y="483.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="540.0" dy="0.0">scheduling profiles</tspan></text>
+<rect x="1420.0" y="440.0" width="660.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1750.0" y="483.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1750.0" dy="0.0">lifecycle orchestration</tspan></text>
+<rect x="120.0" y="555.0" width="840.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="540.0" y="598.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="540.0" dy="0.0">P/D-aware plugins</tspan></text>
+<rect x="1420.0" y="555.0" width="660.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1750.0" y="598.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1750.0" dy="0.0">Kubernetes-native UX</tspan></text>
+<rect x="120.0" y="670.0" width="840.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="540.0" y="713.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="540.0" dy="0.0">routing execution</tspan></text>
+<rect x="1420.0" y="670.0" width="660.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1750.0" y="713.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1750.0" dy="0.0">integration with InferenceSet / autoscaling</tspan></text>
+<rect x="120.0" y="785.0" width="840.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="540.0" y="828.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="540.0" dy="0.0">future scheduling surface</tspan></text>
+<rect x="1420.0" y="785.0" width="660.0" height="74.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1750.0" y="828.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1750.0" dy="0.0">future topology APIs</tspan></text>
+</svg>

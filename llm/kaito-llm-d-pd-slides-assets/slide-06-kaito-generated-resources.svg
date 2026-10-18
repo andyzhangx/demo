@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
+<defs>
+<marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6D28D9" /></marker>
+<marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0F766E" /></marker>
+<marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C2410C" /></marker>
+<marker id="arrow4" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
+<marker id="arrow5" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0F9D58" /></marker>
+</defs>
+<rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
+<path d="M 900.0 430.0 L 685.0 430.0 L 685.0 250.0 L 470.0 250.0" fill="none" stroke="#6D28D9" stroke-width="5.0" marker-end="url(#arrow1)" />
+<path d="M 900.0 430.0 L 685.0 430.0 L 685.0 670.0 L 470.0 670.0" fill="none" stroke="#6D28D9" stroke-width="5.0" marker-end="url(#arrow1)" />
+<path d="M 1320.0 430.0 L 1520.0 430.0 L 1520.0 250.0 L 1720.0 250.0" fill="none" stroke="#0F766E" stroke-width="5.0" marker-end="url(#arrow2)" />
+<path d="M 1320.0 430.0 L 1470.0 430.0 L 1470.0 450.0 L 1620.0 450.0" fill="none" stroke="#C2410C" stroke-width="5.0" marker-end="url(#arrow3)" />
+<path d="M 1320.0 430.0 L 1320.0 550.0 L 1550.0 550.0 L 1550.0 670.0" fill="none" stroke="#2F6FEB" stroke-width="5.0" marker-end="url(#arrow4)" />
+<path d="M 1110.0 500.0 L 1110.0 700.0" fill="none" stroke="#0F9D58" stroke-width="5.0" marker-end="url(#arrow5)" />
+<rect x="900.0" y="360.0" width="420.0" height="140.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1110.0" y="439.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="26" font-weight="700" fill="#0F2747"><tspan x="1110.0" dy="0.0">MultiRoleInference</tspan></text>
+<rect x="120.0" y="180.0" width="350.0" height="140.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
+<text x="295.0" y="244.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#6D28D9"><tspan x="295.0" dy="0.0">InferenceSet</tspan><tspan x="295.0" dy="30.0">(prefill)</tspan></text>
+<rect x="120.0" y="600.0" width="350.0" height="140.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
+<text x="295.0" y="664.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#6D28D9"><tspan x="295.0" dy="0.0">InferenceSet</tspan><tspan x="295.0" dy="30.0">(decode)</tspan></text>
+<rect x="1720.0" y="180.0" width="340.0" height="140.0" rx="18" ry="18" fill="#E8FFFB" stroke="#0F766E" stroke-width="3" />
+<text x="1890.0" y="259.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F766E"><tspan x="1890.0" dy="0.0">InferencePool</tspan></text>
+<rect x="1620.0" y="380.0" width="440.0" height="140.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
+<text x="1840.0" y="444.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#C2410C"><tspan x="1840.0" dy="0.0">llm-d Router</tspan><tspan x="1840.0" dy="30.0">EPP</tspan></text>
+<rect x="1550.0" y="600.0" width="510.0" height="140.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1805.0" y="664.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1805.0" dy="0.0">sidecar</tspan><tspan x="1805.0" dy="30.0">injection</tspan></text>
+<rect x="900.0" y="700.0" width="420.0" height="140.0" rx="18" ry="18" fill="#ECFDF3" stroke="#0F9D58" stroke-width="3" />
+<text x="1110.0" y="779.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F9D58"><tspan x="1110.0" dy="0.0">NIXL env wiring</tspan></text>
+</svg>

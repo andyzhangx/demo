@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
+<defs>
+<marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#C2410C" /></marker>
+<marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6D28D9" /></marker>
+</defs>
+<rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
+<path d="M 1295.0 270.0 L 1295.0 340.0 L 1245.0 340.0 L 1245.0 410.0" fill="none" stroke="#C2410C" stroke-width="5.0" marker-end="url(#arrow1)" />
+<path d="M 1400.0 470.0 L 1400.0 340.0 L 1620.0 340.0 L 1620.0 210.0" fill="none" stroke="#6D28D9" stroke-width="5.0" marker-end="url(#arrow2)" />
+<rect x="70.0" y="150.0" width="200.0" height="120.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="170.0" y="218.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="170.0" dy="0.0">1 Client</tspan></text>
+<rect x="340.0" y="150.0" width="260.0" height="120.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="470.0" y="218.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="470.0" dy="0.0">2 Gateway</tspan></text>
+<rect x="680.0" y="150.0" width="330.0" height="120.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="845.0" y="218.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="845.0" dy="0.0">3 InferencePool</tspan></text>
+<rect x="1090.0" y="150.0" width="410.0" height="120.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
+<text x="1295.0" y="218.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#C2410C"><tspan x="1295.0" dy="0.0">4 llm-d Router EPP</tspan></text>
+<rect x="1620.0" y="150.0" width="350.0" height="120.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1795.0" y="218.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="1795.0" dy="0.0">5 Decode sidecar</tspan></text>
+<rect x="2030.0" y="150.0" width="140.0" height="120.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="2100.0" y="204.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="2100.0" dy="0.0">6 Decode</tspan><tspan x="2100.0" dy="27.5">vLLM</tspan></text>
+<rect x="1090.0" y="410.0" width="310.0" height="120.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
+<text x="1245.0" y="479.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#6D28D9"><tspan x="1245.0" dy="0.0">Prefill</tspan></text>
+<rect x="90.0" y="620.0" width="1160.0" height="310.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<rect x="1320.0" y="620.0" width="790.0" height="310.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+</svg>
