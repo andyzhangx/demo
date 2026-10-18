@@ -1,33 +1,30 @@
 flowchart LR
-%% pos CLIENT 100 470 220 110
-%% pos GATEWAY 400 470 250 110
-%% pos ROUTER 760 470 340 110
-%% pos SIDECAR 1230 470 340 110
-%% pos VLLM 1730 470 320 110
-%% pos PREFILL 1230 710 320 110
-%% pos NOTE1 90 860 920 95
-%% pos NOTE2 1130 860 980 95
-%% pos KAITO 120 150 420 110
-%% pos GWIE 720 150 420 110
-%% pos KEDA 1310 150 230 110
-%% pos CONTRACT 1600 150 430 110
+%% pos TOP1 120 120 520 120
+%% pos TOP2 840 120 520 120
+%% pos TOP3 1560 120 520 120
+%% pos CLIENT 110 450 230 110
+%% pos GATEWAY 430 450 250 110
+%% pos ROUTER 810 450 320 110
+%% pos SIDECAR 1260 450 340 110
+%% pos VLLM 1730 450 320 110
+%% pos PREFILL 1260 690 320 110
+%% pos NOTE1 100 855 920 95
+%% pos NOTE2 1140 855 960 95
 
-KAITO["KAITO / MultiRoleInference controller"]:::primary
-GWIE["InferencePool + GWIE contract surface"]:::teal
-KEDA["KEDA"]:::green
-CONTRACT["Gateway-facing contract\n + role-specific backends"]:::blue2
+TOP1["KAITO generates topology\nand role wiring"]:::primary
+TOP2["InferencePool / GWIE exposes\none gateway-facing contract"]:::teal
+TOP3["llm-d Router makes\nrole-aware execution decisions"]:::orange
 CLIENT["Client"]:::plain
 GATEWAY["Gateway"]:::plain
-ROUTER["llm-d Router EPP"]:::orange
+ROUTER["llm-d Router EPP"]:::orange2
 SIDECAR["Decode sidecar"]:::decode
 VLLM["Local decode vLLM"]:::decode
 PREFILL["Prefill InferenceSet"]:::prefill
 NOTE1["Client traffic stays on one stable endpoint."]:::note
 NOTE2["KV cache moves on a separate direct path between roles."]:::note
 
-KAITO --> GWIE
-GWIE --> KEDA
-KEDA --> CONTRACT
+TOP1 --> TOP2
+TOP2 --> TOP3
 CLIENT --> GATEWAY
 GATEWAY --> ROUTER
 ROUTER --> SIDECAR
@@ -36,13 +33,15 @@ ROUTER --> PREFILL
 PREFILL -.-> SIDECAR
 CLIENT -.-> NOTE1
 PREFILL -.-> NOTE2
+TOP3 -.-> ROUTER
+TOP2 -.-> GATEWAY
+TOP1 -.-> PREFILL
 
-classDef primary fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:22px,font-weight:bold
+classDef primary fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:23px,font-weight:bold
 classDef prefill fill:#F3E8FF,stroke:#6D28D9,color:#6D28D9,font-size:22px,font-weight:bold
 classDef decode fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:22px,font-weight:bold
-classDef teal fill:#E8FFFB,stroke:#0F766E,color:#0F766E,font-size:22px,font-weight:bold
-classDef orange fill:#FFF2E8,stroke:#C2410C,color:#C2410C,font-size:22px,font-weight:bold
-classDef green fill:#ECFDF3,stroke:#0F9D58,color:#0F9D58,font-size:22px,font-weight:bold
-classDef blue2 fill:#EFF6FF,stroke:#93C5FD,color:#1D4ED8,font-size:20px,font-weight:bold
+classDef teal fill:#E8FFFB,stroke:#0F766E,color:#0F766E,font-size:23px,font-weight:bold
+classDef orange fill:#FFF2E8,stroke:#C2410C,color:#C2410C,font-size:23px,font-weight:bold
+classDef orange2 fill:#FFF7ED,stroke:#FDBA74,color:#9A3412,font-size:21px,font-weight:bold
 classDef plain fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:22px,font-weight:bold
 classDef note fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:18px

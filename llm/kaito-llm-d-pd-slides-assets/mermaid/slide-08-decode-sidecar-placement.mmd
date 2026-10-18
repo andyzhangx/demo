@@ -1,24 +1,28 @@
 flowchart LR
-%% pos WHY 80 140 860 600
-%% pos EPP 1020 260 210 90
-%% pos SIDECAR 1330 250 600 130
-%% pos KV 1930 120 180 80
-%% pos VLLM 1330 520 600 130
-%% pos PROXY 1510 420 240 70
-%% pos NOTE 1260 820 760 100
+%% pos WHY 80 150 820 560
+%% pos POD 1320 90 600 90
+%% pos EPP 1040 275 220 90
+%% pos KV 1940 220 170 80
+%% pos SIDECAR 1320 250 600 130
+%% pos PROXY 1510 430 220 70
+%% pos VLLM 1320 540 600 130
+%% pos NOTE 1290 815 780 100
 
-WHY["Decode pods are the final response point for user traffic.\nThe routing sidecar receives the EPP decision, coordinates prefill, waits for KV handoff, then forwards to local vLLM.\nThis keeps the external routing contract stable while hiding the internal P/D choreography behind one decode endpoint."]:::note
-EPP["from EPP"]:::orange2
-SIDECAR["Routing sidecar\nport 5000"]:::decode
+WHY["Decode pods are the final response point for user traffic.\nThe routing sidecar receives the EPP decision, coordinates prefill, waits for KV handoff, then forwards to local vLLM.\nThat keeps the external routing contract stable while hiding the internal P/D choreography behind one decode endpoint."]:::note
+POD["Decode Pod"]:::tag
+EPP["EPP decision"]:::orange2
 KV["KV handoff"]:::prefill
-VLLM["Local decode vLLM\nport 5001"]:::teal
+SIDECAR["Routing sidecar\nport 5000"]:::decode
 PROXY["proxy to local"]:::plain
+VLLM["Local decode vLLM\nport 5001"]:::teal
 NOTE["decode pod = coordination point + final response point"]:::note2
 
 EPP --> SIDECAR
 KV -.-> SIDECAR
 SIDECAR --> PROXY
 PROXY --> VLLM
+POD -.-> SIDECAR
+POD -.-> VLLM
 VLLM -.-> NOTE
 
 classDef prefill fill:#F3E8FF,stroke:#6D28D9,color:#6D28D9,font-size:20px,font-weight:bold
@@ -28,3 +32,4 @@ classDef orange2 fill:#FFF7ED,stroke:#FDBA74,color:#9A3412,font-size:18px,font-w
 classDef plain fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:18px,font-weight:bold
 classDef note fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:18px
 classDef note2 fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:18px
+classDef tag fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:18px,font-weight:bold

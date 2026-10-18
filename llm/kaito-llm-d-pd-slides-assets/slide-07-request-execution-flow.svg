@@ -6,34 +6,41 @@
 <marker id="solid3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
 <marker id="dash4" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6D28D9" /></marker>
 <marker id="dash5" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#CBD5E1" /></marker>
-<marker id="dash6" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
+<marker id="dash6" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#FDBA74" /></marker>
+<marker id="dash7" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
 </defs>
 <rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
-<path d="M 290.0 215.0 L 350.0 215.0" fill="none" stroke="#CBD5E1" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 600.0 215.0 L 690.0 215.0" fill="none" stroke="#CBD5E1" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1010.0 215.0 L 1090.0 215.0" fill="none" stroke="#CBD5E1" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1470.0 215.0 L 1580.0 215.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid2)" />
-<path d="M 1900.0 215.0 L 1970.0 215.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid3)" />
-<path d="M 1280.0 270.0 L 1280.0 350.0 L 1270.0 350.0 L 1270.0 430.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid2)" />
-<path d="M 1420.0 485.0 L 1420.0 350.0 L 1580.0 350.0 L 1580.0 215.0" fill="none" stroke="#6D28D9" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash4)" />
-<path d="M 180.0 270.0 L 420.0 270.0 L 420.0 650.0 L 660.0 650.0" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash5)" />
-<path d="M 1740.0 270.0 L 1740.0 460.0 L 1745.0 460.0 L 1745.0 650.0" fill="none" stroke="#2F6FEB" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash6)" />
-<rect x="70.0" y="160.0" width="220.0" height="110.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
-<text x="180.0" y="223.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="180.0" dy="0.0">1 Client</tspan></text>
-<rect x="350.0" y="160.0" width="250.0" height="110.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
-<text x="475.0" y="223.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="475.0" dy="0.0">2 Gateway</tspan></text>
-<rect x="690.0" y="160.0" width="320.0" height="110.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
-<text x="850.0" y="223.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="850.0" dy="0.0">3 InferencePool</tspan></text>
-<rect x="1090.0" y="160.0" width="380.0" height="110.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
-<text x="1280.0" y="223.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#C2410C"><tspan x="1280.0" dy="0.0">4 llm-d Router EPP</tspan></text>
-<rect x="1580.0" y="160.0" width="320.0" height="110.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="1740.0" y="223.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="1740.0" dy="0.0">5 Decode sidecar</tspan></text>
-<rect x="1970.0" y="160.0" width="170.0" height="110.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="2055.0" y="209.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="2055.0" dy="0.0">6 Decode</tspan><tspan x="2055.0" dy="27.5">vLLM</tspan></text>
-<rect x="1120.0" y="430.0" width="300.0" height="110.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
-<text x="1270.0" y="493.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#6D28D9"><tspan x="1270.0" dy="0.0">Prefill</tspan></text>
-<rect x="70.0" y="650.0" width="1180.0" height="220.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
-<text x="660.0" y="744.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="660.0" dy="0.0">Gateway / HTTPRoute forwards the user request to the model&#x27;s InferencePool.\nllm-d Router EPP decides whether</tspan><tspan x="660.0" dy="22.5">prefill is needed and picks the role-specific backends.\nDecode remains the coordination point; the client</tspan><tspan x="660.0" dy="22.5">still sees one endpoint.</tspan></text>
-<rect x="1360.0" y="650.0" width="770.0" height="220.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="1745.0" y="755.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#0F2747"><tspan x="1745.0" dy="0.0">Prefill is conditional, not mandatory.\nKV transfer bridges prefill and</tspan><tspan x="1745.0" dy="22.5">decode.\nResponse streaming returns through the decode path.</tspan></text>
+<path d="M 300.0 265.0 L 360.0 265.0" fill="none" stroke="#CBD5E1" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 610.0 265.0 L 700.0 265.0" fill="none" stroke="#CBD5E1" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1020.0 265.0 L 1100.0 265.0" fill="none" stroke="#CBD5E1" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1460.0 265.0 L 1560.0 265.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid2)" />
+<path d="M 1880.0 265.0 L 1960.0 265.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid3)" />
+<path d="M 1280.0 320.0 L 1280.0 500.0" fill="none" stroke="#C2410C" stroke-width="4" marker-end="url(#solid2)" />
+<path d="M 1420.0 555.0 L 1420.0 410.0 L 1560.0 410.0 L 1560.0 265.0" fill="none" stroke="#6D28D9" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash4)" />
+<path d="M 690.0 130.0 L 895.0 130.0 L 895.0 265.0 L 1100.0 265.0" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash5)" />
+<path d="M 1260.0 175.0 L 1260.0 337.5 L 1280.0 337.5 L 1280.0 500.0" fill="none" stroke="#FDBA74" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash6)" />
+<path d="M 190.0 320.0 L 425.0 320.0 L 425.0 690.0 L 660.0 690.0" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash5)" />
+<path d="M 1720.0 320.0 L 1720.0 505.0 L 1740.0 505.0 L 1740.0 690.0" fill="none" stroke="#2F6FEB" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash7)" />
+<rect x="70.0" y="85.0" width="620.0" height="90.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<text x="380.0" y="136.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827"><tspan x="380.0" dy="0.0">One user-visible request path</tspan></text>
+<rect x="1120.0" y="85.0" width="280.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
+<text x="1260.0" y="136.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#9A3412"><tspan x="1260.0" dy="0.0">Optional prefill branch</tspan></text>
+<rect x="80.0" y="210.0" width="220.0" height="110.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="190.0" y="273.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="190.0" dy="0.0">1 Client</tspan></text>
+<rect x="360.0" y="210.0" width="250.0" height="110.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="485.0" y="273.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="485.0" dy="0.0">2 Gateway</tspan></text>
+<rect x="700.0" y="210.0" width="320.0" height="110.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="860.0" y="273.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#111827"><tspan x="860.0" dy="0.0">3 InferencePool</tspan></text>
+<rect x="1100.0" y="210.0" width="360.0" height="110.0" rx="18" ry="18" fill="#FFF2E8" stroke="#C2410C" stroke-width="3" />
+<text x="1280.0" y="273.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#C2410C"><tspan x="1280.0" dy="0.0">4 llm-d Router EPP</tspan></text>
+<rect x="1560.0" y="210.0" width="320.0" height="110.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1720.0" y="273.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="1720.0" dy="0.0">5 Decode sidecar</tspan></text>
+<rect x="1960.0" y="210.0" width="170.0" height="110.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="2045.0" y="259.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#0F2747"><tspan x="2045.0" dy="0.0">6 Decode</tspan><tspan x="2045.0" dy="27.5">vLLM</tspan></text>
+<rect x="1140.0" y="500.0" width="280.0" height="110.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
+<text x="1280.0" y="563.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="22" font-weight="700" fill="#6D28D9"><tspan x="1280.0" dy="0.0">Prefill</tspan></text>
+<rect x="80.0" y="690.0" width="1160.0" height="200.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="660.0" y="774.2" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="660.0" dy="0.0">Gateway / HTTPRoute forwards the user request to the model&#x27;s InferencePool.\nllm-d Router EPP decides whether</tspan><tspan x="660.0" dy="22.5">prefill is needed and picks the role-specific backends.\nDecode remains the coordination point, so the client</tspan><tspan x="660.0" dy="22.5">still sees one endpoint.</tspan></text>
+<rect x="1360.0" y="690.0" width="760.0" height="200.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1740.0" y="785.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#0F2747"><tspan x="1740.0" dy="0.0">Prefill is conditional, not mandatory.\nKV transfer bridges prefill</tspan><tspan x="1740.0" dy="22.5">and decode.\nResponse streaming still returns through the decode path.</tspan></text>
 </svg>

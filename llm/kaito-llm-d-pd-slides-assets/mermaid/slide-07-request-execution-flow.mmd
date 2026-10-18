@@ -1,14 +1,18 @@
 flowchart LR
-%% pos CLIENT 70 160 220 110
-%% pos GATEWAY 350 160 250 110
-%% pos POOL 690 160 320 110
-%% pos ROUTER 1090 160 380 110
-%% pos SIDECAR 1580 160 320 110
-%% pos VLLM 1970 160 170 110
-%% pos PREFILL 1120 430 300 110
-%% pos NOTE1 70 650 1180 220
-%% pos NOTE2 1360 650 770 220
+%% pos PATH 70 85 620 90
+%% pos PREFILLTAG 1120 85 280 90
+%% pos CLIENT 80 210 220 110
+%% pos GATEWAY 360 210 250 110
+%% pos POOL 700 210 320 110
+%% pos ROUTER 1100 210 360 110
+%% pos SIDECAR 1560 210 320 110
+%% pos VLLM 1960 210 170 110
+%% pos PREFILL 1140 500 280 110
+%% pos NOTE1 80 690 1160 200
+%% pos NOTE2 1360 690 760 200
 
+PATH["One user-visible request path"]:::tag
+PREFILLTAG["Optional prefill branch"]:::tag2
 CLIENT["1 Client"]:::plain
 GATEWAY["2 Gateway"]:::plain
 POOL["3 InferencePool"]:::plain
@@ -16,8 +20,8 @@ ROUTER["4 llm-d Router EPP"]:::orange
 SIDECAR["5 Decode sidecar"]:::decode
 VLLM["6 Decode vLLM"]:::decode
 PREFILL["Prefill"]:::prefill
-NOTE1["Gateway / HTTPRoute forwards the user request to the model's InferencePool.\nllm-d Router EPP decides whether prefill is needed and picks the role-specific backends.\nDecode remains the coordination point; the client still sees one endpoint."]:::note
-NOTE2["Prefill is conditional, not mandatory.\nKV transfer bridges prefill and decode.\nResponse streaming returns through the decode path."]:::blueNote
+NOTE1["Gateway / HTTPRoute forwards the user request to the model's InferencePool.\nllm-d Router EPP decides whether prefill is needed and picks the role-specific backends.\nDecode remains the coordination point, so the client still sees one endpoint."]:::note
+NOTE2["Prefill is conditional, not mandatory.\nKV transfer bridges prefill and decode.\nResponse streaming still returns through the decode path."]:::blueNote
 
 CLIENT --> GATEWAY
 GATEWAY --> POOL
@@ -26,6 +30,8 @@ ROUTER --> SIDECAR
 SIDECAR --> VLLM
 ROUTER --> PREFILL
 PREFILL -.-> SIDECAR
+PATH -.-> ROUTER
+PREFILLTAG -.-> PREFILL
 CLIENT -.-> NOTE1
 SIDECAR -.-> NOTE2
 
@@ -35,3 +41,5 @@ classDef orange fill:#FFF2E8,stroke:#C2410C,color:#C2410C,font-size:22px,font-we
 classDef plain fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:22px,font-weight:bold
 classDef note fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:18px
 classDef blueNote fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:18px
+classDef tag fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:18px,font-weight:bold
+classDef tag2 fill:#FFF7ED,stroke:#FDBA74,color:#9A3412,font-size:18px,font-weight:bold
