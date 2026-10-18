@@ -1,0 +1,30 @@
+flowchart LR
+%% pos WHY 80 140 860 600
+%% pos EPP 1020 260 210 90
+%% pos SIDECAR 1330 250 600 130
+%% pos KV 1930 120 180 80
+%% pos VLLM 1330 520 600 130
+%% pos PROXY 1510 420 240 70
+%% pos NOTE 1260 820 760 100
+
+WHY["Decode pods are the final response point for user traffic.\nThe routing sidecar receives the EPP decision, coordinates prefill, waits for KV handoff, then forwards to local vLLM.\nThis keeps the external routing contract stable while hiding the internal P/D choreography behind one decode endpoint."]:::note
+EPP["from EPP"]:::orange2
+SIDECAR["Routing sidecar\nport 5000"]:::decode
+KV["KV handoff"]:::prefill
+VLLM["Local decode vLLM\nport 5001"]:::teal
+PROXY["proxy to local"]:::plain
+NOTE["decode pod = coordination point + final response point"]:::note2
+
+EPP --> SIDECAR
+KV -.-> SIDECAR
+SIDECAR --> PROXY
+PROXY --> VLLM
+VLLM -.-> NOTE
+
+classDef prefill fill:#F3E8FF,stroke:#6D28D9,color:#6D28D9,font-size:20px,font-weight:bold
+classDef decode fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:24px,font-weight:bold
+classDef teal fill:#E8FFFB,stroke:#0F766E,color:#0F766E,font-size:24px,font-weight:bold
+classDef orange2 fill:#FFF7ED,stroke:#FDBA74,color:#9A3412,font-size:18px,font-weight:bold
+classDef plain fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:18px,font-weight:bold
+classDef note fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:18px
+classDef note2 fill:#F8FAFC,stroke:#CBD5E1,color:#111827,font-size:18px

@@ -1,0 +1,37 @@
+flowchart LR
+%% pos CLIENT 70 160 220 110
+%% pos GATEWAY 350 160 250 110
+%% pos POOL 690 160 320 110
+%% pos ROUTER 1090 160 380 110
+%% pos SIDECAR 1580 160 320 110
+%% pos VLLM 1970 160 170 110
+%% pos PREFILL 1120 430 300 110
+%% pos NOTE1 70 650 1180 220
+%% pos NOTE2 1360 650 770 220
+
+CLIENT["1 Client"]:::plain
+GATEWAY["2 Gateway"]:::plain
+POOL["3 InferencePool"]:::plain
+ROUTER["4 llm-d Router EPP"]:::orange
+SIDECAR["5 Decode sidecar"]:::decode
+VLLM["6 Decode vLLM"]:::decode
+PREFILL["Prefill"]:::prefill
+NOTE1["Gateway / HTTPRoute forwards the user request to the model's InferencePool.\nllm-d Router EPP decides whether prefill is needed and picks the role-specific backends.\nDecode remains the coordination point; the client still sees one endpoint."]:::note
+NOTE2["Prefill is conditional, not mandatory.\nKV transfer bridges prefill and decode.\nResponse streaming returns through the decode path."]:::blueNote
+
+CLIENT --> GATEWAY
+GATEWAY --> POOL
+POOL --> ROUTER
+ROUTER --> SIDECAR
+SIDECAR --> VLLM
+ROUTER --> PREFILL
+PREFILL -.-> SIDECAR
+CLIENT -.-> NOTE1
+SIDECAR -.-> NOTE2
+
+classDef prefill fill:#F3E8FF,stroke:#6D28D9,color:#6D28D9,font-size:22px,font-weight:bold
+classDef decode fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:22px,font-weight:bold
+classDef orange fill:#FFF2E8,stroke:#C2410C,color:#C2410C,font-size:22px,font-weight:bold
+classDef plain fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:22px,font-weight:bold
+classDef note fill:#FFFFFF,stroke:#CBD5E1,color:#111827,font-size:18px
+classDef blueNote fill:#EAF2FF,stroke:#2F6FEB,color:#0F2747,font-size:18px

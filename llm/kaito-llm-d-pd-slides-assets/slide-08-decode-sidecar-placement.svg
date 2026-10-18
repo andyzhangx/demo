@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
 <defs>
-<marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
+<marker id="solid1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#FDBA74" /></marker>
+<marker id="dash2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6D28D9" /></marker>
+<marker id="solid3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
+<marker id="solid4" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#CBD5E1" /></marker>
+<marker id="dash5" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0F766E" /></marker>
 </defs>
 <rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
-<path d="M 1690.0 460.0 L 1690.0 580.0" fill="none" stroke="#2F6FEB" stroke-width="5.0" marker-end="url(#arrow1)" />
-<rect x="80.0" y="130.0" width="910.0" height="690.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
-<rect x="1230.0" y="80.0" width="910.0" height="780.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
-<rect x="1510.0" y="120.0" width="310.0" height="56.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
-<text x="1665.0" y="154.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827"><tspan x="1665.0" dy="0.0">Decode Pod</tspan></text>
-<rect x="1360.0" y="300.0" width="660.0" height="160.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="1690.0" y="373.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="26" font-weight="700" fill="#0F2747"><tspan x="1690.0" dy="0.0">Routing sidecar</tspan><tspan x="1690.0" dy="32.5">port 5000</tspan></text>
-<rect x="1360.0" y="580.0" width="660.0" height="160.0" rx="18" ry="18" fill="#E8FFFB" stroke="#0F766E" stroke-width="3" />
-<text x="1690.0" y="653.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="26" font-weight="700" fill="#0F766E"><tspan x="1690.0" dy="0.0">Local decode vLLM</tspan><tspan x="1690.0" dy="32.5">port 5001</tspan></text>
-<rect x="1080.0" y="300.0" width="180.0" height="56.0" rx="18" ry="18" fill="#FFFFFF" stroke="#C2410C" stroke-width="3" />
-<text x="1170.0" y="334.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#C2410C"><tspan x="1170.0" dy="0.0">from EPP</tspan></text>
-<rect x="1540.0" y="490.0" width="300.0" height="50.0" rx="18" ry="18" fill="#FFFFFF" stroke="#2F6FEB" stroke-width="3" />
-<text x="1690.0" y="521.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="16" font-weight="400" fill="#0F2747"><tspan x="1690.0" dy="0.0">proxy to local</tspan></text>
-<rect x="1840.0" y="120.0" width="260.0" height="56.0" rx="18" ry="18" fill="#FFFFFF" stroke="#6D28D9" stroke-width="3" />
-<text x="1970.0" y="154.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#6D28D9"><tspan x="1970.0" dy="0.0">KV handoff</tspan></text>
+<path d="M 1230.0 305.0 L 1280.0 305.0 L 1280.0 315.0 L 1330.0 315.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid1)" />
+<path d="M 1930.0 160.0 L 1930.0 315.0" fill="none" stroke="#6D28D9" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash2)" />
+<path d="M 1630.0 380.0 L 1630.0 420.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid3)" />
+<path d="M 1630.0 490.0 L 1630.0 520.0" fill="none" stroke="#CBD5E1" stroke-width="4" marker-end="url(#solid4)" />
+<path d="M 1630.0 650.0 L 1630.0 735.0 L 1640.0 735.0 L 1640.0 820.0" fill="none" stroke="#0F766E" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash5)" />
+<rect x="80.0" y="140.0" width="860.0" height="600.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="510.0" y="413.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="510.0" dy="0.0">Decode pods are the final response point for user traffic.\nThe routing sidecar</tspan><tspan x="510.0" dy="22.5">receives the EPP decision, coordinates prefill, waits for KV handoff, then</tspan><tspan x="510.0" dy="22.5">forwards to local vLLM.\nThis keeps the external routing contract stable while</tspan><tspan x="510.0" dy="22.5">hiding the internal P/D choreography behind one decode endpoint.</tspan></text>
+<rect x="1020.0" y="260.0" width="210.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
+<text x="1125.0" y="311.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#9A3412"><tspan x="1125.0" dy="0.0">from EPP</tspan></text>
+<rect x="1330.0" y="250.0" width="600.0" height="130.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
+<text x="1630.0" y="324.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1630.0" dy="0.0">Routing sidecar\nport 5000</tspan></text>
+<rect x="1930.0" y="120.0" width="180.0" height="80.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
+<text x="2020.0" y="167.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="700" fill="#6D28D9"><tspan x="2020.0" dy="0.0">KV handoff</tspan></text>
+<rect x="1330.0" y="520.0" width="600.0" height="130.0" rx="18" ry="18" fill="#E8FFFB" stroke="#0F766E" stroke-width="3" />
+<text x="1630.0" y="594.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F766E"><tspan x="1630.0" dy="0.0">Local decode vLLM\nport 5001</tspan></text>
+<rect x="1510.0" y="420.0" width="240.0" height="70.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
+<text x="1630.0" y="461.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827"><tspan x="1630.0" dy="0.0">proxy to local</tspan></text>
+<rect x="1260.0" y="820.0" width="760.0" height="100.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
+<text x="1640.0" y="876.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1640.0" dy="0.0">decode pod = coordination point + final response point</tspan></text>
 </svg>

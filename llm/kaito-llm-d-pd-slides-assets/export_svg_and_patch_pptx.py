@@ -20,11 +20,11 @@ NS_CT = {"ct": "http://schemas.openxmlformats.org/package/2006/content-types"}
 NS_REL = {"rel": "http://schemas.openxmlformats.org/package/2006/relationships"}
 
 SLIDES = {
-    4: {"basename": "slide-04-end-to-end-architecture", "source": "drawio", "drawio_name": "Slide 4 - End-to-End Architecture"},
+    4: {"basename": "slide-04-end-to-end-architecture", "source": "mermaid", "mmd": "slide-04-end-to-end-architecture.mmd"},
     5: {"basename": "slide-05-multiroleinference-topology", "source": "mermaid", "mmd": "slide-05-multiroleinference-topology.mmd"},
     6: {"basename": "slide-06-kaito-generated-resources", "source": "mermaid", "mmd": "slide-06-kaito-generated-resources.mmd"},
-    7: {"basename": "slide-07-request-execution-flow", "source": "drawio", "drawio_name": "Slide 7 - How a P/D Request Actually Executes"},
-    8: {"basename": "slide-08-decode-sidecar-placement", "source": "drawio", "drawio_name": "Slide 8 - Why the Routing Sidecar Lives on Decode Pods"},
+    7: {"basename": "slide-07-request-execution-flow", "source": "mermaid", "mmd": "slide-07-request-execution-flow.mmd"},
+    8: {"basename": "slide-08-decode-sidecar-placement", "source": "mermaid", "mmd": "slide-08-decode-sidecar-placement.mmd"},
     9: {"basename": "slide-09-runtime-contracts", "source": "mermaid", "mmd": "slide-09-runtime-contracts.mmd"},
     10: {"basename": "slide-10-kaito-vs-llmd", "source": "mermaid", "mmd": "slide-10-kaito-vs-llmd.mmd"},
     11: {"basename": "slide-11-ownership-boundary", "source": "mermaid", "mmd": "slide-11-ownership-boundary.mmd"},
@@ -394,18 +394,10 @@ def render_mermaid_svg(model: dict) -> str:
 
 # ---------------- export + patch ----------------
 def export_svgs() -> None:
-    drawio_pages = parse_drawio_diagrams()
-    for slide_no, meta in SLIDES.items():
+    for _slide_no, meta in SLIDES.items():
         out = ASSET_DIR / f"{meta['basename']}.svg"
-        if meta['source'] == 'drawio':
-            page = meta['drawio_name']
-            if page not in drawio_pages:
-                raise RuntimeError(f'missing draw.io page: {page}')
-            width, height, vertices, edges = drawio_pages[page]
-            out.write_text(render_drawio_svg(width, height, vertices, edges))
-        else:
-            mmd_path = MERMAID_DIR / meta['mmd']
-            out.write_text(render_mermaid_svg(parse_mermaid(mmd_path)))
+        mmd_path = MERMAID_DIR / meta['mmd']
+        out.write_text(render_mermaid_svg(parse_mermaid(mmd_path)))
 
 
 def patch_pptx_to_svg() -> None:
@@ -446,18 +438,10 @@ def patch_pptx_to_svg() -> None:
 def update_readme() -> None:
     (ASSET_DIR / 'README.md').write_text(
         "# kaito-llm-d-pd-slides-assets\n\n"
-        "Mixed-source diagram assets for `../kaito-llm-d-pd-slides.pptx`.\n\n"
+        "Mermaid-first diagram assets for `../kaito-llm-d-pd-slides.pptx`.\n\n"
         "## Source of truth\n"
-        "- `kaito-llm-d-pd-slides.drawio`: main visual / architecture diagrams\n"
-        "  - slide 4: end-to-end architecture\n"
-        "  - slide 7: request execution flow\n"
-        "  - slide 8: decode-side sidecar placement\n"
-        "- `mermaid/*.mmd`: structure / logic diagrams\n"
-        "  - slide 5: MultiRoleInference topology\n"
-        "  - slide 6: KAITO-generated resources\n"
-        "  - slide 9: runtime contracts\n"
-        "  - slide 10: KAITO vs llm-d\n"
-        "  - slide 11: ownership boundary\n\n"
+        "- `mermaid/*.mmd`: Mermaid source files for slides 4-11\n"
+        "- `kaito-llm-d-pd-slides.drawio`: legacy reference copy from the earlier diagram iteration (no longer used by the export pipeline)\n\n"
         "## Generated outputs\n"
         "- `slide-04-*.svg` ... `slide-11-*.svg`: vector assets embedded into the PowerPoint deck\n"
         "- `slide-04-*.png` ... `slide-11-*.png`: legacy raster reference exports\n\n"
@@ -466,7 +450,7 @@ def update_readme() -> None:
         "cd llm/kaito-llm-d-pd-slides-assets\n"
         "python3 export_svg_and_patch_pptx.py\n"
         "```\n\n"
-        "This regenerates the slide SVG assets from the mixed draw.io + Mermaid sources and patches `../kaito-llm-d-pd-slides.pptx` so slides 4-11 reference the SVG media.\n"
+        "This regenerates the slide SVG assets from the Mermaid sources and patches `../kaito-llm-d-pd-slides.pptx` so slides 4-11 reference the SVG media.\n"
     )
 
 
@@ -474,7 +458,7 @@ def main() -> None:
     export_svgs()
     patch_pptx_to_svg()
     update_readme()
-    print(f'updated mixed draw.io + Mermaid SVG assets and patched {PPTX_PATH}')
+    print(f'updated Mermaid SVG assets and patched {PPTX_PATH}')
 
 
 if __name__ == '__main__':
