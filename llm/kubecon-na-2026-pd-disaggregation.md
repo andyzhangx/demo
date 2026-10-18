@@ -503,47 +503,47 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - That continuity is what makes P/D feel like an extension of serving, not a completely separate system.
 
 ### Slide 17 — What the llm-d Router brings to the stack
-- EPP for Gateway API Inference Extension
+- EPP implementation for the GWIE flow
 - model-aware and role-aware endpoint selection
 - KV-cache-aware and P/D-aware plugin chain
-- future advanced scheduling surface
+- the routing intelligence KAITO builds on
 
 **Suggested visual:** llm-d Router EPP box with plugin labels around it.
 
 **Speaker note:**
-- Explain that Gateway API Inference Extension gives the abstraction pattern, and the llm-d Router provides the advanced EPP implementation KAITO uses.
+- This slide should answer one question only: **what new capability does llm-d add?**
+- Explain that KAITO is not inventing its own routing algorithm here; it is building on llm-d Router as the EPP implementation and scheduling substrate.
 - Mention that this gives KAITO room to grow into richer inference topologies later.
 
-### Slide 18 — KAITO + llm-d Router + GWIE: division of labor
-- KAITO = declarative abstraction / orchestration
-- Gateway API Inference Extension = Kubernetes-native routing contract and API model
-- llm-d Router = actual EPP implementation, endpoint selection, and P/D-aware scheduling logic
-- InferencePool connects the gateway-facing contract to the serving backends
+### Slide 18 — Why all three: KAITO + GWIE + llm-d Router
+- KAITO = declarative abstraction and orchestration
+- GWIE = Kubernetes-native contract between gateway and inference backends
+- llm-d Router = routing intelligence and P/D-aware scheduling
+- InferencePool = the contract surface that binds them together
 
 **Suggested visual:** layered diagram with explicit separation of concerns.
 
 **Speaker note:**
 - This slide should answer “why all three?” very clearly.
+- Use a simple progression: **llm-d gives the routing brain, GWIE gives the Kubernetes routing contract, and KAITO turns the whole thing into a usable platform workflow.**
 - Be precise here: KAITO still uses GWIE objects and integration patterns, but it does **not** rely on GWIE’s reference routing implementation for P/D behavior.
-- Say explicitly: GWIE provides the contract, llm-d Router provides the routing intelligence, and KAITO makes the topology operable for platform teams.
-- If the audience only remembers one stack diagram, let it be this one or Slide 19.
+- Keep this slide conceptual; save the concrete topology for the next page.
 
 ### Slide 19 — End-to-end architecture diagram
-- client
-- gateway
-- InferencePool (GWIE CRD / contract surface)
-- llm-d Router EPP
-- prefill child InferenceSet
-- decode child InferenceSet
-- KV path
+- client request enters through the gateway
+- gateway targets an InferencePool (GWIE contract surface)
+- llm-d Router EPP selects decode and, when needed, prefill
+- KAITO-managed child InferenceSets provide the actual prefill/decode backends
+- KV data moves directly between prefill and decode
+- one user endpoint, multiple coordinated runtime paths
 
 **Suggested visual:** full architecture diagram; this is one of the anchor slides.
 
 **Speaker note:**
-- This is the main reference diagram for the rest of the talk.
+- This is the concrete payoff slide for 17 and 18.
+- Show the audience where each piece from the previous slides lands in the real architecture.
 - Make the child InferenceSets visible so the audience sees the real KAITO object model.
-- Be explicit that the gateway integration still flows through InferencePool, but the routing decisions come from the llm-d Router EPP.
-- Keep returning to it when later slides discuss request flow or autoscaling.
+- Keep returning to this diagram when later slides discuss request flow or autoscaling.
 
 ### Slide 20 — What MultiRoleInference declares
 - one logical inference service
