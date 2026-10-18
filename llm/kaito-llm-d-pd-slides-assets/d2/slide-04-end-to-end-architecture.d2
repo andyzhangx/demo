@@ -1,0 +1,96 @@
+direction: down
+vars: {
+  d2-config: {
+    pad: 30
+    theme-id: 300
+    layout-engine: dagre
+  }
+}
+
+x_platform: "Platform layer" {
+  shape: rectangle
+  style.fill: "#F8FAFC"
+  style.stroke: "#CBD5E1"
+  style.font-size: 24
+
+  kaito: "KAITO\nMultiRoleInference controller" {
+    style.fill: "#EAF2FF"
+    style.stroke: "#2F6FEB"
+    style.font-color: "#0F2747"
+    style.bold: true
+  }
+  gwie: "InferencePool + GWIE\ncontract surface" {
+    style.fill: "#E8FFFB"
+    style.stroke: "#0F766E"
+    style.font-color: "#0F766E"
+    style.bold: true
+  }
+  llmd: "llm-d Router\nrole-aware execution" {
+    style.fill: "#FFF2E8"
+    style.stroke: "#C2410C"
+    style.font-color: "#C2410C"
+    style.bold: true
+  }
+}
+
+x_request: "Execution path" {
+  direction: right
+  style.fill: "#FFFFFF"
+  style.stroke: "#FFFFFF"
+
+  client: Client
+  gateway: Gateway
+  router: "llm-d Router EPP" {
+    style.fill: "#FFF7ED"
+    style.stroke: "#FDBA74"
+    style.font-color: "#9A3412"
+    style.bold: true
+  }
+  sidecar: "Decode sidecar" {
+    style.fill: "#EAF2FF"
+    style.stroke: "#2F6FEB"
+    style.font-color: "#0F2747"
+    style.bold: true
+  }
+  vllm: "Local decode vLLM" {
+    style.fill: "#EAF2FF"
+    style.stroke: "#2F6FEB"
+    style.font-color: "#0F2747"
+    style.bold: true
+  }
+}
+
+prefill: "Prefill InferenceSet" {
+  style.fill: "#F3E8FF"
+  style.stroke: "#6D28D9"
+  style.font-color: "#6D28D9"
+  style.bold: true
+}
+
+note1: "Client traffic stays on one stable endpoint." {
+  shape: text
+  style.font-size: 18
+}
+note2: "KV cache moves on a separate direct path between roles." {
+  shape: text
+  style.font-size: 18
+}
+
+x_platform.kaito -> x_platform.gwie -> x_platform.llmd
+x_platform.gwie -> x_request.gateway: contract
+x_platform.kaito -> prefill: topology + wiring
+x_platform.llmd -> x_request.router: execution decision
+x_request.client -> x_request.gateway -> x_request.router -> x_request.sidecar -> x_request.vllm
+x_request.router -> prefill: optional prefill
+prefill -> x_request.sidecar: KV handoff {
+  style.stroke: "#6D28D9"
+  style.stroke-dash: 4
+}
+x_request.client -> note1: "" {
+  style.stroke-dash: 4
+  style.stroke: "#CBD5E1"
+}
+prefill -> note2: "" {
+  style.stroke-dash: 4
+  style.stroke: "#CBD5E1"
+}

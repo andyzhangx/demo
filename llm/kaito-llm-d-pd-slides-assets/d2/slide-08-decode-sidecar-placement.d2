@@ -1,0 +1,63 @@
+direction: right
+vars: {
+  d2-config: {
+    pad: 30
+    theme-id: 300
+    layout-engine: dagre
+  }
+}
+
+why: "Decode pods are the final response point for user traffic.\nThe routing sidecar receives the EPP decision, coordinates prefill, waits for KV handoff, then forwards to local vLLM.\nThat keeps the external routing contract stable while hiding the internal P/D choreography behind one decode endpoint." {
+  style.fill: "#FFFFFF"
+  style.stroke: "#CBD5E1"
+}
+
+pod: "Decode Pod" {
+  direction: down
+  style.fill: "#F8FAFC"
+  style.stroke: "#CBD5E1"
+  style.bold: true
+
+  sidecar: "Routing sidecar\nport 5000" {
+    style.fill: "#EAF2FF"
+    style.stroke: "#2F6FEB"
+    style.font-color: "#0F2747"
+    style.bold: true
+  }
+  vllm: "Local decode vLLM\nport 5001" {
+    style.fill: "#E8FFFB"
+    style.stroke: "#0F766E"
+    style.font-color: "#0F766E"
+    style.bold: true
+  }
+}
+
+epp: "EPP decision" {
+  style.fill: "#FFF7ED"
+  style.stroke: "#FDBA74"
+  style.font-color: "#9A3412"
+  style.bold: true
+}
+kv: "KV handoff" {
+  style.fill: "#F3E8FF"
+  style.stroke: "#6D28D9"
+  style.font-color: "#6D28D9"
+  style.bold: true
+}
+proxy: "proxy to local"
+result: "decode pod = coordination point + final response point" {
+  shape: text
+  style.font-size: 18
+  style.bold: true
+}
+
+epp -> pod.sidecar
+kv -> pod.sidecar: "" {
+  style.stroke: "#6D28D9"
+  style.stroke-dash: 4
+}
+pod.sidecar -> proxy -> pod.vllm
+pod.vllm -> result: "" {
+  style.stroke-dash: 4
+  style.stroke: "#CBD5E1"
+}

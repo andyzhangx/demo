@@ -1,35 +1,62 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1000" viewBox="0 0 2200 1000">
-<defs>
-<marker id="solid1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#FDBA74" /></marker>
-<marker id="dash2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6D28D9" /></marker>
-<marker id="solid3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2F6FEB" /></marker>
-<marker id="solid4" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#CBD5E1" /></marker>
-<marker id="dash5" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#CBD5E1" /></marker>
-<marker id="dash6" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0F766E" /></marker>
-</defs>
-<rect x="0" y="0" width="2200" height="1000" fill="#FFFFFF"/>
-<path d="M 1260.0 320.0 L 1290.0 320.0 L 1290.0 315.0 L 1320.0 315.0" fill="none" stroke="#FDBA74" stroke-width="4" marker-end="url(#solid1)" />
-<path d="M 1940.0 260.0 L 1940.0 287.5 L 1920.0 287.5 L 1920.0 315.0" fill="none" stroke="#6D28D9" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash2)" />
-<path d="M 1620.0 380.0 L 1620.0 430.0" fill="none" stroke="#2F6FEB" stroke-width="4" marker-end="url(#solid3)" />
-<path d="M 1620.0 500.0 L 1620.0 540.0" fill="none" stroke="#CBD5E1" stroke-width="4" marker-end="url(#solid4)" />
-<path d="M 1620.0 180.0 L 1620.0 250.0" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash5)" />
-<path d="M 1620.0 180.0 L 1620.0 540.0" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash5)" />
-<path d="M 1620.0 670.0 L 1620.0 742.5 L 1680.0 742.5 L 1680.0 815.0" fill="none" stroke="#0F766E" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#dash6)" />
-<rect x="80.0" y="150.0" width="820.0" height="560.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
-<text x="490.0" y="391.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="490.0" dy="0.0">Decode pods are the final response point for user traffic.\nThe routing</tspan><tspan x="490.0" dy="22.5">sidecar receives the EPP decision, coordinates prefill, waits for KV</tspan><tspan x="490.0" dy="22.5">handoff, then forwards to local vLLM.\nThat keeps the external routing</tspan><tspan x="490.0" dy="22.5">contract stable while hiding the internal P/D choreography behind one decode</tspan><tspan x="490.0" dy="22.5">endpoint.</tspan></text>
-<rect x="1320.0" y="90.0" width="600.0" height="90.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
-<text x="1620.0" y="141.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827"><tspan x="1620.0" dy="0.0">Decode Pod</tspan></text>
-<rect x="1040.0" y="275.0" width="220.0" height="90.0" rx="18" ry="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3" />
-<text x="1150.0" y="326.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#9A3412"><tspan x="1150.0" dy="0.0">EPP decision</tspan></text>
-<rect x="1940.0" y="220.0" width="170.0" height="80.0" rx="18" ry="18" fill="#F3E8FF" stroke="#6D28D9" stroke-width="3" />
-<text x="2025.0" y="267.5" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="20" font-weight="700" fill="#6D28D9"><tspan x="2025.0" dy="0.0">KV handoff</tspan></text>
-<rect x="1320.0" y="250.0" width="600.0" height="130.0" rx="18" ry="18" fill="#EAF2FF" stroke="#2F6FEB" stroke-width="3" />
-<text x="1620.0" y="324.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F2747"><tspan x="1620.0" dy="0.0">Routing sidecar\nport 5000</tspan></text>
-<rect x="1510.0" y="430.0" width="220.0" height="70.0" rx="18" ry="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3" />
-<text x="1620.0" y="471.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827"><tspan x="1620.0" dy="0.0">proxy to local</tspan></text>
-<rect x="1320.0" y="540.0" width="600.0" height="130.0" rx="18" ry="18" fill="#E8FFFB" stroke="#0F766E" stroke-width="3" />
-<text x="1620.0" y="614.0" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F766E"><tspan x="1620.0" dy="0.0">Local decode vLLM\nport 5001</tspan></text>
-<rect x="1290.0" y="815.0" width="780.0" height="100.0" rx="18" ry="18" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3" />
-<text x="1680.0" y="871.8" text-anchor="middle" font-family="Aptos, Arial, sans-serif" font-size="18" font-weight="400" fill="#111827"><tspan x="1680.0" dy="0.0">decode pod = coordination point + final response point</tspan></text>
-</svg>
+<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.9.0" preserveAspectRatio="xMinYMin meet" viewBox="0 0 2894 458"><svg class="d2-1857249693 d2-svg" width="2894" height="458" viewBox="-31 -31 2894 458"><rect x="-31" y="-31" width="2894" height="458" rx="0" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
+.d2-1857249693 .text-mono-bold {
+	font-family: "d2-1857249693-font-mono-bold";
+}
+@font-face {
+	font-family: d2-1857249693-font-mono-bold;
+	src: url("data:application/font-woff;base64,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");
+}]]></style><style type="text/css"><![CDATA[.shape {
+  shape-rendering: geometricPrecision;
+  stroke-linejoin: round;
+}
+.connection {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.blend {
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+		.d2-1857249693 .fill-N1{fill:#000410;}
+		.d2-1857249693 .fill-N7{fill:#FFFFFF;}
+		.d2-1857249693 .fill-B1{fill:#000410;}
+		.d2-1857249693 .fill-B6{fill:#FFFFFF;}
+		.d2-1857249693 .stroke-B1{stroke:#000410;}
+		.d2-1857249693 .stroke-B2{stroke:#0000E4;}.appendix text.text{fill:#000410}.md{--color-fg-default:#000410;--color-fg-muted:#0000B8;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#000410;--color-border-muted:#0000E4;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0000E4;--color-accent-emphasis:#0000E4;--color-attention-subtle:#0000B8;--color-danger-fg:red;}.light-code{display: block}.dark-code{display: none}]]></style><style type="text/css"><![CDATA[
+.dots-overlay {
+	fill: url(#dots-d2-1857249693);
+	mix-blend-mode: multiply;
+}]]></style><defs><pattern id="dots-d2-1857249693" x="0" y="0" width="15" height="15" patternUnits="userSpaceOnUse">
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="2" y="2" width="1" height="1" fill="#0A0F25"/>
+</g>
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="12" y="2" width="1" height="1" fill="#0A0F25"/>
+</g>
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="12" y="12" width="1" height="1" fill="#0A0F25"/>
+</g>
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="2" y="12" width="1" height="1" fill="#0A0F25"/>
+</g>
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="2" y="7" width="1" height="1" fill="#0A0F25"/>
+</g>
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="12" y="7" width="1" height="1" fill="#0A0F25"/>
+</g>
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="7" y="2" width="1" height="1" fill="#0A0F25"/>
+</g>
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="7" y="12" width="1" height="1" fill="#0A0F25"/>
+</g>
+<g style="mix-blend-mode:multiply" opacity="0.1">
+<rect x="7" y="7" width="1" height="1" fill="#0A0F25"/>
+</g>
+</pattern>
+</defs><g class="d2h5"><g class="shape" ><rect x="0" y="0" width="1175" height="98" stroke="#CBD5E1" fill="#FFFFFF" style="stroke-width:2;" /></g><text x="587.5" y="38.5" fill="#000410" class="text-mono-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="587.5" dy="0">DECODE PODS ARE THE FINAL RESPONSE POINT FOR USER TRAFFIC.</tspan><tspan x="587.5" dy="17.666667">THE ROUTING SIDECAR RECEIVES THE EPP DECISION, COORDINATES PREFILL, WAITS FOR KV HANDOFF, THEN FORWARDS TO LOCAL VLLM.</tspan><tspan x="587.5" dy="17.666667">THAT KEEPS THE EXTERNAL ROUTING CONTRACT STABLE WHILE HIDING THE INTERNAL P/D CHOREOGRAPHY BEHIND ONE DECODE ENDPOINT.</tspan></text></g><g class="cG9k"><g class="shape" ><rect x="1295" y="219" width="834" height="152" stroke="#CBD5E1" fill="#F8FAFC" style="stroke-width:2;" /><rect x="1295" y="219" width="834" height="152" class="dots-overlay" style="stroke-width:2;" /><rect x="1300" y="224" width="824" height="142" stroke="#CBD5E1" fill="transparent" style="stroke-width:2;" /></g><text x="1712" y="206" fill="#000410" class="text-mono-bold fill-N1" style="text-anchor:middle;font-size:28px">DECODE POD</text></g><g class="ZXBw"><g class="shape" ><rect x="508" y="204" width="159" height="66" stroke="#FDBA74" fill="#FFF7ED" style="stroke-width:2;" /></g><text x="587.5" y="242.5" fill="#9A3412" class="text-mono-bold" style="text-anchor:middle;font-size:16px">EPP DECISION</text></g><g class="a3Y="><g class="shape" ><rect x="518" y="330" width="140" height="66" stroke="#6D28D9" fill="#F3E8FF" style="stroke-width:2;" /></g><text x="588" y="368.5" fill="#6D28D9" class="text-mono-bold" style="text-anchor:middle;font-size:16px">KV HANDOFF</text></g><g class="cHJveHk="><g class="shape" ><rect x="1614" y="25" width="178" height="66" stroke="#000410" fill="#FFFFFF" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1703" y="63.5" fill="#000410" class="text-mono-bold fill-N1" style="text-anchor:middle;font-size:16px">PROXY TO LOCAL</text></g><g class="cmVzdWx0"><g class="shape" ></g><text x="2540.5" y="297" fill="#000410" class="text-mono-bold fill-N1" style="text-anchor:middle;font-size:18px">DECODE POD = COORDINATION POINT + FINAL RESPONSE POINT</text></g><g class="cG9kLnNpZGVjYXI="><g class="shape" ><rect x="1325" y="259" width="189" height="82" stroke="#2F6FEB" fill="#EAF2FF" style="stroke-width:2;" /></g><text x="1419.5" y="297.5" fill="#0F2747" class="text-mono-bold" style="text-anchor:middle;font-size:16px"><tspan x="1419.5" dy="0">ROUTING SIDECAR</tspan><tspan x="1419.5" dy="18.5">PORT 5000</tspan></text></g><g class="cG9kLnZsbG0="><g class="shape" ><rect x="1892" y="249" width="207" height="82" stroke="#0F766E" fill="#E8FFFB" style="stroke-width:2;" /></g><text x="1995.5" y="287.5" fill="#0F766E" class="text-mono-bold" style="text-anchor:middle;font-size:16px"><tspan x="1995.5" dy="0">LOCAL DECODE VLLM</tspan><tspan x="1995.5" dy="18.5">PORT 5001</tspan></text></g><g class="KGVwcCAtJmd0OyBwb2Quc2lkZWNhcilbMF0="><marker id="mk-d2-1857249693-3488378134" markerWidth="10" markerHeight="12" refX="7" refY="6" viewBox="0 0 10 12" orient="auto" markerUnits="userSpaceOnUse"> <polygon points="0,0 10,6 0,12" fill="#000410" class="connection fill-B1" stroke-width="2" /> </marker><path d="M 669 237 C 1113.400024 237 1285 241.399994 1321.33874 257.389045" stroke="#000410" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1857249693-3488378134)" mask="url(#d2-1857249693)" /></g><g class="KGt2IC0mZ3Q7IHBvZC5zaWRlY2FyKVswXQ=="><marker id="mk-d2-1857249693-3290281597" markerWidth="10" markerHeight="12" refX="7" refY="6" viewBox="0 0 10 12" orient="auto" markerUnits="userSpaceOnUse"> <polygon points="0,0 10,6 0,12" fill="#6D28D9" class="connection" stroke-width="2" /> </marker><path d="M 660.5 363 C 1111.699951 363 1285 358.600006 1321.33874 342.610955" stroke="#6D28D9" fill="none" class="connection" style="stroke-width:2;stroke-dasharray:8.000000,7.892511;" marker-end="url(#mk-d2-1857249693-3290281597)" mask="url(#d2-1857249693)" /></g><g class="KHBvZC5zaWRlY2FyIC0mZ3Q7IHByb3h5KVswXQ=="><path d="M 1516 300 C 1554 300 1587 258.200012 1677.071681 94.50451" stroke="#000410" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1857249693-3488378134)" mask="url(#d2-1857249693)" /></g><g class="KHByb3h5IC0mZ3Q7IHBvZC52bGxtKVswXQ=="><path d="M 1728.593668 93.232802 C 1819.119019 250.300003 1852 290 1888 290" stroke="#000410" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1857249693-3488378134)" mask="url(#d2-1857249693)" /></g><g class="KHBvZC52bGxtIC0mZ3Q7IHJlc3VsdClbMF0="><marker id="mk-d2-1857249693-4110486056" markerWidth="10" markerHeight="12" refX="7" refY="6" viewBox="0 0 10 12" orient="auto" markerUnits="userSpaceOnUse"> <polygon points="0,0 10,6 0,12" fill="#CBD5E1" class="connection" stroke-width="2" /> </marker><path d="M 2101 290 C 2139 290 2209 290 2245 290" stroke="#CBD5E1" fill="none" class="connection" style="stroke-width:2;stroke-dasharray:8.000000,7.892511;" marker-end="url(#mk-d2-1857249693-4110486056)" mask="url(#d2-1857249693)" /></g><mask id="d2-1857249693" maskUnits="userSpaceOnUse" x="-31" y="-31" width="2894" height="458">
+<rect x="-31" y="-31" width="2894" height="458" fill="white"></rect>
+
+</mask></svg></svg>

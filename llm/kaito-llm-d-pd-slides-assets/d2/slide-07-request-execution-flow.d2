@@ -1,0 +1,84 @@
+direction: down
+vars: {
+  d2-config: {
+    pad: 30
+    theme-id: 300
+    layout-engine: dagre
+  }
+}
+
+headline: "One user-visible request path" {
+  shape: text
+  style.bold: true
+  style.font-size: 20
+}
+
+flow: {
+  direction: right
+  client: "1 Client"
+  gateway: "2 Gateway"
+  pool: "3 InferencePool"
+  router: "4 llm-d Router EPP" {
+    style.fill: "#FFF7ED"
+    style.stroke: "#FDBA74"
+    style.font-color: "#9A3412"
+    style.bold: true
+  }
+  sidecar: "5 Decode sidecar" {
+    style.fill: "#EAF2FF"
+    style.stroke: "#2F6FEB"
+    style.font-color: "#0F2747"
+    style.bold: true
+  }
+  vllm: "6 Decode vLLM" {
+    style.fill: "#EAF2FF"
+    style.stroke: "#2F6FEB"
+    style.font-color: "#0F2747"
+    style.bold: true
+  }
+}
+
+prefill_label: "Optional prefill branch" {
+  shape: text
+  style.bold: true
+  style.font-size: 20
+}
+prefill: Prefill {
+  style.fill: "#F3E8FF"
+  style.stroke: "#6D28D9"
+  style.font-color: "#6D28D9"
+  style.bold: true
+}
+
+summary_left: "Gateway / HTTPRoute forwards the request to the model's InferencePool.\nllm-d Router EPP decides whether prefill is needed and picks the role-specific backends.\nDecode remains the coordination point, so the client still sees one endpoint." {
+  style.fill: "#FFFFFF"
+  style.stroke: "#CBD5E1"
+}
+summary_right: "Prefill is conditional, not mandatory.\nKV transfer bridges prefill and decode.\nResponse streaming still returns through the decode path." {
+  style.fill: "#EAF2FF"
+  style.stroke: "#2F6FEB"
+  style.font-color: "#0F2747"
+}
+
+headline -> flow.router: "" {
+  style.stroke-dash: 4
+  style.stroke: "#CBD5E1"
+}
+prefill_label -> prefill: "" {
+  style.stroke-dash: 4
+  style.stroke: "#FDBA74"
+}
+flow.client -> flow.gateway -> flow.pool -> flow.router -> flow.sidecar -> flow.vllm
+flow.router -> prefill: optional prefill
+prefill -> flow.sidecar: KV handoff {
+  style.stroke: "#6D28D9"
+  style.stroke-dash: 4
+}
+flow.client -> summary_left: "" {
+  style.stroke-dash: 4
+  style.stroke: "#CBD5E1"
+}
+flow.sidecar -> summary_right: "" {
+  style.stroke-dash: 4
+  style.stroke: "#CBD5E1"
+}
