@@ -1,0 +1,17 @@
+# kaito-llm-d-pd-slides-assets
+
+Draw.io source-of-truth assets for the diagram-heavy slides in `../kaito-llm-d-pd-slides.pptx`.
+
+## Contents
+- `kaito-llm-d-pd-slides.drawio`: editable diagrams.net source with one page per slide diagram
+- `slide-04-*.png` ... `slide-11-*.png`: exported raster assets used in the PowerPoint deck
+
+## Slide mapping
+- Slide 4: End-to-End Architecture
+- Slide 5: One MultiRoleInference Object Describes the Topology
+- Slide 6: What KAITO Automatically Generates for P/D
+- Slide 7: How a P/D Request Actually Executes
+- Slide 8: Why the Routing Sidecar Lives on Decode Pods
+- Slide 9: The Runtime Contracts That Make P/D Actually Work
+- Slide 10: KAITO Does Not Replace llm-d — It Operationalizes It
+- Slide 11: What Users Manage vs. What the Platform Manages
