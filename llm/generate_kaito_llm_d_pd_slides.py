@@ -236,6 +236,12 @@ def slide_18_division_of_labor():
     add_textbox(slide, Inches(0.85), Inches(1.18), Inches(11.7), Inches(0.62),
                 "Three layers, three responsibilities, one usable P/D platform.", 21, True,
                 NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+    add_textbox(slide, Inches(1.35), Inches(1.92), Inches(2.35), Inches(0.32), "control-plane abstraction", 12, True,
+                BLUE, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(5.52), Inches(1.92), Inches(2.25), Inches(0.32), "gateway-facing contract", 12, True,
+                GREEN, PP_ALIGN.CENTER, fill=False, line=False)
+    add_textbox(slide, Inches(9.52), Inches(1.92), Inches(2.35), Inches(0.32), "routing intelligence", 12, True,
+                ORANGE, PP_ALIGN.CENTER, fill=False, line=False)
     add_card(slide, Inches(0.9), Inches(2.2), Inches(3.2), Inches(2.55), "KAITO",
              ["declarative abstraction", "Kubernetes orchestration", "child resource ownership", "platform-facing UX"],
              fill=BLUE_SOFT, line=BLUE)
@@ -247,6 +253,8 @@ def slide_18_division_of_labor():
              fill=ORANGE_SOFT, line=ORANGE)
     add_connector(slide, Inches(4.10), Inches(3.47), Inches(5.00), Inches(3.47), PURPLE, 3)
     add_connector(slide, Inches(8.25), Inches(3.47), Inches(9.15), Inches(3.47), PURPLE, 3)
+    add_textbox(slide, Inches(2.70), Inches(4.98), Inches(8.0), Inches(0.34), "contract + routing together become a usable platform path only when the controller owns the topology and wiring", 13, True,
+                MUTED, PP_ALIGN.CENTER, fill=False, line=False)
     add_note(slide, "llm-d gives the routing brain, GWIE gives the Kubernetes routing contract, and KAITO turns the whole thing into a usable platform workflow.")
 
 
@@ -262,48 +270,55 @@ def slide_19_anchor_architecture():
     add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.78), Inches(1.85), Inches(11.9), Inches(4.7), fill=WHITE, line=False)
     add_textbox(slide, Inches(0.98), Inches(2.00), Inches(2.0), Inches(0.28), "AKS / Kubernetes cluster", 12, True, MUTED, fill=None, line=False)
 
-    # Control plane band
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.05), Inches(2.22), Inches(10.95), Inches(0.78), fill=GRAY_SOFT, line=False)
-    add_textbox(slide, Inches(1.20), Inches(2.40), Inches(1.55), Inches(0.20), "control plane", 12, True, BLUE, fill=None, line=False)
-    add_textbox(slide, Inches(2.15), Inches(2.32), Inches(2.45), Inches(0.44), "KAITO\nMultiRoleInference controller", 16, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(4.72), Inches(2.32), Inches(2.40), Inches(0.44), "InferencePool\n(GWIE CRD)", 15, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_textbox(slide, Inches(7.20), Inches(2.32), Inches(2.65), Inches(0.44), "Gateway API Inference Extension", 15, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_textbox(slide, Inches(10.15), Inches(2.32), Inches(1.40), Inches(0.44), "KEDA", 16, True, NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
+    # Legend chips
+    add_textbox(slide, Inches(9.75), Inches(1.93), Inches(1.15), Inches(0.30), "user traffic", 11, True, NAVY,
+                PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
+    add_textbox(slide, Inches(11.00), Inches(1.93), Inches(1.15), Inches(0.30), "KV handoff", 11, True, NAVY,
+                PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
 
-    # Data plane band labels
-    add_textbox(slide, Inches(1.15), Inches(3.18), Inches(1.25), Inches(0.20), "request path", 12, True, BLUE, fill=None, line=False)
-    add_textbox(slide, Inches(1.15), Inches(5.78), Inches(1.10), Inches(0.20), "KV path", 12, True, PURPLE, fill=None, line=False)
+    # Control plane band
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.05), Inches(2.22), Inches(10.95), Inches(0.82), fill=GRAY_SOFT, line=False)
+    add_textbox(slide, Inches(1.20), Inches(2.42), Inches(1.55), Inches(0.20), "control plane", 12, True, BLUE, fill=None, line=False)
+    add_textbox(slide, Inches(2.05), Inches(2.34), Inches(2.55), Inches(0.46), "KAITO\nMultiRoleInference controller", 15, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
+    add_textbox(slide, Inches(4.78), Inches(2.34), Inches(2.05), Inches(0.46), "InferencePool\n(GWIE CRD)", 14, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
+    add_textbox(slide, Inches(7.02), Inches(2.34), Inches(2.88), Inches(0.46), "Gateway API Inference Extension", 14, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
+    add_textbox(slide, Inches(10.18), Inches(2.34), Inches(1.38), Inches(0.46), "KEDA", 15, True, NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
+
+    # Data plane background bands
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.05), Inches(3.18), Inches(10.95), Inches(1.35), fill=BLUE_SOFT, line=False)
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(6.55), Inches(4.70), Inches(4.15), Inches(0.60), fill=PURPLE_SOFT, line=False)
+    add_textbox(slide, Inches(1.20), Inches(3.26), Inches(1.10), Inches(0.20), "request path", 12, True, BLUE, fill=None, line=False)
+    add_textbox(slide, Inches(6.68), Inches(4.84), Inches(1.00), Inches(0.18), "KV path", 12, True, PURPLE, fill=None, line=False)
 
     # Request/data plane components
-    add_textbox(slide, Inches(1.15), Inches(3.45), Inches(1.10), Inches(0.74), "Client", 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
-    add_textbox(slide, Inches(2.55), Inches(3.45), Inches(1.40), Inches(0.74), "Gateway", 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
-    add_textbox(slide, Inches(4.25), Inches(3.28), Inches(2.05), Inches(1.06), "llm-d Router\nEPP", 18, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(6.80), Inches(3.02), Inches(2.15), Inches(0.84), "Prefill\nInferenceSet", 18, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(6.80), Inches(4.58), Inches(2.15), Inches(0.84), "Decode\nInferenceSet", 18, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(9.35), Inches(4.32), Inches(2.10), Inches(1.05), "Decode pod\nsidecar + local vLLM", 16, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=PURPLE, radius=True)
+    add_textbox(slide, Inches(1.18), Inches(3.62), Inches(1.10), Inches(0.64), "Client", 17, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
+    add_textbox(slide, Inches(2.60), Inches(3.62), Inches(1.35), Inches(0.64), "Gateway", 17, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
+    add_textbox(slide, Inches(4.32), Inches(3.46), Inches(2.05), Inches(0.96), "llm-d Router\nEPP", 17, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
+    add_textbox(slide, Inches(6.92), Inches(3.28), Inches(2.05), Inches(0.72), "Prefill\nInferenceSet", 17, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
+    add_textbox(slide, Inches(6.92), Inches(4.02), Inches(2.05), Inches(0.72), "Decode\nInferenceSet", 17, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
+    add_textbox(slide, Inches(9.42), Inches(3.84), Inches(2.35), Inches(0.92), "Decode pod\nsidecar + local vLLM", 15, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=PURPLE, radius=True)
 
-    # Request path connectors
-    add_connector(slide, Inches(2.25), Inches(3.82), Inches(2.55), Inches(3.82), BLUE, 3)
-    add_connector(slide, Inches(3.95), Inches(3.82), Inches(4.25), Inches(3.82), BLUE, 3)
-    add_connector(slide, Inches(6.30), Inches(3.82), Inches(6.80), Inches(5.00), BLUE, 2.8)
-    add_connector(slide, Inches(8.95), Inches(5.00), Inches(9.35), Inches(4.85), BLUE, 2.8)
-
-    # Optional prefill decision branch
-    add_connector(slide, Inches(6.30), Inches(3.68), Inches(6.80), Inches(3.42), BLUE, 2.2)
-    add_textbox(slide, Inches(5.55), Inches(3.00), Inches(0.95), Inches(0.30), "selects", 11, True, MUTED, PP_ALIGN.CENTER, fill=None, line=False)
+    # Request path connectors and labels
+    add_connector(slide, Inches(2.28), Inches(3.94), Inches(2.60), Inches(3.94), BLUE, 3)
+    add_connector(slide, Inches(3.95), Inches(3.94), Inches(4.32), Inches(3.94), BLUE, 3)
+    add_connector(slide, Inches(6.37), Inches(3.94), Inches(6.92), Inches(4.38), BLUE, 2.8)
+    add_connector(slide, Inches(8.97), Inches(4.38), Inches(9.42), Inches(4.30), BLUE, 2.8)
+    add_textbox(slide, Inches(5.45), Inches(3.22), Inches(1.00), Inches(0.26), "selects decode", 11, True, MUTED, PP_ALIGN.CENTER, fill=None, line=False)
+    add_connector(slide, Inches(6.37), Inches(3.82), Inches(6.92), Inches(3.64), BLUE, 2.2)
+    add_textbox(slide, Inches(5.48), Inches(3.02), Inches(1.02), Inches(0.24), "optional prefill", 10, True, MUTED, PP_ALIGN.CENTER, fill=None, line=False)
 
     # KV path
-    add_connector(slide, Inches(8.95), Inches(3.44), Inches(9.35), Inches(4.70), PURPLE, 2.8)
-    add_textbox(slide, Inches(8.82), Inches(3.68), Inches(0.90), Inches(0.28), "NIXL KV", 11, True, PURPLE, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
+    add_connector(slide, Inches(8.97), Inches(3.64), Inches(9.42), Inches(4.10), PURPLE, 2.8)
+    add_textbox(slide, Inches(8.80), Inches(3.52), Inches(0.95), Inches(0.28), "NIXL KV", 11, True, PURPLE, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
 
     # Callouts
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.10), Inches(6.02), Inches(4.55), Inches(0.42), fill=GRAY_SOFT, line=False)
-    add_textbox(slide, Inches(1.18), Inches(6.09), Inches(4.40), Inches(0.24),
-                "Request routing and KV transfer are separate paths.", 13, True, MUTED,
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.08), Inches(5.52), Inches(5.25), Inches(0.56), fill=GRAY_SOFT, line=False)
+    add_textbox(slide, Inches(1.24), Inches(5.66), Inches(4.95), Inches(0.24),
+                "Client traffic and KV-cache movement follow different paths.", 13, True, MUTED,
                 PP_ALIGN.CENTER, fill=None, line=False)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(6.15), Inches(6.02), Inches(5.70), Inches(0.42), fill=GRAY_SOFT, line=False)
-    add_textbox(slide, Inches(6.28), Inches(6.09), Inches(5.42), Inches(0.24),
-                "KAITO owns topology + wiring; GWIE carries the contract; llm-d owns EPP decisions; vLLM/NIXL own execution + handoff.",
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(6.55), Inches(5.52), Inches(5.55), Inches(0.56), fill=GRAY_SOFT, line=False)
+    add_textbox(slide, Inches(6.72), Inches(5.66), Inches(5.20), Inches(0.24),
+                "KAITO owns topology + wiring; GWIE carries the contract; llm-d owns EPP decisions.",
                 13, True, MUTED, PP_ALIGN.CENTER, fill=None, line=False)
 
 
@@ -368,37 +383,51 @@ def slide_22_request_flow():
     add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
                 "One endpoint for the user; multiple coordinated steps underneath.", 18, True,
                 NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+    add_textbox(slide, Inches(0.92), Inches(1.72), Inches(1.10), Inches(0.28), "request path", 11, True, BLUE,
+                PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
+    add_textbox(slide, Inches(7.56), Inches(3.03), Inches(1.00), Inches(0.28), "prefill path", 11, True, ORANGE,
+                PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
+    add_textbox(slide, Inches(8.98), Inches(3.32), Inches(1.00), Inches(0.28), "KV path", 11, True, PURPLE,
+                PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
     labels = [
-        ("Client", Inches(0.72), Inches(1.95), GREEN_SOFT, GREEN),
-        ("Gateway", Inches(2.10), Inches(1.95), BLUE_SOFT, BLUE),
-        ("InferencePool", Inches(3.60), Inches(1.95), GREEN_SOFT, GREEN),
-        ("llm-d Router EPP", Inches(5.38), Inches(1.95), ORANGE_SOFT, ORANGE),
-        ("Decode sidecar", Inches(7.60), Inches(1.95), PURPLE_SOFT, PURPLE),
-        ("Decode vLLM", Inches(10.00), Inches(1.95), BLUE_SOFT, BLUE),
+        ("1  Client", Inches(0.72), Inches(1.98), GREEN_SOFT, GREEN),
+        ("2  Gateway", Inches(2.15), Inches(1.98), BLUE_SOFT, BLUE),
+        ("3  InferencePool", Inches(3.85), Inches(1.98), GREEN_SOFT, GREEN),
+        ("4  llm-d Router EPP", Inches(5.95), Inches(1.98), ORANGE_SOFT, ORANGE),
+        ("5  Decode sidecar", Inches(8.38), Inches(1.98), PURPLE_SOFT, PURPLE),
+        ("6  Decode vLLM", Inches(10.85), Inches(1.98), BLUE_SOFT, BLUE),
     ]
-    for t, x, y, fillc, linec in labels:
-        add_textbox(slide, x, y, Inches(1.40), Inches(0.62), t, 15, True, NAVY,
+    widths = [Inches(1.15), Inches(1.40), Inches(1.65), Inches(1.95), Inches(1.80), Inches(1.45)]
+    for (t, x, y, fillc, linec), w in zip(labels, widths):
+        add_textbox(slide, x, y, w, Inches(0.64), t, 14, True, NAVY,
                     PP_ALIGN.CENTER, fill=fillc, line=linec, radius=True)
     for i in range(len(labels) - 1):
         _, x1, y1, *_ = labels[i]
         _, x2, y2, *_ = labels[i + 1]
-        add_connector(slide, x1 + Inches(1.40), y1 + Inches(0.31), x2, y2 + Inches(0.31), BLUE, 2.4)
-    add_textbox(slide, Inches(7.60), Inches(3.18), Inches(1.40), Inches(0.62), "Prefill", 15, True,
+        add_connector(slide, x1 + widths[i], y1 + Inches(0.32), x2, y2 + Inches(0.32), BLUE, 2.5)
+    add_textbox(slide, Inches(8.35), Inches(3.30), Inches(1.82), Inches(0.64), "Prefill", 15, True,
                 NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_connector(slide, Inches(8.30), Inches(2.57), Inches(8.30), Inches(3.18), PURPLE, 2.4)
-    add_connector(slide, Inches(9.00), Inches(3.49), Inches(10.00), Inches(2.57), PURPLE, 2.4)
-    add_textbox(slide, Inches(9.00), Inches(3.25), Inches(1.22), Inches(0.36), "NIXL KV", 12, True,
-                PURPLE, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-    add_numbered(slide, Inches(0.82), Inches(4.10), Inches(8.25), Inches(2.05), [
+    add_connector(slide, Inches(9.28), Inches(2.62), Inches(9.28), Inches(3.30), ORANGE, 2.5)
+    add_textbox(slide, Inches(7.85), Inches(2.78), Inches(1.05), Inches(0.24), "dispatches", 10, True, MUTED,
+                PP_ALIGN.CENTER, fill=None, line=False)
+    add_connector(slide, Inches(10.17), Inches(3.62), Inches(10.85), Inches(2.62), PURPLE, 2.5)
+    add_textbox(slide, Inches(9.75), Inches(3.78), Inches(0.95), Inches(0.24), "handoff", 10, True, MUTED,
+                PP_ALIGN.CENTER, fill=None, line=False)
+    add_connector(slide, Inches(10.85), Inches(2.62), Inches(11.55), Inches(2.62), GREEN, 2.2)
+    add_connector(slide, Inches(11.55), Inches(2.62), Inches(11.55), Inches(1.55), GREEN, 2.2)
+    add_connector(slide, Inches(11.55), Inches(1.55), Inches(2.85), Inches(1.55), GREEN, 2.2)
+    add_textbox(slide, Inches(6.72), Inches(1.34), Inches(1.35), Inches(0.24), "response stream", 10, True, MUTED,
+                PP_ALIGN.CENTER, fill=None, line=False)
+    add_numbered(slide, Inches(0.82), Inches(4.22), Inches(8.1), Inches(1.95), [
         "Gateway / HTTPRoute forwards to the InferencePool for the model",
         "llm-d Router EPP decides whether prefill work is needed and selects the role-specific backends",
         "The request lands on a decode pod, whose sidecar coordinates prefill on the selected prefill pod",
         "KV cache is transferred directly to decode via NIXL, and local decode vLLM continues generation",
     ], size=15)
-    add_textbox(slide, Inches(9.35), Inches(4.08), Inches(3.0), Inches(1.62),
-                "• Decode is the coordination point\n• Prefill is selected only when it helps\n• KV transfer bridges the two phases",
+    add_textbox(slide, Inches(9.32), Inches(4.14), Inches(3.03), Inches(1.70),
+                "• Decode is the coordination point\n• Prefill is selected only when it helps\n• KV transfer bridges the two phases\n• The client still sees one endpoint",
                 15, False, SLATE, fill=WHITE, line=MID, radius=True)
-    add_note(slide, "The user sees one endpoint. GWIE carries the gateway-facing contract, llm-d makes the routing decisions, and the platform coordinates prefill placement, KV movement, and decode execution across multiple pods.")
+    add_note(slide, "GWIE carries the gateway-facing contract, llm-d makes the routing decisions, and the platform coordinates prefill placement, KV movement, and decode execution across multiple pods.")
 
 
 def slide_23_sidecar():
@@ -408,26 +437,35 @@ def slide_23_sidecar():
     add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
                 "Sidecar placement is an execution design choice, not an incidental implementation detail.",
                 18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_bullets(slide, Inches(0.85), Inches(2.05), Inches(5.55), Inches(3.8), [
+    add_bullets(slide, Inches(0.85), Inches(2.05), Inches(5.45), Inches(3.8), [
         "Decode pods are the final response point for user traffic",
         "The routing sidecar receives the EPP decision, coordinates prefill, waits for KV handoff, then forwards to local vLLM",
         "This keeps the external routing contract cleaner: sidecar on 5000, local decode vLLM on 5001",
         "Prefill pods stay simpler and focus only on prompt processing",
     ], size=16)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(7.25), Inches(1.85), Inches(4.95), Inches(4.65), fill=WHITE, line=BLUE, line_width=1.8)
-    add_textbox(slide, Inches(8.72), Inches(2.00), Inches(2.0), Inches(0.35), "Decode Pod", 21, True,
+    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(7.12), Inches(1.80), Inches(5.10), Inches(4.75), fill=WHITE, line=BLUE, line_width=1.8)
+    add_textbox(slide, Inches(8.72), Inches(1.98), Inches(2.0), Inches(0.35), "Decode Pod", 21, True,
                 NAVY, PP_ALIGN.CENTER, fill=None, line=False)
-    add_textbox(slide, Inches(7.80), Inches(2.80), Inches(3.85), Inches(0.82), "Routing sidecar\nport 5000", 20, True,
+    add_textbox(slide, Inches(7.42), Inches(2.48), Inches(1.08), Inches(0.30), "external request", 11, True,
+                GREEN, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
+    add_textbox(slide, Inches(11.08), Inches(2.48), Inches(1.00), Inches(0.30), "KV handoff", 11, True,
+                ORANGE, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
+    add_textbox(slide, Inches(7.72), Inches(2.95), Inches(3.90), Inches(0.84), "Routing sidecar\nport 5000", 20, True,
                 NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-    add_textbox(slide, Inches(7.80), Inches(4.25), Inches(3.85), Inches(0.82), "Local decode vLLM\nport 5001", 20, True,
+    add_textbox(slide, Inches(7.72), Inches(4.42), Inches(3.90), Inches(0.84), "Local decode vLLM\nport 5001", 20, True,
                 NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_connector(slide, Inches(9.72), Inches(3.62), Inches(9.72), Inches(4.25), PURPLE, 3)
-    add_textbox(slide, Inches(6.15), Inches(2.95), Inches(1.10), Inches(0.40), "from EPP", 12, True,
+    add_connector(slide, Inches(6.90), Inches(3.36), Inches(7.72), Inches(3.36), GREEN, 2.8)
+    add_textbox(slide, Inches(6.02), Inches(3.15), Inches(0.82), Inches(0.32), "from EPP", 11, True,
                 NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_connector(slide, Inches(7.25), Inches(3.21), Inches(6.85), Inches(3.21), GREEN, 2.6)
-    add_textbox(slide, Inches(11.82), Inches(3.62), Inches(0.98), Inches(0.40), "NIXL KV", 12, True,
+    add_connector(slide, Inches(9.67), Inches(3.79), Inches(9.67), Inches(4.42), PURPLE, 3)
+    add_textbox(slide, Inches(9.82), Inches(3.96), Inches(1.20), Inches(0.28), "proxy to local", 11, True,
+                MUTED, PP_ALIGN.CENTER, fill=None, line=False)
+    add_connector(slide, Inches(11.35), Inches(3.35), Inches(11.78), Inches(4.68), ORANGE, 2.6)
+    add_textbox(slide, Inches(11.24), Inches(4.02), Inches(0.90), Inches(0.28), "NIXL KV", 11, True,
                 NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_connector(slide, Inches(11.55), Inches(3.82), Inches(11.82), Inches(4.66), ORANGE, 2.6)
+    add_textbox(slide, Inches(7.48), Inches(5.58), Inches(4.35), Inches(0.40),
+                "decode pod = coordination point + final response point", 14, True,
+                SLATE, PP_ALIGN.CENTER, fill=GRAY_SOFT, line=False, radius=True)
     add_note(slide, "Decode-side sidecar placement turns the decode pod into the coordination point for P/D execution.")
 
 
