@@ -5,7 +5,7 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 ## Design
 
-- Retains the original narrative and English presentation language; now **38 slides**, with two ecosystem/integration slides inserted after original slide 8.
+- Retains the original narrative and English presentation language; now **43 slides**, with two ecosystem/integration slides after original slide 8 and five implementation-focused autoscaling slides after slide 25.
 - New slide 9 compares Dynamo, llm-d, AIBrix, KServe, Ray Serve/KubeRay and vLLM Production Stack, with a separate LWS DisaggregatedSet callout. New slide 10 explains why llm-d fits KAITO’s integration goals.
 - All diagrams, tables, labels, and arrows are **native PowerPoint objects**. There are no embedded raster/SVG diagrams and no flattened slide images.
 - Blue = platform/routing; teal = prefill/KV data; purple = decode; amber = constraints or recommendations.
@@ -14,9 +14,21 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 - Uses common PowerPoint font families: Arial and Courier New. Fonts are not embedded; substitutions can affect layout on systems without those fonts.
 - `overview.png` is a rendered contact sheet **for preview only**; it is not used inside the deck.
 
+## P/D autoscaling implementation
+
+Slides **26–30** expand the autoscaling section using the [role-aware autoscaling design](../kaito-llm-d/kaito-role-aware-autoscaling-for-pd.md):
+
+1. MRI policy projection and one KEDA/HPA actuator per role InferenceSet.
+2. Phase 1 native vLLM waiting/running gauges, illustrative thresholds and bounds.
+3. Proposed role-aware annotation configuration, with typed fields as an alternative.
+4. Replica ownership, actual metric availability, and safe lifecycle handoff.
+5. Phase 2 signals derived from native vLLM metrics, their uses and integration requirements.
+
+The new slides remain editable and include source-backed speaker notes. They distinguish the proposed MRI adapter/API from current functionality and keep derived recording rules in a later phase. Existing scaling-summary labels now match the two native phase-1 gauges. Example thresholds are not production recommendations.
+
 ## Accuracy boundaries
 
-- Slides 26–29 are an **evaluation plan**, not benchmark results. The source does not contain measured data. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
+- Slides 31–34 are an **evaluation plan**, not benchmark results. The source does not contain measured data. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
 - Slide 23 documents the existing KEDA → InferenceSet integration. Slide 25 explicitly labels MRI-level per-role scaling policy as a **recommendation**, not an available API schema.
 - Slides 9–10 acknowledge existing declarative APIs, including DynamoGraphDeployment, StormService/RoleSet, LLMInferenceService and DisaggregatedSet. “Best fit” is scoped to extending KAITO, not a claim of universal platform superiority or measured performance. Official references and current alpha/runtime/gateway limitations are included in speaker notes.
 - Request/control messages and KV-tensor payloads are separate. The KV payload moves from prefill to decode even when the transport operation is a decode-initiated read.
@@ -40,7 +52,7 @@ The generator resolves paths relative to itself and replaces only the PPTX. It d
 
 The redesign was exported with LibreOffice 25.8 and checked for:
 
-- 38 slides and 38 non-empty speaker-note pages;
+- 43 slides and 43 non-empty speaker-note pages;
 - valid OOXML ZIP/XML and no embedded media;
 - slide geometry and text-box overlap;
 - rendered text presence and text bounds on every slide;
@@ -52,6 +64,8 @@ This is a LibreOffice rendering check, not a Microsoft PowerPoint application te
 
 - [KAITO prefill/decode disaggregation](https://kaito-project.github.io/kaito/docs/prefill-decode-disaggregation)
 - [KAITO KEDA autoscaling for InferenceSet](https://kaito-project.github.io/kaito/docs/keda-autoscaler-inference)
+- [Role-aware P/D autoscaling design](../kaito-llm-d/kaito-role-aware-autoscaling-for-pd.md)
+- [vLLM native production metrics](https://docs.vllm.ai/en/stable/usage/metrics/)
 - [llm-d architecture](https://llm-d.ai/docs/architecture)
 - [Dynamo Kubernetes deployment](https://docs.nvidia.com/dynamo/v1.1.0/getting-started/kubernetes-deployment)
 - [AIBrix P/D routing](https://aibrix.readthedocs.io/latest/features/gateway-routing/pd-disaggregation.html) and [StormService](https://aibrix.readthedocs.io/latest/designs/aibrix-stormservice.html)
