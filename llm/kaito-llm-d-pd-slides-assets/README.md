@@ -24,7 +24,7 @@ The script writes the PPTX next to itself, so it can also be run from another wo
 - Green: direct KV data transfer between runtimes, separate from HTTP coordination.
 - Dashed lines: control relationships or response messages, as identified by each diagram.
 
-The request sequence distinguishes **KV data direction** (prefill → decode) from the **read initiator** (decode). Speaker notes include technical context, diagram omissions, the upstream sequence reference and deployment-specific port caveats. The topology YAML is explicitly an excerpt, not an apply-ready manifest.
+The request sequence distinguishes **KV data direction** (prefill → decode) from the **read initiator** (decode). Speaker notes include technical context, diagram omissions, the upstream sequence reference and deployment-specific port caveats. Slide 5 reproduces the user-supplied `qwen-3-8-27b` / `Qwen/Qwen3.8-27B` example, with one prefill replica on `Standard_NC24ads_A100_v4` and two decode replicas on `Standard_NC80adis_H100_v5`. Its diagram shows **role replica counts**, not GPU counts per VM. The example is not a deployment validation; model availability, installed CRD schema, quota and regional SKU support must be checked separately.
 
 ## Historical assets
 

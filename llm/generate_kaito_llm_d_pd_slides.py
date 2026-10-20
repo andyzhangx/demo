@@ -3,7 +3,7 @@
 
 Requires Python 3.10+ and python-pptx 1.0.2+. Run this file from any directory.
 No raster diagrams, external assets, or presentation application are required.
-The topology YAML is an explanatory excerpt, not a complete deployment manifest.
+The topology YAML is the user-supplied model/role example, not a deployment validation.
 """
 from __future__ import annotations
 
@@ -287,26 +287,33 @@ def architecture_slide():
 
 
 def topology_slide():
-    s = slide(5, "One object declares the serving topology", "Users describe roles and replica intent; controllers own the expansion.", "DECLARATIVE API")
-    shape(s, .6, 2.02, 5.23, 4.12, NAVY)
-    text(s, .85, 2.23, 4.7, .25, "MultiRoleInference  /  topology excerpt", 12, LIGHT_TEXT, True)
-    code = "apiVersion: kaito.sh/v1alpha1\nkind: MultiRoleInference\nmetadata:\n  name: qwen-pd\nspec:\n  roles:\n    - type: prefill\n      replicas: 1\n    - type: decode\n      replicas: 2"
-    text(s, .86, 2.75, 4.74, 2.97, code, 16, WHITE, font=MONO)
-    text(s, .86, 5.79, 4.65, .18, "Illustrative excerpt — model and placement omitted.", 10, LIGHT_TEXT)
-    path(s, [(5.96, 4.07), (6.66, 4.07)], PURPLE)
-    text(s, 5.91, 3.62, .79, .3, "reconcile", 10, PURPLE, align=PP_ALIGN.CENTER)
-    node(s, 6.9, 2.04, 5.58, .69, "One logical service / InferencePool", color=BLUE, fill=B_SOFT, size=18)
-    shape(s, 6.9, 3.05, 2.48, 2.55, A_SOFT)
-    shape(s, 9.7, 3.05, 2.78, 2.55, T_SOFT)
-    text(s, 7.13, 3.28, 2.05, .35, "Prefill role", 20, AMBER, True)
-    text(s, 9.94, 3.28, 2.28, .35, "Decode role", 20, TEAL, True)
-    node(s, 7.16, 4.01, 1.95, .71, "Worker 1", color=AMBER, fill=WHITE, size=17)
-    node(s, 9.95, 3.99, 2.27, .6, "Worker 1", color=TEAL, fill=WHITE, size=17)
-    node(s, 9.95, 4.75, 2.27, .6, "Worker 2", color=TEAL, fill=WHITE, size=17)
-    text(s, 7.14, 5.04, 2.04, .24, "replicas: 1", 13, AMBER)
-    text(s, 6.94, 5.83, 5.48, .27, "Independent role intent. Shared service surface.", 14, MUTED, True)
-    takeaway(s, "The CRD is the product surface — topology intent in, role-specific serving out.")
-    notes(s, "This is a topology excerpt, not apply-ready YAML. Model configuration, placement and other required fields are omitted for focus. The original example has one prefill replica and two decode replicas. Replica cards are illustrative workers; an InferenceSet remains the controller-managed abstraction for each role.")
+    s = slide(5, "One object declares the serving topology", "One model, distinct instance types: 1 A100 prefill replica + 2 H100 decode replicas.", "DECLARATIVE API")
+    shape(s, .6, 2.02, 6.18, 4.12, NAVY)
+    text(s, .85, 2.23, 5.68, .25, "MultiRoleInference  /  model + role placement", 12, LIGHT_TEXT, True)
+    code = "apiVersion: kaito.sh/v1alpha1\nkind: MultiRoleInference\nmetadata:\n  name: qwen-3-8-27b\nspec:\n  model:\n    name: Qwen/Qwen3.8-27B\n  roles:\n    - type: prefill\n      replicas: 1\n      instanceType: Standard_NC24ads_A100_v4\n    - type: decode\n      replicas: 2\n      instanceType: Standard_NC80adis_H100_v5"
+    code_box = text(s, .86, 2.7, 5.68, 3.25, code, 14, WHITE, font=MONO)
+    for paragraph in code_box.text_frame.paragraphs:
+        paragraph.line_spacing = Pt(16.3)
+        paragraph.space_after = Pt(0)
+    path(s, [(6.88, 4.07), (7.42, 4.07)], PURPLE)
+    text(s, 6.8, 3.64, .73, .3, "reconcile", 9, PURPLE, align=PP_ALIGN.CENTER)
+    node(s, 7.6, 2.02, 5.13, .86, "qwen-3-8-27b", "Qwen/Qwen3.8-27B", color=BLUE, fill=B_SOFT, size=21)
+    text(s, 7.63, 3.0, 5.07, .24, "ONE LOGICAL SERVICE / INFERENCEPOOL", 11, MUTED, True, PP_ALIGN.CENTER)
+    shape(s, 7.6, 3.47, 2.43, 2.67, A_SOFT)
+    shape(s, 10.29, 3.47, 2.44, 2.67, T_SOFT)
+    text(s, 7.8, 3.65, 2.03, .35, "Prefill role", 20, AMBER, True)
+    text(s, 10.49, 3.65, 2.04, .35, "Decode role", 20, TEAL, True)
+    text(s, 7.8, 4.08, 2.03, .24, "replicas: 1", 13, AMBER)
+    text(s, 10.49, 4.08, 2.04, .24, "replicas: 2", 13, TEAL)
+    node(s, 7.81, 4.48, 2.01, .57, "A100 / replica 1", color=AMBER, fill=WHITE, size=14)
+    node(s, 10.5, 4.48, 2.02, .57, "H100 / replica 1", color=TEAL, fill=WHITE, size=14)
+    node(s, 10.5, 5.19, 2.02, .57, "H100 / replica 2", color=TEAL, fill=WHITE, size=14)
+    text(s, 7.73, 5.87, 2.17, .18, "Standard_NC24ads_A100_v4", 9, AMBER, align=PP_ALIGN.CENTER)
+    text(s, 10.42, 5.87, 2.18, .18, "Standard_NC80adis_H100_v5", 9, TEAL, align=PP_ALIGN.CENTER)
+    path(s, [(8.82, 3.28), (8.82, 3.43)], AMBER)
+    path(s, [(11.51, 3.28), (11.51, 3.43)], TEAL)
+    takeaway(s, "Same model, independent role placement — A100 for prefill; H100 for decode.")
+    notes(s, "User-supplied example: kaito.sh/v1alpha1 MultiRoleInference named qwen-3-8-27b, model Qwen/Qwen3.8-27B. The prefill role has replicas: 1 and instanceType: Standard_NC24ads_A100_v4; the decode role has replicas: 2 and instanceType: Standard_NC80adis_H100_v5. The diagram shows role replicas, not the number of GPUs in each VM. Model and SKU identifiers are reproduced as provided; model availability, installed CRD schema, deployment prerequisites, quota and regional SKU support have not been validated by this presentation edit. Replica cards are illustrative workers; each role is managed through its own InferenceSet.")
 
 
 def resources_slide():
