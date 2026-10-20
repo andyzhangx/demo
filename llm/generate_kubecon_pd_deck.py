@@ -124,7 +124,7 @@ def slide(title, section, sub='', takeaway=None, dark=False):
         text(s, .68, 6.49, 11.97, .31, takeaway, 15, 'ink', True)
     arrow(s, .5, 7.12, 12.83, 7.12, 'muted' if dark else 'line', head=False, width=.7)
     text(s, .5, 7.19, 11.5, .2, 'KUBECON + CLOUDNATIVECON NORTH AMERICA 2026  /  KAITO + llm-d', 8, 'pale' if dark else 'muted')
-    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 36', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
+    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 38', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
     return s
 
 
@@ -247,6 +247,83 @@ route(s,[(8.52,3.75),(8.77,3.75),(8.77,2.93),(9.03,2.93)],'purple')
 route(s,[(8.52,4.17),(8.77,4.17),(8.77,5.2),(9.03,5.2)],'amber')
 note(s, 'This is an operational dependency map, not a request-flow diagram. Explain why assembling correct components by hand still leaves brittle contracts between them.',[PD_DOC])
 
+# Ecosystem addition — slides 09–10 (original slide markers below remain stable)
+ECOSYSTEM_REFS = [
+    'https://docs.nvidia.com/dynamo/v1.1.0/getting-started/kubernetes-deployment',
+    'https://llm-d.ai/docs/architecture',
+    'https://aibrix.readthedocs.io/latest/features/gateway-routing/pd-disaggregation.html',
+    'https://aibrix.readthedocs.io/latest/designs/aibrix-stormservice.html',
+    'https://kserve.github.io/website/docs/model-serving/generative-inference/llmisvc/llmisvc-overview',
+    'https://docs.ray.io/en/latest/serve/llm/user-guides/prefill-decode.html',
+    'https://docs.vllm.ai/projects/production-stack/en/latest/use_cases/disaggregated-prefill.html',
+    'https://lws.sigs.k8s.io/docs/concepts/disaggregatedset/',
+]
+s = slide('Open-source P/D: several paths, different abstractions', '02 / Ecosystem landscape',
+          'Representative approaches—not an adoption ranking or mutually exclusive stacks.',
+          'Declarative APIs already exist. The opportunity is simpler integration—not the first CRD.')
+rows = [
+    ['APPROACH', 'SERVING / ROUTING PATH', 'KUBERNETES PACKAGING'],
+    ['NVIDIA Dynamo', 'Integrated inference stack', 'Operator + DynamoGraphDeployment'],
+    ['llm-d', 'P/D-aware EPP + routing sidecar', 'Gateway API / InferencePool'],
+    ['AIBrix', 'P/D-aware gateway + engines', 'StormService / RoleSet'],
+    ['KServe + llm-d', 'llm-d serving integration', 'LLMInferenceService'],
+    ['Ray Serve + KubeRay', 'P/D app + vLLM KV connectors', 'RayService + Serve configuration'],
+    ['vLLM Production Stack', 'vLLM + LMCache / NIXL + router', 'Helm-managed P/D deployment'],
+]
+for r, row in enumerate(rows):
+    x = .55
+    y = 2.12 + r * .47
+    for c, (w, val) in enumerate(zip([3.15, 4.33, 4.75], row)):
+        rect(s, x, y, w-.025, .445, 'dark' if r == 0 else ('white' if r % 2 else 'blue_bg'))
+        text(s, x+.11, y+.085, w-.22, .32, val, 13 if r == 0 else 14,
+             'white' if r == 0 else ('blue' if c == 0 else 'ink'), r == 0 or c == 0)
+        x += w
+rect(s, .55, 5.55, 12.23, .57, 'teal_bg', radius=True)
+text(s, .72, 5.68, 11.9, .32,
+     'Also: LWS DisaggregatedSet orchestrates roles; engines and KV transport remain separate.', 15, 'teal')
+note(s, 'Sources checked 2026-10-20. This is a capability and abstraction map, not a maturity, performance, or market-share ranking. '
+     'The Kubernetes packaging column highlights a representative API; it is not an exhaustive feature inventory. '
+     'Dynamo has a Kubernetes Operator and DynamoGraphDeployment: do not characterize it as lacking declarative orchestration. '
+     'AIBrix StormService/RoleSet manages multi-role workloads. KServe LLMInferenceService explicitly wraps llm-d architecture, '
+     'so it is not a separate underlying P/D engine. Ray Serve models P/D as application deployments; KubeRay supplies Kubernetes lifecycle management. '
+     'The vLLM Production Stack tutorial supplies a Helm-based P/D deployment using LMCache/NIXL and a router; its sample versions are not a recommendation. '
+     'LWS DisaggregatedSet is a workload controller, not a complete serving data plane. SGLang, vLLM and TensorRT-LLM are engines; '
+     'NIXL, LMCache and Mooncake are transfer/cache building blocks, not standalone Kubernetes serving platforms. '
+     'Latest documentation can describe newer or alpha capabilities: validate release compatibility and production maturity separately. '
+     'Replace the old claim that the ecosystem lacks a declarative Kubernetes abstraction.', ECOSYSTEM_REFS)
+
+s = slide('Why llm-d is the best fit for KAITO’s P/D integration', '03 / Integration rationale',
+          'For teams choosing KAITO’s Kubernetes operating model—not a universal best-platform claim.',
+          'KAITO owns deployment intent and lifecycle; llm-d supplies reusable inference routing.')
+node(s, .55, 2.16, 3.62, 1.22, 'KAITO', 'MRI → child InferenceSets', 'blue', 21)
+node(s, 4.86, 2.16, 3.62, 1.22, 'llm-d', 'EPP + decode routing sidecar', 'teal', 21)
+node(s, 9.17, 2.16, 3.61, 1.22, 'vLLM + NIXL', 'Execute phases + move KV', 'purple', 21)
+text(s, 4.24, 2.52, .54, .5, '+', 26, 'muted', True, PP_ALIGN.CENTER)
+text(s, 8.55, 2.52, .54, .5, '+', 26, 'muted', True, PP_ALIGN.CENTER)
+for i, (title, body, accent) in enumerate([
+    ('Reuse the API model', 'Keep Workspace / InferenceSet.\nAdd role-specific replicas, GPU\ninstance types and runtime settings.', 'blue'),
+    ('Integrate, do not rebuild', 'Reuse P/D-aware endpoint selection\nand request orchestration. KAITO\nwires sidecars, ports and the pool.', 'teal'),
+    ('Clear ownership', 'Use Gateway API / InferencePool.\nKeep routing plugins upstream;\navoid adding a second serving API.', 'purple'),
+]):
+    card(s, .55+i*4.14, 3.58, 3.95, 2.12, title, body, accent, size=14)
+text(s, .58, 5.78, 12.15, .4,
+     'Current scope: alpha MRI • vLLM + Istio • GPU connectivity for KV transfer • scaling policy still needs design',
+     13, 'muted')
+note(s, 'Best fit is an architecture recommendation relative to the goal of extending KAITO, not evidence that KAITO beats every serving platform. '
+     'KAITO users already have Workspace/InferenceSet APIs, model presets and infrastructure lifecycle workflows. MRI reuses that model through role-specific child InferenceSets. '
+     'The documented controller creates an InferencePool and llm-d EPP, injects the decode routing sidecar, and sets vLLM NIXL side-channel configuration. '
+     'llm-d contributes P/D endpoint-selection plugins and request orchestration; vLLM and NIXL execute inference and transfer KV directly between pods. '
+     'The three boxes are a composition diagram, not a sequential request path. Gateway/HTTPRoute, certificates, GPU capacity and fabric setup remain platform prerequisites; '
+     'do not claim MRI provisions every cluster dependency automatically. '
+     'Compared with introducing another serving platform API alongside KAITO, reusing llm-d components preserves KAITO as the user-facing orchestration entry point. '
+     'KServe and AIBrix are legitimate alternative orchestration platforms; Dynamo offers an integrated stack; Ray Serve fits Ray-centric applications. '
+     'Existing users of those platforms need not migrate solely to obtain P/D. '
+     'Documented KAITO limitations: MRI is alpha, currently vLLM-only and requires Istio plus suitable GPU-to-GPU connectivity. '
+     'Independent role replica settings do not imply an automatic MRI-level autoscaling policy. The existing KEDA-InferenceSet capability and proposed MRI policy UX are discussed later. '
+     'No throughput, latency, cost, hardware-portability or superiority claim is made. Sources checked 2026-10-20.',
+     [PD_DOC, KEDA_DOC, 'https://llm-d.ai/docs/architecture',
+      'https://kserve.github.io/website/docs/model-serving/generative-inference/llmisvc/llmisvc-overview'])
+
 # 09
 s = slide('KAITO turns inference topology into Kubernetes APIs', '03 / KAITO + llm-d',
           'A control-plane progression from model serving to distributed inference.',
@@ -309,7 +386,7 @@ node(s,.8,3.89,5.5,1.83,'prefill InferenceSet','Replica count • instance type\
 node(s,7.03,3.89,5.5,1.83,'decode InferenceSet','Replica count • instance type\nTensor parallelism • vLLM configuration','purple',21)
 route(s,[(6.66,3.2),(6.66,3.52),(3.55,3.52),(3.55,3.89)],'teal')
 route(s,[(6.66,3.52),(9.78,3.52),(9.78,3.89)],'purple')
-note(s, 'The current MRI P/D documentation supports per-role replica, instance-type, preset, and vLLM settings. Do not imply this slide is a literal schema or that the proposed MRI scaling UX on slide 23 is already implemented.',[PD_DOC])
+note(s, 'The current MRI P/D documentation supports per-role replica, instance-type, preset, and vLLM settings. Do not imply this slide is a literal schema or that the proposed MRI scaling UX on slide 25 is already implemented.',[PD_DOC])
 
 # 14 — full architecture
 s = slide('One API endpoint, a role-aware serving path', '03 / Architecture',
@@ -634,6 +711,6 @@ for y,label,url in [(5.87,'KAITO: prefill/decode disaggregation',PD_DOC),(6.32,'
     sh.text_frame.paragraphs[0].runs[0].hyperlink.address=url
 note(s, 'Use workload, fabric, and operational constraints to guide questions. Both links are clickable in PowerPoint. Full URLs are retained here for export formats that do not preserve hyperlinks.',[PD_DOC,KEDA_DOC])
 
-assert len(prs.slides) == 36
+assert len(prs.slides) == 38
 prs.save(OUT)
 print(f'Saved {OUT} ({len(prs.slides)} slides; native editable shapes, no embedded images)')

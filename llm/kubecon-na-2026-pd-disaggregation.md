@@ -418,16 +418,59 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Make this sound concrete, not abstract: this is where manual wiring starts to hurt.
 - This sets up why an abstraction layer matters.
 
-### Slide 10 — Existing approaches in the ecosystem
-- NVIDIA Dynamo: powerful, but tightly coupled to the NVIDIA stack
-- llm-d standalone: Kubernetes-native, but still operationally manual
-- need for a declarative Kubernetes abstraction layer on top
+### Slide 10A — Open-source P/D: several paths, different abstractions
 
-**Suggested visual:** simple ecosystem map, not a competitive matrix.
+> Rendered as slide 9 in the 38-slide PowerPoint, followed by the integration rationale on slide 10. Outline numbering below is retained for existing references; the generator controls final presentation order.
 
-**Speaker note:**
-- Keep this balanced and brief.
-- The point is not who is better; the point is where the abstraction gap still exists.
+| Approach | Serving / routing path | Kubernetes packaging |
+| --- | --- | --- |
+| NVIDIA Dynamo | Integrated inference stack | Operator + DynamoGraphDeployment |
+| llm-d | P/D-aware EPP + routing sidecar | Gateway API / InferencePool |
+| AIBrix | P/D-aware gateway + engines | StormService / RoleSet |
+| KServe + llm-d | llm-d serving integration | LLMInferenceService |
+| Ray Serve + KubeRay | P/D application + vLLM KV connectors | RayService + Serve configuration |
+| vLLM Production Stack | vLLM + LMCache / NIXL + router | Helm-managed P/D deployment |
+
+Also relevant: **LWS DisaggregatedSet** declaratively orchestrates roles as child LeaderWorkerSets; engines and KV transport remain separate.
+
+**Takeaway:** Declarative APIs already exist. The opportunity is simpler integration—not the first CRD.
+
+**Visual:** editable three-column landscape table, with a separate workload-controller callout.
+
+**Speaker notes:**
+- Representative capabilities, not an adoption, maturity, or performance ranking. Projects overlap and can be composed.
+- KServe wraps llm-d rather than providing a competing underlying P/D engine. Dynamo and AIBrix also have declarative Kubernetes orchestration.
+- SGLang/vLLM/TensorRT-LLM are engines; NIXL/LMCache/Mooncake are transport or cache building blocks, not standalone Kubernetes serving platforms.
+- Check actual releases: latest documentation can include alpha/new capabilities. This comparison does not establish production readiness.
+
+### Slide 10B — Why llm-d is the best fit for KAITO’s P/D integration
+
+**Scope:** for teams choosing KAITO’s Kubernetes operating model—not a universal best-platform claim.
+
+**Composition diagram:** KAITO (MRI → child InferenceSets) + llm-d (EPP + decode routing sidecar) + vLLM/NIXL (execution + KV movement). This is not a request-flow sequence.
+
+- **Reuse the API model:** retain Workspace/InferenceSet and extend to role-specific replicas, GPU instance types and runtime settings.
+- **Integrate, do not rebuild:** reuse llm-d’s P/D endpoint selection and request orchestration; KAITO supplies sidecar, port and InferencePool wiring.
+- **Clear ownership:** use Gateway API/InferencePool boundaries, retain upstream routing plugins, and avoid adding a second serving platform API alongside KAITO.
+
+**Takeaway:** KAITO owns deployment intent and lifecycle; llm-d supplies reusable inference routing.
+
+**Speaker notes:**
+- This is a best-fit architectural judgment for extending KAITO, not a measured latency/throughput/cost comparison.
+- KServe and AIBrix remain valid orchestration alternatives; Dynamo is an integrated stack; Ray Serve suits Ray-centric applications. Their existing users need not migrate solely for P/D.
+- KAITO’s documented implementation already creates child InferenceSets, an InferencePool and EPP; it injects a decode routing sidecar and configures the vLLM NIXL side channel.
+- Current documented scope is alpha MRI, vLLM and Istio, with suitable GPU connectivity for KV transfer. Gateway/HTTPRoute, TLS, capacity and fabric preparation remain platform responsibilities.
+- Independent role replica settings are not an automatic MRI-level scaling policy. Keep current KEDA/InferenceSet support separate from the proposed MRI scaling-policy UX.
+
+**Official references for both slides (checked 2026-10-20):**
+- [KAITO P/D implementation and limitations](https://kaito-project.github.io/kaito/docs/prefill-decode-disaggregation/)
+- [llm-d architecture](https://llm-d.ai/docs/architecture)
+- [Dynamo Kubernetes deployment](https://docs.nvidia.com/dynamo/v1.1.0/getting-started/kubernetes-deployment)
+- [AIBrix P/D routing](https://aibrix.readthedocs.io/latest/features/gateway-routing/pd-disaggregation.html) and [StormService](https://aibrix.readthedocs.io/latest/designs/aibrix-stormservice.html)
+- [KServe LLMInferenceService](https://kserve.github.io/website/docs/model-serving/generative-inference/llmisvc/llmisvc-overview)
+- [Ray Serve P/D](https://docs.ray.io/en/latest/serve/llm/user-guides/prefill-decode.html)
+- [vLLM Production Stack P/D](https://docs.vllm.ai/projects/production-stack/en/latest/use_cases/disaggregated-prefill.html)
+- [LWS DisaggregatedSet](https://lws.sigs.k8s.io/docs/concepts/disaggregatedset/)
 
 ### Slide 11 — What KAITO is
 - Kubernetes-native AI operator
