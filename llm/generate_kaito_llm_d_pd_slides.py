@@ -1,601 +1,488 @@
 #!/usr/bin/env python3
+"""Build the KAITO + llm-d P/D deck using editable PowerPoint shapes.
+
+Requires Python 3.10+ and python-pptx 1.0.2+. Run this file from any directory.
+No raster diagrams, external assets, or presentation application are required.
+The topology YAML is an explanatory excerpt, not a complete deployment manifest.
+"""
 from __future__ import annotations
 
 from pathlib import Path
+
 from pptx import Presentation
 from pptx.dml.color import RGBColor
-from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE, MSO_CONNECTOR
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR, MSO_AUTO_SIZE
+from pptx.enum.dml import MSO_LINE_DASH_STYLE
+from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE as SHAPE, MSO_CONNECTOR
+from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE, PP_ALIGN
+from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "kaito-llm-d-pd-slides.pptx"
-
-BG = RGBColor(246, 248, 252)
-BG_ALT = RGBColor(240, 244, 248)
-NAVY = RGBColor(15, 23, 42)
-SLATE = RGBColor(51, 65, 85)
-MUTED = RGBColor(100, 116, 139)
-MID = RGBColor(203, 213, 225)
-WHITE = RGBColor(255, 255, 255)
-BLUE = RGBColor(37, 99, 235)
-BLUE_SOFT = RGBColor(219, 234, 254)
-ORANGE = RGBColor(234, 88, 12)
-ORANGE_SOFT = RGBColor(255, 237, 213)
-GREEN = RGBColor(22, 163, 74)
-GREEN_SOFT = RGBColor(220, 252, 231)
-PURPLE = RGBColor(109, 40, 217)
-PURPLE_SOFT = RGBColor(237, 233, 254)
-RED = RGBColor(220, 38, 38)
-RED_SOFT = RGBColor(254, 226, 226)
-GRAY_SOFT = RGBColor(241, 245, 249)
-
+W, H = 13.333, 7.5
+FONT, MONO = "Arial", "Consolas"
+NAVY, INK, MUTED = "10243A", "23384D", "5B6E80"
+WHITE, BG, LINE = "FFFFFF", "F5F8FC", "DCE5EF"
+PURPLE, P_SOFT = "7150C8", "F0ECFA"
+BLUE, B_SOFT = "2463D4", "EAF1FF"
+AMBER, A_SOFT = "A85C05", "FFF3DD"
+TEAL, T_SOFT = "087F82", "E5F5F3"
+GREEN, G_SOFT = "24824C", "E9F6EC"
+DARK_CARD, LIGHT_TEXT = "19344E", "C8D8E7"
 prs = Presentation()
-prs.slide_width = Inches(13.333)
-prs.slide_height = Inches(7.5)
+prs.slide_width, prs.slide_height = Inches(W), Inches(H)
+prs.core_properties.title = "KAITO + llm-d | Prefill/Decode Disaggregation"
+prs.core_properties.subject = "Declarative topology, role-aware routing, and direct KV-cache handoff"
+prs.core_properties.author = "andyzhangx"
+prs.core_properties.keywords = "KAITO, llm-d, GWIE, NIXL, prefill, decode, editable diagrams"
+prs.core_properties.comments = "Diagrams are native, editable PowerPoint shapes and connectors."
 
 
-def set_bg(slide, color=BG):
-    fill = slide.background.fill
-    fill.solid()
-    fill.fore_color.rgb = color
+def rgb(value):
+    return RGBColor.from_string(value)
 
 
-def add_shape(slide, kind, x, y, w, h, fill=None, line=None, line_width=1.1):
-    s = slide.shapes.add_shape(kind, x, y, w, h)
-    if fill is None or fill is False:
-        s.fill.background()
+def shape(s, x, y, w, h, fill=WHITE, stroke=None, rounded=True, name=""):
+    kind = SHAPE.ROUNDED_RECTANGLE if rounded else SHAPE.RECTANGLE
+    obj = s.shapes.add_shape(kind, Inches(x), Inches(y), Inches(w), Inches(h))
+    if rounded:
+        obj.adjustments[0] = 0.12
+    obj.fill.solid()
+    obj.fill.fore_color.rgb = rgb(fill)
+    if stroke:
+        obj.line.color.rgb = rgb(stroke)
+        obj.line.width = Pt(1)
     else:
-        s.fill.solid()
-        s.fill.fore_color.rgb = fill
-    if line is None:
-        s.line.color.rgb = MID
-        s.line.width = Pt(line_width)
-    elif line is False:
-        s.line.fill.background()
-    else:
-        s.line.color.rgb = line
-        s.line.width = Pt(line_width)
-    return s
+        obj.line.fill.background()
+    obj.name = name or f"Panel {len(s.shapes)}"
+    return obj
 
 
-def add_textbox(slide, x, y, w, h, text, size=18, bold=False, color=NAVY,
-                align=PP_ALIGN.LEFT, fill=None, line=False, radius=False,
-                margin=0.08, font="Aptos"):
-    kind = MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE if radius else MSO_AUTO_SHAPE_TYPE.RECTANGLE
-    box = add_shape(slide, kind, x, y, w, h, fill=fill, line=line)
-    tf = box.text_frame
+def text(s, x, y, w, h, value, size=18, color=INK, bold=False,
+         align=PP_ALIGN.LEFT, font=FONT, valign=MSO_ANCHOR.TOP, name=""):
+    obj = s.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+    obj.name = name or value.replace("\n", " / ")[:80]
+    tf = obj.text_frame
     tf.clear()
     tf.word_wrap = True
     tf.auto_size = MSO_AUTO_SIZE.NONE
-    tf.margin_left = Inches(margin)
-    tf.margin_right = Inches(margin)
-    tf.margin_top = Inches(margin)
-    tf.margin_bottom = Inches(margin)
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    tf.vertical_anchor = valign
+    for i, line in enumerate(value.split("\n")):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.text = line
+        p.alignment = align
+        p.font.name = font
+        p.font.size = Pt(size)
+        p.font.bold = bold
+        p.font.color.rgb = rgb(color)
+        p.space_before = Pt(0)
+        p.space_after = Pt(4 if size >= 18 else 2)
+    return obj
+
+
+def node(s, x, y, w, h, title, sub="", color=BLUE, fill=B_SOFT, size=18):
+    obj = shape(s, x, y, w, h, fill, None, name=title)
+    tf = obj.text_frame
+    tf.clear()
+    tf.word_wrap = True
+    tf.auto_size = MSO_AUTO_SIZE.NONE
+    tf.margin_left = tf.margin_right = Inches(0.12)
+    tf.margin_top = tf.margin_bottom = Inches(0.06)
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    for i, (value, fs, col, bold) in enumerate([(title, size, color, True)] + ([(sub, 12, MUTED, False)] if sub else [])):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.text = value
+        p.alignment = PP_ALIGN.CENTER
+        p.font.name, p.font.size = FONT, Pt(fs)
+        p.font.bold, p.font.color.rgb = bold, rgb(col)
+        p.space_before, p.space_after = Pt(3 if i else 0), Pt(0)
+    return obj
+
+
+def line(s, x1, y1, x2, y2, color=LINE, width=1.5, arrow=False,
+         dashed=False, start=None, end=None, both=False, name="Connector"):
+    obj = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT,
+                                 Inches(x1), Inches(y1), Inches(x2), Inches(y2))
+    obj.name = name
+    obj.line.color.rgb = rgb(color)
+    obj.line.width = Pt(width)
+    if dashed:
+        obj.line.dash_style = MSO_LINE_DASH_STYLE.DASH
+    ln = obj._element.spPr.get_or_add_ln()
+    for tag in (["tailEnd"] if arrow else []) + (["headEnd"] if both else []):
+        el = OxmlElement(f"a:{tag}")
+        el.set("type", "triangle")
+        el.set("w", "sm")
+        el.set("len", "sm")
+        ln.append(el)
+    if start:
+        obj.begin_connect(*start)
+    if end:
+        obj.end_connect(*end)
+    return obj
+
+
+def connect(s, a, b, color=BLUE, dashed=False, a_site=3, b_site=1):
+    return line(s, 0, 0, 1, 1, color, 1.8, True, dashed,
+                (a, a_site), (b, b_site), name=f"{a.name} → {b.name}")
+
+
+def path(s, points, color=BLUE, dashed=False, width=1.8, name="Flow"):
+    for i in range(len(points) - 1):
+        line(s, *points[i], *points[i + 1], color, width,
+             arrow=i == len(points) - 2, dashed=dashed, name=name)
+
+
+def pill(s, x, y, w, label, color=BLUE, fill=B_SOFT):
+    return node(s, x, y, w, 0.32, label, color=color, fill=fill, size=10)
+
+
+def dot(s, x, y, label, color=BLUE):
+    obj = s.shapes.add_shape(SHAPE.OVAL, Inches(x), Inches(y), Inches(0.29), Inches(0.29))
+    obj.name = f"Step {label}"
+    obj.fill.solid()
+    obj.fill.fore_color.rgb = rgb(color)
+    obj.line.fill.background()
+    tf = obj.text_frame
+    tf.clear()
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     p = tf.paragraphs[0]
-    p.alignment = align
-    r = p.add_run()
-    r.text = text
-    r.font.size = Pt(size)
-    r.font.bold = bold
-    r.font.color.rgb = color
-    r.font.name = font
-    return box
+    p.text, p.alignment = str(label), PP_ALIGN.CENTER
+    p.font.name, p.font.size, p.font.bold = FONT, Pt(10), True
+    p.font.color.rgb = rgb(WHITE)
+    return obj
 
 
-def add_bullets(slide, x, y, w, h, items, size=16, color=SLATE, bullet_char=True):
-    tb = slide.shapes.add_textbox(x, y, w, h)
-    tf = tb.text_frame
-    tf.word_wrap = True
-    tf.margin_left = 0
-    tf.margin_right = 0
-    tf.margin_top = 0
-    tf.margin_bottom = 0
-    for i, item in enumerate(items):
-        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        p.text = item
-        p.font.size = Pt(size)
-        p.font.color.rgb = color
-        p.space_after = Pt(6)
-        if bullet_char:
-            p.bullet = True
-    return tb
+def footer(s, n, dark=False):
+    col = LIGHT_TEXT if dark else MUTED
+    text(s, .6, 7.13, 8, .18, "KAITO + llm-d  /  PREFILL–DECODE DISAGGREGATION", 9, col)
+    text(s, 11.8, 7.1, .9, .23, f"{n:02d} / 12", 10, col, align=PP_ALIGN.RIGHT)
 
 
-def add_numbered(slide, x, y, w, h, items, size=15, color=SLATE):
-    tb = slide.shapes.add_textbox(x, y, w, h)
-    tf = tb.text_frame
-    tf.word_wrap = True
-    tf.margin_left = 0
-    tf.margin_right = 0
-    tf.margin_top = 0
-    tf.margin_bottom = 0
-    for i, item in enumerate(items, start=1):
-        p = tf.paragraphs[0] if i == 1 else tf.add_paragraph()
-        p.text = f"{i}. {item}"
-        p.font.size = Pt(size)
-        p.font.color.rgb = color
-        p.space_after = Pt(5)
-    return tb
+def slide(n, title, subtitle, section="ARCHITECTURE"):
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = rgb(WHITE)
+    shape(s, .6, .36, .34, .045, TEAL, rounded=False)
+    text(s, 1.05, .29, 10.8, .2, f"{section}  /  KAITO + llm-d", 10, MUTED, True)
+    text(s, .6, .72, 12.1, .61, title, 30, NAVY, True)
+    text(s, .62, 1.39, 12.0, .34, subtitle, 15, MUTED)
+    footer(s, n)
+    return s
 
 
-def add_connector(slide, x1, y1, x2, y2, color=BLUE, width=2.5):
-    c = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, x1, y1, x2, y2)
-    c.line.color.rgb = color
-    c.line.width = Pt(width)
-    return c
+def takeaway(s, value, color=TEAL):
+    shape(s, .6, 6.48, 12.13, .49, BG)
+    shape(s, .6, 6.48, .045, .49, color, rounded=False)
+    text(s, .81, 6.59, 11.7, .26, value, 14, NAVY, True)
 
 
-def add_header(slide, num, title, accent=BLUE):
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, 0, 0, Inches(13.333), Inches(0.84), fill=NAVY, line=False)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, 0, Inches(0.80), Inches(13.333), Inches(0.04), fill=accent, line=False)
-    add_textbox(slide, Inches(0.40), Inches(0.18), Inches(0.62), Inches(0.34), str(num), 14, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_textbox(slide, Inches(1.12), Inches(0.12), Inches(11.4), Inches(0.42), title, 24, True,
-                WHITE, fill=None, line=False, font="Aptos Display")
+def notes(s, value):
+    s.notes_slide.notes_text_frame.text = value
 
 
-def add_note(slide, text):
-    add_textbox(slide, Inches(0.65), Inches(6.72), Inches(12.0), Inches(0.40), text, 13, False,
-                NAVY, PP_ALIGN.CENTER, fill=GRAY_SOFT, line=MID, radius=True)
-
-
-def add_card(slide, x, y, w, h, title, lines, fill=WHITE, line=MID, title_color=NAVY):
-    add_textbox(slide, x, y, w, h, "", fill=fill, line=line, radius=True)
-    add_textbox(slide, x + Inches(0.16), y + Inches(0.12), w - Inches(0.32), Inches(0.36), title,
-                18, True, title_color, fill=None, line=False)
-    tb = slide.shapes.add_textbox(x + Inches(0.18), y + Inches(0.56), w - Inches(0.36), h - Inches(0.68))
-    tf = tb.text_frame
-    tf.word_wrap = True
-    tf.margin_left = 0
-    tf.margin_right = 0
-    tf.margin_top = 0
-    tf.margin_bottom = 0
-    for i, item in enumerate(lines):
-        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        p.text = item
-        p.font.size = Pt(14)
-        p.font.color.rgb = SLATE
-        p.space_after = Pt(5)
-    return tb
+def item(s, x, y, number, title, body, color=BLUE, width=3.3):
+    dot(s, x, y + .03, number, color)
+    text(s, x + .42, y, width - .42, .37, title, 18, NAVY, True)
+    text(s, x + .42, y + .49, width - .42, .98, body, 16, MUTED)
 
 
 def title_slide():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide, NAVY)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, 0, 0, Inches(13.333), Inches(0.14), fill=ORANGE, line=False)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.RECTANGLE, Inches(8.9), Inches(0.14), Inches(4.45), Inches(7.36), fill=RGBColor(22, 32, 58), line=False)
-    add_textbox(slide, Inches(0.82), Inches(0.92), Inches(0.98), Inches(0.42), "KubeCon '26", 12, True, NAVY,
-                PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_textbox(slide, Inches(0.82), Inches(1.45), Inches(7.7), Inches(0.70), "KAITO + llm-d", 30, True,
-                WHITE, fill=None, line=False, font="Aptos Display")
-    add_textbox(slide, Inches(0.84), Inches(2.08), Inches(8.0), Inches(1.05),
-                "How They Support Prefill/Decode\nDisaggregation", 25, True,
-                WHITE, fill=None, line=False, font="Aptos Display")
-    add_textbox(slide, Inches(0.86), Inches(3.35), Inches(7.8), Inches(0.82),
-                "A Kubernetes-native story about declarative topology,\nrole-aware routing, and direct KV-cache handoff.",
-                18, False, RGBColor(201, 214, 255), fill=None, line=False)
-    add_textbox(slide, Inches(0.86), Inches(5.10), Inches(5.6), Inches(1.05),
-                "Control plane: KAITO\nGateway-facing contract: GWIE\nRouting intelligence: llm-d Router\nRuntime + KV path: vLLM + NIXL",
-                17, False, WHITE, fill=None, line=False)
-    chips = [("KAITO", BLUE_SOFT, BLUE), ("llm-d", ORANGE_SOFT, ORANGE), ("GWIE", GREEN_SOFT, GREEN), ("NIXL", PURPLE_SOFT, PURPLE)]
-    cx = Inches(0.88)
-    for label, fillc, linec in chips:
-        add_textbox(slide, cx, Inches(6.25), Inches(1.18), Inches(0.44), label, 13, True, NAVY,
-                    PP_ALIGN.CENTER, fill=fillc, line=linec, radius=True)
-        cx += Inches(1.35)
-    add_textbox(slide, Inches(9.22), Inches(1.00), Inches(3.2), Inches(0.45), "P/D platform stack", 15, True,
-                BLUE, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_textbox(slide, Inches(9.46), Inches(1.88), Inches(2.72), Inches(0.62), "MultiRoleInference", 20, True,
-                NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_textbox(slide, Inches(9.46), Inches(2.98), Inches(2.72), Inches(0.62), "InferencePool + GWIE", 18, True,
-                NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(9.46), Inches(4.08), Inches(2.72), Inches(0.62), "llm-d Router EPP", 20, True,
-                NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(9.46), Inches(5.18), Inches(2.72), Inches(0.62), "vLLM + NIXL", 20, True,
-                NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-    add_connector(slide, Inches(10.82), Inches(2.50), Inches(10.82), Inches(2.98), GREEN, 3)
-    add_connector(slide, Inches(10.82), Inches(3.60), Inches(10.82), Inches(4.08), BLUE, 3)
-    add_connector(slide, Inches(10.82), Inches(4.70), Inches(10.82), Inches(5.18), ORANGE, 3)
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = rgb(NAVY)
+    shape(s, 8.65, 0, 4.683, 7.5, DARK_CARD, rounded=False)
+    pill(s, .7, .57, 1.55, "KUBECON ’26", TEAL, T_SOFT)
+    text(s, .7, 1.37, 7.8, .8, "KAITO + llm-d", 42, WHITE, True)
+    text(s, .72, 2.42, 7.6, 1.5, "Prefill/Decode\nDisaggregation", 36, WHITE, True)
+    text(s, .74, 4.15, 7.0, .88, "One declarative topology.\nOne serving endpoint. Two specialized roles.", 22, LIGHT_TEXT)
+    pill(s, .74, 5.65, 2.1, "DECLARE TOPOLOGY", PURPLE, P_SOFT)
+    pill(s, 3.02, 5.65, 1.94, "ROUTE BY ROLE", BLUE, B_SOFT)
+    pill(s, 5.13, 5.65, 2.08, "TRANSFER KV", GREEN, G_SOFT)
+    text(s, 9.02, 1.0, 3.5, .3, "THE PLATFORM STACK", 12, LIGHT_TEXT, True)
+    labels = [("KAITO", "MultiRoleInference", PURPLE, P_SOFT),
+              ("GWIE", "InferencePool contract", BLUE, B_SOFT),
+              ("llm-d Router", "Endpoint Picker (EPP)", BLUE, B_SOFT),
+              ("vLLM + NIXL", "Runtime + direct KV transfer", TEAL, T_SOFT)]
+    boxes = []
+    for i, (title, sub, col, fill) in enumerate(labels):
+        boxes.append(node(s, 9.02, 1.65 + i * 1.09, 3.58, .86, title, sub, col, fill, 20))
+    for a, b in zip(boxes, boxes[1:]):
+        connect(s, a, b, LIGHT_TEXT, a_site=2, b_site=0)
+    footer(s, 1, True)
+    notes(s, "Opening: KAITO owns the control plane; Gateway API Inference Extension (GWIE) defines the gateway-facing contract; llm-d Router supplies the Endpoint Picker (EPP); vLLM and NIXL execute inference and transfer KV cache. This is a responsibility stack, not a network packet path.")
 
 
-def slide_17_router_value():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide)
-    add_header(slide, 17, "What the llm-d Router Brings to the Stack", accent=ORANGE)
-    add_textbox(slide, Inches(0.85), Inches(1.18), Inches(11.7), Inches(0.62),
-                "The routing intelligence KAITO builds on for P/D.", 21, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_card(slide, Inches(0.95), Inches(2.15), Inches(2.55), Inches(2.7), "EPP", [
-        "implementation for the GWIE flow",
-        "the runtime hook point for endpoint selection",
-    ], fill=ORANGE_SOFT, line=ORANGE)
-    add_card(slide, Inches(3.78), Inches(2.15), Inches(2.55), Inches(2.7), "Selection", [
-        "model-aware and role-aware",
-        "select decode and, when needed, prefill",
-    ], fill=BLUE_SOFT, line=BLUE)
-    add_card(slide, Inches(6.62), Inches(2.15), Inches(2.55), Inches(2.7), "Plugins", [
-        "KV-cache-aware logic",
-        "P/D-aware scheduling chain",
-    ], fill=GREEN_SOFT, line=GREEN)
-    add_card(slide, Inches(9.45), Inches(2.15), Inches(2.55), Inches(2.7), "Extensibility", [
-        "future advanced scheduling surface",
-        "a substrate KAITO can build on",
-    ], fill=PURPLE_SOFT, line=PURPLE)
-    add_connector(slide, Inches(3.50), Inches(3.50), Inches(3.78), Inches(3.50), ORANGE, 2.8)
-    add_connector(slide, Inches(6.33), Inches(3.50), Inches(6.62), Inches(3.50), ORANGE, 2.8)
-    add_connector(slide, Inches(9.18), Inches(3.50), Inches(9.45), Inches(3.50), ORANGE, 2.8)
-    add_note(slide, "KAITO is not inventing a new routing brain here. It is building on llm-d Router as the EPP and scheduling substrate.")
+def router_slide():
+    s = slide(2, "llm-d Router brings role-aware decisions", "The Endpoint Picker selects workers; the serving path executes the decision.", "ROUTING")
+    shape(s, .6, 1.98, 12.13, 1.72, BG)
+    a = node(s, .9, 2.32, 2.1, 1.03, "Gateway", "GWIE integration", BLUE, B_SOFT)
+    b = node(s, 4.1, 2.24, 3.3, 1.18, "llm-d Router EPP", "Endpoint selection + plugin chain", PURPLE, P_SOFT, 20)
+    c = node(s, 8.5, 2.24, 3.8, 1.18, "Selected workers", "Decode + optional prefill", TEAL, T_SOFT, 20)
+    connect(s, a, b)
+    connect(s, b, c, PURPLE)
+    text(s, 3.0, 2.02, 1.2, .2, "pick request", 10, MUTED, align=PP_ALIGN.CENTER)
+    text(s, 7.45, 2.02, 1.2, .2, "decision", 10, MUTED, align=PP_ALIGN.CENTER)
+    item(s, .8, 4.15, "01", "Select by role", "Model-aware selection\nacross prefill and decode.", BLUE, 3.6)
+    item(s, 4.95, 4.15, "02", "Compose plugins", "KV-cache-aware logic\nand P/D-aware scheduling.", PURPLE, 3.6)
+    item(s, 9.02, 4.15, "03", "Extend scheduling", "A plugin surface for\nfuture scheduling policy.", TEAL, 3.4)
+    takeaway(s, "KAITO builds on llm-d’s routing intelligence — it does not invent a second routing engine.")
+    notes(s, "EPP means Endpoint Picker. The arrows show the decision flow, not a proxy hop carrying the inference payload. Endpoint selection may choose a decode worker and, when needed, a prefill worker. Advanced scheduling remains an extension surface, not a claim that every policy is implemented.")
 
 
-def slide_18_division_of_labor():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide)
-    add_header(slide, 18, "Why All Three: KAITO + GWIE + llm-d Router", accent=GREEN)
-    add_textbox(slide, Inches(0.85), Inches(1.18), Inches(11.7), Inches(0.62),
-                "Three layers, three responsibilities, one usable P/D platform.", 21, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_textbox(slide, Inches(1.35), Inches(1.92), Inches(2.35), Inches(0.32), "control-plane abstraction", 12, True,
-                BLUE, PP_ALIGN.CENTER, fill=False, line=False)
-    add_textbox(slide, Inches(5.52), Inches(1.92), Inches(2.25), Inches(0.32), "gateway-facing contract", 12, True,
-                GREEN, PP_ALIGN.CENTER, fill=False, line=False)
-    add_textbox(slide, Inches(9.52), Inches(1.92), Inches(2.35), Inches(0.32), "routing intelligence", 12, True,
-                ORANGE, PP_ALIGN.CENTER, fill=False, line=False)
-    add_card(slide, Inches(0.9), Inches(2.2), Inches(3.2), Inches(2.55), "KAITO",
-             ["declarative abstraction", "Kubernetes orchestration", "child resource ownership", "platform-facing UX"],
-             fill=BLUE_SOFT, line=BLUE)
-    add_card(slide, Inches(5.05), Inches(2.2), Inches(3.2), Inches(2.55), "GWIE",
-             ["gateway-facing routing contract", "InferencePool API model", "gateway integration pattern", "Kubernetes-native interface"],
-             fill=GREEN_SOFT, line=GREEN)
-    add_card(slide, Inches(9.2), Inches(2.2), Inches(3.2), Inches(2.55), "llm-d Router",
-             ["EPP implementation", "endpoint selection", "P/D-aware scheduling", "routing execution substrate"],
-             fill=ORANGE_SOFT, line=ORANGE)
-    add_connector(slide, Inches(4.10), Inches(3.47), Inches(5.00), Inches(3.47), PURPLE, 3)
-    add_connector(slide, Inches(8.25), Inches(3.47), Inches(9.15), Inches(3.47), PURPLE, 3)
-    add_textbox(slide, Inches(2.70), Inches(4.98), Inches(8.0), Inches(0.34), "contract + routing together become a usable platform path only when the controller owns the topology and wiring", 13, True,
-                MUTED, PP_ALIGN.CENTER, fill=False, line=False)
-    add_note(slide, "llm-d gives the routing brain, GWIE gives the Kubernetes routing contract, and KAITO turns the whole thing into a usable platform workflow.")
+def layers_slide():
+    s = slide(3, "Three layers. Three clear responsibilities.", "The InferencePool contract connects platform orchestration to routing.", "RESPONSIBILITIES")
+    rows = [(PURPLE, P_SOFT, "KAITO", "DECLARE + RECONCILE", "MultiRoleInference → role topology", "Resource generation • ownership • lifecycle"),
+            (BLUE, B_SOFT, "GWIE", "DEFINE THE CONTRACT", "InferencePool + gateway integration", "Kubernetes API surface • backend discovery"),
+            (TEAL, T_SOFT, "llm-d Router", "SELECT ENDPOINTS", "EPP + P/D-aware scheduling", "Endpoint picking • role-aware routing decisions")]
+    for i, (col, fill, title, tag, main, sub) in enumerate(rows):
+        y = 2.01 + i * 1.35
+        shape(s, .6, y, 12.13, 1.12, fill)
+        text(s, .86, y + .18, 2.7, .38, title, 23, col, True)
+        text(s, .88, y + .70, 2.7, .18, tag, 10, col, True)
+        line(s, 3.82, y + .2, 3.82, y + .92, col, 1)
+        text(s, 4.12, y + .18, 8.2, .35, main, 21, NAVY, True)
+        text(s, 4.14, y + .68, 8.0, .25, sub, 15, MUTED)
+    takeaway(s, "KAITO owns the topology. GWIE defines the contract. llm-d Router makes the selection.")
+    notes(s, "Keep APIs separate from implementations. KAITO uses GWIE objects and integration patterns, but the P/D routing implementation is llm-d Router, not GWIE’s reference EPP implementation. InferencePool is an API object, not an inline traffic proxy.")
 
 
-def slide_19_anchor_architecture():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide, BG_ALT)
-    add_header(slide, 19, "End-to-End Architecture", accent=ORANGE)
-    add_textbox(slide, Inches(0.86), Inches(1.10), Inches(11.65), Inches(0.55),
-                "This is the anchor architecture slide: one user endpoint, one gateway-facing contract surface, two role-specific backends, and a direct KV path.",
-                18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-
-    # Cluster canvas
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.78), Inches(1.85), Inches(11.9), Inches(4.7), fill=WHITE, line=False)
-    add_textbox(slide, Inches(0.98), Inches(2.00), Inches(2.0), Inches(0.28), "AKS / Kubernetes cluster", 12, True, MUTED, fill=None, line=False)
-
-    # Legend chips
-    add_textbox(slide, Inches(9.75), Inches(1.93), Inches(1.15), Inches(0.30), "user traffic", 11, True, NAVY,
-                PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(11.00), Inches(1.93), Inches(1.15), Inches(0.30), "KV handoff", 11, True, NAVY,
-                PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-
-    # Control plane band
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.05), Inches(2.22), Inches(10.95), Inches(0.82), fill=GRAY_SOFT, line=False)
-    add_textbox(slide, Inches(1.20), Inches(2.42), Inches(1.55), Inches(0.20), "control plane", 12, True, BLUE, fill=None, line=False)
-    add_textbox(slide, Inches(2.05), Inches(2.34), Inches(2.55), Inches(0.46), "KAITO\nMultiRoleInference controller", 15, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(4.78), Inches(2.34), Inches(2.05), Inches(0.46), "InferencePool\n(GWIE CRD)", 14, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_textbox(slide, Inches(7.02), Inches(2.34), Inches(2.88), Inches(0.46), "Gateway API Inference Extension", 14, True, NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_textbox(slide, Inches(10.18), Inches(2.34), Inches(1.38), Inches(0.46), "KEDA", 15, True, NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-
-    # Data plane background bands
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.05), Inches(3.18), Inches(10.95), Inches(1.35), fill=BLUE_SOFT, line=False)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(6.55), Inches(4.70), Inches(4.15), Inches(0.60), fill=PURPLE_SOFT, line=False)
-    add_textbox(slide, Inches(1.20), Inches(3.26), Inches(1.10), Inches(0.20), "request path", 12, True, BLUE, fill=None, line=False)
-    add_textbox(slide, Inches(6.68), Inches(4.84), Inches(1.00), Inches(0.18), "KV path", 12, True, PURPLE, fill=None, line=False)
-
-    # Request/data plane components
-    add_textbox(slide, Inches(1.18), Inches(3.62), Inches(1.10), Inches(0.64), "Client", 17, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
-    add_textbox(slide, Inches(2.60), Inches(3.62), Inches(1.35), Inches(0.64), "Gateway", 17, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=MID, radius=True)
-    add_textbox(slide, Inches(4.32), Inches(3.46), Inches(2.05), Inches(0.96), "llm-d Router\nEPP", 17, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(6.92), Inches(3.28), Inches(2.05), Inches(0.72), "Prefill\nInferenceSet", 17, True, NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(6.92), Inches(4.02), Inches(2.05), Inches(0.72), "Decode\nInferenceSet", 17, True, NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(9.42), Inches(3.84), Inches(2.35), Inches(0.92), "Decode pod\nsidecar + local vLLM", 15, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=PURPLE, radius=True)
-
-    # Request path connectors and labels
-    add_connector(slide, Inches(2.28), Inches(3.94), Inches(2.60), Inches(3.94), BLUE, 3)
-    add_connector(slide, Inches(3.95), Inches(3.94), Inches(4.32), Inches(3.94), BLUE, 3)
-    add_connector(slide, Inches(6.37), Inches(3.94), Inches(6.92), Inches(4.38), BLUE, 2.8)
-    add_connector(slide, Inches(8.97), Inches(4.38), Inches(9.42), Inches(4.30), BLUE, 2.8)
-    add_textbox(slide, Inches(5.45), Inches(3.22), Inches(1.00), Inches(0.26), "selects decode", 11, True, MUTED, PP_ALIGN.CENTER, fill=None, line=False)
-    add_connector(slide, Inches(6.37), Inches(3.82), Inches(6.92), Inches(3.64), BLUE, 2.2)
-    add_textbox(slide, Inches(5.48), Inches(3.02), Inches(1.02), Inches(0.24), "optional prefill", 10, True, MUTED, PP_ALIGN.CENTER, fill=None, line=False)
-
-    # KV path
-    add_connector(slide, Inches(8.97), Inches(3.64), Inches(9.42), Inches(4.10), PURPLE, 2.8)
-    add_textbox(slide, Inches(8.80), Inches(3.52), Inches(0.95), Inches(0.28), "NIXL KV", 11, True, PURPLE, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-
-    # Callouts
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(1.08), Inches(5.52), Inches(5.25), Inches(0.56), fill=GRAY_SOFT, line=False)
-    add_textbox(slide, Inches(1.24), Inches(5.66), Inches(4.95), Inches(0.24),
-                "Client traffic and KV-cache movement follow different paths.", 13, True, MUTED,
-                PP_ALIGN.CENTER, fill=None, line=False)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(6.55), Inches(5.52), Inches(5.55), Inches(0.56), fill=GRAY_SOFT, line=False)
-    add_textbox(slide, Inches(6.72), Inches(5.66), Inches(5.20), Inches(0.24),
-                "KAITO owns topology + wiring; GWIE carries the contract; llm-d owns EPP decisions.",
-                13, True, MUTED, PP_ALIGN.CENTER, fill=None, line=False)
+def architecture_slide():
+    s = slide(4, "One endpoint. Separate control, request and KV paths.", "Read the serving path left to right; endpoint selection is an out-of-band decision.")
+    shape(s, .6, 1.98, 12.13, 1.08, P_SOFT)
+    text(s, .79, 2.08, 2.3, .18, "CONTROL PLANE", 10, PURPLE, True)
+    a = node(s, .8, 2.34, 2.65, .52, "MultiRoleInference", color=PURPLE, fill=WHITE, size=15)
+    b = node(s, 4.05, 2.34, 2.6, .52, "KAITO controller", color=PURPLE, fill=WHITE, size=15)
+    c = node(s, 7.27, 2.34, 5.2, .52, "Child InferenceSets + InferencePool + wiring", color=PURPLE, fill=WHITE, size=14)
+    connect(s, a, b, PURPLE, True)
+    connect(s, b, c, PURPLE, True)
+    # Routing decision is intentionally above, not in, the request path.
+    epp = node(s, 2.25, 3.32, 2.45, .65, "llm-d Router EPP", color=PURPLE, fill=P_SOFT, size=15)
+    prefill = node(s, 6.1, 3.32, 2.35, .65, "Prefill vLLM", color=AMBER, fill=A_SOFT, size=16)
+    text(s, 5.97, 3.06, 2.6, .19, "PREFILL INFERENCESET", 9, AMBER, True, PP_ALIGN.CENTER)
+    shape(s, 5.86, 4.36, 6.61, 1.23, BG, LINE)
+    text(s, 6.05, 4.45, 5.8, .19, "DECODE INFERENCESET  /  SELECTED DECODE POD", 9, TEAL, True)
+    client = node(s, .65, 4.83, 1.17, .65, "Client", color=BLUE, fill=B_SOFT, size=15)
+    gateway = node(s, 2.25, 4.83, 2.45, .65, "Gateway", color=BLUE, fill=B_SOFT, size=16)
+    sidecar = node(s, 6.1, 4.83, 2.35, .65, "Routing sidecar", color=BLUE, fill=B_SOFT, size=15)
+    decode = node(s, 10.0, 4.83, 2.2, .65, "Decode vLLM", color=TEAL, fill=T_SOFT, size=15)
+    connect(s, client, gateway)
+    connect(s, gateway, sidecar)
+    connect(s, sidecar, decode)
+    text(s, 4.75, 4.53, 1.25, .23, "request", 10, BLUE, align=PP_ALIGN.CENTER)
+    text(s, 8.58, 4.88, 1.26, .2, "local proxy", 10, BLUE, align=PP_ALIGN.CENTER)
+    line(s, 3.48, 4.8, 3.48, 3.98, PURPLE, 1.5, True, True, both=True, name="Gateway ↔ EPP endpoint selection")
+    text(s, 1.15, 4.11, 2.08, .44, "endpoint selection\nvia InferencePool", 10, PURPLE, align=PP_ALIGN.RIGHT)
+    line(s, 7.28, 4.81, 7.28, 3.99, AMBER, 1.8, True, name="Sidecar → remote prefill request")
+    text(s, 5.17, 4.03, 1.9, .22, "optional prefill", 10, AMBER, align=PP_ALIGN.RIGHT)
+    path(s, [(8.46, 3.65), (11.1, 3.65), (11.1, 4.81)], GREEN, width=2.3, name="Direct KV data transfer: prefill → decode")
+    text(s, 8.85, 3.26, 3.5, .25, "Direct KV data • NIXL", 12, GREEN, True)
+    for x, col, label, dash in [(.85, PURPLE, "Control / selection", True), (4.1, BLUE, "Request / local proxy", False), (8.2, GREEN, "KV data (separate path)", False)]:
+        line(s, x, 5.97, x + .4, 5.97, col, 2, True, dash)
+        text(s, x + .53, 5.85, 3.8, .26, label, 12, MUTED)
+    takeaway(s, "The client sees one endpoint; KV data never needs to pass through the gateway.")
+    notes(s, "The upper band is resource ownership, not traffic. The gateway consults the llm-d Router EPP through the InferencePool integration and forwards to the selected decode sidecar, carrying the selected prefill worker when applicable. The sidecar invokes remote prefill and local decode. The green arrow denotes the direction of KV data (prefill to decode); the decode runtime initiates the read. Response arrows are omitted for clarity and shown on slide 7. InferenceSets are managed resources, not network hops.")
 
 
-def slide_20_mri_object():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide)
-    add_header(slide, 20, "One MultiRoleInference Object Describes the Topology", accent=GREEN)
-    add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
-                "Users declare intent once; the platform expands it into a runnable P/D system.", 18, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(0.80), Inches(1.92), Inches(5.18), Inches(4.65), fill=NAVY, line=False)
-    add_textbox(slide, Inches(1.02), Inches(2.18), Inches(4.8), Inches(3.9),
-                "apiVersion: kaito.sh/v1alpha1\nkind: MultiRoleInference\nmetadata:\n  name: qwen-3-8-27b\nspec:\n  model:\n    name: Qwen/Qwen3.8-27B\n  roles:\n    - type: prefill\n      replicas: 1\n      instanceType: Standard_NC24ads_A100_v4\n    - type: decode\n      replicas: 1\n      instanceType: Standard_NC80adis_H100_v5",
-                15, False, WHITE, fill=None, line=False, font="Consolas")
-    add_connector(slide, Inches(6.10), Inches(4.05), Inches(7.05), Inches(4.05), GREEN, 4)
-    add_textbox(slide, Inches(7.30), Inches(2.10), Inches(2.0), Inches(0.60), "prefill", 20, True,
-                NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(9.85), Inches(2.10), Inches(2.0), Inches(0.60), "decode", 20, True,
-                NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(8.58), Inches(3.36), Inches(2.0), Inches(0.60), "InferencePool", 18, True,
-                NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_connector(slide, Inches(9.55), Inches(2.70), Inches(9.55), Inches(3.36), PURPLE, 3)
-    add_connector(slide, Inches(10.85), Inches(3.96), Inches(10.85), Inches(2.70), PURPLE, 3)
-    add_bullets(slide, Inches(7.08), Inches(4.65), Inches(5.1), Inches(1.35), [
-        "One logical service with role-specific backends",
-        "Role-specific scaling intent for prefill and decode",
-        "Users describe what they want, not how to wire the stack",
-    ], size=15)
-    add_note(slide, "The CRD is the product surface. Users express topology intent; controllers own the plumbing.")
+def topology_slide():
+    s = slide(5, "One object declares the serving topology", "Users describe roles and replica intent; controllers own the expansion.", "DECLARATIVE API")
+    shape(s, .6, 2.02, 5.23, 4.12, NAVY)
+    text(s, .85, 2.23, 4.7, .25, "MultiRoleInference  /  topology excerpt", 12, LIGHT_TEXT, True)
+    code = "apiVersion: kaito.sh/v1alpha1\nkind: MultiRoleInference\nmetadata:\n  name: qwen-pd\nspec:\n  roles:\n    - type: prefill\n      replicas: 1\n    - type: decode\n      replicas: 2"
+    text(s, .86, 2.75, 4.74, 2.97, code, 16, WHITE, font=MONO)
+    text(s, .86, 5.79, 4.65, .18, "Illustrative excerpt — model and placement omitted.", 10, LIGHT_TEXT)
+    path(s, [(5.96, 4.07), (6.66, 4.07)], PURPLE)
+    text(s, 5.91, 3.62, .79, .3, "reconcile", 10, PURPLE, align=PP_ALIGN.CENTER)
+    node(s, 6.9, 2.04, 5.58, .69, "One logical service / InferencePool", color=BLUE, fill=B_SOFT, size=18)
+    shape(s, 6.9, 3.05, 2.48, 2.55, A_SOFT)
+    shape(s, 9.7, 3.05, 2.78, 2.55, T_SOFT)
+    text(s, 7.13, 3.28, 2.05, .35, "Prefill role", 20, AMBER, True)
+    text(s, 9.94, 3.28, 2.28, .35, "Decode role", 20, TEAL, True)
+    node(s, 7.16, 4.01, 1.95, .71, "Worker 1", color=AMBER, fill=WHITE, size=17)
+    node(s, 9.95, 3.99, 2.27, .6, "Worker 1", color=TEAL, fill=WHITE, size=17)
+    node(s, 9.95, 4.75, 2.27, .6, "Worker 2", color=TEAL, fill=WHITE, size=17)
+    text(s, 7.14, 5.04, 2.04, .24, "replicas: 1", 13, AMBER)
+    text(s, 6.94, 5.83, 5.48, .27, "Independent role intent. Shared service surface.", 14, MUTED, True)
+    takeaway(s, "The CRD is the product surface — topology intent in, role-specific serving out.")
+    notes(s, "This is a topology excerpt, not apply-ready YAML. Model configuration, placement and other required fields are omitted for focus. The original example has one prefill replica and two decode replicas. Replica cards are illustrative workers; an InferenceSet remains the controller-managed abstraction for each role.")
 
 
-def slide_21_kaito_generates():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide, BG_ALT)
-    add_header(slide, 21, "What KAITO Automatically Generates for P/D", accent=ORANGE)
-    add_textbox(slide, Inches(0.88), Inches(1.12), Inches(11.6), Inches(0.55),
-                "KAITO acts like the control-plane compiler for the topology.", 18, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_textbox(slide, Inches(4.95), Inches(3.18), Inches(3.15), Inches(0.70), "MultiRoleInference", 22, True,
-                NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    boxes = [
-        (Inches(1.05), Inches(1.95), "InferenceSet\n(prefill)", ORANGE_SOFT, ORANGE),
-        (Inches(1.05), Inches(4.58), "InferenceSet\n(decode)", BLUE_SOFT, BLUE),
-        (Inches(8.85), Inches(1.95), "InferencePool", GREEN_SOFT, GREEN),
-        (Inches(8.62), Inches(3.25), "llm-d Router\nEPP", ORANGE_SOFT, ORANGE),
-        (Inches(8.35), Inches(4.58), "sidecar\ninjection", PURPLE_SOFT, PURPLE),
-        (Inches(4.95), Inches(5.05), "NIXL env wiring", BLUE_SOFT, BLUE),
+def resources_slide():
+    s = slide(6, "KAITO generates resources — and keeps them aligned", "A declarative topology becomes owned resources, runtime wiring and a shared routing contract.", "RECONCILIATION")
+    root = node(s, 4.63, 1.98, 4.07, .72, "MultiRoleInference", color=PURPLE, fill=P_SOFT, size=22)
+    text(s, 5.0, 2.84, 3.32, .24, "KAITO RECONCILES + OWNS", 11, PURPLE, True, PP_ALIGN.CENTER)
+    xs = [.63, 4.83, 9.03]
+    colors = [(AMBER, A_SOFT), (TEAL, T_SOFT), (BLUE, B_SOFT)]
+    titles = ["Prefill InferenceSet", "Decode InferenceSet", "Routing resources"]
+    subs = ["Role-specific workers", "Role-specific workers", "InferencePool + llm-d EPP"]
+    for x, (col, fill), title, sub in zip(xs, colors, titles, subs):
+        path(s, [(6.665, 3.13), (x + 1.83, 3.13), (x + 1.83, 3.48)], PURPLE, True, name=f"KAITO owns {title}")
+        node(s, x, 3.5, 3.67, .93, title, sub, col, fill, 19)
+    text(s, .88, 4.71, 3.15, .8, "Role labels\nNIXL host / Pod IP", 17, MUTED)
+    text(s, 5.08, 4.71, 3.15, .8, "Routing sidecar injection\nNIXL + local vLLM ports", 17, MUTED)
+    text(s, 9.28, 4.71, 3.15, .8, "Services + targetPorts\nEndpoint selection config", 17, MUTED)
+    shape(s, .65, 5.74, 12.03, .42, BG)
+    text(s, .85, 5.83, 11.6, .22, "Shared invariants: ownership references • role consistency • labels • ports • lifecycle", 13, MUTED, align=PP_ALIGN.CENTER)
+    takeaway(s, "Not just generated YAML: controller-owned relationships and consistent runtime contracts.")
+    notes(s, "The dashed tree is a resource and responsibility map, not an exact claim that every depicted object is a direct Kubernetes child of the MultiRoleInference. Ownership and reconciliation can be delegated through child controllers. Distinguish the resources from the wiring installed in their pods. Per-role autoscaling is an integration surface; do not imply every policy is provided automatically.")
+
+
+def sequence_slide():
+    s = slide(7, "The decode sidecar coordinates the P/D request", "Remote prefill when needed; local decode on the selected worker.", "REQUEST LIFECYCLE")
+    xs = [1.2, 3.63, 6.05, 8.5, 11.2]
+    headers = [("Client", BLUE, B_SOFT), ("Gateway", BLUE, B_SOFT), ("Decode sidecar", BLUE, B_SOFT), ("Prefill vLLM", AMBER, A_SOFT), ("Decode vLLM", TEAL, T_SOFT)]
+    for x, (label, col, fill) in zip(xs, headers):
+        node(s, x - .99, 2.03, 1.98, .54, label, color=col, fill=fill, size=14)
+        line(s, x, 2.66, x, 6.31, LINE, 1.1, dashed=True, name=f"{label} lifeline")
+    # Small labels immediately above arrows; no text sits across a node or another arrow.
+    events = [
+        (0, 1, 2.94, "1  Inference request", BLUE, False),
+        (1, 2, 3.34, "2  Selected decode + prefill header", BLUE, False),
+        (2, 3, 3.74, "3  Remote prefill · max_tokens=1", AMBER, False),
+        (3, 2, 4.14, "4  Remote KV parameters", AMBER, True),
+        (2, 4, 4.58, "5  Local decode · remote_prefill=true + IDs", BLUE, False),
+        (3, 4, 5.02, "6  KV data → decode (NIXL read)", GREEN, False),
+        (4, 2, 5.46, "7  Inference response", TEAL, True),
+        (2, 1, 5.86, "8  Response", TEAL, True),
+        (1, 0, 6.23, "9  Final response", TEAL, True),
     ]
-    for x, y, label, fillc, linec in boxes:
-        add_textbox(slide, x, y, Inches(2.45), Inches(0.82), label, 18, True, NAVY,
-                    PP_ALIGN.CENTER, fill=fillc, line=linec, radius=True)
-    for x, y, *_ in boxes:
-        add_connector(slide, Inches(6.52), Inches(3.53), x + Inches(1.22), y + Inches(0.41),
-                      GREEN if x < Inches(6.1) else BLUE, 2.2)
-    add_note(slide, "KAITO does not replace llm-d. It generates, owns, and keeps the llm-d-facing resources consistent.")
+    for a, b, y, label, col, dash in events:
+        left, right = sorted([xs[a], xs[b]])
+        line(s, xs[a], y, xs[b], y, col, 1.8, True, dash, name=label)
+        width = right - left - .12
+        # Long adjacent-lane labels use two lines to stay readable at 11 pt.
+        if label.startswith("2 "):
+            label = "2  Route to decode sidecar\n     + selected prefill header"
+        elif label.startswith("3 "):
+            label = "3  Remote prefill\n     max_tokens=1"
+        elif label.startswith("6 "):
+            label = "6  KV data → decode\n     NIXL read by decode"
+        two = "\n" in label
+        text(s, left + .06, y - (.35 if two else .22), width, .34 if two else .2, label, 10.5 if two else 11, col, bold=False, align=PP_ALIGN.CENTER)
+    # Runtime activities sit outside the message labels.
+    text(s, 11.44, 5.15, 1.55, .21, "Run decode", 10, TEAL, True)
+    text(s, 8.69, 3.84, 1.55, .21, "Run prefill", 10, AMBER, True)
+    takeaway(s, "The sidecar coordinates the request; KV data moves directly between the two runtimes.")
+    notes(s, "Based on llm-d-router docs/disaggregation.md#pd-sequence. Step 2 follows EPP selection; the EPP consultation is omitted from this sequence and shown on slide 4. Step 4 returns transfer metadata, not the KV payload. Step 5 carries remote_prefill=true, prefill request ID and memory block IDs to local decode. Step 6 shows KV DATA direction (prefill → decode); decode initiates the NIXL read. Response arrows return via sidecar and gateway. Source: https://github.com/llm-d/llm-d-router/blob/main/docs/disaggregation.md#pd-sequence")
 
 
-def slide_22_request_flow():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide)
-    add_header(slide, 22, "How a P/D Request Actually Executes", accent=PURPLE)
-    add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
-                "One endpoint for the user; multiple coordinated steps underneath.", 18, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_textbox(slide, Inches(0.92), Inches(1.72), Inches(1.10), Inches(0.28), "request path", 11, True, BLUE,
-                PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_textbox(slide, Inches(7.78), Inches(2.94), Inches(1.05), Inches(0.28), "prefill path", 11, True, ORANGE,
-                PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(9.28), Inches(3.06), Inches(1.00), Inches(0.28), "KV path", 11, True, PURPLE,
-                PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-    labels = [
-        ("1  Client", Inches(0.72), Inches(1.98), GREEN_SOFT, GREEN),
-        ("2  Gateway", Inches(2.15), Inches(1.98), BLUE_SOFT, BLUE),
-        ("3  InferencePool", Inches(3.85), Inches(1.98), GREEN_SOFT, GREEN),
-        ("4  llm-d Router EPP", Inches(5.95), Inches(1.98), ORANGE_SOFT, ORANGE),
-        ("5  Decode sidecar", Inches(8.38), Inches(1.98), PURPLE_SOFT, PURPLE),
-        ("6  Decode vLLM", Inches(10.85), Inches(1.98), BLUE_SOFT, BLUE),
-    ]
-    widths = [Inches(1.15), Inches(1.40), Inches(1.65), Inches(1.95), Inches(1.80), Inches(1.45)]
-    for (t, x, y, fillc, linec), w in zip(labels, widths):
-        add_textbox(slide, x, y, w, Inches(0.64), t, 14, True, NAVY,
-                    PP_ALIGN.CENTER, fill=fillc, line=linec, radius=True)
-    for i in range(len(labels) - 1):
-        _, x1, y1, *_ = labels[i]
-        _, x2, y2, *_ = labels[i + 1]
-        add_connector(slide, x1 + widths[i], y1 + Inches(0.32), x2, y2 + Inches(0.32), BLUE, 2.5)
-    add_textbox(slide, Inches(8.30), Inches(3.36), Inches(1.82), Inches(0.64), "Prefill", 15, True,
-                NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_connector(slide, Inches(9.28), Inches(2.62), Inches(9.28), Inches(3.36), ORANGE, 2.5)
-    add_textbox(slide, Inches(7.85), Inches(2.78), Inches(1.05), Inches(0.24), "dispatches", 10, True, MUTED,
-                PP_ALIGN.CENTER, fill=None, line=False)
-    add_connector(slide, Inches(10.17), Inches(3.62), Inches(10.85), Inches(2.62), PURPLE, 2.5)
-    add_textbox(slide, Inches(9.75), Inches(3.78), Inches(0.95), Inches(0.24), "handoff", 10, True, MUTED,
-                PP_ALIGN.CENTER, fill=None, line=False)
-    add_connector(slide, Inches(10.85), Inches(2.62), Inches(11.55), Inches(2.62), GREEN, 2.2)
-    add_connector(slide, Inches(11.55), Inches(2.62), Inches(11.55), Inches(1.55), GREEN, 2.2)
-    add_connector(slide, Inches(11.55), Inches(1.55), Inches(2.85), Inches(1.55), GREEN, 2.2)
-    add_textbox(slide, Inches(6.72), Inches(1.34), Inches(1.35), Inches(0.24), "response stream", 10, True, MUTED,
-                PP_ALIGN.CENTER, fill=None, line=False)
-    add_numbered(slide, Inches(0.82), Inches(4.22), Inches(8.1), Inches(1.95), [
-        "Gateway / HTTPRoute forwards to the InferencePool for the model",
-        "llm-d Router EPP decides whether prefill work is needed and selects the role-specific backends",
-        "The request lands on a decode pod, whose sidecar coordinates prefill on the selected prefill pod",
-        "KV cache is transferred directly to decode via NIXL, and local decode vLLM continues generation",
-    ], size=15)
-    add_textbox(slide, Inches(9.32), Inches(4.14), Inches(3.03), Inches(1.70),
-                "• Decode is the coordination point\n• Prefill is selected only when it helps\n• KV transfer bridges the two phases\n• The client still sees one endpoint",
-                15, False, SLATE, fill=WHITE, line=MID, radius=True)
-    add_note(slide, "GWIE carries the gateway-facing contract, llm-d makes the routing decisions, and the platform coordinates prefill placement, KV movement, and decode execution across multiple pods.")
+def sidecar_slide():
+    s = slide(8, "Why the sidecar belongs on the decode pod", "A single decode endpoint coordinates remote prefill and returns the final response.", "POD BOUNDARY")
+    shape(s, 4.2, 2.08, 8.48, 2.6, BG, LINE, name="Decode pod boundary")
+    text(s, 4.47, 2.29, 7.8, .3, "SELECTED DECODE POD", 12, TEAL, True)
+    gateway = node(s, .65, 3.1, 2.58, .95, "Gateway", "EPP-selected endpoint", BLUE, B_SOFT)
+    sc = node(s, 4.55, 3.08, 2.85, 1.12, "Routing sidecar", "Port 5000", BLUE, B_SOFT, 20)
+    dec = node(s, 9.15, 3.08, 2.95, 1.12, "Local decode vLLM", "Port 5001", TEAL, T_SOFT, 19)
+    connect(s, gateway, sc)
+    connect(s, sc, dec)
+    text(s, 7.52, 3.19, 1.48, .45, "local request\n+ KV metadata", 11, BLUE, align=PP_ALIGN.CENTER)
+    pre = node(s, 4.55, 5.17, 2.85, .89, "Remote prefill", "vLLM worker", AMBER, A_SOFT)
+    connect(s, sc, pre, AMBER, a_site=2, b_site=0)
+    text(s, 2.48, 4.73, 3.16, .25, "optional prefill request", 11, AMBER)
+    path(s, [(7.42, 5.61), (10.62, 5.61), (10.62, 4.22)], GREEN, width=2.2, name="NIXL KV data → local decode, bypassing sidecar")
+    text(s, 8.05, 5.77, 4.0, .24, "Direct KV data • bypasses sidecar", 12, GREEN, True)
+    text(s, .74, 2.34, 2.8, .46, "STABLE EXTERNAL\nROUTING CONTRACT", 11, BLUE, True)
+    takeaway(s, "Coordination lives in the sidecar. KV transport terminates at the decode runtime.")
+    notes(s, "Ports 5000 and 5001 reflect this deployment configuration, not universal requirements for every llm-d deployment. The InferencePool targetPort must reach the sidecar’s listening port. The sidecar coordinates remote prefill, passes transfer metadata to local vLLM, and proxies the final response. KV payload does not transit through the HTTP sidecar. The decode runtime performs the KV read over NIXL.")
 
 
-def slide_23_sidecar():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide)
-    add_header(slide, 23, "Why the Routing Sidecar Lives on Decode Pods", accent=BLUE)
-    add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
-                "Sidecar placement is an execution design choice, not an incidental implementation detail.",
-                18, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_bullets(slide, Inches(0.85), Inches(2.05), Inches(5.00), Inches(3.8), [
-        "Decode pods are the final response point for user traffic",
-        "The routing sidecar receives the EPP decision, coordinates prefill, waits for KV handoff, then forwards to local vLLM",
-        "This keeps the external routing contract cleaner: sidecar on 5000, local decode vLLM on 5001",
-        "Prefill pods stay simpler and focus only on prompt processing",
-    ], size=16)
-    add_shape(slide, MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE, Inches(7.30), Inches(1.80), Inches(4.92), Inches(4.75), fill=WHITE, line=BLUE, line_width=1.8)
-    add_textbox(slide, Inches(8.72), Inches(1.98), Inches(2.0), Inches(0.35), "Decode Pod", 21, True,
-                NAVY, PP_ALIGN.CENTER, fill=None, line=False)
-    add_textbox(slide, Inches(7.58), Inches(2.48), Inches(1.08), Inches(0.30), "external request", 11, True,
-                GREEN, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_textbox(slide, Inches(11.00), Inches(2.48), Inches(1.00), Inches(0.30), "KV handoff", 11, True,
-                ORANGE, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(7.88), Inches(2.95), Inches(3.72), Inches(0.84), "Routing sidecar\nport 5000", 20, True,
-                NAVY, PP_ALIGN.CENTER, fill=PURPLE_SOFT, line=PURPLE, radius=True)
-    add_textbox(slide, Inches(7.88), Inches(4.42), Inches(3.72), Inches(0.84), "Local decode vLLM\nport 5001", 20, True,
-                NAVY, PP_ALIGN.CENTER, fill=BLUE_SOFT, line=BLUE, radius=True)
-    add_connector(slide, Inches(7.08), Inches(3.36), Inches(7.88), Inches(3.36), GREEN, 2.8)
-    add_textbox(slide, Inches(6.12), Inches(3.15), Inches(0.82), Inches(0.32), "from EPP", 11, True,
-                NAVY, PP_ALIGN.CENTER, fill=GREEN_SOFT, line=GREEN, radius=True)
-    add_connector(slide, Inches(9.67), Inches(3.79), Inches(9.67), Inches(4.42), PURPLE, 3)
-    add_textbox(slide, Inches(9.82), Inches(3.96), Inches(1.20), Inches(0.28), "proxy to local", 11, True,
-                MUTED, PP_ALIGN.CENTER, fill=None, line=False)
-    add_connector(slide, Inches(11.35), Inches(3.35), Inches(11.78), Inches(4.68), ORANGE, 2.6)
-    add_textbox(slide, Inches(11.24), Inches(4.02), Inches(0.90), Inches(0.28), "NIXL KV", 11, True,
-                NAVY, PP_ALIGN.CENTER, fill=ORANGE_SOFT, line=ORANGE, radius=True)
-    add_textbox(slide, Inches(7.58), Inches(5.58), Inches(4.15), Inches(0.40),
-                "decode pod = coordination point + final response point", 14, True,
-                SLATE, PP_ALIGN.CENTER, fill=GRAY_SOFT, line=False, radius=True)
-    add_note(slide, "Decode-side sidecar placement turns the decode pod into the coordination point for P/D execution.")
-
-
-def slide_24_runtime_contracts():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide, BG_ALT)
-    add_header(slide, 24, "The Runtime Contracts That Make P/D Actually Work", accent=RED)
-    add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
-                "Most real failures here are contract bugs, not model bugs.", 18, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+def contracts_slide():
+    s = slide(9, "Five contracts the platform must keep consistent", "P/D failures often come from wiring drift — before model execution even begins.", "RUNTIME CONTRACTS")
+    cols = [(.86, 3.5), (4.66, 3.44), (8.65, 3.5)]
+    for (x, w), label in zip(cols, ["CONTRACT", "REQUIRED INVARIANT", "IF IT DRIFTS"]):
+        text(s, x, 2.07, w, .24, label, 11, MUTED, True)
     rows = [
-        ("Routing sidecar", "No", "Yes", "Decode is the coordination point"),
-        ("vLLM port", "5000", "5001", "Avoid sidecar ↔ local vLLM collision"),
-        ("Sidecar ingress port", "N/A", "5000", "Gives decode a stable external entry point"),
-        ("Role label", "prefill", "decode", "EPP filters workers by role"),
-        ("NIXL side-channel host", "Pod IP", "Pod IP", "KV handoff must advertise a reachable address"),
-        ("InferencePool targetPort", "Shared", "Shared", "Gateway/EPP expect consistent routing semantics"),
+        ("01", "Sidecar placement", "Runs on decode pods", "Coordination path breaks", BLUE),
+        ("02", "Port split", "Sidecar :5000 → vLLM :5001", "Proxy loops / wrong listener", BLUE),
+        ("03", "Role labels", "Prefill and decode are distinct", "Wrong role gets selected", AMBER),
+        ("04", "NIXL reachability", "Advertise reachable Pod IPs", "KV transfer cannot complete", GREEN),
+        ("05", "InferencePool targetPort", "Targets the sidecar listener", "Gateway bypasses coordination", PURPLE),
     ]
-    x0 = Inches(0.80)
-    y0 = Inches(1.92)
-    widths = [Inches(2.35), Inches(1.20), Inches(1.20), Inches(4.85)]
-    headers = ["Contract", "Prefill", "Decode", "Why it matters"]
-    x = x0
-    for w, head in zip(widths, headers):
-        add_textbox(slide, x, y0, w, Inches(0.48), head, 15, True, WHITE,
-                    PP_ALIGN.CENTER, fill=NAVY, line=False)
-        x += w
-    for r, row in enumerate(rows, start=1):
-        x = x0
-        fill = WHITE if r % 2 else GRAY_SOFT
-        for idx, (w, cell) in enumerate(zip(widths, row)):
-            add_textbox(slide, x, y0 + Inches(0.48 * r), w, Inches(0.48), cell, 13,
-                        idx == 0, NAVY if idx == 0 else SLATE,
-                        PP_ALIGN.CENTER if idx < 3 else PP_ALIGN.LEFT, fill=fill, line=MID)
-            x += w
-    add_bullets(slide, Inches(0.92), Inches(5.18), Inches(11.3), Inches(1.0), [
-        "Contracts must be controller-enforced",
-        "Labels are functional metadata, not decoration",
-        "TargetPort is part of the serving contract",
-        "Pod IP / env wiring must be automatic",
-    ], size=14)
-    add_note(slide, "If these contracts are not enforced by the controller, users debug infrastructure wiring as if it were model behavior.")
+    for i, (num, title, invariant, failure, col) in enumerate(rows):
+        y = 2.53 + i * .69
+        shape(s, .62, y, 12.09, .59, BG if i % 2 == 0 else WHITE, rounded=False)
+        dot(s, .87, y + .15, num, col)
+        text(s, 1.3, y + .15, 3.19, .3, title, 16, NAVY, True)
+        text(s, 4.66, y + .16, 3.85, .29, invariant, 15, INK)
+        text(s, 8.65, y + .16, 3.86, .29, failure, 15, MUTED)
+    takeaway(s, "These are serving contracts, not decorative metadata — reconciliation must enforce them.")
+    notes(s, "The right column lists illustrative failure modes, not measured incident statistics. Port values correspond to the illustrated deployment. Reachability includes the correct advertised address and network path. Role labels, selectors and targetPorts must agree with runtime behavior.")
 
 
-def slide_25_operationalizes():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide)
-    add_header(slide, 25, "KAITO Does Not Replace llm-d — It Operationalizes It", accent=ORANGE)
-    add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
-                "The two projects solve different layers of the same problem.", 18, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_textbox(slide, Inches(1.05), Inches(1.95), Inches(4.55), Inches(0.50), "llm-d Router", 20, True,
-                WHITE, PP_ALIGN.CENTER, fill=ORANGE, line=False, radius=True)
-    add_textbox(slide, Inches(7.75), Inches(1.95), Inches(4.55), Inches(0.50), "KAITO", 20, True,
-                WHITE, PP_ALIGN.CENTER, fill=BLUE, line=False, radius=True)
-    left_items = ["EPP implementation", "endpoint picking", "scheduling profiles", "P/D-aware plugins", "routing execution", "future scheduling surface"]
-    right_items = ["CRD abstraction", "child resource generation", "lifecycle orchestration", "Kubernetes-native UX", "integration with InferenceSet / autoscaling", "future topology APIs"]
-    for i, (l, r) in enumerate(zip(left_items, right_items)):
-        y = Inches(2.70 + i * 0.57)
-        add_textbox(slide, Inches(1.0), y, Inches(4.65), Inches(0.44), l, 15, False, SLATE,
-                    fill=ORANGE_SOFT if i % 2 == 0 else WHITE, line=MID, radius=True)
-        add_textbox(slide, Inches(7.70), y, Inches(4.65), Inches(0.44), r, 15, False, SLATE,
-                    fill=BLUE_SOFT if i % 2 == 0 else WHITE, line=MID, radius=True)
-        add_connector(slide, Inches(5.80), y + Inches(0.22), Inches(7.55), y + Inches(0.22), PURPLE, 2.2)
-    add_note(slide, "This is not KAITO vs. llm-d. KAITO builds on llm-d and turns it into a cleaner Kubernetes workflow.")
+def complement_slide():
+    s = slide(10, "KAITO operationalizes llm-d — it does not replace it", "The routing engine and the platform controller solve different problems.", "DIVISION OF LABOR")
+    for x, col, fill, title, tag in [(.65, BLUE, B_SOFT, "llm-d Router", "DECIDE WHERE TO SERVE"), (7.0, PURPLE, P_SOFT, "KAITO", "DECLARE + KEEP IT RUNNING")]:
+        shape(s, x, 2.05, 5.68, 3.95, fill)
+        text(s, x + .28, 2.32, 5.0, .46, title, 28, col, True)
+        text(s, x + .29, 2.96, 5.0, .23, tag, 10, col, True)
+    left = [("EPP implementation", "Gateway-integrated endpoint picking"), ("P/D-aware scheduling", "Role selection and routing decisions"), ("Extensible plugins", "A surface for advanced scheduling")]
+    right = [("Declarative CRD", "Topology and resource abstraction"), ("Resource reconciliation", "Generation, ownership and runtime wiring"), ("Platform integration", "InferenceSet + autoscaling integration")]
+    for x, rows in [(.94, left), (7.29, right)]:
+        for i, (title, sub) in enumerate(rows):
+            y = 3.47 + i * .73
+            text(s, x, y, 5.05, .28, title, 18, NAVY, True)
+            text(s, x, y + .34, 5.03, .24, sub, 14, MUTED)
+    node(s, 6.39, 3.76, .54, .6, "+", color=MUTED, fill=WHITE, size=28)
+    takeaway(s, "Complementary layers: routing intelligence below, a Kubernetes-native operating model above.")
+    notes(s, "Preserve the boundary: llm-d Router supplies endpoint-picking and scheduling behavior; KAITO supplies declarative intent, resource generation, lifecycle and integration. Autoscaling is shown as an integration point, not a claim of a specific enabled algorithm.")
 
 
-def slide_26_users_vs_platform():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide, BG_ALT)
-    add_header(slide, 26, "What Users Manage vs. What the Platform Manages", accent=GREEN)
-    add_textbox(slide, Inches(0.84), Inches(1.12), Inches(11.7), Inches(0.55),
-                "P/D becomes usable when the ownership boundary is clean.", 18, True,
-                NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
-    add_textbox(slide, Inches(0.96), Inches(1.95), Inches(5.0), Inches(0.50), "User intent", 20, True,
-                WHITE, PP_ALIGN.CENTER, fill=GREEN, line=False, radius=True)
-    add_textbox(slide, Inches(7.35), Inches(1.95), Inches(5.0), Inches(0.50), "Platform-managed plumbing", 20, True,
-                WHITE, PP_ALIGN.CENTER, fill=BLUE, line=False, radius=True)
-    add_bullets(slide, Inches(1.02), Inches(2.62), Inches(4.86), Inches(3.45), [
-        "model choice",
-        "prefill/decode role definitions",
-        "replica intent",
-        "instance types",
-        "autoscaling intent",
-        "policy-level topology decisions",
-    ], size=16)
-    add_bullets(slide, Inches(7.45), Inches(2.62), Inches(4.80), Inches(3.75), [
-        "child InferenceSets",
-        "InferencePool",
-        "llm-d Router EPP resources",
-        "sidecar injection",
-        "labels / services / targetPorts",
-        "env wiring for NIXL",
-        "ownership references",
-        "request path correctness",
-        "per-role wiring consistency",
-    ], size=15)
-    add_connector(slide, Inches(6.12), Inches(4.02), Inches(7.10), Inches(4.02), GREEN, 4)
-    add_note(slide, "The platform value is not fewer YAML files. The platform value is a cleaner operational ownership boundary.")
+def ownership_slide():
+    s = slide(11, "Users own intent. The platform owns the plumbing.", "A clean operational boundary is more valuable than simply reducing YAML.", "OPERATING MODEL")
+    shape(s, .65, 2.04, 4.45, 3.98, P_SOFT)
+    shape(s, 6.05, 2.04, 6.63, 3.98, BG)
+    text(s, .95, 2.32, 3.85, .47, "Users declare", 25, PURPLE, True)
+    text(s, 6.35, 2.32, 6.0, .47, "Platform reconciles", 25, NAVY, True)
+    left = ["Model choice", "Prefill / decode roles", "Replicas + autoscaling intent", "Instance types + topology"]
+    right = ["Child InferenceSets + shared InferencePool", "llm-d EPP resources + decode sidecar", "Labels, services and targetPorts", "NIXL environment and Pod IP wiring", "Ownership references + per-role consistency"]
+    for i, label in enumerate(left):
+        dot(s, .98, 3.17 + i * .58, "•", PURPLE)
+        text(s, 1.43, 3.18 + i * .58, 3.45, .39, label, 17, INK)
+    for i, label in enumerate(right):
+        dot(s, 6.38, 3.15 + i * .49, "•", TEAL)
+        text(s, 6.83, 3.16 + i * .49, 5.52, .37, label, 17, INK)
+    path(s, [(5.22, 4.1), (5.93, 4.1)], PURPLE)
+    text(s, 5.17, 4.33, .81, .6, "API\nboundary", 10, PURPLE, align=PP_ALIGN.CENTER)
+    takeaway(s, "Users reason about serving behavior — not hidden infrastructure dependencies.")
+    notes(s, "Declarative intent is separate from runtime implementation. The platform keeps request handling correct by maintaining these contracts; it cannot eliminate all runtime errors. Autoscaling intent is a policy/integration concern and need not imply that the MultiRoleInference excerpt contains every autoscaling field.")
 
 
-def closing_slide():
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-    set_bg(slide, NAVY)
-    add_textbox(slide, Inches(1.0), Inches(1.12), Inches(11.3), Inches(0.82), "Why This Matters Operationally", 30, True,
-                WHITE, PP_ALIGN.CENTER, fill=None, line=False, font="Aptos Display")
-    add_textbox(slide, Inches(1.35), Inches(2.20), Inches(10.65), Inches(2.75),
-                "• P/D is useful because prefill and decode have different resource profiles.\n\n• llm-d is useful because routing and scheduling need role awareness.\n\n• KAITO is useful because platform teams need a Kubernetes-native control-plane abstraction.\n\n• Together they turn P/D from a manual stack into a repeatable platform workflow.",
-                21, False, WHITE, fill=None, line=False)
-    add_textbox(slide, Inches(1.48), Inches(5.65), Inches(10.35), Inches(0.68),
-                "KAITO turns llm-d-style prefill/decode disaggregation from a manual routing stack into a declarative Kubernetes workflow.",
-                20, True, NAVY, PP_ALIGN.CENTER, fill=WHITE, line=False, radius=True)
+def close_slide():
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    s.background.fill.solid()
+    s.background.fill.fore_color.rgb = rgb(NAVY)
+    text(s, .72, .51, 11.8, .26, "THE OPERATIONAL PAYOFF", 12, LIGHT_TEXT, True)
+    text(s, .72, 1.18, 11.95, 1.5, "From a manual routing stack\nto a declarative platform workflow.", 36, WHITE, True)
+    cards = [("01", "Specialize execution", "Prefill and decode have\ndifferent resource profiles.", AMBER, A_SOFT),
+             ("02", "Route with awareness", "llm-d adds role-aware\nselection and scheduling.", BLUE, B_SOFT),
+             ("03", "Operate declaratively", "KAITO reconciles topology,\nresources and runtime wiring.", TEAL, T_SOFT)]
+    for i, (num, title, sub, col, fill) in enumerate(cards):
+        x = .72 + 4.2 * i
+        shape(s, x, 3.25, 3.89, 2.02, DARK_CARD)
+        pill(s, x + .22, 3.47, .57, num, col, fill)
+        text(s, x + .22, 4.0, 3.45, .36, title, 21, WHITE, True)
+        text(s, x + .22, 4.58, 3.45, .62, sub, 15, LIGHT_TEXT)
+    text(s, .74, 5.94, 11.8, .47, "One topology. One endpoint. A repeatable P/D workflow.", 24, WHITE, True)
+    footer(s, 12, True)
+    notes(s, "Close by restating the complementarity: P/D specializes execution, llm-d supplies routing and scheduling intelligence, and KAITO makes the topology a Kubernetes-native workflow. The value proposition is operational repeatability, not an unsupported performance claim.")
 
 
-def main():
-    title_slide()
-    slide_17_router_value()
-    slide_18_division_of_labor()
-    slide_19_anchor_architecture()
-    slide_20_mri_object()
-    slide_21_kaito_generates()
-    slide_22_request_flow()
-    slide_23_sidecar()
-    slide_24_runtime_contracts()
-    slide_25_operationalizes()
-    slide_26_users_vs_platform()
-    closing_slide()
+def build():
+    for build_slide in [title_slide, router_slide, layers_slide, architecture_slide,
+                        topology_slide, resources_slide, sequence_slide, sidecar_slide,
+                        contracts_slide, complement_slide, ownership_slide, close_slide]:
+        build_slide()
+    # Prevent unintended objects outside the canvas; all diagrams remain editable.
+    for i, s in enumerate(prs.slides, 1):
+        for obj in s.shapes:
+            assert obj.left >= 0 and obj.top >= 0, (i, obj.name)
+            assert obj.left + obj.width <= prs.slide_width + 20, (i, obj.name)
+            assert obj.top + obj.height <= prs.slide_height + 20, (i, obj.name)
     prs.save(OUT)
-    print(f"wrote {OUT}")
+    print(f"Wrote {OUT} ({len(prs.slides)} slides; native editable shapes)")
 
 
 if __name__ == "__main__":
-    main()
+    build()
