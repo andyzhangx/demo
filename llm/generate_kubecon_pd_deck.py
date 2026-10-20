@@ -126,7 +126,7 @@ def slide(title, section, sub='', takeaway=None, dark=False):
         text(s, .68, 6.49, 11.97, .31, takeaway, 15, 'ink', True)
     arrow(s, .5, 7.12, 12.83, 7.12, 'muted' if dark else 'line', head=False, width=.7)
     text(s, .5, 7.19, 11.5, .2, 'KUBECON + CLOUDNATIVECON NORTH AMERICA 2026  /  KAITO + llm-d', 8, 'pale' if dark else 'muted')
-    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 38', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
+    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 47', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
     return s
 
 
@@ -496,7 +496,75 @@ card(s,7.43,2.35,5.35,3.75,'After: declared intent',
      'Describe roles in MultiRoleInference\n\nInspect generated child resources\n\nOperate through Kubernetes APIs','blue',size=18)
 note(s, 'The value is reduced configuration drift, not the removal of all operational complexity. Operators still need observability, fabric validation, failure testing, and version-aware troubleshooting.',[PD_DOC])
 
-# 20 — primary native signals and illustrative actions
+# 20
+s = slide('Autoscale the role that is actually saturated', '04 / Per-role autoscaling',
+          'Different bottlenecks deserve different signals and scale decisions.',
+          'Independent scaling only helps when the metrics match each role.')
+for x,t,body,metric,ac in [
+ (.55,'PREFILL','Protect prompt latency\nand time to first token.','Primary signal: vLLM waiting requests','teal'),
+ (6.78,'DECODE','Protect token delivery\nand sustained throughput.','Primary signal: vLLM running requests','purple')]:
+    card(s,x,2.35,5.95,2.7,t,body,ac,size=22)
+    pill(s,x,5.35,5.95,metric,ac,'teal_bg' if ac=='teal' else 'purple_bg')
+note(s, 'Use native vllm:num_requests_waiting for prefill and vllm:num_requests_running for decode as primary role-specific signals. Verify availability and aggregation on the actual runtime. KV utilization and latency add diagnostic context; a derived signal becomes a control input only after its semantics and safety policy are validated. This is a control-pattern recommendation, not a claim about an automatically available MRI feature.',[AUTOSCALING_DOC,KEDA_DOC])
+
+# 21 — actual keda capabilities
+s = slide('Today: KEDA targets the InferenceSet scale API', '04 / Existing capability',
+          'Documented KAITO examples cover both scheduled and metric-based scaling.',
+          'The scale target is the InferenceSet—not a manually scaled workload Pod.')
+pill(s,.55,2.21,2.4,'DOCUMENTED TODAY','blue','blue_bg')
+node(s,.55,3.12,3.5,1.37,'Trigger','Cron or Prometheus query','amber',22)
+node(s,4.92,3.12,3.5,1.37,'KEDA / HPA','ScaledObject target','blue',22)
+node(s,9.28,3.12,3.5,1.37,'InferenceSet','Scale subresource','teal',22)
+arrow(s,4.05,3.8,4.92,3.8,'blue'); arrow(s,8.42,3.8,9.28,3.8,'teal')
+rect(s,.55,5.05,12.23,.92,'white','line',True)
+text(s,.78,5.31,3.6,.36,'Documented queue signal',17,'muted',True)
+text(s,4.7,5.31,7.7,.37,'vllm:num_requests_waiting',19,'teal',mono=True)
+note(s, 'KEDA is installed separately. The KAITO documentation shows Cron and Prometheus triggers with a ScaledObject scaleTargetRef pointing to a kaito.sh InferenceSet. The controller reconciles the desired replicas into serving resources. The queue metric example is real; it does not establish native per-role MRI autoscaling policy.',[KEDA_DOC])
+
+# 22 — loops
+s = slide('Two independent control loops, one logical service', '04 / Per-role autoscaling',
+          'Conceptual design: validate signals and thresholds for the actual workload.')
+for y,role,metric,target,ac in [
+ (2.48,'PREFILL','Waiting requests','Prefill InferenceSet','teal'),
+ (4.55,'DECODE','Running requests','Decode InferenceSet','purple')]:
+    pill(s,.55,y,1.5,role,ac,'teal_bg' if ac=='teal' else 'purple_bg')
+    for x,w,t,d in [(2.42,2.85,metric,'Observe'),(6.0,2.6,'KEDA / HPA','Decide'),(9.32,3.46,target,'Reconcile replicas')]:
+        node(s,x,y-.08,w,1.19,t,d,ac,17)
+    arrow(s,5.27,y+.5,6.,y+.5,ac); arrow(s,8.6,y+.5,9.32,y+.5,ac)
+    route(s,[(11.05,y+1.11),(11.05,y+1.49),(3.84,y+1.49),(3.84,y+1.11)],ac,True)
+text(s,.57,6.59,12.1,.36,'Add stabilization, warm-up awareness, and safe scale-down behavior to each loop.',16,'muted')
+note(s, 'Conceptual two-loop design. A KEDA deployment can use one ScaledObject per target InferenceSet. Native vLLM waiting and running request gauges supply role-specific signals. Do not install conflicting autoscalers for one target. Metric aggregation, freshness, model warm-up and safe scale-down require verification. The following slides explain policy and signal choices independently of the configuration API.',[AUTOSCALING_DOC,KEDA_DOC])
+
+# 23 — recommendation explicitly marked
+s = slide('One service, independently managed role capacity', '04 / Policy boundary',
+          'Coordinate P/D at the service level; make capacity decisions separately for each role.',
+          'Scale a complete serving replica—not an individual tensor-parallel worker.')
+pill(s,.55,2.22,4.3,'DESIGN PATTERN / PER-ROLE CONTROL','amber','amber_bg')
+node(s,.55,3.15,3.6,2.22,'Service-level intent','Prefill: latency objective\nDecode: delivery objective','blue',22)
+node(s,5.0,3.53,3.3,1.47,'Policy reconciliation','Independent role targets','blue',21)
+node(s,9.15,2.96,3.63,1.17,'Prefill scale target','Generated policy + target','teal',18)
+node(s,9.15,4.63,3.63,1.17,'Decode scale target','Generated policy + target','purple',18)
+arrow(s,4.15,4.25,5.,4.25,'blue')
+route(s,[(8.3,4.1),(8.7,4.1),(8.7,3.55),(9.15,3.55)],'teal')
+route(s,[(8.3,4.42),(8.7,4.42),(8.7,5.22),(9.15,5.22)],'purple')
+note(s, 'Public-facing design pattern: express service objectives, reconcile independent role policies, and scale each role as a complete serving replica. Policy representation and controller-specific wiring are implementation details and intentionally omitted here. Existing KEDA/InferenceSet capability is described on the earlier slide; this diagram is not a claim that automatic service-level policy projection is already available. Keep one authoritative autoscaler per target.',[AUTOSCALING_DOC,KEDA_DOC])
+
+# Autoscaling detail A — policy ownership and independent actuators
+s = slide('Observe each role. Act on its own capacity.', '04 / Control-loop design',
+          'Independent feedback loops connect role-specific load to role-specific serving capacity.',
+          'Routing chooses where requests go; autoscaling changes how much capacity is available.')
+node(s,.55,2.23,3.5,1.16,'Role-specific policies','Signals, thresholds and bounds','blue',21)
+node(s,4.92,2.23,3.5,1.16,'Independent decisions','One controller per target','blue',21)
+node(s,9.28,2.23,3.5,1.16,'Serving capacity','Count model-ready replicas','blue',21)
+arrow(s,4.05,2.81,4.92,2.81,'blue'); arrow(s,8.42,2.81,9.28,2.81,'blue')
+for y,role,metric,ac in [(3.89,'Prefill','Waiting requests','teal'),(5.07,'Decode','Running requests','purple')]:
+    node(s,.55,y,3.5,1.0,role+' vLLM /metrics',metric,ac,18)
+    node(s,4.92,y,3.5,1.0,role+' autoscaler','Evaluate this role independently',ac,18)
+    node(s,9.28,y,3.5,1.0,role+' replicas','Reconcile serving capacity',ac,18)
+    arrow(s,4.05,y+.5,4.92,y+.5,ac); arrow(s,8.42,y+.5,9.28,y+.5,ac)
+note(s, 'Architectural control pattern, independent of how policies are encoded. Each role has its own signals, controller decision and serving-replica target. KEDA/HPA targeting an InferenceSet is one implementation. Scope samples to the actual role and deduplicate engine/worker series. Scale complete serving replicas and account for model loading before counting new capacity as ready. Arrows show conceptual policy and metric flow, not strict ownership references or push-based scraping. The serving topology still coordinates P/D requests while the capacity loops act independently. Implementation-specific automatic policy projection is outside this talk slide.', [AUTOSCALING_DOC,KEDA_DOC])
+
+# Autoscaling detail B — explicit native signals and illustrative actions
 s = slide('Two native gauges, two scaling decisions', '04 / vLLM-native metrics',
           'Use per-replica role aggregation; tune thresholds against the deployed model and workload.',
           'Illustrative thresholds only. Verify actual /metrics output before enabling either policy.')
@@ -515,21 +583,20 @@ for x,role,metric,body,low,high,bounds,ac,bg in [
     text(s,x+.2,5.69,5.55,.3,bounds,15,'muted')
 note(s, 'Native vllm:num_requests_waiting and vllm:num_requests_running are the primary signals for the respective roles. Verify metric presence, type and units on the actual runtime. Engine-local queues exclude requests still waiting in the router/EPP. Thresholds and bounds are illustrative, not capacity recommendations. The design example uses bounded incremental adjustments; behavior still depends on readiness, stabilization, cooldown and the chosen controller. Equal-to-threshold values hold under the stated strict comparisons. KV utilization and latency support diagnosis; integrating them into automated decisions needs an explicit tested policy. Missing/stale/non-finite data must not become zero; hold/report semantics require implementation and validation.', [AUTOSCALING_DOC,VLLM_METRICS])
 
-# 21 — independent role control loops
-s = slide('Two independent control loops, one logical service', '04 / Per-role autoscaling',
-          'Conceptual design: validate signals and thresholds for the actual workload.')
-for y,role,metric,target,ac in [
- (2.48,'PREFILL','Waiting requests','Prefill InferenceSet','teal'),
- (4.55,'DECODE','Running requests','Decode InferenceSet','purple')]:
-    pill(s,.55,y,1.5,role,ac,'teal_bg' if ac=='teal' else 'purple_bg')
-    for x,w,t,d in [(2.42,2.85,metric,'Observe'),(6.0,2.6,'KEDA / HPA','Decide'),(9.32,3.46,target,'Reconcile replicas')]:
-        node(s,x,y-.08,w,1.19,t,d,ac,17)
-    arrow(s,5.27,y+.5,6.,y+.5,ac); arrow(s,8.6,y+.5,9.32,y+.5,ac)
-    route(s,[(11.05,y+1.11),(11.05,y+1.49),(3.84,y+1.49),(3.84,y+1.11)],ac,True)
-text(s,.57,6.59,12.1,.36,'Add stabilization, warm-up awareness, and safe scale-down behavior to each loop.',16,'muted')
-note(s, 'Conceptual two-loop design. A KEDA deployment can use one ScaledObject per target InferenceSet. Native vLLM waiting and running request gauges supply role-specific signals. Do not install conflicting autoscalers for one target. Metric aggregation, freshness, model warm-up and safe scale-down require verification. KEDA can target the InferenceSet scale subresource; this is existing documented capability, while automatic service-level policy projection is not asserted here. Configuration syntax is intentionally outside this presentation.',[AUTOSCALING_DOC,KEDA_DOC])
+# Autoscaling detail C — policy behavior rather than implementation syntax
+s = slide('Different roles need different scaling policies', '04 / Role-specific decisions',
+          'Use the same safety contract, but tune each role against its own workload and objective.',
+          'Illustrative policy—not universal tuning. Validate thresholds, cooldown and model warm-up.')
+table(s,.55,2.25,[3.2,4.51,4.51],[
+ ['POLICY','PREFILL','DECODE'],
+ ['Primary signal','Waiting requests','Running requests'],
+ ['Example replica range','1–8','2–16'],
+ ['Example scale-up','Signal > 8','Signal > 24'],
+ ['Example scale-down','Signal < 1','Signal < 4'],
+ ['Shared guardrails','Readiness + fresh metrics','Readiness + fresh metrics']],.64)
+note(s, 'The slide explains policy semantics without exposing configuration syntax. Values are illustrative and match the source design: waiting-request thresholds 8/1 and bounds 1–8 for prefill; running-request thresholds 24/4 and bounds 2–16 for decode. Evaluate role-scoped per-replica aggregation, not a whole-service sum. Apply strict above/below comparisons, hold between/equal to thresholds, and enforce bounds, fresh-data checks, readiness, stabilization and cooldown for both roles. Scale-down also requires safe treatment of in-flight work. Policy ownership must be unambiguous. The underlying representation is intentionally outside the external presentation.', [AUTOSCALING_DOC,VLLM_METRICS])
 
-# 22 — safe lifecycle and unavailable data
+# Autoscaling detail D — safe lifecycle and unavailable data
 s = slide('Safe autoscaling starts with ownership and valid data', '04 / Operational safeguards',
           'The happy path is small. Correct handoff and failure behavior make it operable.',
           'Avoid competing controllers, count only ready capacity, and protect in-flight requests.')
@@ -541,16 +608,84 @@ for i,(title,body,ac,tag) in enumerate([
 text(s,.57,5.97,12.1,.33,'On missing or invalid signals: hold decisions and report the problem. Missing is not zero.',16,'muted')
 note(s, 'Safety contract: do not let a fixed-replica reconciler and an autoscaler compete for the same target. Stop the old writer before handing over control, and never silently adopt/delete user-managed autoscalers. Missing, stale, unreachable or non-finite metric samples should prevent activation or hold active decisions and surface a condition/event. This is the required behavior, not an assertion that all controller/HPA fallback paths implement it today; verify end to end. Partial scrape coverage must not look like zero load. Readiness includes model loading and actual serving eligibility. Protect in-flight requests and KV state during scale-down.', [AUTOSCALING_DOC])
 
-# 23 — three derived-signal families and their interpretation
+# Autoscaling detail E — derived signals and their interpretation
 s = slide('Derived signals add context to scaling decisions', '04 / Signal interpretation',
           'Aggregate native vLLM metrics to understand KV utilization, latency and throughput.',
           'KV occupancy is not demand. High or low throughput alone should not change replica counts.')
 table(s,.55,2.25,[4.43,3.4,4.4],[
  ['NATIVE INPUT (vllm: PREFIX)','DERIVATION','DECISION SUPPORT'],
- ['kv_cache_usage_perc','Max usage / min free fraction','Guard scale-down;\nnot demand for scale-up'],
+ ['kv_cache_usage_perc','max(role samples)','Candidate downscale guard'],
+ ['kv_cache_usage_perc','1 - max(role samples)','Minimum free fraction;\nnot effective request capacity'],
  ['time_to_first_token_seconds\n(histogram buckets)','P95 over bucket rates','Latency tail; tune prefill policy'],
- ['generation_tokens_total','sum(rate(counter[5m]))','Output throughput;\nobserve and benchmark']],.92)
+ ['generation_tokens_total','sum(rate(counter[5m]))','Output throughput;\nobserve and benchmark']],.78)
 note(s, 'These are derived-signal design examples, not metrics natively emitted by vLLM or a claim of current MRI integration support. All table input names have the vllm: prefix. Proposed recording-rule names: kaito:decode_kv_cache_usage_max = max valid role-scoped vllm:kv_cache_usage_perc; kaito:decode_kv_cache_free_fraction_min = 1 - that maximum; kaito:prefill_ttft_p95_seconds = histogram_quantile(0.95, summed per-series 5m bucket rates preserving workload/role and le); kaito:decode_generation_tokens_per_second = sum of reset-aware rate(vllm:generation_tokens_total[5m]). Generation tokens is a native Counter exposed with the _total suffix. KV usage is a fraction 0–1; 0.8 is 80%. Maximum usage and minimum free fraction are complements, not independent evidence, bytes or effective request capacity. A fleet maximum does not identify a safe removal target. Histogram quantiles need sufficient observations and are engine-local, not client P/D latency. Apply rate before summing counters, account for resets, deduplicate engines and require fresh/full role coverage. Recording-rule outputs do not appear on vLLM /metrics; a verified adapter/query integration is required. The desired guard allows high running load to scale up independently of KV occupancy, while low load permits scale-down only with safe KV utilization. Simply appending KV to the existing conservative AND list can suppress needed scale-up and is not this policy. Start with observation; promote a signal to control only after failure and workload tests.', [AUTOSCALING_DOC,VLLM_METRICS])
+
+
+# Annotation addition — 31: concrete implementation boundary, not a shipped MRI API
+s = slide('KAITO annotations wire each role to its own scaler', '04 / KAITO implementation design',
+          'Reuse existing InferenceSet scaling; add an explicit MRI-to-role policy adapter.',
+          'Proposed MRI integration—not enabled today by adding annotations alone.')
+node(s,.55,2.24,3.25,1.08,'MultiRoleInference','autoscaling.kaito.sh/roles','blue',19)
+node(s,4.24,2.24,3.28,1.08,'MRI adapter (new)','Validate + project by role','amber',19)
+node(s,8.0,2.24,4.78,1.08,'Role InferenceSet metadata','scaledobject.kaito.sh/*','teal',19)
+arrow(s,3.8,2.78,4.24,2.78,'blue'); arrow(s,7.52,2.78,8.0,2.78,'teal')
+rect(s,.55,3.56,6.08,2.56,'white','line',True)
+text(s,.75,3.72,5.68,.3,'GENERATED PREFILL CHILD ANNOTATIONS',12,'teal',True)
+code = '''scaledobject.kaito.sh/auto-provision: "true"
+scaledobject.kaito.sh/min-replicas: "1"
+scaledobject.kaito.sh/max-replicas: "8"
+scaledobject.kaito.sh/combinepolicy: AND
+scaledobject.kaito.sh/metrics: |
+  - name: vllm:num_requests_waiting
+    type: gauge
+    upthreshold: 8
+    downthreshold: 1'''
+sh=text(s,.75,4.19,5.68,1.76,code,11.6,'ink',mono=True)
+for p in sh.text_frame.paragraphs: p.space_after=Pt(0)
+text(s,7.0,3.59,5.65,.33,'ONE PATH PER ROLE',12,'blue',True)
+text(s,7.0,4.02,5.65,.78,'Scaler provisions ScaledObject\nKEDA / HPA writes InferenceSet /scale',18,'ink')
+text(s,7.0,4.97,5.65,1.13,'Required: opt in MRI-owned children\nWrite metadata, not template annotations\nreplicas: null releases MRI enforcement',15,'amber')
+note(s, 'This is the proposed annotation-first integration, not an existing deployable MRI API. Existing scaler source consumes InferenceSet.metadata.annotations and provisions an owned ScaledObject. It currently rejects MRI-owned children in create/update predicates; deliberately support only adapter-managed opt-in children, including cleanup events. MRI currently copies annotations to child spec.template.annotations; that placement does not configure this scaler. A new adapter must validate/version autoscaling.kaito.sh/roles, match entries by role type, project only allowed scalar/metrics keys into the matching child metadata, keep the policy blob out of workload templates, watch annotation-only changes, and remove stale owned output. One child InferenceSet and one ScaledObject per enabled role; KEDA/HPA targets that child scale subresource, not MRI or an individual Pod. A null role replicas value stops MRI steady-state replica enforcement but does not create an autoscaler. Reject fixed replicas plus policy and conflicting manually managed autoscalers; preserve unrelated annotations and perform ordered cleanup/handoff. KEDA, the scaler and metrics collection must be installed/configured separately. Sources are pinned in the design document: KAITO 3c831cad and scaler ba1f2340. The annotation block shown is generated output inside child metadata.annotations. Decode receives the analogous 2..16 / running / 24 / 4 policy.', [AUTOSCALING_DOC,KEDA_DOC])
+
+# Annotation addition — 32: input and observable per-role behavior
+s = slide('Example: one MRI policy, independent P/D decisions', '04 / KAITO annotation example',
+          'Illustrative policy excerpts. Full proposed manifest is linked in the speaker notes.',
+          'Requires the MRI adapter + child opt-in above. Thresholds are examples, not production tuning.')
+rect(s,.55,2.22,6.2,4.03,'white','line',True)
+text(s,.75,2.3,5.8,.25,'MRI metadata.annotations',12,'blue',True,mono=True)
+code = '''autoscaling.kaito.sh/roles: |
+  version: v1alpha1
+  roles:
+    prefill:
+      min-replicas: "1"
+      max-replicas: "8"
+      combinepolicy: AND
+      metrics:
+      - name: vllm:num_requests_waiting
+        type: gauge
+        upthreshold: 8
+        downthreshold: 1
+    decode:
+      min-replicas: "2"
+      max-replicas: "16"
+      combinepolicy: AND
+      metrics:
+      - name: vllm:num_requests_running
+        type: gauge
+        upthreshold: 24
+        downthreshold: 4'''
+sh=text(s,.75,2.65,5.8,3.59,code,10.7,'ink',mono=True)
+for p in sh.text_frame.paragraphs:
+    p.space_after=Pt(0)
+    p.line_spacing=Pt(12.2)
+rect(s,7.02,2.22,5.76,1.55,'blue_bg',radius=True)
+text(s,7.22,2.36,5.36,.3,'MRI spec.roles (excerpt)',13,'blue',True,mono=True)
+sh=text(s,7.22,2.83,5.36,.79,'- type: prefill\n  replicas: null\n- type: decode\n  replicas: null',12,'ink',mono=True)
+for p in sh.text_frame.paragraphs: p.space_after=Pt(0)
+text(s,7.04,3.98,5.69,.31,'ROLE AVERAGES / START AT P=1, D=2',12,'blue',True)
+text(s,7.04,4.49,5.69,.7,'Waiting=12; running=12\nPrefill scales up; decode holds.',17,'teal')
+text(s,7.04,5.4,5.69,.68,'Running later rises above 24:\ndecode can scale up independently.',16,'purple')
+note(s, 'The left panel is a literal excerpt under MRI metadata.annotations; the right is a spec.roles excerpt, not the entire deployable resource. Full YAML: llm/kaito-llm-d/examples/proposed-pd-autoscaling-annotations.yaml in this repository. Model and instanceType values in that file are illustrative and not deployment-validated. Annotation policy is a proposal and needs the integration work on the preceding slide. Role replicas are null to stop MRI enforcement; the adapter must reject non-null replicas with an enabled policy and bootstrap minima safely. The modelpod source discovers Workspaces owned by the target InferenceSet and scrapes their Workspace Service /metrics endpoints, not every GPU worker individually. The gauge default is service-avg: sum matching label series within each service, then average across successfully scraped services. Treat this as a per-serving-replica signal only after verifying the runtime/service topology; do not use an MRI-wide total or include router/EPP queues. Current source skips failed services and can treat a partially absent metric as zero, so complete-coverage missing-is-not-zero hardening is still required, not an existing guarantee. Example: with P=1 and D=2, prefill waiting=12 is above 8, so prefill has an up decision while decode running=12 lies between 4 and 24, so decode holds. Later running above 24 can independently request decode scale-up. These are illustrative decision outcomes, not observed tests or guaranteed instantaneous replica counts: readiness, cooldown, stabilization, data availability and bounds still apply. Strict comparisons mean equality holds. The generated expression produces 2.0 when ready and above up-threshold, 0.5 below down-threshold, otherwise 1.0; raw desired replicas are ceil(current replicas times that result). The generated HPA behavior limits each directional change to at most one replica per configured cooldown period, subject to stabilization and bounds. The formula is not itself N+1/N-1 and an evaluation does not guarantee immediate scaling. Values below 1 for prefill or below 4 for decode can request scale-down only after safeguards and within minima. Each role has only one metric, so AND is trivial within a role; it does NOT mean prefill and decode must both be busy. Do not claim an asymmetric KV guard is implemented by appending KV to AND. Require deployed vLLM /metrics verification and full-role sample coverage before activation.', [AUTOSCALING_DOC,VLLM_METRICS,'https://github.com/andyzhangx/demo/blob/master/llm/kaito-llm-d/examples/proposed-pd-autoscaling-annotations.yaml'])
 
 # 24 — comparison protocol
 s = slide('Benchmark the operating point—not only the peak', '05 / Evaluation plan',
@@ -657,6 +792,35 @@ for i,(t,b,ac,tag) in enumerate([
     card(s,.55+i*3.13,2.4,2.94,3.62,t,b,ac,tag,18)
 note(s, 'Use these gates to decide whether to keep, tune, or reject P/D. Do not infer a generic performance percentage. Operators still own resource placement, network policy, observability, failure recovery, and upgrades.')
 
+# P/D adoption addition — source Markdown Slide 34, actual slides 41–42
+s = slide('When should you use P/D—and when not?', '06 / P/D decision matrix',
+          'Two axes matter: how different the roles are, and what the KV-transfer path costs.',
+          'Use P/D when the roles want different capacity AND KV transfer does not erase the gain.')
+text(s,2.38,2.17,4.85,.32,'EXPENSIVE / WEAK KV TRANSFER',13,'amber',True,PP_ALIGN.CENTER)
+text(s,7.69,2.17,4.85,.32,'CHEAP / FAST ENOUGH KV TRANSFER',13,'teal',True,PP_ALIGN.CENTER)
+text(s,.55,2.9,1.55,.92,'Different\nbottlenecks /\nscaling needs',14,'ink',True)
+text(s,.55,4.74,1.55,.8,'Similar\nbottlenecks /\nscaling needs',14,'muted',True)
+for x,y,w,title,body,fill,ink in [
+ (2.3,2.68,5.05,'IMPROVE TOPOLOGY FIRST','Independent capacity may help.\nTransfer overhead may erase the gain.','amber_bg','amber'),
+ (7.62,2.68,5.16,'STRONG P/D CANDIDATE','Different role capacity or parallelism.\nValidate the gain at matched SLO + cost.','teal_bg','green'),
+ (2.3,4.39,5.05,'STAY AGGREGATED','Little role separation benefit,\nplus an expensive transfer path.','line','muted'),
+ (7.62,4.39,5.16,'USUALLY STAY AGGREGATED','Fast fabric alone is not a reason to split.\nOperational gains may be limited.','white','blue')]:
+    rect(s,x,y,w,1.48,fill,radius=True)
+    text(s,x+.18,y+.16,w-.36,.31,title,16,ink,True)
+    text(s,x+.18,y+.67,w-.36,.67,body,15,'ink')
+note(s, 'Source: companion Markdown, Slide 34 — When to use P/D, and when not to. This is a qualitative decision matrix, not measured results or a performance guarantee. The horizontal axis increases from costly/weak transfer to cheap/fast-enough transfer; the vertical axis increases from similar role bottlenecks at the bottom to meaningfully different scaling, bottlenecks or parallelism at the top. Top-right is the strongest candidate; bottom-left stays aggregated. Top-left should first improve locality/transport or investigate same-node placement. Bottom-right usually remains aggregated because cheap transfer does not by itself create a reason for role separation. Cross-node placement is a risk factor to measure, not proof that fabric is weak: fast cross-node links can satisfy the right-hand condition. Likewise single-node transfer is not automatically free. Compare actual KV payload transfer cost, contention, tail latency, reliability and operational complexity. A strong candidate still requires a matched workload/cost/SLO benchmark.', [SOURCE+'#slide-34--when-to-use-pd-and-when-not-to'])
+
+s = slide('Apply the matrix to your workload and topology', '06 / P/D adoption examples',
+          'Workload shape suggests a candidate. Measurement decides whether to keep it.',
+          'A long prompt or a fast interconnect alone is not enough—both axes must justify separation.')
+for i,(title,body,ac,tag) in enumerate([
+ ('Keep it simple','Small model, short prompts\nLow concurrency\nSimilar P/D scaling needs\n\nStart with aggregated.','blue','SIMILAR ROLES'),
+ ('Benchmark P/D','Different role bottlenecks\nDifferent scaling or TP needs\nCheap, reliable KV transfer\n\nTest independent role capacity.','teal','STRONG CANDIDATE'),
+ ('Fix the path first','Different role bottlenecks\nCostly or unstable KV path\n\nImprove locality or transport.\nThen reassess P/D.','amber','TRANSFER-LIMITED')]):
+    card(s,.55+i*4.14,2.3,3.95,3.43,title,body,ac,tag,15)
+text(s,.57,5.94,12.1,.35,'Start with a simple topology; measure client TTFT / ITL, KV-transfer tails, SLO goodput and total cost.',14,'muted')
+note(s, 'Expands companion Markdown Slide 34 into concrete but unmeasured adoption scenarios. Small models, short prompts, low concurrency and simple traffic often favor aggregated serving, but those attributes are heuristics rather than hard cutoffs. Long prompts, retrieval-heavy traffic, long generation or high concurrency are reasons to investigate divergent P/D pressure, not sufficient conditions for a win. Use P/D when separate capacity/parallelism can address a demonstrated bottleneck and KV-transfer overhead does not eliminate that benefit. A single-node multi-GPU experiment can simplify the initial topology if the model and role placement fit; it is not a universal fastest or feasible configuration. Cross-node P/D raises the validation bar: test transfer payload sizes, sustained/tail latency, contention, reliability, network policy and failure recovery. Improve locality or transport before adding scale if KV transfer is already the bottleneck. Compare aggregated and P/D at the same model, request distribution, offered load and GPU/cost budget, measuring client-visible TTFT/ITL, SLO goodput, transfer tails and total GPU cost. Retain a reversible aggregated baseline; do not claim measured savings here.', [SOURCE+'#slide-34--when-to-use-pd-and-when-not-to'])
+
 # 32
 s = slide('Adopt P/D in reversible steps', '06 / Adoption path',
           'Start with the simplest serving model that meets the workload.')
@@ -716,6 +880,6 @@ for y,label,url in [(5.87,'KAITO: prefill/decode disaggregation',PD_DOC),(6.32,'
     sh.text_frame.paragraphs[0].runs[0].hyperlink.address=url
 note(s, 'Use workload, fabric, and operational constraints to guide questions. Both links are clickable in PowerPoint. Full URLs are retained here for export formats that do not preserve hyperlinks.',[PD_DOC,KEDA_DOC])
 
-assert len(prs.slides) == 38
+assert len(prs.slides) == 47
 prs.save(OUT)
 print(f'Saved {OUT} ({len(prs.slides)} slides; native editable shapes, no embedded images)')

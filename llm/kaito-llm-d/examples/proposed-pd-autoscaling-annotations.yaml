@@ -1,0 +1,43 @@
+# PROPOSAL ONLY: not a currently deployable MRI autoscaling API.
+# Requires a validated MRI role-policy adapter and explicit scaler opt-in for MRI children.
+# Model, SKUs, bounds and thresholds are illustrative; no cluster validation was performed.
+# See ../kaito-role-aware-autoscaling-for-pd.md for ownership, prerequisites and safety.
+apiVersion: kaito.sh/v1alpha1
+kind: MultiRoleInference
+metadata:
+  name: deepseek-v3
+  annotations:
+    autoscaling.kaito.sh/roles: |
+      version: v1alpha1
+      roles:
+        prefill:
+          min-replicas: "1"
+          max-replicas: "8"
+          combinepolicy: AND
+          metrics:
+          - name: vllm:num_requests_waiting
+            type: gauge
+            upthreshold: 8
+            downthreshold: 1
+        decode:
+          min-replicas: "2"
+          max-replicas: "16"
+          combinepolicy: AND
+          metrics:
+          - name: vllm:num_requests_running
+            type: gauge
+            upthreshold: 24
+            downthreshold: 4
+spec:
+  labelSelector:
+    matchLabels:
+      apps: deepseek-v3
+  model:
+    name: deepseek-ai/DeepSeek-V3
+  roles:
+  - type: prefill
+    instanceType: Standard_ND96isr_H100_v5
+    replicas: null
+  - type: decode
+    instanceType: Standard_ND96isr_H100_v5
+    replicas: null

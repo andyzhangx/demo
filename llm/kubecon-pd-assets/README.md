@@ -5,7 +5,7 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 ## Design
 
-- Retains the original narrative and English presentation language; now **38 slides**, with two ecosystem/integration slides after original slide 8 and a concise four-slide autoscaling section.
+- Retains the original narrative and English presentation language; now **47 slides**, with the full nine-slide autoscaling section restored, two KAITO annotation implementation/example slides, and two P/D adoption decision slides.
 - New slide 9 compares Dynamo, llm-d, AIBrix, KServe, Ray Serve/KubeRay and vLLM Production Stack, with a separate LWS DisaggregatedSet callout. New slide 10 explains why llm-d fits KAITO’s integration goals.
 - All diagrams, tables, labels, and arrows are **native PowerPoint objects**. There are no embedded raster/SVG diagrams and no flattened slide images.
 - Blue = platform/routing; teal = prefill/KV data; purple = decode; amber = constraints or recommendations.
@@ -16,21 +16,30 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 ## P/D autoscaling presentation
 
-Slides **22–25** condense autoscaling into four ideas based on the [role-aware autoscaling design](../kaito-llm-d/kaito-role-aware-autoscaling-for-pd.md):
+Slides **22–30** restore the original nine-slide section from commit `b1a2a23`, preserving its content, native shapes and speaker notes (only pagination changes): role saturation, existing KEDA/InferenceSet capability, independent loops, service policy boundary, control architecture, native gauges, policy table, operational safeguards and derived signals.
 
-1. Native vLLM waiting/running gauges and illustrative scaling decisions.
-2. Two independent control loops for one logical P/D service.
-3. Single-writer ownership, valid metric data, and safe scale-down/handoff.
-4. Derived KV, latency and throughput signals and their decision-support limits.
+Two additional slides connect those concepts to the [role-aware autoscaling design](../kaito-llm-d/kaito-role-aware-autoscaling-for-pd.md):
 
-Repeated architecture, API and policy-table slides have been removed; essential details remain in speaker notes.
+- **31 — KAITO annotation implementation:** proposed `autoscaling.kaito.sh/roles` → validated MRI adapter → each child `InferenceSet.metadata.annotations` → per-role ScaledObject → KEDA/HPA → child scale API. Shows the exact generated prefill annotations and the required MRI-child opt-in.
+- **32 — Concrete policy example:** prefill waiting-request thresholds 8/1 and range 1–8; decode running-request thresholds 24/4 and range 2–16. `replicas: null` releases MRI replica enforcement. With waiting=12 and running=12, prefill requests scale-up while decode holds; decode can scale independently when running rises above 24. These are hypothetical decisions, not measured scaling results.
 
-The slides focus on external concepts rather than rollout phases or KAITO-specific policy encoding. All content remains editable, with source-backed speaker notes preserving implementation and metric-availability caveats. The underlying design document retains its implementation plan; the talk does not present that plan as a released capability. Example thresholds are not production recommendations.
+The [full proposed YAML example](../kaito-llm-d/examples/proposed-pd-autoscaling-annotations.yaml) matches the design and slide excerpt. It is **not a currently deployable MRI autoscaling API**: it requires the MRI policy adapter, explicit scaler support for opted-in MRI children, validation, metric wiring, ownership and safe handoff. Existing annotations on MRI alone do not enable this behavior. `AND` combines metrics within a role, not decisions across prefill and decode.
+
+All content remains editable. Source-backed notes preserve implementation and metric-availability caveats without numbered rollout phases. Example thresholds, model and SKUs are not deployment or capacity recommendations.
+
+## When to use P/D—and when not to
+
+Slides **41–42** expand [Slide 34 of the companion Markdown](../kubecon-na-2026-pd-disaggregation.md#slide-34--when-to-use-pd-and-when-not-to):
+
+- **41 — Decision matrix:** role bottleneck/scaling divergence versus KV-transfer cost. Different role needs plus cheap transfer is the strongest candidate; similar roles plus expensive transfer favors aggregated serving. Divergent roles with costly transfer should improve topology first; cheap transfer alone does not justify P/D.
+- **42 — Workload/topology scenarios:** keep aggregated serving for simple, similar-role workloads; benchmark P/D for divergent role capacity with a suitable transfer path; improve locality/transport before scaling a transfer-limited design. Single-node trials can simplify the first experiment; cross-node transfer must be measured, not assumed slow.
+
+These are qualitative selection guidelines, not benchmark results. Compare client-visible TTFT/ITL, SLO goodput, KV-transfer tails and total cost using the same model, workload and budget.
 
 ## Accuracy boundaries
 
-- Slides 26–29 are an **evaluation plan**, not benchmark results. The source does not contain measured data. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
-- Slide 23 uses the existing KEDA → InferenceSet integration to illustrate two role-specific loops. Slides 22–25 explain control and policy **design patterns**, not a new available MRI API schema. Derived recording rules require aggregation and collection; they are not native vLLM metric outputs.
+- Slides 33–36 are an **evaluation plan**, not benchmark results. The source does not contain measured data. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
+- Slide 23 covers existing KEDA → InferenceSet scaling; slide 24 illustrates independent role loops. Slides 22–30 explain control and policy **design patterns**. Slides 31–32 explicitly label MRI annotation integration as **proposed**, not a released API. Derived recording rules require aggregation and collection; they are not native vLLM metric outputs.
 - Slides 9–10 acknowledge existing declarative APIs, including DynamoGraphDeployment, StormService/RoleSet, LLMInferenceService and DisaggregatedSet. “Best fit” is scoped to extending KAITO, not a claim of universal platform superiority or measured performance. Official references and current alpha/runtime/gateway limitations are included in speaker notes.
 - Request/control messages and KV-tensor payloads are separate. The KV payload moves from prefill to decode even when the transport operation is a decode-initiated read.
 - Diagram arrows illustrate logical paths, not exact timings, port values, or strict Kubernetes owner references unless identified as such.
@@ -53,10 +62,12 @@ The generator resolves paths relative to itself and replaces only the PPTX. It d
 
 The redesign was exported with LibreOffice 25.8 and checked for:
 
-- 38 slides and 38 non-empty speaker-note pages;
+- 47 slides and 47 non-empty speaker-note pages;
+- all 43 slides from the pre-condensation baseline preserved, except footer pagination;
+- exact equivalence between the YAML example, source design, slide policy and generated prefill projection;
 - valid OOXML ZIP/XML and no embedded media;
 - slide geometry and text-box overlap;
-- rendered text presence and text bounds on every slide;
+- rendered text presence and text bounds on every slide (no new layout issues; two pre-existing slide-20 text-box margin overruns remain unchanged);
 - explicit distinction between existing capabilities, proposals, and unmeasured results.
 
 This is a LibreOffice rendering check, not a Microsoft PowerPoint application test. Preview the final deck on the presentation machine before the talk, particularly if font substitution occurs.
