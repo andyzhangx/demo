@@ -126,7 +126,7 @@ def slide(title, section, sub='', takeaway=None, dark=False):
         text(s, .68, 6.49, 11.97, .31, takeaway, 15, 'ink', True)
     arrow(s, .5, 7.12, 12.83, 7.12, 'muted' if dark else 'line', head=False, width=.7)
     text(s, .5, 7.19, 11.5, .2, 'KUBECON + CLOUDNATIVECON NORTH AMERICA 2026  /  KAITO + llm-d', 8, 'pale' if dark else 'muted')
-    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 47', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
+    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 48', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
     return s
 
 
@@ -855,6 +855,17 @@ for i,(title,body,ac) in enumerate([
     card(s,.55+i*4.14,2.45,3.95,3.43,title,body,ac,'DIRECTION',20)
 note(s, 'These are talk recommendations derived from the source outline, not a published project delivery timeline. Keep the distinction between current capability and proposed user experience explicit.')
 
+# Roadmap addition — source Markdown Slide 36, actual slide 46
+s = slide('What’s next for KAITO + llm-d', '07 / Integration roadmap',
+          'Build on P/D with better cache reuse, richer role layouts and larger-scale execution.',
+          'Integration directions—not release dates or claims that every upstream capability is new.')
+for i,(title,body,ac,tag) in enumerate([
+ ('Cache-aware serving','KV-event-based\nprefix-cache routing\n\nTiered cache: HBM + CPU RAM\n+ optional filesystem tiers','teal','NEAR TERM'),
+ ('E/P/D','Encode / Prefill / Decode\n\nExtend role-based serving\nto richer inference topologies.','blue','NEXT TOPOLOGY'),
+ ('Larger-scale systems','Wide Expert Parallelism\n\nCross-node transport\nand communication\noptimization','purple','AT LARGER SCALE')]):
+    card(s,.55+i*4.14,2.35,3.95,3.72,title,body,ac,tag,17)
+note(s, 'Based on companion Markdown Slide 36 — What’s next for KAITO + llm-d. Near-term integration directions are precise prefix-cache routing driven by KV events and tiered prefix cache across GPU HBM, CPU RAM, and optional filesystem tiers. The next topology item is E/P/D: Encode, Prefill, Decode. Larger-scale work includes Wide Expert Parallelism and cross-node transport/communication optimization. These are presentation-level KAITO integration directions, not a dated release commitment or a claim that llm-d and its runtimes lack these capabilities today. Speculative decoding was removed from future work because the presenter confirms it is already implemented; this slide does not attempt to revalidate its support matrix or claim universal runtime support. Keep feature availability tied to the deployed KAITO/llm-d/runtime versions.', [SOURCE+'#slide-36--whats-next-for-kaito--llm-d'])
+
 # 35
 s = slide('Three things to remember', '08 / Takeaways',
           'Independent capacity is the opportunity. Reconciled topology is the enabler.')
@@ -880,6 +891,6 @@ for y,label,url in [(5.87,'KAITO: prefill/decode disaggregation',PD_DOC),(6.32,'
     sh.text_frame.paragraphs[0].runs[0].hyperlink.address=url
 note(s, 'Use workload, fabric, and operational constraints to guide questions. Both links are clickable in PowerPoint. Full URLs are retained here for export formats that do not preserve hyperlinks.',[PD_DOC,KEDA_DOC])
 
-assert len(prs.slides) == 47
+assert len(prs.slides) == 48
 prs.save(OUT)
 print(f'Saved {OUT} ({len(prs.slides)} slides; native editable shapes, no embedded images)')

@@ -5,7 +5,7 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 ## Design
 
-- Retains the original narrative and English presentation language; now **47 slides**, with the full nine-slide autoscaling section restored, two KAITO annotation implementation/example slides, and two P/D adoption decision slides.
+- Retains the original narrative and English presentation language; now **48 slides**, with the full nine-slide autoscaling section restored, two KAITO annotation implementation/example slides, two P/D adoption decision slides, and a concrete integration roadmap.
 - New slide 9 compares Dynamo, llm-d, AIBrix, KServe, Ray Serve/KubeRay and vLLM Production Stack, with a separate LWS DisaggregatedSet callout. New slide 10 explains why llm-d fits KAITO’s integration goals.
 - All diagrams, tables, labels, and arrows are **native PowerPoint objects**. There are no embedded raster/SVG diagrams and no flattened slide images.
 - Blue = platform/routing; teal = prefill/KV data; purple = decode; amber = constraints or recommendations.
@@ -36,6 +36,16 @@ Slides **41–42** expand [Slide 34 of the companion Markdown](../kubecon-na-202
 
 These are qualitative selection guidelines, not benchmark results. Compare client-visible TTFT/ITL, SLO goodput, KV-transfer tails and total cost using the same model, workload and budget.
 
+## What’s next for KAITO + llm-d
+
+Slide **46** expands [Slide 36 of the companion Markdown](../kubecon-na-2026-pd-disaggregation.md#slide-36--whats-next-for-kaito--llm-d) into three integration directions:
+
+- **Near term:** KV-event-based prefix-cache routing; tiered cache across HBM, CPU RAM and optional filesystem tiers.
+- **Next topology:** E/P/D (Encode / Prefill / Decode).
+- **Larger-scale systems:** Wide Expert Parallelism and cross-node transport/communication optimization.
+
+Speculative decoding is omitted from future work because it is already implemented, as confirmed by the presenter. Both roadmap mentions in the companion Markdown are updated accordingly. These are KAITO integration directions, not release-date commitments or claims that the underlying llm-d/runtime features are all new.
+
 ## Accuracy boundaries
 
 - Slides 33–36 are an **evaluation plan**, not benchmark results. The source does not contain measured data. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
@@ -62,7 +72,8 @@ The generator resolves paths relative to itself and replaces only the PPTX. It d
 
 The redesign was exported with LibreOffice 25.8 and checked for:
 
-- 47 slides and 47 non-empty speaker-note pages;
+- 48 slides and 48 non-empty speaker-note pages;
+- all 47 slides from the previous deck preserved, except footer pagination;
 - all 43 slides from the pre-condensation baseline preserved, except footer pagination;
 - exact equivalence between the YAML example, source design, slide policy and generated prefill projection;
 - valid OOXML ZIP/XML and no embedded media;

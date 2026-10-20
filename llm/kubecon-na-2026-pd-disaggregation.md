@@ -307,7 +307,7 @@ For the deck itself, keep the agenda short, architectural, and easy to scan. A g
   - that allows prefill and decode to keep different metrics and thresholds without asking users to hand-author per-role ScaledObjects
 - Add a short **future integration roadmap** for KAITO + llm-d:
   - **near term:** precise prefix-cache routing based on KV events; productized tiered prefix cache across HBM, CPU RAM, and optional filesystem tiers
-  - **next topology:** E/P/D and speculative decoding
+  - **next topology:** E/P/D
   - **larger-scale systems:** Wide Expert Parallelism and deeper transport / cross-node optimization
 - Final takeaway:
   - the challenge is no longer whether P/D works
@@ -801,7 +801,7 @@ Use a real decision matrix here instead of a generic pros/cons list.
 ### Slide 36 — What’s next for KAITO + llm-d
 - near term: precise prefix-cache routing based on KV events
 - near term: tiered prefix cache across HBM, CPU RAM, and optional filesystem tiers
-- next topology: E/P/D and speculative decoding
+- next topology: E/P/D
 - larger-scale systems: Wide Expert Parallelism and richer cross-node transport optimization
 
 **Suggested visual:** roadmap slide with “current / next / later” swimlanes.
