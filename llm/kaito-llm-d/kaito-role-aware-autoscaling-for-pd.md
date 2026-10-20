@@ -10,76 +10,88 @@ The target is not just to say that prefill and decode should scale independently
 
 For P/D disaggregation in KAITO, the right scaling boundary is **per role**, not one global autoscaling knob for the whole service.
 
-The recommended design is:
+Two user-facing designs are viable:
 
-1. `MultiRoleInference` remains the top-level user API.
-2. The MRI controller creates one child `InferenceSet` for `prefill` and one for `decode`.
-3. The MRI controller also creates one role-specific `ScaledObject` per child `InferenceSet`.
-4. `prefill` and `decode` use **different metrics and thresholds**.
-5. **KV events should primarily drive routing/scoring**, not raw autoscaling decisions.
-6. If KV information is used for autoscaling, it should first be aggregated into a **stable pressure metric** or **desired replicas signal**, then consumed by KEDA.
+1. **Recommended for the first implementation: role-aware annotations on `MultiRoleInference` (MRI).** A small MRI adapter projects each role's policy onto the corresponding child `InferenceSet.metadata.annotations`, reusing the existing `keda-kaito-scaler` provisioning and metrics machinery.
+2. **Alternative: typed `spec.roles[].autoscaling` fields.** This offers better schema discoverability and field-level validation, at the cost of a CRD/API compatibility commitment. It remains an option if the policy contract later stabilizes or first-class schema tooling becomes a requirement.
+
+The annotation recommendation is a scoped implementation choice, not a claim that annotations are universally a better API. It minimizes changes to KAITO's CRD and reuses its optional KEDA integration while P/D scaling policy is still evolving. The new annotation payload is still a public contract that needs validation and versioning.
+
+In either design:
+
+- MRI remains the single user-facing resource.
+- Each role has one child `InferenceSet` and at most one authoritative autoscaling path.
+- The scaler integration reconciles one role-specific `ScaledObject` per managed role; the MRI controller need not implement KEDA resource provisioning itself.
+- Prefill and decode use different metrics and thresholds.
+- Raw KV events remain routing/scoring inputs. Autoscaling consumes stable derived pressure metrics or desired-replica signals instead.
+
+> **Implementation status:** The MRI annotation and typed API examples below are proposals, not currently deployable MRI autoscaling APIs. Existing InferenceSet annotations alone do not enable this design. The required MRI integration changes are listed explicitly below.
 
 ## Why Per-Role Autoscaling Is Needed
 
 P/D disaggregation only pays off if prefill and decode can evolve capacity independently.
 
-- **Prefill** is compute-heavy and TTFT-sensitive.
-- **Decode** is memory/KV/cache-pressure-heavy and throughput-sensitive.
+- **Prefill** is compute-heavy and TTFT-sensitive: scale it to protect prompt admission latency.
+- **Decode** is memory/KV/cache-pressure-heavy and throughput-sensitive: scale it to protect steady-state generation throughput and KV headroom.
 
-Those are different bottlenecks, so they should not share one autoscaling signal.
+The scaling target for each loop is the role-specific `InferenceSet`, not the whole MRI and not an individual tensor-parallel pod.
 
-A practical way to say it:
+## Existing Capabilities and Integration Gaps
 
-- scale **prefill** to protect prompt admission latency
-- scale **decode** to protect steady-state generation throughput and KV headroom
+The source baseline for this proposal is KAITO [`3c831cad`](https://github.com/kaito-project/kaito/tree/3c831cadcae38b9b66cd615d865739d3b9ef771b) and keda-kaito-scaler [`ba1f2340`](https://github.com/kaito-project/keda-kaito-scaler/tree/ba1f234098a0f02d2e52ebc90eddf717a31a3318). These are source snapshots, not a guarantee that every released chart has the same capabilities. Pin and test compatible versions before implementation or deployment.
 
-## What KAITO Already Has Today
+### What Can Be Reused
 
-Current KAITO building blocks already line up well with this design:
+- MRI already creates one child `InferenceSet` per role and sets role labels such as `kaito.sh/inference-role: prefill` and `decode` on selectors/templates.
+- A nil role `replicas` already causes the MRI controller to stop enforcing that role's replica count.
+- The scaler auto-provision controller consumes top-level **`InferenceSet.metadata.annotations`** and creates a `ScaledObject` targeting that InferenceSet.
+- Current scaler source supports a `scaledobject.kaito.sh/metrics` YAML/JSON list, per-metric up/down thresholds, model-pod and EPP metric sources, readiness gating, and stabilization/cooldown controls. It is **not limited to one metric**.
+- Multi-metric combination currently supports a conservative **AND** policy. This is not equivalent to the usual maximum-of-replica-recommendations behavior of multiple HPA metrics.
 
-- `InferenceSet` is the autoscaling/scaled-replica boundary.
-- `MultiRoleInference` creates child `InferenceSet`s for `prefill` and `decode`.
-- The MRI controller labels child `InferenceSet`s and pod templates with role labels such as:
-  - `kaito.sh/inference-role: prefill`
-  - `kaito.sh/inference-role: decode`
-- KEDA integration already exists for `InferenceSet` via `keda-kaito-scaler`.
+The [website's metric-based scaler example](https://kaito-project.github.io/kaito/docs/keda-autoscaler-inference#metric-based-keda-scaler) demonstrates the annotation integration pattern. Its single-metric configuration and the current source's `metrics` list must not be assumed to be interchangeable across versions.
 
-This means KAITO already has the right **reconciliation boundary** for independent scaling: each role-specific child `InferenceSet`.
+### What Must Change for MRI
 
-## Important Current Limitation
-
-KAITO's current KEDA auto-provision flow is **InferenceSet-centric**, not MRI-centric.
-
-Today, `keda-kaito-scaler`'s auto-provision controller watches top-level `InferenceSet.metadata.annotations`, for example:
-
-- `scaledobject.kaito.sh/auto-provision`
-- `scaledobject.kaito.sh/max-replicas`
-- `scaledobject.kaito.sh/threshold`
-
-However, the current MRI controller propagates MRI annotations into **child `InferenceSet.spec.template.annotations`**, not into child `InferenceSet.metadata.annotations`.
-
-That means the existing annotation-based auto-provision path is **not enough by itself** to express MRI role-aware autoscaling cleanly.
-
-There is a second limitation: the default auto-provision controller is optimized for a **simple single-metric InferenceSet case**, while MRI needs:
-
-- one policy for prefill
-- another policy for decode
-- possibly multiple triggers for decode
-- role-specific defaults and status reporting
-
-So the recommended product direction is **not** "tell users to hand-wire multiple `ScaledObject`s" and also **not** "stretch the old annotation-only model too far".
+1. **Annotation placement:** MRI currently copies its annotations into child `InferenceSet.spec.template.annotations`, not child `metadata.annotations`. Simply putting existing `scaledobject.kaito.sh/*` annotations on MRI does not configure child auto-provisioning.
+2. **Explicit child exclusion:** The existing auto-provision create/update predicates reject MRI-owned InferenceSets via `isMultiRoleInferenceChild`. Copying annotations to child metadata is therefore insufficient; the scaler needs an intentional, opt-in MRI integration path.
+3. **Role-specific policy:** One flat MRI annotation map cannot give prefill and decode different thresholds and bounds. The adapter must map policies by role type, not list position, and must not copy one global policy onto both roles.
+4. **Metric attribution:** Existing EPP scraping is reusable infrastructure, but its InferenceSet-oriented discovery does not automatically support MRI's shared router/EPP topology or per-role attribution. Model-pod metrics are the initial scope; EPP integration requires separate verification.
 
 ## Recommended API Design
 
-Add autoscaling configuration directly to each MRI role.
+### Option A: Role-Aware MRI Annotations — Recommended
 
-Example:
+Introduce one proposed MRI annotation, **`autoscaling.kaito.sh/roles`**, containing a versioned YAML object. Each role policy uses the existing scaler annotation suffixes (`min-replicas`, `max-replicas`, `combinepolicy`, `metrics`, and supported behavior settings), rather than inventing a second set of scaling algorithms.
+
+The new annotation name, envelope, and translation rules below require implementation. They are not existing KAITO features.
 
 ```yaml
 apiVersion: kaito.sh/v1alpha1
 kind: MultiRoleInference
 metadata:
   name: deepseek-v3
+  annotations:
+    autoscaling.kaito.sh/roles: |
+      version: v1alpha1
+      roles:
+        prefill:
+          min-replicas: "1"
+          max-replicas: "8"
+          combinepolicy: AND
+          metrics:
+          - name: vllm:num_requests_waiting
+            type: gauge
+            upthreshold: 8
+            downthreshold: 1
+        decode:
+          min-replicas: "2"
+          max-replicas: "16"
+          combinepolicy: AND
+          metrics:
+          - name: vllm:num_requests_running
+            type: gauge
+            upthreshold: 24
+            downthreshold: 4
 spec:
   labelSelector:
     matchLabels:
@@ -90,83 +102,141 @@ spec:
   - type: prefill
     instanceType: Standard_ND96isr_H100_v5
     replicas: null
-    autoscaling:
-      minReplicas: 1
-      maxReplicas: 8
-      triggers:
-      - type: kaito-external
-        metricName: vllm:num_requests_waiting
-        threshold: "8"
-        metricProtocol: http
-        metricPort: "80"
-        metricPath: /metrics
-        scrapeTimeout: 5s
-
   - type: decode
     instanceType: Standard_ND96isr_H100_v5
     replicas: null
-    autoscaling:
-      minReplicas: 2
-      maxReplicas: 16
-      triggers:
-      - type: kaito-external
-        metricName: vllm:num_running_requests
-        threshold: "24"
-        metricProtocol: http
-        metricPort: "80"
-        metricPath: /metrics
-        scrapeTimeout: 5s
-      - type: prometheus
-        serverAddress: http://prometheus.monitoring.svc:9090
-        metricName: kaito_decode_kv_cache_pressure
-        threshold: "0.8"
-        query: |
-          avg(kaito_decode_kv_cache_pressure{multiroleinference="deepseek-v3"})
 ```
 
-## API Semantics
+The model/SKUs and thresholds are illustrative, not validated deployment or capacity recommendations. Verify exact metric names and semantics against the deployed runtime; do not assume every engine exports vLLM's metric names. Initial policies use per-replica model-pod gauge aggregation supported by the selected scaler version.
 
-Suggested semantics:
+#### Annotation Contract and Projection
 
-- `roles[].replicas != nil` means **fixed replica mode**.
-- `roles[].autoscaling != nil` means **external autoscaling mode**.
-- These two should be treated as mutually exclusive for a given role.
-- If `autoscaling` is set, the MRI controller should leave the role's replica count under scaler control.
+- `version` is required. Reject unsupported versions, malformed YAML, duplicate keys, unknown fields, and role names not present in `spec.roles`.
+- A role entry enables KAITO-managed autoscaling for that role. An omitted entry means this adapter does not manage an autoscaler for that role.
+- Require explicit `min-replicas` and `max-replicas` in the MRI policy. For the first release, require `1 <= min <= max`; do not rely on node-count-derived bounds or enable scale-to-zero for P/D before activation/routing semantics are designed.
+- `metrics` is a non-empty structured list; scalar settings use the string representation expected by scaler annotations. Validate thresholds, metric types/sources, combinations, and behavior settings against the supported scaler contract before reconciliation.
+- The adapter serializes `metrics` to `scaledobject.kaito.sh/metrics`, prefixes supported scalar keys with `scaledobject.kaito.sh/`, and sets `scaledobject.kaito.sh/auto-provision: "true"` on the matching child **metadata**.
+- Only an explicit allowlist of scaler settings is accepted. Do not expose internal ownership annotations or arbitrary KEDA fields through this payload. The first implementation supports model-pod metrics; EPP and arbitrary Prometheus queries are not implied by this example.
+- Reject a policy for a role with non-nil `replicas`. Reject ambiguous global `scaledobject.kaito.sh/*` configuration on the same MRI rather than guessing precedence.
+- Treat generated child scaler annotations as adapter-owned output. Preserve unrelated child metadata, remove stale adapter-owned keys when a policy changes, and never require users to edit generated children.
+- Do not propagate the MRI policy blob into child templates, Workspaces, or pods. Keep it separate from the existing propagation of workload annotations.
+- Bound payload size and keep the annotation within Kubernetes metadata limits. Changes must trigger reconciliation even when MRI `metadata.generation` does not change; a generation-only watch predicate is insufficient.
 
-This aligns well with the current KAITO behavior where `nil` replicas already imply the controller should not actively force a fixed count.
+For the prefill role, the projection produces the equivalent of these annotations on `<mri-name>-prefill` (generated output, not a second user-authored object):
 
-## Recommended Controller Behavior
+```yaml
+metadata:
+  annotations:
+    scaledobject.kaito.sh/auto-provision: "true"
+    scaledobject.kaito.sh/min-replicas: "1"
+    scaledobject.kaito.sh/max-replicas: "8"
+    scaledobject.kaito.sh/combinepolicy: AND
+    scaledobject.kaito.sh/metrics: |
+      - name: vllm:num_requests_waiting
+        type: gauge
+        upthreshold: 8
+        downthreshold: 1
+```
 
-For each MRI role, the controller should reconcile two things:
+This output only becomes effective after the MRI-child exclusion is deliberately adapted. Existing standalone InferenceSet behavior must remain unchanged.
 
-1. the child `InferenceSet`
-2. the role-specific `ScaledObject` (if autoscaling is configured)
+### Option B: Typed `spec.roles[].autoscaling` — Alternative
 
-### Reconcile Flow
+The same intent can be represented as typed fields, for example this proposed `spec.roles` excerpt:
 
-For each role in `spec.roles`:
+```yaml
+roles:
+- type: prefill
+  instanceType: Standard_ND96isr_H100_v5
+  replicas: null
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 8
+    combinePolicy: AND
+    metrics:
+    - name: vllm:num_requests_waiting
+      type: gauge
+      upThreshold: 8
+      downThreshold: 1
+- type: decode
+  instanceType: Standard_ND96isr_H100_v5
+  replicas: null
+  autoscaling:
+    minReplicas: 2
+    maxReplicas: 16
+    combinePolicy: AND
+    metrics:
+    - name: vllm:num_requests_running
+      type: gauge
+      upThreshold: 24
+      downThreshold: 4
+```
 
-1. Reconcile child `InferenceSet`:
-   - `<mri-name>-prefill`
-   - `<mri-name>-decode`
-2. If `role.autoscaling == nil`:
-   - do not create a `ScaledObject`
-   - respect fixed replica semantics if `role.replicas` is set
-3. If `role.autoscaling != nil`:
-   - validate `role.replicas == nil`
-   - create or update one `ScaledObject` targeting the child `InferenceSet`
-4. Aggregate child readiness and autoscaling readiness back into MRI status
+Advantages include schema discovery through `kubectl explain`, IDE completion, schema/admission validation, and more granular declarative field management when the CRD list/map schemas are designed correctly. It also puts replica mode and scaling intent together in the role spec.
 
-### Ownership Model
+Costs include CRD/generated-client changes, defaulting and conversion decisions, and a longer-lived compatibility commitment while the P/D policy model evolves. Typed fields do not automatically create status or correct lifecycle handling; those still need implementation.
 
-The MRI controller should own the role-specific `ScaledObject`s directly.
+A typed API should not blindly embed every KEDA trigger field. If arbitrary Prometheus queries or backend-specific triggers are later needed, define a deliberate extension contract, including authentication and metric-combination semantics. Do not imply that the current annotation adapter already supports them.
 
-That gives KAITO a clean UX:
+### Comparison and Decision
 
-- users declare scaling intent once at MRI level
-- child `InferenceSet`s remain implementation details
-- KEDA stays the execution engine
-- MRI status can summarize both routing and scaling health
+| Dimension | Role-aware annotations | Typed role fields |
+| --- | --- | --- |
+| Initial integration | Reuses scaler annotation contract; needs MRI adapter and validation | Needs CRD/API work as well as controller integration |
+| Role-specific policies | Explicit role map in annotation payload | Natural placement under each role |
+| Validation/discovery | Custom parsing/admission; embedded YAML is opaque to CRD schema | Better schema tooling and earlier field-level validation |
+| GitOps/field ownership | Whole policy blob is one annotation value | Finer-grained with correctly designed structural schemas |
+| Fast policy iteration | Avoids CRD churn, but payload compatibility still matters | Stable contract must be considered for each schema change |
+| Status and handoff | Must be implemented explicitly | Must also be implemented explicitly |
+| Backend coupling | Intentionally reuses supported scaler vocabulary | Can be abstract, but only if designed that way |
+
+**Decision: recommend Option A for the initial implementation.** KAITO already has an annotation-driven optional scaler with multi-metric and behavior support. A thin, validated role-aware adapter is a smaller integration than introducing a new typed policy surface now. Keep Option B documented as a future alternative, not a second simultaneously authoritative configuration source.
+
+This recommendation has a boundary: if policies become large, require extensive composition, or need strong schema tooling for broad production use, reevaluate typed fields or a separate policy resource. Annotation-based does not mean unversioned or unvalidated.
+
+## API Semantics and Replica Ownership
+
+These semantics apply regardless of which public representation is chosen:
+
+| Role replicas | Role policy | Mode |
+| --- | --- | --- |
+| Non-nil | Absent | Fixed replicas; MRI enforces the value |
+| Nil | Present | KAITO-managed autoscaling; MRI does not write replicas |
+| Nil | Absent | Externally managed replicas; no guarantee that any scaler exists |
+| Non-nil | Present | Invalid; reject at admission |
+
+For Option A, "role policy" means an entry under `autoscaling.kaito.sh/roles`; for Option B it means `roles[].autoscaling`. Preserve the nil/nil state for existing user-managed HPA/KEDA setups.
+
+Mode changes require an ordered handoff, not merely changing fields:
+
+- **Fixed to managed autoscaling:** stop MRI replica enforcement before enabling the managed scaler. Define bootstrap behavior so initial replicas converge to the configured minimum without MRI becoming a second steady-state writer.
+- **Managed autoscaling to fixed:** disable/remove the managed ScaledObject and its HPA, confirm replica control is released, then enforce the fixed value. Cleanup must gate fixed-replica reconciliation, including the case where the scaler component is unavailable.
+- **Policy removal with nil replicas:** clean up only the managed scaler/HPA, then leave replicas externally managed. Do not reset the last replica count or silently install a default policy.
+- **Manual scaler conflicts:** report a conflict rather than silently adopting/deleting user-owned ScaledObjects or running two controllers against one target. Check both HPA and ScaledObject targets.
+- **Potential future migration:** reject simultaneous typed and annotation policies for a role, or define a coordinated one-way migration. Do not run both provisioning paths concurrently.
+
+Annotation admission must validate the decoded payload and cross-check `spec.roles`. Invalid updates should be rejected instead of silently disabling a working policy. Controller validation remains necessary for existing objects, version skew, and dynamic failures.
+
+## Recommended Controller Behavior and Ownership
+
+Keep policy ownership separate from KEDA implementation ownership:
+
+1. **MRI controller / MRI adapter:** reconcile child InferenceSets and project each role's validated policy to child metadata. Watch annotation changes, policy removal, and child drift. Do not manage all child metadata indiscriminately.
+2. **Scaler integration:** explicitly admit opted-in, adapter-managed MRI children through the current exclusion boundary; validate projected configuration, build and reconcile ScaledObjects using the existing implementation, and handle cleanup. An owner-aware gate/feature flag must distinguish this supported path from arbitrary annotations on MRI children, including removal events that must still reach cleanup.
+3. **KEDA/HPA:** update the child InferenceSet's scale subresource. MRI leaves role replicas alone in autoscaling mode.
+4. **MRI status aggregation:** expose role policy acceptance, managed ScaledObject reference, scaler readiness, and conflicts separately from workload readiness. Surface missing/incompatible KEDA installation and invalid metric wiring rather than claiming successful scaling. These status additions are implementation work, not existing behavior supplied by annotations.
+
+For the annotation-first integration, preserve the existing lifecycle chain:
+
+```text
+MRI --owns--> role InferenceSet --owns--> role ScaledObject --owns--> HPA
+```
+
+The scaler controller reconciles ScaledObjects; the MRI controller does not need to duplicate their construction logic. Kubernetes owner references define lifecycle ownership, not which controller binary must reconcile a resource. A future typed API can reuse this same integration boundary.
+
+Track applied policy identity with a digest/version as appropriate: annotation-only updates do not necessarily advance MRI generation. Assign a clear writer for MRI status conditions; do not have the MRI and scaler controllers overwrite each other's status.
+
+Required failure and transition tests include role-specific projection, role reorder, annotation-only updates, policy key removal, bounds/threshold rejection, fixed/autoscaling handoff, child recreation, missing KEDA, manual scaler conflicts, cleanup, and non-regression of standalone InferenceSet provisioning. Independent P/D scaling also needs end-to-end verification against the deployed runtime and routing topology.
 
 ## Recommended Scaling Signals
 
@@ -263,79 +333,67 @@ Then KEDA can scale from those metrics in a stable way.
 
 ## Recommended Release Plan
 
-### v1: Simple and Immediately Implementable
+### v1: Annotation-First Role-Aware Integration
 
-This is the recommended first shipping version.
+This is the recommended first implementation, not an already available MRI feature.
 
-- `prefill` scales on `vllm:num_requests_waiting`
-- `decode` scales on `vllm:num_running_requests` or equivalent running-load metric
-- KV-aware plugins remain in the routing plane only
-- MRI controller owns role-specific `ScaledObject`s
+- Implement and validate the versioned MRI role-policy annotation and metadata projection.
+- Add an explicit MRI-child opt-in path to the scaler; retain standalone InferenceSet behavior and existing ScaledObject construction logic.
+- Use `vllm:num_requests_waiting` for prefill and `vllm:num_requests_running` (or a verified equivalent) for decode, initially one model-pod metric per role.
+- Require positive minimum replicas and explicit bounds; keep raw KV events in routing only.
+- Implement ownership handoff, cleanup, conflict detection, and per-role status before presenting the feature as supported.
+- Pin compatible KAITO, scaler, KEDA, Kubernetes, and model-runtime versions; verify emitted HPA behavior against the cluster's feature gates.
 
-Why this is the best first step:
+Why this is the preferred first step: it reuses mature scaler mechanisms, avoids an immediate typed autoscaling CRD surface, and keeps routing and scaling responsibilities separate. It is smaller in scope, not a zero-code annotation change.
 
-- minimal implementation risk
-- clean separation between routing and scaling
-- easy to explain in docs and talks
-- maps well to current KAITO + KEDA architecture
+### v2: Add Decode KV Pressure with Explicit Combination Semantics
 
-### v2: Add Decode KV Pressure
+Add an aggregated KV pressure metric only after defining its meaning and collection path. For example, decode concurrency and KV pressure may be:
 
-Add a second decode trigger using an aggregated KV pressure metric.
+- independent scale-up reasons (either is sufficient), or
+- a load signal plus a scale-down safety guard, or
+- intentionally combined with conservative AND semantics.
 
-Example:
+The current annotation provisioner supports AND only. It must not be presented as equivalent to independent KEDA triggers whose desired replica recommendations are combined by taking the maximum. If the selected policy requires OR, separate up/down combinations, or arbitrary Prometheus queries, extend and test the scaler contract explicitly rather than merely adding another metric to the list.
 
-- trigger A: running decode requests
-- trigger B: decode KV cache pressure
+Verify MRI role attribution and shared EPP discovery before using EPP metrics. Ensure KV occupancy is a useful pressure signal rather than only retained cache state, and make scale-down conservative enough for in-flight decode work.
 
-That lets decode scaling reflect both request concurrency and memory pressure.
+### v3: Desired-Replica Computation and API Reassessment
 
-### v3: Desired-Replica Computation
-
-Move from "metric thresholding" to "desired replica computation".
-
-For example:
+Move from metric thresholding to explicit desired-replica computation if measurements justify the added complexity:
 
 - `kaito_prefill_desired_replicas = f(queue depth, prompt tokens, TTFT budget)`
 - `kaito_decode_desired_replicas = f(running requests, KV pressure, throughput budget)`
 
-At that point, KEDA becomes mostly an actuator while the scaling intelligence lives in a KAITO-native controller or aggregator.
+KEDA can act as the actuator while an aggregator or KAITO-native component computes demand. This is conceptually closer to llm-d's WVA-style direction, but is not the first implementation.
 
-This is conceptually closer to llm-d's WVA-style direction, but it is more complex and should not be the first step.
+Revisit typed `roles[].autoscaling` or a policy resource when the contract stabilizes or annotation ergonomics become a limitation. Preserve a single authoritative policy source and an explicit migration path; do not require a rewrite of the scaler execution layer.
 
 ## Recommendation for KAITO Product UX
 
-The preferred KAITO UX is:
+The preferred initial UX is:
 
-- users author one `MultiRoleInference`
-- MRI expresses per-role scaling intent declaratively
-- KAITO generates the child `InferenceSet`s and child `ScaledObject`s
-- routing stays llm-d-aware
-- scaling stays role-aware
+- users author one `MultiRoleInference` with role-aware autoscaling annotations;
+- KAITO projects independent prefill/decode policies onto generated child InferenceSets;
+- the scaler integration manages role-specific ScaledObjects;
+- MRI reports policy/scaler state without requiring users to inspect generated children for every failure;
+- routing stays llm-d-aware and scaling stays role-aware.
 
-This is better than asking users to:
-
-- discover generated child object names
-- create multiple `ScaledObject`s manually
-- understand which metrics belong to which role without guidance
-
-In short:
-
-> **`MultiRoleInference` should be the user-facing autoscaling API for P/D serving, while `InferenceSet` remains the controller-facing scaling target.**
+Users should not need to discover generated child names, patch their annotations, or hand-wire multiple ScaledObjects for the managed path. Existing manual scaling remains possible through the explicit externally managed mode.
 
 ## Practical Recommendation
 
-If a single sentence is needed for a design review or conference talk, use this:
-
-> In KAITO, role-aware autoscaling for prefill/decode should be implemented by letting `MultiRoleInference` generate one child `InferenceSet` and one role-specific `ScaledObject` per role; prefill scales on queue/waiting-request style signals, decode scales on running-request and later KV-pressure style signals, and raw KV events remain routing inputs rather than direct KEDA triggers.
+> Prefer a versioned, role-aware annotation on `MultiRoleInference` for the initial P/D autoscaling API, adapt it to existing InferenceSet scaler annotations, and reuse `keda-kaito-scaler` for one ScaledObject per managed role. Keep typed `roles[].autoscaling` as an alternative; scale prefill on queue pressure, decode on running load and later well-defined KV pressure, and keep raw KV events in the routing plane.
 
 ## References
 
-- `kaito/website/docs/keda-autoscaler-inference.md`
-- `kaito/website/docs/prefill-decode-disaggregation.md`
-- `kaito/pkg/controllers/multiroleinference/controller.go`
-- `keda-kaito-scaler/pkg/controllers/autoprovision/auto_provision_controller.go`
-- `keda-kaito-scaler/pkg/scaler/scaler.go`
+- [KAITO metric-based KEDA scaler documentation](https://kaito-project.github.io/kaito/docs/keda-autoscaler-inference#metric-based-keda-scaler)
+- [KAITO P/D documentation source](https://github.com/kaito-project/kaito/blob/3c831cadcae38b9b66cd615d865739d3b9ef771b/website/docs/prefill-decode-disaggregation.md)
+- [MRI replica and annotation reconciliation](https://github.com/kaito-project/kaito/blob/3c831cadcae38b9b66cd615d865739d3b9ef771b/pkg/controllers/multiroleinference/controller.go#L431-L476)
+- [Scaler metrics and annotation contract](https://github.com/kaito-project/keda-kaito-scaler/blob/ba1f234098a0f02d2e52ebc90eddf717a31a3318/README.md)
+- [Auto-provision predicates and MRI-child exclusion](https://github.com/kaito-project/keda-kaito-scaler/blob/ba1f234098a0f02d2e52ebc90eddf717a31a3318/pkg/controllers/autoprovision/auto_provision_controller.go#L378-L427)
+- [ScaledObject builder and lifecycle ownership](https://github.com/kaito-project/keda-kaito-scaler/blob/ba1f234098a0f02d2e52ebc90eddf717a31a3318/pkg/scaledobject/provisioner.go)
+- [EPP metric source](https://github.com/kaito-project/keda-kaito-scaler/blob/ba1f234098a0f02d2e52ebc90eddf717a31a3318/pkg/metricsource/epp_source.go)
 - `llm-d/docs/well-lit-paths/foundations/workload-autoscaling.md`
 - `llm-d/docs/architecture/core/router/epp/scheduling.md`
 - `llm-d/docs/architecture/advanced/kv-management/prefix-cache-aware-routing.md`
