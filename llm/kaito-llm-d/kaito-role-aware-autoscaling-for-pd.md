@@ -4,7 +4,7 @@
 
 This document captures a concrete KAITO implementation plan for **role-aware autoscaling** in prefill/decode (P/D) disaggregated serving.
 
-The target is not just to say that prefill and decode should scale independently, but to define **where the API lives, which controller owns it, and which vLLM-native metrics drive scaling or observation**. Every metric named in this design must be emitted by vLLM itself; no custom exporter metric or externally computed desired-replica signal is required.
+The target is not just to say that prefill and decode should scale independently, but to define **where the API lives, which controller owns it, and which vLLM-native metrics drive scaling or observation**. Every scaling signal must either be emitted by vLLM itself or have an explicit derivation from verified vLLM-native metrics. The first implementation uses native metrics only; derived metrics are a next-phase goal, not a prerequisite or an existing capability.
 
 ## Executive Summary
 
@@ -23,7 +23,7 @@ In either design:
 - Each role has one child `InferenceSet` and at most one authoritative autoscaling path.
 - The scaler integration reconciles one role-specific `ScaledObject` per managed role; the MRI controller need not implement KEDA resource provisioning itself.
 - Prefill and decode use different metrics and thresholds.
-- Raw KV events remain routing/scoring inputs. Scaling uses native vLLM request-count gauges; native KV-cache utilization is a candidate safety signal, not a custom pressure metric.
+- Raw KV events remain routing/scoring inputs. Initial scaling uses native vLLM request-count gauges. A subsequent phase may aggregate native KV utilization, latency, or token counters into clearly defined derived signals; it must not invent unavailable inputs.
 
 > **Implementation status:** The MRI annotation and typed API examples below are proposals, not currently deployable MRI autoscaling APIs. Existing InferenceSet annotations alone do not enable this design. The required MRI integration changes are listed explicitly below.
 
@@ -116,7 +116,7 @@ The model/SKUs and thresholds are illustrative, not validated deployment or capa
 - Require explicit `min-replicas` and `max-replicas` in the MRI policy. For the first release, require `1 <= min <= max`; do not rely on node-count-derived bounds or enable scale-to-zero for P/D before activation/routing semantics are designed.
 - `metrics` is a non-empty structured list; scalar settings use the string representation expected by scaler annotations. Validate thresholds, metric types/sources, combinations, and behavior settings against the supported scaler contract before reconciliation. The first release accepts only `vllm:num_requests_waiting` for prefill and `vllm:num_requests_running` for decode, both gauges from the model-pod source. Histograms in the observation inventory below are not automatically admitted as autoscaling triggers.
 - The adapter serializes `metrics` to `scaledobject.kaito.sh/metrics`, prefixes supported scalar keys with `scaledobject.kaito.sh/`, and sets `scaledobject.kaito.sh/auto-provision: "true"` on the matching child **metadata**.
-- Only an explicit allowlist of scaler settings is accepted. Do not expose internal ownership annotations or arbitrary KEDA fields through this payload. EPP-exported metrics, custom exporter metrics, and arbitrary Prometheus query triggers are outside this design. The optional KV gauge may enter the scaling allowlist only after the separate safety policy described below is implemented and tested.
+- Only an explicit allowlist of scaler settings is accepted. Do not expose internal ownership annotations or arbitrary KEDA fields through this payload. EPP-exported metrics, derived metrics, and arbitrary Prometheus query triggers are outside v1. The optional KV gauge and explicitly defined vLLM-derived signals may enter a later scaling allowlist only after their collection adapter and control policy are implemented and tested.
 - Reject a policy for a role with non-nil `replicas`. Reject ambiguous global `scaledobject.kaito.sh/*` configuration on the same MRI rather than guessing precedence.
 - Treat generated child scaler annotations as adapter-owned output. Preserve unrelated child metadata, remove stale adapter-owned keys when a policy changes, and never require users to edit generated children.
 - Do not propagate the MRI policy blob into child templates, Workspaces, or pods. Keep it separate from the existing propagation of workload annotations.
@@ -176,7 +176,7 @@ Advantages include schema discovery through `kubectl explain`, IDE completion, s
 
 Costs include CRD/generated-client changes, defaulting and conversion decisions, and a longer-lived compatibility commitment while the P/D policy model evolves. Typed fields do not automatically create status or correct lifecycle handling; those still need implementation.
 
-A typed API should not blindly embed every KEDA trigger field. It must retain the same vLLM-native metric allowlist, source restrictions, availability checks, and combination semantics as the annotation API. Switching representation does not justify adding unsupported or custom metrics.
+A typed API should not blindly embed every KEDA trigger field. It must retain the same native-metric allowlist in v1 and the same verified derivation contract in later phases, including availability checks and combination semantics. Switching representation does not justify adding unsupported inputs.
 
 ### Comparison and Decision
 
@@ -256,9 +256,9 @@ The same native waiting-request gauge may be observed on decode instances to dia
 
 KV occupancy is not a direct measurement of remaining safe request capacity. Its relationship to active work, cache reuse, and reclaimability depends on runtime semantics and workload. Validate that relationship before using it to gate scaling; no synthetic pressure/headroom metric is assumed.
 
-### Native Histograms for Observation and Policy Tuning
+### Native Histograms and Counter for Observation and Policy Tuning
 
-These metrics are native vLLM outputs, but are **observational in this design**, not additional v1 KEDA triggers.
+These metrics are native vLLM outputs, but are **observational in v1**, not additional v1 KEDA triggers. They also provide the inputs for explicitly defined next-phase derivations.
 
 | Native vLLM metric family | Type and unit | Corresponding action |
 | --- | --- | --- |
@@ -267,8 +267,26 @@ These metrics are native vLLM outputs, but are **observational in this design**,
 | `vllm:request_prefill_time_seconds` | Histogram, seconds | Diagnose prefill compute latency and benchmark runtime/SKU choices before changing scaling bounds. |
 | `vllm:request_decode_time_seconds` | Histogram, seconds | Diagnose decode service duration; interpret with output length because a longer generation naturally takes longer. |
 | `vllm:inter_token_latency_seconds` | Histogram, seconds | Observe decode token-delivery latency and investigate regressions alongside the running-request gauge. |
+| `vllm:generation_tokens_total` | Counter, tokens | Count generated tokens; a reset-aware rate over a window yields decode output throughput for observation and the v2 derived signal below. |
 
-Histogram families expose bucket/count/sum series rather than one instantaneous scalar with the family name. A dashboard may compute windowed averages or quantiles from those native series; these calculations do not introduce a custom exported metric or a new scaling input. Do not treat the raw sum, missing observations, or a no-traffic interval as a valid low-latency sample. Existing scaler histogram support does not by itself establish the desired P/D control policy.
+The generation counter is registered as `vllm:generation_tokens`; Prometheus exposition adds the `_total` suffix. Histogram families expose bucket/count/sum series rather than one instantaneous scalar with the family name. A dashboard may compute windowed averages or quantiles from those native series; v1 does not require publishing their results as a new exported metric or using them as scaling inputs. Publishing the defined recording rules below is a v2 goal. Do not treat the raw sum, missing observations, or a no-traffic interval as a valid low-latency sample. Existing scaler histogram support does not by itself establish the desired P/D control policy.
+
+### Next-Phase Derived Metrics — Only from Existing vLLM Inputs
+
+The following are **proposed recording-rule names, not metrics already emitted by vLLM or KAITO**. Each has a concrete native source and formula. They can be implemented with Prometheus recording rules or a narrowly scoped aggregation adapter; v1 does not depend on either.
+
+In the formulas, `role_series(...)` selects only the intended MRI/role, deduplicates scrapes, and retains the appropriate engine/replica scope. Kubernetes discovery labels may supply identity, but no non-vLLM load metric supplies the signal. Group by cluster/namespace/MRI/role so unrelated workloads are never merged. The formulas specify semantics rather than ready-to-paste PromQL with assumed label names.
+
+| Proposed derived metric | Existing native vLLM input | Derivation and unit | Intended action in the next phase |
+| --- | --- | --- | --- |
+| `kaito:decode_kv_cache_usage_max` | `vllm:kv_cache_usage_perc` | Maximum of valid decode engine samples in the role; fraction `[0, 1]` | Observe/alert on the most occupied engine; evaluate a scale-down guard, not unconditional scale-up. A role average must not conceal a hot engine; a role-wide maximum alone does not identify which replica is safe to remove. |
+| `kaito:decode_kv_cache_free_fraction_min` | `vllm:kv_cache_usage_perc` | `1 - max(role_series(kv_cache_usage_perc))`; fraction `[0, 1]` | Equivalent conservative free-cache-fraction view for the guard. This is **not** effective request capacity, free bytes, or headroom adjusted for pending work; do not treat it as independent evidence from KV utilization. |
+| `kaito:prefill_ttft_p95_seconds` | `vllm:time_to_first_token_seconds_bucket` and the native histogram count | Apply `histogram_quantile(0.95, ...)` to the sum of per-series bucket rates over 5m, retaining workload/role labels and the `le` bucket boundary; seconds | Observe the prefill latency tail and tune queue thresholds/minimum replicas. First require enough observations; do not average per-pod P95 values or equate engine-local TTFT with client P/D latency. Not a direct scaling trigger until a policy is tested. |
+| `kaito:decode_generation_tokens_per_second` | `vllm:generation_tokens_total` | Sum of per-series reset-aware `rate(...[5m])` for decode engines; tokens/s | Observe actual output throughput and benchmark capacity. Throughput alone is not saturation or unsatisfied demand; neither high nor low throughput alone requests scale-up or scale-down. |
+
+A derived metric is allowed only if all required source series exist on the deployed vLLM version, have the expected units/topology, and are fresh. Handle counter resets before aggregation, require adequate histogram observations, and propagate missing/invalid inputs rather than converting them to zero. For a role-wide safety guard, a partial scrape must not silently present the surviving engines as complete coverage.
+
+Prometheus recording-rule outputs are **not available from the vLLM model-pod `/metrics` endpoint**. To use them for future automated decisions, implement a dedicated, validated collection path (for example, an adapter reading the approved recording rules) and define its authentication, time-window, freshness, coverage, and failure semantics. Merely putting these names in the current model-pod `metrics` annotation will not work. Observation can precede that scaling integration.
 
 ### Runtime Verification Gate — Required Before Enabling Actions
 
@@ -283,9 +301,9 @@ No cluster or deployed runtime was inspected while writing this document. A rele
 
 ## KV Events and Out-of-Scope Signals
 
-Raw KV events can continue to support routing, cache affinity, and endpoint scoring, but they are not KEDA metrics in this proposal. The scaling/observation inventory is limited to the native gauges and histograms above.
+Raw KV events can continue to support routing, cache affinity, and endpoint scoring, but they are not KEDA metrics in this proposal. The v1 scaling/observation inventory is limited to the native gauges, histograms, and counter above; v2 derivations must trace back to those verified sources.
 
-Do not require custom pressure/headroom exporters, a token-backlog metric, EPP-exported signals, or a desired-replica signal. The scaling controller will necessarily calculate replica recommendations from native inputs; that does not make its internal calculation a new externally supplied metric.
+Do not require an undefined pressure/headroom exporter, a token-backlog metric, EPP-exported load, or an unexplained desired-replica signal. Native cumulative token counters cannot reconstruct queued prompt-token work. A replica recommendation calculated internally by the scaler is an action, not evidence that vLLM exports a desired-replica metric. Defined transformations of existing native signals, such as the v2 rules above, are allowed.
 
 Connector-specific transfer instrumentation is not part of the initial inventory. Adding it would require a separately verified vLLM version and connector configuration; do not make an optional connector metric a prerequisite for basic P/D autoscaling.
 
@@ -306,9 +324,11 @@ This is the recommended first implementation, not an already available MRI featu
 
 This first step reuses existing scaler mechanisms without introducing a typed autoscaling CRD surface or requiring any custom metric exporter.
 
-### v2: Optional Native KV-Utilization Safety Guard
+### v2: Derived Signals from Native Inputs and Optional KV Safety Guard
 
-Use only `vllm:kv_cache_usage_perc` for the optional KV signal, after runtime verification and workload experiments. Prefer a clearly specified scale-down guard to treating occupancy alone as demand for new replicas.
+Implement the recording rules defined above, with source-to-output tests for reset handling, histogram quantiles, role isolation, complete coverage, and missing data. Begin with observation/alerts; keep v1 scaling operational without a dependency on the new rules. Any promotion to an automated scaling input requires the explicit collection adapter and validated policy, not just a new metric name in annotations.
+
+Use `vllm:kv_cache_usage_perc`, or its verified maximum/minimum-free-fraction derivations, for the optional KV signal. Prefer a clearly specified scale-down guard to treating occupancy alone as demand for new replicas.
 
 An example policy to evaluate is:
 
@@ -324,9 +344,9 @@ An example policy to evaluate is:
 - Validate bursts, steady state, cold starts, long generations, partial scrape failures, and scale-down with in-flight requests.
 - Tune thresholds, minimum replicas, stabilization, and cooldown against the native queue/running gauges and latency histograms.
 - Test runtime upgrades for metric-name/type changes, new engine topology, and changed KV-utilization semantics.
-- Revisit typed `roles[].autoscaling` or a policy resource only if schema/tooling needs justify migration; keep the native-metric constraint and a single authoritative policy source.
+- Revisit typed `roles[].autoscaling` or a policy resource only if schema/tooling needs justify migration; keep native-source traceability for every direct or derived signal and a single authoritative policy source.
 
-No later phase in this plan depends on a custom exporter or an externally generated desired-replica metric.
+Later phases may publish the defined vLLM-derived metrics, but must not depend on an input that vLLM cannot actually provide. Custom desired-replica signals remain outside this plan.
 
 ## Recommendation for KAITO Product UX
 
@@ -336,13 +356,13 @@ The preferred initial UX is:
 - KAITO projects independent prefill/decode policies onto generated child InferenceSets;
 - the scaler integration manages role-specific ScaledObjects;
 - MRI reports policy/scaler state without requiring users to inspect generated children for every failure;
-- routing stays llm-d-aware and scaling stays role-aware, using only verified native vLLM metric inputs.
+- routing stays llm-d-aware and scaling stays role-aware, using verified native vLLM inputs directly in v1 and explicit, tested derivations in later phases.
 
 Users should not need to discover generated child names, patch their annotations, or hand-wire multiple ScaledObjects for the managed path. Existing manual scaling remains possible through the explicit externally managed mode.
 
 ## Practical Recommendation
 
-> Prefer a versioned, role-aware annotation on `MultiRoleInference`, adapt it to existing InferenceSet scaler annotations, and reuse `keda-kaito-scaler`. Scale prefill on native `vllm:num_requests_waiting` and decode on native `vllm:num_requests_running`; observe native latency histograms and `vllm:kv_cache_usage_perc`, and add a KV safety guard only after explicit implementation and runtime verification. Keep typed fields as an alternative and raw KV events in routing. Do not require custom metrics.
+> Prefer a versioned, role-aware annotation on `MultiRoleInference`, adapt it to existing InferenceSet scaler annotations, and reuse `keda-kaito-scaler`. Scale prefill on native `vllm:num_requests_waiting` and decode on native `vllm:num_requests_running`; observe native latency histograms and `vllm:kv_cache_usage_perc`, and add a KV safety guard only after explicit implementation and runtime verification. Keep typed fields as an alternative and raw KV events in routing. Add the documented vLLM-derived recording rules in the next phase; do not invent unavailable source metrics.
 
 ## References
 
