@@ -5,7 +5,7 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 ## Design
 
-- Retains the original narrative and English presentation language; now **43 slides**, with two ecosystem/integration slides after original slide 8 and five implementation-focused autoscaling slides after slide 25.
+- Retains the original narrative and English presentation language; now **38 slides**, with two ecosystem/integration slides after original slide 8 and a concise four-slide autoscaling section.
 - New slide 9 compares Dynamo, llm-d, AIBrix, KServe, Ray Serve/KubeRay and vLLM Production Stack, with a separate LWS DisaggregatedSet callout. New slide 10 explains why llm-d fits KAITO’s integration goals.
 - All diagrams, tables, labels, and arrows are **native PowerPoint objects**. There are no embedded raster/SVG diagrams and no flattened slide images.
 - Blue = platform/routing; teal = prefill/KV data; purple = decode; amber = constraints or recommendations.
@@ -16,20 +16,21 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 ## P/D autoscaling presentation
 
-Slides **26–30** expand the autoscaling section using the [role-aware autoscaling design](../kaito-llm-d/kaito-role-aware-autoscaling-for-pd.md):
+Slides **22–25** condense autoscaling into four ideas based on the [role-aware autoscaling design](../kaito-llm-d/kaito-role-aware-autoscaling-for-pd.md):
 
-1. Independent role-specific control loops connecting load to serving capacity.
-2. Native vLLM waiting/running gauges, illustrative thresholds and bounds.
-3. Prefill/decode policy comparison without configuration syntax.
-4. Single-writer ownership, valid metric data, and safe scale-down/handoff.
-5. Derived KV, latency and throughput signals and their decision-support limits.
+1. Native vLLM waiting/running gauges and illustrative scaling decisions.
+2. Two independent control loops for one logical P/D service.
+3. Single-writer ownership, valid metric data, and safe scale-down/handoff.
+4. Derived KV, latency and throughput signals and their decision-support limits.
+
+Repeated architecture, API and policy-table slides have been removed; essential details remain in speaker notes.
 
 The slides focus on external concepts rather than rollout phases or KAITO-specific policy encoding. All content remains editable, with source-backed speaker notes preserving implementation and metric-availability caveats. The underlying design document retains its implementation plan; the talk does not present that plan as a released capability. Example thresholds are not production recommendations.
 
 ## Accuracy boundaries
 
-- Slides 31–34 are an **evaluation plan**, not benchmark results. The source does not contain measured data. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
-- Slide 23 documents the existing KEDA → InferenceSet integration. Slides 25–30 explain control and policy **design patterns**, not a new available MRI API schema. Derived recording rules require aggregation and collection; they are not native vLLM metric outputs.
+- Slides 26–29 are an **evaluation plan**, not benchmark results. The source does not contain measured data. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
+- Slide 23 uses the existing KEDA → InferenceSet integration to illustrate two role-specific loops. Slides 22–25 explain control and policy **design patterns**, not a new available MRI API schema. Derived recording rules require aggregation and collection; they are not native vLLM metric outputs.
 - Slides 9–10 acknowledge existing declarative APIs, including DynamoGraphDeployment, StormService/RoleSet, LLMInferenceService and DisaggregatedSet. “Best fit” is scoped to extending KAITO, not a claim of universal platform superiority or measured performance. Official references and current alpha/runtime/gateway limitations are included in speaker notes.
 - Request/control messages and KV-tensor payloads are separate. The KV payload moves from prefill to decode even when the transport operation is a decode-initiated read.
 - Diagram arrows illustrate logical paths, not exact timings, port values, or strict Kubernetes owner references unless identified as such.
@@ -52,7 +53,7 @@ The generator resolves paths relative to itself and replaces only the PPTX. It d
 
 The redesign was exported with LibreOffice 25.8 and checked for:
 
-- 43 slides and 43 non-empty speaker-note pages;
+- 38 slides and 38 non-empty speaker-note pages;
 - valid OOXML ZIP/XML and no embedded media;
 - slide geometry and text-box overlap;
 - rendered text presence and text bounds on every slide;
