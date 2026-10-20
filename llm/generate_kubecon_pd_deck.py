@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Build the KubeCon NA 2026 deck using editable PowerPoint primitives.
 
-Requires python-pptx==1.0.2. No images, external assets, or measured benchmark
-claims. The companion Markdown is the narrative source; see speaker notes.
+Requires python-pptx==1.0.2. Uses editable shapes plus one attributed public
+benchmark figure. External results are not KAITO measurements; see speaker notes.
 Run from any directory: python llm/generate_kubecon_pd_deck.py
 """
 from pathlib import Path
+import json
+import math
+import statistics
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
@@ -20,6 +23,12 @@ PD_DOC = 'https://kaito-project.github.io/kaito/docs/prefill-decode-disaggregati
 KEDA_DOC = 'https://kaito-project.github.io/kaito/docs/keda-autoscaler-inference'
 AUTOSCALING_DOC = 'https://github.com/andyzhangx/demo/blob/26c3e14a340d4b0aae5c820b43087d71b85d1554/llm/kaito-llm-d/kaito-role-aware-autoscaling-for-pd.md'
 VLLM_METRICS = 'https://docs.vllm.ai/en/stable/usage/metrics/'
+BENCH_URL = 'https://vllm.ai/blog/2026-04-07-moriio-kv-connector'
+BENCH_SHA = 'c4fa4eee56ed2c097a4e078c33955253db123018'
+BENCH_RAW = f'https://github.com/vllm-project/vllm-project.github.io/blob/{BENCH_SHA}/assets/figures/2026-04-07-moriio-kv-connector/plotly-figure3.js'
+BENCH = json.loads((ROOT / 'kubecon-pd-assets/benchmarks/moriio-source-data.json').read_text())
+BENCH_PASSES = {key: sum(t <= 1.0 and i <= .05 for t, i in zip(BENCH[key+'_ttft'], BENCH[key+'_itl'])) for key in ('normal', 'write')}
+assert BENCH_PASSES == {'normal': 29, 'write': 73}
 W, H = 13.333333, 7.5
 C = dict(bg='F6F8FC', ink='172941', muted='586A80', line='D9E2EE', white='FFFFFF',
          blue='2563EB', teal='087F8C', purple='7354B8', amber='AE641A', red='B5464A',
@@ -126,7 +135,7 @@ def slide(title, section, sub='', takeaway=None, dark=False):
         text(s, .68, 6.49, 11.97, .31, takeaway, 15, 'ink', True)
     arrow(s, .5, 7.12, 12.83, 7.12, 'muted' if dark else 'line', head=False, width=.7)
     text(s, .5, 7.19, 11.5, .2, 'KUBECON + CLOUDNATIVECON NORTH AMERICA 2026  /  KAITO + llm-d', 8, 'pale' if dark else 'muted')
-    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 48', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
+    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 51', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
     return s
 
 
@@ -690,7 +699,7 @@ note(s, 'The left panel is a literal excerpt under MRI metadata.annotations; the
 # 24 — comparison protocol
 s = slide('Benchmark the operating point—not only the peak', '05 / Evaluation plan',
           'Compare aggregated and P/D deployments under the same constraints.',
-          'No measured results are supplied in the source material.')
+          'Local KAITO evaluation plan; external reference results follow.')
 node(s,.55,2.37,3.3,1.31,'Workload replay','Same model, traffic, and SLO','blue',21)
 node(s,5.05,2.37,3.35,1.31,'Aggregated','Baseline configuration','blue',21)
 node(s,9.45,2.37,3.33,1.31,'Disaggregated','Prefill + decode configuration','teal',21)
@@ -704,7 +713,7 @@ note(s, 'This slide is an evaluation protocol, not a result. Match GPU budget or
 
 # 25 — no fake chart
 s = slide('TTFT: measure the tail under prompt pressure', '05 / Benchmark scorecard',
-          'Measurement plan only. No performance numbers are available in the source.')
+          'Local measurement plan. External benchmark results are separate—not KAITO data.')
 pill(s,.55,2.18,2.9,'AWAITING MEASURED RESULTS','amber','amber_bg')
 table(s,.55,2.87,[3.52,4.35,4.36],[
  ['TTFT METRIC','AGGREGATED','P/D'],
@@ -718,7 +727,7 @@ note(s, 'Replaces the original [X]% / [Y]% placeholders. There is no numeric cla
 
 # 26
 s = slide('Throughput: count useful work inside the SLO', '05 / Benchmark scorecard',
-          'Measurement plan only. Report useful throughput and its cost together.')
+          'Local measurement plan. Report useful throughput and its cost together.')
 pill(s,.55,2.18,2.9,'AWAITING MEASURED RESULTS','amber','amber_bg')
 table(s,.55,2.87,[3.52,4.35,4.36],[
  ['MEASURE','AGGREGATED','P/D'],
@@ -740,6 +749,71 @@ table(s,.55,2.48,[3.35,4.44,4.44],[
 rect(s,.55,5.5,12.23,.88,'amber_bg',radius=True)
 text(s,.8,5.71,11.72,.47,'Concurrency, GPU budget, and transfer fabric can change the result in every cell.',17,'amber',True)
 note(s, 'A decision aid, not experimental data. Prompt and output lengths interact with concurrency, model size, parallelism, and hardware. Validate both latency and cost. Even the strongest candidate cell is not a guaranteed P/D win.')
+
+# Public benchmark additions — 37–39; external results, not KAITO tests
+bench_context = 'External vLLM / MORI-IO study • Qwen3-235B-A22B-FP8 • one 8× MI300X node • 2K input / 1K output'
+bench_notes = ('External benchmark by AMD and Embedded LLM, published on the vLLM blog on 2026-04-07; not a KAITO or llm-d measurement and not a reproduction performed for this deck. Hardware: one node, 8 AMD MI300X GPUs. Model: Qwen/Qwen3-235B-A22B-FP8. Compare standard two independent TP4 instances with MORI-IO write-mode 1P+1D, TP4 per role; all eight GPUs used in either case. Synthetic random workload, fixed 2000-token input and 1000-token output, 100 requests at 8 offered requests/s for the per-request data. Concurrent prefill/decode phases, NOT a heterogeneous prompt-length or asymmetric-traffic sweep. Source software is a vLLM source build (no exact vLLM commit stated), ROCm 7.0.3, MORI 0.1.0; gpu_memory_utilization=0.9, max_model_len=4096, max_num_seqs=256, enable_expert_parallel=True.\n'
+               'Provenance: the pinned Figure 3 JavaScript DATA arrays contain 100 paired TTFT/ITL values per configuration, in seconds. Joint pass criterion is TTFT <=1 second and the published per-request ITL value <=0.05 seconds. This reproduces the JavaScript predicate. It is NOT a p99-per-token ITL test and ITL aggregation inside each request is not documented by the exported arrays. Figure 3 arrays produce 29 standard TP4 passes and 73 write-mode passes. The post’s static Table 3 instead says 28 and 70; use the pinned arrays consistently and do not silently combine those snapshots. Figure 4 is reproduced as published; rates other than 8 are not digitized.\n'
+               'No sustained tokens/s, completed requests/s, GPU busy utilization, energy, dollar cost, or fewer-GPU result is measured by this deck. The small 100-request trace has no error bars or repeated-run uncertainty. Results are evidence of a tradeoff in this setup, not a universal P/D win. All raw values and derivations are documented in kubecon-pd-assets/benchmarks/README.md.\n')
+s = slide('Evaluation results: TTFT is a trade-off', '05 / Public benchmark — TTFT',
+          bench_context,
+          'No TTFT win in this setup: measure first-token latency separately from streaming quality.')
+text(s,.65,2.16,6.7,.31,'TTFT (ms) • lower is better • 8 offered req/s',14,'blue',True)
+# Native, editable grouped bars. Median and nearest-rank p95 from published arrays.
+base_y, top_y, chart_x0, chart_x1 = 5.65, 2.78, 1.15, 7.15
+for val in (0,500,1000,1500):
+    y=base_y-(base_y-top_y)*val/1500
+    arrow(s,chart_x0,y,chart_x1,y,'line',1,False)
+    text(s,.56,y-.12,.49,.24,str(val),10,'muted',align=PP_ALIGN.RIGHT)
+for center,percentile in ((2.68,'p50'),(5.65,'p95')):
+    for dx,key,ac in ((-.79,'normal','blue'),(.12,'write','teal')):
+        values=BENCH[key+'_ttft']
+        value=1000*(statistics.median(values) if percentile=='p50' else sorted(values)[math.ceil(.95*len(values))-1])
+        height=(base_y-top_y)*value/1500
+        rect(s,center+dx,base_y-height,.66,height,ac)
+        text(s,center+dx-.13,base_y-height-.3,.92,.27,str(round(value)),13,ac,True,PP_ALIGN.CENTER)
+    text(s,center-.72,5.76,1.57,.27,percentile,13,'ink',True,PP_ALIGN.CENTER)
+rect(s,1.05,2.58,.15,.12,'blue');text(s,1.28,2.49,2.3,.25,'Colocated: 2× TP4',11,'ink')
+rect(s,4.04,2.58,.15,.12,'teal');text(s,4.27,2.49,2.8,.25,'P/D: write, TP4 + TP4',11,'ink')
+text(s,7.78,2.62,4.93,.7,'First token is slower here.',23,'amber',True)
+text(s,7.78,3.56,4.85,1.08,'Long prompts + concurrency can\nmake decode isolation valuable.\nThat does not imply lower TTFT.',17,'ink')
+text(s,7.78,5.09,4.85,.84,'No prompt-length sweep was published.\nDo not infer which prompts gain most.',15,'muted')
+text(s,.65,6.09,11.9,.18,'Source: vLLM blog (Apr 7, 2026), Figure 3 data. Median / nearest-rank p95 computed from 100 requests; see notes.',9,'muted')
+note(s, bench_notes+'One chart, one interpretation: this comparison trades a higher TTFT for more stable decoding, rather than proving a TTFT improvement. Values: standard median 227.9635 ms, p95 490.613 ms; write-mode median 645.135 ms, p95 1325.584 ms. Median is the mean of the middle two ordered observations; p95 is nearest-rank (95th of 100). Rounded to integer milliseconds on the slide. No SLO line is implied by the 1000 ms grid tick. The source recommends investigating P/D for high concurrency and long prompts because prefill interference is stronger, but has no prompt-length sweep supporting a quantified TTFT gain by workload. Do not narrate a fabricated long-prompt TTFT win.', [BENCH_URL,BENCH_RAW])
+
+s = slide('Evaluation results: useful throughput under load', '05 / Public benchmark — SLO attainment',
+          bench_context,
+          'Two phases, one pool: removing decode interference improves SLO attainment—not every latency metric.')
+s.shapes.add_picture(str(ROOT/'kubecon-pd-assets/benchmarks/moriio-slo-attainment.png'),Inches(.55),Inches(2.13),width=Inches(6.66))
+# Outline a narrow region around 8 req/s without modifying the original chart pixels.
+highlight = rect(s,5.57,2.35,.61,2.81,'white','amber',True)
+highlight.fill.background()
+text(s,7.68,2.38,4.96,.43,'FOCUS: 8 OFFERED REQ/S',14,'amber',True)
+text(s,7.68,3.04,4.96,.68,'29% → 73%',32,'teal',True)
+text(s,7.68,3.91,4.96,.96,'Joint SLO passes at this load\nColocated 2× TP4 → P/D write\nTTFT ≤1 s AND ITL ≤50 ms',16,'ink')
+text(s,7.68,5.18,4.96,.89,'Concurrent P/D phases; fixed 2K/1K.\nNot a heterogeneous traffic benchmark\nor an absolute tokens/s result.',14,'muted')
+text(s,.65,6.09,11.9,.18,'Source: vLLM blog Figure 4, reproduced with attribution; highlighted region at 8 req/s. Callout uses pinned Figure 3 arrays.',9,'muted')
+note(s, bench_notes+'Keep narration high signal. Original Figure 4 shows request SLO attainment versus offered request rate, not measured token throughput. The source calls the joint-SLO benefit higher goodput; this slide retains the original y-axis instead of relabeling it as throughput. The orange outline focuses attention on about 8 req/s. The 29% and 73% callout comes from the exact Figure 3 arrays for standard TP4 and MORI-IO write, not visual digitization. Other configurations are retained as source context; do not narrate every curve. At this load the colocated configuration’s per-request ITL values account for failed joint SLOs; the P/D write configuration’s TTFT values account for its failures. This supports phase-interference interpretation, not an unqualified peak-throughput claim. Prompt/output lengths are fixed, so mixed-length traffic remains a validation gap. The source caption overstates improvement across all rates: at the lowest rate standard TP4 also reaches 100%, so this slide only highlights the loaded regime.', [BENCH_URL,BENCH_RAW])
+
+s = slide('Evaluation results: more SLO passes per GPU', '05 / Public benchmark — efficiency proxy',
+          bench_context,
+          'More useful work on the same eight GPUs—not measured GPU utilization or proof that fewer GPUs suffice.')
+text(s,.66,2.25,6.51,.38,'NORMALIZED SLO PASSES / GPU',14,'blue',True)
+ratio=BENCH_PASSES['write']/BENCH_PASSES['normal']
+for y,name,value,ac in ((3.16,'Colocated',1.0,'blue'),(4.37,'P/D write',ratio,'teal')):
+    text(s,.66,y-.02,1.75,.37,name,16,'ink',True)
+    rect(s,2.54,y,4.02*value/ratio,.49,ac)
+    text(s,2.54+4.02*value/ratio+.13,y-.01,.91,.47,f'{value:.2f}×',18,ac,True)
+text(s,.66,5.4,6.51,.56,'Same 100-request workload and 8-GPU budget.\nA comparison-specific efficiency proxy, not sustained capacity.',13,'muted')
+table(s,7.79,2.37,[2.17,1.2,1.08],[
+ ['Measure','2× TP4','P/D'],
+ ['Total GPUs','8','8'],
+ ['Joint SLO passes','29 / 100','73 / 100'],
+ ['SLO passes / GPU','3.625','9.125'],
+ ],row_h=.82)
+text(s,7.79,5.72,4.72,.37,'No GPU savings or utilization claim.',12,'amber')
+text(s,.65,6.09,11.9,.18,'Source: pinned vLLM Figure 3 arrays. Derived proxy = (SLO passes / 8 GPUs), normalized to colocated; not req/s/GPU.',9,'muted')
+note(s, bench_notes+'Reinforce why separate pools: isolate prefill and decode, then judge useful service delivered at a fixed resource budget. The source configuration uses all 8 GPUs in both cases: standard 2×TP4 versus prefill TP4 + decode TP4. Derivation: 29/8=3.625 and 73/8=9.125 SLO passes per GPU in each 100-request trace; normalized ratio = (73/8)/(29/8) = 73/29 = 2.517241379, displayed 2.52×. This is a sample-specific SLO-pass efficiency proxy, NOT a time-normalized throughput-per-GPU metric, GPU busy percentage, independent capacity study, cost/energy result, or justification for dividing the GPU budget by 2.52. Do not claim fewer GPUs. There is no asymmetric traffic experiment or dynamic P/D autoscaling in this source; that business case still needs a controlled local benchmark. The same trace supports the preceding slide, so these are three interpretations of one study, not three independent confirmations.', [BENCH_URL,BENCH_RAW])
 
 # 28
 s = slide('Production lesson #1: KV transfer is a dependency', '06 / Production lessons',
@@ -891,6 +965,6 @@ for y,label,url in [(5.87,'KAITO: prefill/decode disaggregation',PD_DOC),(6.32,'
     sh.text_frame.paragraphs[0].runs[0].hyperlink.address=url
 note(s, 'Use workload, fabric, and operational constraints to guide questions. Both links are clickable in PowerPoint. Full URLs are retained here for export formats that do not preserve hyperlinks.',[PD_DOC,KEDA_DOC])
 
-assert len(prs.slides) == 48
+assert len(prs.slides) == 51
 prs.save(OUT)
-print(f'Saved {OUT} ({len(prs.slides)} slides; native editable shapes, no embedded images)')
+print(f'Saved {OUT} ({len(prs.slides)} slides; editable shapes plus one attributed public figure)')

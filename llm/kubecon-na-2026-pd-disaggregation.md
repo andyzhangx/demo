@@ -741,6 +741,8 @@ Also relevant: **LWS DisaggregatedSet** declaratively orchestrates roles as chil
 - Highlight prompt-length-sensitive gain rather than narrating every series.
 - Resist the urge to explain every line.
 
+**Public evidence used in the PPTX (actual slide 37):** the [vLLM MORI-IO study](https://vllm.ai/blog/2026-04-07-moriio-kv-connector) supplies exact per-request TTFT arrays. These show a TTFT penalty, not a gain, with P/D at fixed 2K/1K and 8 req/s; no prompt-length sweep was published. The slide preserves this trade-off.
+
 ### Slide 32 — Evaluation results: throughput
 - compare throughput under mixed load
 
@@ -751,6 +753,8 @@ Also relevant: **LWS DisaggregatedSet** declaratively orchestrates roles as chil
 - Tie the result back to earlier “two workloads, one pool” framing.
 - Mixed-load behavior matters more here than peak synthetic throughput.
 
+**Public evidence used in the PPTX (actual slide 38):** the same report provides a SLO-attainment-versus-offered-rate curve. The slide highlights 8 req/s without relabeling attainment as measured tokens/s. This is concurrent P/D activity at fixed lengths, not a heterogeneous mixed-traffic result.
+
 ### Slide 33 — Evaluation results: utilization / efficiency
 - show GPU utilization or capacity efficiency under asymmetric traffic
 
@@ -760,6 +764,8 @@ Also relevant: **LWS DisaggregatedSet** declaratively orchestrates roles as chil
 - Reinforce the “why separate pools” message.
 - Tie this to capacity efficiency and, if the data supports it, fewer total GPUs needed.
 - This is the business/operations payoff slide.
+
+**Public evidence used in the PPTX (actual slide 39):** an explicitly labeled SLO-pass/GPU efficiency proxy derived from the same fixed-eight-GPU run. No GPU-utilization, asymmetric-traffic or GPU-count reduction claim is made. See [source provenance and calculations](kubecon-pd-assets/benchmarks/README.md).
 
 ### Slide 34 — When to use P/D, and when not to
 
