@@ -940,27 +940,53 @@ Actual slides **7–9** expand why P/D can help: execution interference (DistSer
 
 ### Prefill and decode foundations in the PPTX
 
-Actual slides **3–4** explain a standard cached decoder-only Transformer request before discussing why to split its phases.
+Actual slides **3–4** explain a standard cached decoder-only Transformer before discussing disaggregation. All diagrams, table cells, arrows and labels remain native editable PowerPoint objects.
 
-**Prompt:** “On a rainy afternoon, the little robot decided to”
+**Exact prompt:** `What does Kubernetes do?`
 
-**Illustrative completion:** “ build a small boat and sail across the pond.”
+**Exact illustrative output:** `Kubernetes helps teams deploy and scale applications.`
 
-1. **Prefill:** tokenize first, process all uncached prompt positions with a causal mask, build per-layer attention keys and values, and select y1 = “ build” from the final prompt position's logits. The cache contains prompt state, not yet K/V for the selected y1.
-2. **Decode:** consume the selected token with past KV, append its K/V, select the next token, and repeat. Six visible steps generate meaningful words, not just punctuation:
+#### Real tokenizer, illustrative sentence
 
-   | Step | Consumed input | Append to per-layer KV | Newly selected output |
+These are **real token IDs and pieces** from the raw **Qwen/Qwen2.5-7B-Instruct** tokenizer, using Hugging Face `tokenizers==0.22.1`. The completion is authored for teaching: **no model inference was run**. It is not a captured Qwen response or a claim about the KAITO demo model.
+
+- Repository revision: `a09a35458c702b33eeacc393d103063234e8bc28`.
+- Artifact: [`tokenizer.json`](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct/resolve/a09a35458c702b33eeacc393d103063234e8bc28/tokenizer.json).
+- SHA-256: `c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539`.
+- Raw text, no chat template, `add_special_tokens=False`, no hidden special tokens and no added leading whitespace.
+- Prompt and output are **independently encoded**. The teaching sequence is prompt IDs followed by output IDs; retokenizing concatenated text need not preserve a generation boundary.
+- `·` displays one literal ASCII space **inside a token**, not an extra token. The manifest contains the raw tokenizer notation (`Ġ`) and exact decoded pieces.
+
+| Prompt piece | What | ·does | ·Kubernetes | ·do | ? |
+| --- | --- | --- | --- | --- | --- |
+| Token ID | 3838 | 1558 | 66374 | 653 | 30 |
+
+| Output position | y1 | y2 | y3 | y4 | y5 | y6 | y7 | y8 | y9 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Piece | K | ubernetes | ·helps | ·teams | ·deploy | ·and | ·scale | ·applications | . |
+| ID | 42 | 29827 | 8609 | 7263 | 10517 | 323 | 5452 | 8357 | 13 |
+
+Output **Kubernetes splits into `K` + `ubernetes`**; the prompt's `·Kubernetes` is one token. Tokens are neither fixed-size letters nor necessarily whole words. Whitespace/context matters.
+
+#### Phase and cache semantics
+
+1. **Prefill:** process the 5 uncached prompt positions with a causal mask, build per-layer attention keys and values, then use final-position logits to select y1 = `K` [42] along this illustrative path. Immediately after selection, the cache contains prompt KV, **not** K/V for y1.
+2. **Decode:** consume a selected token with past KV, append K/V for that consumed token, and select the next:
+
+   | Step | Consume | Append to per-layer KV | Select next |
    | --- | --- | --- | --- |
-   | 1 | y1 = “ build” | K/V for y1 | y2 = “ a” |
-   | 2 | y2 = “ a” | K/V for y2 | y3 = “ small” |
-   | 3 | y3 = “ small” | K/V for y3 | y4 = “ boat” |
-   | 4 | y4 = “ boat” | K/V for y4 | y5 = “ and” |
-   | 5 | y5 = “ and” | K/V for y5 | y6 = “ sail” |
-   | 6 | y6 = “ sail” | K/V for y6 | y7 = “ across” |
+   | 1 | y1 = K [42] | K/V for y1 | y2 = ubernetes [29827] |
+   | 2 | y2 = ubernetes [29827] | K/V for y2 | y3 = ·helps [8609] |
+   | 3 | y3 = ·helps [8609] | K/V for y3 | y4 = ·teams [7263] |
+   | 4 | y4 = ·teams [7263] | K/V for y4 | y5 = ·deploy [10517] |
+   | 5 | y5 = ·deploy [10517] | K/V for y5 | y6 = ·and [323] |
+   | 6 | y6 = ·and [323] | K/V for y6 | y7 = ·scale [5452] |
 
-   After step 6, output KV covers y1–y6; y7 has been selected but not cached. Omitted continuation: consume across → select the; consume the → select pond; consume pond → select period; consume period → select EOS (normally hidden). EOS need not be consumed into KV once generation stops.
-3. **Client timing:** the first six meaningful output arrivals illustrate request → first token (**TTFT**) and five successive **ITL** gaps. Later arrivals are omitted; no durations or relative timing ratios are asserted. Client queueing, transport and buffering affect these metrics.
+   After row 6, output KV covers y1–y6; y7 is selected but not consumed/cached. The omitted steps consume y7 → select y8 = `·applications` [8357]; consume y8 → select y9 = `.` [13]. No stop token is part of the encoded output. If generation continued, consuming the period could select EOS; no EOS ID or model decision is asserted. EOS normally is hidden and need not be consumed into KV when stopping; output limits and stop strings are alternatives.
+3. **Client timing:** the first six actual **token** arrivals (not six words) illustrate request → first token (**TTFT**) and five successive **ITL** gaps. Later arrivals are omitted; the timeline is schematic, not to scale. Queueing, transport, detokenization and buffering affect observed timing. Real stream chunks can group multiple tokens.
 
-These are **conceptual word-sized tokens**, not actual tokenization or captured model output; no real prompt-token count is asserted. KV reuse avoids recomputing old K/V, but full-context attention still reads the cached history. Speaker notes qualify chunked prefill, prefix caching, static/sliding-window caches, and ordinary autoregressive decode versus speculative multi-token acceptance. These phase definitions do not assign first-token delivery to a particular worker.
+KV reuse avoids recomputing old K/V, but full-context attention still reads cached history. Notes qualify chunked prefill, prefix caching, static/sliding-window caches, ordinary autoregressive versus speculative decoding, and worker boundaries. These phase definitions do not assign first-token delivery to a particular worker.
 
-Reference: [Hugging Face Transformers — How caching works](https://huggingface.co/docs/transformers/en/cache_explanation), live checked 2026-10-21. The documentation's generation loop selects from final-position logits, then passes only the newly selected token into the next forward pass.
+Reference: [Hugging Face Transformers — How caching works](https://huggingface.co/docs/transformers/en/cache_explanation).
+
+Reproduce the tokenization using [`reproduce.py`](kubecon-pd-assets/tokenization/reproduce.py); exact IDs, pieces, provenance and cache mapping are in [`manifest.json`](kubecon-pd-assets/tokenization/manifest.json).

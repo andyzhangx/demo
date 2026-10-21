@@ -1,0 +1,313 @@
+{
+  "tokenizer": {
+    "repository": "Qwen/Qwen2.5-7B-Instruct",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "asset": "tokenizer.json",
+    "source_url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct/resolve/a09a35458c702b33eeacc393d103063234e8bc28/tokenizer.json",
+    "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+    "library": "tokenizers",
+    "version": "0.22.1"
+  },
+  "scope": {
+    "raw_tokenizer": true,
+    "chat_template_applied": false,
+    "add_special_tokens": false,
+    "model_inference_run": false,
+    "prompt_and_output_encoded_independently": true,
+    "leading_whitespace_added": false,
+    "sentence": "Illustrative authored completion, not captured model output.",
+    "boundary": "Continuation uses prompt IDs followed by independently encoded output IDs; concatenated-text retokenization need not preserve this boundary.",
+    "display_legend": "· is one literal ASCII space, not an extra token."
+  },
+  "prompt": {
+    "text": "What does Kubernetes do?",
+    "ids": [
+      3838,
+      1558,
+      66374,
+      653,
+      30
+    ],
+    "raw_tokens": [
+      "What",
+      "Ġdoes",
+      "ĠKubernetes",
+      "Ġdo",
+      "?"
+    ],
+    "decoded_pieces": [
+      "What",
+      " does",
+      " Kubernetes",
+      " do",
+      "?"
+    ],
+    "display_pieces": [
+      "What",
+      "·does",
+      "·Kubernetes",
+      "·do",
+      "?"
+    ]
+  },
+  "output": {
+    "text": "Kubernetes helps teams deploy and scale applications.",
+    "ids": [
+      42,
+      29827,
+      8609,
+      7263,
+      10517,
+      323,
+      5452,
+      8357,
+      13
+    ],
+    "raw_tokens": [
+      "K",
+      "ubernetes",
+      "Ġhelps",
+      "Ġteams",
+      "Ġdeploy",
+      "Ġand",
+      "Ġscale",
+      "Ġapplications",
+      "."
+    ],
+    "decoded_pieces": [
+      "K",
+      "ubernetes",
+      " helps",
+      " teams",
+      " deploy",
+      " and",
+      " scale",
+      " applications",
+      "."
+    ],
+    "display_pieces": [
+      "K",
+      "ubernetes",
+      "·helps",
+      "·teams",
+      "·deploy",
+      "·and",
+      "·scale",
+      "·applications",
+      "."
+    ]
+  },
+  "prefill": {
+    "processed_prompt_positions": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "selected_output_position": 1,
+    "selected_output_id": 42,
+    "cached_output_positions": []
+  },
+  "decode_steps": [
+    {
+      "step": 1,
+      "consumed_position": 1,
+      "consumed_id": 42,
+      "appended_output_kv_positions": [
+        1
+      ],
+      "cached_output_positions_after_step": [
+        1
+      ],
+      "selected_position": 2,
+      "selected_id": 29827
+    },
+    {
+      "step": 2,
+      "consumed_position": 2,
+      "consumed_id": 29827,
+      "appended_output_kv_positions": [
+        2
+      ],
+      "cached_output_positions_after_step": [
+        1,
+        2
+      ],
+      "selected_position": 3,
+      "selected_id": 8609
+    },
+    {
+      "step": 3,
+      "consumed_position": 3,
+      "consumed_id": 8609,
+      "appended_output_kv_positions": [
+        3
+      ],
+      "cached_output_positions_after_step": [
+        1,
+        2,
+        3
+      ],
+      "selected_position": 4,
+      "selected_id": 7263
+    },
+    {
+      "step": 4,
+      "consumed_position": 4,
+      "consumed_id": 7263,
+      "appended_output_kv_positions": [
+        4
+      ],
+      "cached_output_positions_after_step": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "selected_position": 5,
+      "selected_id": 10517
+    },
+    {
+      "step": 5,
+      "consumed_position": 5,
+      "consumed_id": 10517,
+      "appended_output_kv_positions": [
+        5
+      ],
+      "cached_output_positions_after_step": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "selected_position": 6,
+      "selected_id": 323
+    },
+    {
+      "step": 6,
+      "consumed_position": 6,
+      "consumed_id": 323,
+      "appended_output_kv_positions": [
+        6
+      ],
+      "cached_output_positions_after_step": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "selected_position": 7,
+      "selected_id": 5452
+    },
+    {
+      "step": 7,
+      "consumed_position": 7,
+      "consumed_id": 5452,
+      "appended_output_kv_positions": [
+        7
+      ],
+      "cached_output_positions_after_step": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "selected_position": 8,
+      "selected_id": 8357
+    },
+    {
+      "step": 8,
+      "consumed_position": 8,
+      "consumed_id": 8357,
+      "appended_output_kv_positions": [
+        8
+      ],
+      "cached_output_positions_after_step": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "selected_position": 9,
+      "selected_id": 13
+    }
+  ],
+  "concatenated_text_encoding_for_comparison": {
+    "text": "What does Kubernetes do?Kubernetes helps teams deploy and scale applications.",
+    "ids": [
+      3838,
+      1558,
+      66374,
+      653,
+      30,
+      42,
+      29827,
+      8609,
+      7263,
+      10517,
+      323,
+      5452,
+      8357,
+      13
+    ],
+    "raw_tokens": [
+      "What",
+      "Ġdoes",
+      "ĠKubernetes",
+      "Ġdo",
+      "?",
+      "K",
+      "ubernetes",
+      "Ġhelps",
+      "Ġteams",
+      "Ġdeploy",
+      "Ġand",
+      "Ġscale",
+      "Ġapplications",
+      "."
+    ],
+    "decoded_pieces": [
+      "What",
+      " does",
+      " Kubernetes",
+      " do",
+      "?",
+      "K",
+      "ubernetes",
+      " helps",
+      " teams",
+      " deploy",
+      " and",
+      " scale",
+      " applications",
+      "."
+    ],
+    "display_pieces": [
+      "What",
+      "·does",
+      "·Kubernetes",
+      "·do",
+      "?",
+      "K",
+      "ubernetes",
+      "·helps",
+      "·teams",
+      "·deploy",
+      "·and",
+      "·scale",
+      "·applications",
+      "."
+    ]
+  }
+}
