@@ -176,64 +176,61 @@ for i,(title,body,ac) in enumerate([
     if i<3: arrow(s,x+2.96,3.93,x+3.12,3.93,ac,width=1.4)
 note(s, 'Keep this agenda brief. Spend the time on the problem, the orchestration abstraction, and production tradeoffs. Preserve the advanced diagrams for a faster walkthrough or questions if needed.')
 
-# Foundations — real Qwen token IDs/pieces; authored sentence, not model inference.
+# Foundations — schematic word-level tokens; authored sentence, not model inference.
 CACHE_DOC = 'https://huggingface.co/docs/transformers/en/cache_explanation'
-FOUNDATION = json.loads((ROOT / 'kubecon-pd-assets/tokenization/manifest.json').read_text())
-FOUNDATION_PROMPT = FOUNDATION['prompt']['text']
-FOUNDATION_OUTPUT = FOUNDATION['output']['display_pieces']
-FOUNDATION_IDS = FOUNDATION['output']['ids']
-FOUNDATION_STEPS = FOUNDATION['decode_steps'][:6]
-TOKENIZER_URL = FOUNDATION['tokenizer']['source_url']
-FOUNDATION_SCOPE = ('Real tokenization: Qwen/Qwen2.5-7B-Instruct tokenizer.json, revision ' + FOUNDATION['tokenizer']['revision'] + ', SHA-256 ' + FOUNDATION['tokenizer']['sha256'] + ', Hugging Face tokenizers 0.22.1. See kubecon-pd-assets/tokenization/reproduce.py and manifest.json. Raw tokenizer with add_special_tokens=False; no chat template or hidden special tokens. No model inference was run. The completion is an authored illustration, not Qwen output or evidence of a KAITO model deployment. Prompt and output were independently tokenized exactly as written, with no added leading whitespace. The teaching sequence is prompt IDs followed by these output IDs; retokenizing the concatenated text need not preserve a generation boundary. The visible middle-dot symbol marks one ASCII space inside a token, not a separate token. ')
+FOUNDATION_PROMPT = 'What does Kubernetes do?'
+FOUNDATION_PROMPT_TOKENS = ['What', 'does', 'Kubernetes', 'do', '?']
+FOUNDATION_SENTENCE = 'Kubernetes helps teams deploy and scale applications.'
+FOUNDATION_OUTPUT = ['Kubernetes', 'helps', 'teams', 'deploy', 'and', 'scale', 'applications', '.']
+FOUNDATION_SCOPE = ('Illustrative word-level tokens; not a real model tokenizer. For teaching only, assume each complete English word is one token and each punctuation mark is a separate token. Spaces are presentation separators, not extra positions. The prompt has four words plus a question mark (five positions); the output has seven words plus a period (eight positions). This is not BPE and does not describe Qwen or typical production tokenization: real tokenizers can split words into subwords and handle whitespace and punctuation differently. No tokenizer or model inference was run; the completion is authored, not a captured model response or evidence of a KAITO model deployment. ')
 s = slide('Prefill: read the prompt, select the first output token', '01 / Foundations — prefill',
-          'Prompt: “What does Kubernetes do?”   Real token IDs; an illustrative completion.',
-          'Prefill caches the 5 prompt positions, then selects y1 = “K” (42). Its K/V is not cached yet.')
-text(s,.65,2.17,11.9,.28,'RAW TOKENIZER  /  Qwen2.5-7B-Instruct  /  · = SPACE INSIDE A TOKEN',11,'blue',True)
-# These five boxes are actual tokenizer output, not word-based stand-ins.
+          'Prompt: “What does Kubernetes do?”',
+          'Prefill caches the prompt, then selects “Kubernetes”. Its K/V is not cached until it is consumed.')
+text(s,.65,2.17,11.9,.28,'TEACHING EXAMPLE  /  ONE WORD PER TOKEN',12,'blue',True)
+# Complete words stay intact; punctuation occupies its own schematic position.
 xs = [.65, 3.06, 5.47, 7.88, 10.29]
-for i,(x,piece,tid) in enumerate(zip(xs, FOUNDATION['prompt']['display_pieces'], FOUNDATION['prompt']['ids'])):
-    rect(s,x,2.61,2.38,.88,'blue_bg',radius=True)
-    text(s,x+.08,2.73,2.22,.36,piece,20,'blue',True,PP_ALIGN.CENTER)
-    text(s,x+.08,3.13,2.22,.23,f'ID {tid}',12,'muted',align=PP_ALIGN.CENTER)
-text(s,.65,3.64,12.02,.28,'Tokens are not fixed-size letters or words: output “Kubernetes” splits into “K” + “ubernetes”.',16,'ink')
-node(s,.65,4.17,3.0,1.22,'5 prompt positions','The real IDs shown above','blue',20)
+for x,piece in zip(xs, FOUNDATION_PROMPT_TOKENS):
+    rect(s,x,2.61,2.38,.70,'blue_bg',radius=True)
+    text(s,x+.08,2.75,2.22,.42,piece,22,'blue',True,PP_ALIGN.CENTER)
+text(s,.65,3.54,12.02,.32,'Process the prompt positions together, with attention only to earlier or current positions.',17,'ink')
+node(s,.65,4.17,3.0,1.22,'5 prompt positions','4 words + punctuation','blue',20)
 node(s,4.15,4.17,4.16,1.22,'Causal prefill','No attention to future positions','teal',20)
-node(s,9.0,4.17,3.67,1.22,'Select y1 = “K” (42)','Final prompt-position logits','purple',20)
+node(s,9.0,4.17,3.67,1.22,'Select “Kubernetes”','Final prompt-position logits','purple',20)
 arrow(s,3.65,4.77,4.15,4.77,'teal'); arrow(s,8.31,4.77,9.0,4.77,'purple')
 arrow(s,6.23,5.39,6.23,5.58,'teal')
 rect(s,.65,5.60,12.02,.43,'teal_bg',radius=True)
 text(s,.85,5.68,11.62,.29,'Prompt KV = per-layer attention keys + values for the 5 processed prompt positions.',16,'teal')
-text(s,.65,6.12,12.02,.22,'Raw text; no chat template/special tokens. Output tokenized separately. Authored sentence; no inference run.',10.5,'muted')
-note(s, FOUNDATION_SCOPE + 'Exact prompt: What does Kubernetes do? Prompt IDs: ' + str(FOUNDATION['prompt']['ids']) + '. Exact output: Kubernetes helps teams deploy and scale applications. Output IDs: ' + str(FOUNDATION_IDS) + '. In the prompt, the leading-space Kubernetes piece is a single token; without a leading space, output Kubernetes splits into K and ubernetes. This is genuine context-sensitive tokenization, not an assertion that tokens always correspond to words or letters. Scope: a standard decoder-only autoregressive Transformer with KV caching and no speculative decoding. Tokenization precedes model execution. Prefill processes all uncached prompt positions; operations across positions can be batched within a layer while a causal mask prevents attention to future positions. Layers still follow model dependencies. Every attention layer builds K/V for the positions it processes. KV tensors are model state, not prompt text, weights or cached answers. Final prompt-position logits select y1, illustrated as ID 42 (K). This authored selection is a hypothetical model path, not a measured probability. Immediately after selection, only prompt KV is cached. The next forward pass consumes y1 and appends its K/V. Chunked prefill splits uncached positions into scheduled chunks; prefix caching can reuse cached prompt positions. Prefill is not necessarily one physical kernel or uninterrupted scheduler iteration. Phase semantics do not assign first-token selection or delivery to a particular worker or specify the KAITO/llm-d transfer protocol. Client TTFT also includes queueing, tokenization, orchestration, transfer and delivery.', [CACHE_DOC,TOKENIZER_URL,'https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview'])
+text(s,.65,6.12,12.02,.22,'Illustrative word-level tokens; not a real model tokenizer.',11,'muted')
+note(s, FOUNDATION_SCOPE + 'Exact prompt: What does Kubernetes do? Exact output: Kubernetes helps teams deploy and scale applications. Scope: a standard decoder-only autoregressive Transformer with KV caching and no speculative decoding. Tokenization precedes model execution. Prefill processes all uncached prompt positions; operations across positions can be batched within a layer while a causal mask prevents attention to future positions. Layers still follow model dependencies. Every attention layer builds K/V for the positions it processes. KV tensors are model state, not prompt text, weights or cached answers. Final prompt-position logits select y1, illustrated as the complete word Kubernetes. This authored selection is a hypothetical model path, not a measured probability. Immediately after selection, only prompt KV is cached. The next forward pass consumes y1 and appends its K/V. Chunked prefill splits uncached positions into scheduled chunks; prefix caching can reuse cached prompt positions. Prefill is not necessarily one physical kernel or uninterrupted scheduler iteration. Phase semantics do not assign first-token selection or delivery to a particular worker or specify the KAITO/llm-d transfer protocol. Client TTFT also includes queueing, tokenization, orchestration, transfer and delivery.', [CACHE_DOC,'https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview'])
 
 s = slide('Decode: consume one token, select the next, repeat', '01 / Foundations — decode',
           'Illustrative output: “Kubernetes helps teams deploy and scale applications.”',
           'Append KV for the consumed token—not the newly selected token. Read past KV; do not recompute it.')
-text(s,.65,2.10,12.02,.22,'REAL QWEN TOKEN PIECES + IDs  /  · = SPACE  /  RAW OUTPUT ENCODED SEPARATELY; NO MODEL RUN',10,'blue',True)
+text(s,.65,2.10,12.02,.24,'Illustrative word-level tokens; not a real model tokenizer.',11,'muted')
 for x,w,label in [(.65,.73,'STEP'),(1.4,3.1,'CONSUME + READ PAST KV'),(4.55,4.02,'APPEND TO PER-LAYER KV'),(8.62,4.05,'SELECT NEXT OUTPUT')]:
     rect(s,x,2.43,w,.34,'dark')
     text(s,x+.08,2.48,w-.16,.24,label,10,'white',True)
-for row,step in enumerate(FOUNDATION_STEPS):
-    i=step['step']; consumed=FOUNDATION_OUTPUT[i-1]; selected=FOUNDATION_OUTPUT[i]
+for row,(consumed,selected) in enumerate(zip(FOUNDATION_OUTPUT[:6],FOUNDATION_OUTPUT[1:7])):
+    i=row+1
     y=2.83+row*.32
     rect(s,.65,y,12.02,.30,'white' if row%2==0 else 'purple_bg')
-    for x,w,value,ac in [(.73,.55,str(i),'muted'),(1.49,2.9,f'y{i}  “{consumed}”  [{FOUNDATION_IDS[i-1]}]','purple'),
-                          (4.64,3.82,f'K/V for y{i} (“{consumed}”)','teal'),
-                          (8.71,3.85,f'y{i+1}  “{selected}”  [{FOUNDATION_IDS[i]}]','purple')]:
-        text(s,x,y+.035,w,.26,value,13.5,ac,True)
-text(s,.65,4.84,12.02,.25,'Next: consume “·scale” → select “·applications” [8357]; consume it → select “.” [13].',13,'muted')
-text(s,.65,5.18,11.9,.24,'CLIENT TOKEN ARRIVALS  /  FIRST 6 SHOWN; LATER TOKENS OMITTED  /  SCHEMATIC',10,'blue',True)
-xs=[.65,4.55,5.9,7.25,8.6,9.95,11.3]
-labels=['Request']+['“'+p+'”' for p in FOUNDATION_OUTPUT[:6]]
-widths=[1.45]+[1.17]*6
+    for x,w,value,ac in [(.73,.55,str(i),'muted'),(1.49,2.9,consumed,'purple'),
+                          (4.64,3.82,f'K/V for “{consumed}”','teal'),
+                          (8.71,3.85,selected,'purple')]:
+        text(s,x,y+.035,w,.26,value,14,ac,True)
+text(s,.65,4.84,12.02,.25,'Repeat until the answer is complete. Each selected token becomes the next input.',14,'muted')
+text(s,.65,5.18,11.9,.24,'CLIENT ARRIVALS  /  FIRST 6 WORDS SHOWN  /  SCHEMATIC, NOT TO SCALE',10,'blue',True)
+xs=[.65,4.05,5.95,7.3,8.65,10.0,11.35]
+labels=['Request']+FOUNDATION_OUTPUT[:6]
+widths=[1.45,1.72]+[1.17]*5
 for idx,(x,label,w) in enumerate(zip(xs,labels,widths)):
     rect(s,x,5.78,w,.39,'blue_bg' if idx==0 else ('teal_bg' if idx==1 else 'purple_bg'),radius=True)
-    text(s,x+.025,5.85,w-.05,.25,label,11.5,'blue' if idx==0 else ('teal' if idx==1 else 'purple'),True,PP_ALIGN.CENTER)
+    text(s,x+.025,5.85,w-.05,.25,label,12,'blue' if idx==0 else ('teal' if idx==1 else 'purple'),True,PP_ALIGN.CENTER)
     if idx:
         prev=xs[idx-1]+widths[idx-1]
         arrow(s,prev,5.975,x,5.975,'teal' if idx==1 else 'purple',width=1.4)
-        text(s,xs[idx-1],5.52,x-xs[idx-1],.22,'TTFT → first token' if idx==1 else f'ITL {idx-1}',11,'teal' if idx==1 else 'purple',True,PP_ALIGN.CENTER)
-note(s, FOUNDATION_SCOPE + 'Continue slide 3. Exact output: Kubernetes helps teams deploy and scale applications. Output IDs: ' + str(FOUNDATION_IDS) + '. Output decoded pieces: ' + repr(FOUNDATION['output']['decoded_pieces']) + '. Prefill selected y1 = K (42) with only prompt KV cached. Decode step i consumes yi with cache for prompt plus y1 through y(i-1), appends per-layer K/V for yi, then selects y(i+1) from the new position logits. Six rows: K -> ubernetes; ubernetes -> space+helps; space+helps -> space+teams; space+teams -> space+deploy; space+deploy -> space+and; space+and -> space+scale. After row 6, cached output positions are y1-y6 and y7 (space+scale, 5452) is selected but not consumed or cached. Omitted steps consume y7 -> select y8 (space+applications, 8357), then consume y8 -> select y9 (period, 13). The example ends there, without asserting a stop-token ID. If generation continues, consuming the period could select an EOS token; EOS is normally hidden and need not be consumed into KV on stopping. A token limit or stop string can also stop generation. With full-context attention each new query still reads cached history; caching avoids recomputing old K/V, not all attention work or history reads. Cache memory behavior depends on static allocation, sliding windows and eviction. Ordinary autoregressive decode is sequential within one request; cross-request batching is possible, and speculative decoding may accept multiple tokens per physical iteration. Client timeline shows the first six actual token pieces, not six words: K and ubernetes are separate token arrivals. TTFT is request submission to first received token; each ITL is the gap between successive received tokens. Five gaps are shown, not timing measurements; durations are not to scale. Queueing, orchestration, transport, detokenization and stream buffering may change client-observed arrival grouping and latency. Token-level timing is schematic and assumes these arrivals are individually observable; a real stream chunk may contain multiple tokens. Average time per output token is not each ITL sample or percentile. These phase semantics cover colocated and disaggregated serving and do not mandate a worker boundary; colocated serving needs no inter-worker KV transfer.', [CACHE_DOC,TOKENIZER_URL,VLLM_METRICS])
+        text(s,xs[idx-1],5.52,x-xs[idx-1],.22,'TTFT → first word' if idx==1 else f'ITL {idx-1}',11,'teal' if idx==1 else 'purple',True,PP_ALIGN.CENTER)
+note(s, FOUNDATION_SCOPE + 'Continue slide 3. Exact output: Kubernetes helps teams deploy and scale applications. Prefill selected y1 = Kubernetes with only prompt KV cached. Decode step i consumes yi with cache for prompt plus y1 through y(i-1), appends per-layer K/V for yi, then selects y(i+1) from the new position logits. Six rows: Kubernetes -> helps; helps -> teams; teams -> deploy; deploy -> and; and -> scale; scale -> applications. After row 6, cached output positions are y1-y6 and y7 (applications) is selected but not consumed or cached. The omitted final step consumes y7 (applications) and selects y8 (period). If generation continues, consuming the period could select EOS; EOS is normally hidden and need not be consumed into KV on stopping. No EOS ID or actual model decision is asserted. A token limit or stop string can also stop generation. With full-context attention each new query still reads cached history; caching avoids recomputing old K/V, not all attention work or history reads. Cache memory behavior depends on static allocation, sliding windows and eviction. Ordinary autoregressive decode is sequential within one request; cross-request batching is possible, and speculative decoding may accept multiple tokens per physical iteration. Client timeline shows the first six words under the one-word-per-token teaching assumption; the later word applications and punctuation are omitted. TTFT means time to first token: request submission to first received token, which is a whole word only in this schematic. Each ITL is the gap between successive received tokens. Five gaps are shown, not timing measurements; durations are not to scale. In real systems the first token need not be a complete word. Queueing, orchestration, transport, detokenization and stream buffering may change client-observed arrival grouping and latency. A real stream chunk may contain multiple tokens. Average time per output token is not each ITL sample or percentile. These phase semantics cover colocated and disaggregated serving and do not mandate a worker boundary; colocated serving needs no inter-worker KV transfer.', [CACHE_DOC,VLLM_METRICS])
 
 # 03
 s = slide('One request. Two different GPU workloads.', '01 / The problem',
