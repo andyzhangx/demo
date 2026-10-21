@@ -936,4 +936,13 @@ Possible follow-up artifacts from this outline:
 
 ### Expanded motivation in the PPTX
 
-Actual slides **5–7** expand why P/D can help: execution interference (DistServe Figure 2), different batching/resource curves (Figure 3), and independent capacity decisions. The [NVIDIA Dynamo disaggregated-serving overview](https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview) is cited for common compute-bound prefill / memory-bandwidth-bound decode regimes and independently tuned worker pools. These are workload-dependent bottlenecks, not universal hardware laws. These external illustrations retain the original axes and are not KAITO measurements. See [sources, license and interpretation limits](kubecon-pd-assets/motivation/README.md).
+Actual slides **7–9** expand why P/D can help: execution interference (DistServe Figure 2), different batching/resource curves (Figure 3), and independent capacity decisions. The [NVIDIA Dynamo disaggregated-serving overview](https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview) is cited for common compute-bound prefill / memory-bandwidth-bound decode regimes and independently tuned worker pools. These are workload-dependent bottlenecks, not universal hardware laws. These external illustrations retain the original axes and are not KAITO measurements. See [sources, license and interpretation limits](kubecon-pd-assets/motivation/README.md).
+
+### Prefill and decode foundations in the PPTX
+
+Actual slides **3–4** explain a standard cached decoder-only Transformer request before discussing why to split its phases:
+
+1. **Prefill:** tokenize and process the prompt with causal attention, store per-layer attention keys and values, and select the first output token from final-position logits.
+2. **Decode:** consume the selected token using past KV state, append its KV, select the next token, and repeat until a stop condition. The schematic distinguishes client TTFT from inter-token latency.
+
+The word-level example is illustrative, not actual tokenizer output. Speaker notes explain chunked prefill, prefix caching, KV update indexing and speculative decoding. Reference: [Hugging Face Transformers cache explanation](https://huggingface.co/docs/transformers/cache_explanation).

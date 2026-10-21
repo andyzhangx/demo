@@ -1,4 +1,4 @@
-# Why separate prefill and decode? — slides 5–7
+# Why separate prefill and decode? — slides 7–9
 
 These pages expand the introductory motivation using two original external research figures and one conceptual summary. They are **not KAITO/llm-d measurements**, not a new reproduction, and not a benchmark of current vLLM scheduling.
 
@@ -14,7 +14,7 @@ Yinmin Zhong et al., **DistServe: Disaggregating Prefill and Decoding for Goodpu
 
 The SVG files here are downloaded verbatim from the versioned paper. PNGs are mechanical rasterizations using PyMuPDF at 3× scale, with original axes, legends, annotations and data intact. No values were visually estimated, digitized or redrawn. Added presentation labels sit outside the original figures. See `source-manifest.json` for URLs and SHA-256 hashes.
 
-## Slide 5 — A prefill can interfere with existing decode work
+## Slide 7 — A prefill can interfere with existing decode work
 
 `distserve-fig2-interference.svg` / `.png` reproduce [the Figure 2 SVG](https://arxiv.org/html/2401.09670v2/prefill-decoding-interference.svg).
 
@@ -26,7 +26,7 @@ The SVG files here are downloaded verbatim from the versioned paper. PNGs are me
 - The blue horizontal line and slowdown arrows are original source annotations.
 - Interpretation: a long prefill can delay other requests' token streams. Chunked prefill, continuous batching and scheduling can mitigate this; do not infer the same penalty in every modern colocated setup.
 
-## Slide 6 — Different batching curves justify separate tuning
+## Slide 8 — Different batching curves justify separate tuning
 
 `distserve-fig3-throughput.svg` / `.png` reproduce [the Figure 3 SVG](https://arxiv.org/html/2401.09670v2/prefill_decode_throughput.svg).
 
@@ -37,7 +37,7 @@ The SVG files here are downloaded verbatim from the versioned paper. PNGs are me
 - Compute-dominant prefill and bandwidth-dominant decode are common operating regimes, not universal truths independent of model, batch size, context length and hardware.
 - The paper analyzes A100 behavior in sections 2–3, but the captions do not enumerate every kernel, software version or exact model identifier. No current-AKS numeric capacity threshold is inferred.
 
-## Slide 7 — Independent capacity avoids a forced compromise
+## Slide 9 — Independent capacity avoids a forced compromise
 
 This page is a native, editable conceptual summary, not measured data. The two demand patterns indicate where to investigate first, not a deterministic scaling rule. Longer prompts can also increase decode KV state and KV-transfer cost, so always check both roles and end-to-end SLOs.
 
@@ -47,4 +47,4 @@ Separate execution pools permit different replica, parallelism, batching and res
 
 The user-provided [NVIDIA Dynamo disaggregated-serving overview](https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview) corroborates phase-specific resource bottlenecks, independent worker pools, batching, parallelism and hardware choices. Accessed 2026-10-21; `/dev/` is a moving documentation version. The overview page is text-only, so the two reproduced empirical figures come from the explicitly licensed DistServe paper instead. No NVIDIA performance numbers or imagery are reproduced.
 
-Slide 7 links NVIDIA in its speaker notes and cites it visibly. Compute-bound prefill / bandwidth-bound decode are common regimes, not universal laws. Dynamo's decode-first orchestration, etcd/NATS discovery and NIXL configuration are not presented as KAITO/llm-d implementation behavior.
+Slide 9 links NVIDIA in its speaker notes and cites it visibly. Compute-bound prefill / bandwidth-bound decode are common regimes, not universal laws. Dynamo's decode-first orchestration, etcd/NATS discovery and NIXL configuration are not presented as KAITO/llm-d implementation behavior.

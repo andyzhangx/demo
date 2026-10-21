@@ -135,7 +135,7 @@ def slide(title, section, sub='', takeaway=None, dark=False):
         text(s, .68, 6.49, 11.97, .31, takeaway, 15, 'ink', True)
     arrow(s, .5, 7.12, 12.83, 7.12, 'muted' if dark else 'line', head=False, width=.7)
     text(s, .5, 7.19, 11.5, .2, 'KUBECON + CLOUDNATIVECON NORTH AMERICA 2026  /  KAITO + llm-d', 8, 'pale' if dark else 'muted')
-    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 54', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
+    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 56', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
     return s
 
 
@@ -175,6 +175,44 @@ for i,(title,body,ac) in enumerate([
     card(s,x,2.48,2.96,2.95,title,body,ac,f'0{i+1}',18)
     if i<3: arrow(s,x+2.96,3.93,x+3.12,3.93,ac,width=1.4)
 note(s, 'Keep this agenda brief. Spend the time on the problem, the orchestration abstraction, and production tradeoffs. Preserve the advanced diagrams for a faster walkthrough or questions if needed.')
+
+# Foundations — explain the phases before discussing resource differences
+CACHE_DOC = 'https://huggingface.co/docs/transformers/cache_explanation'
+s = slide('Prefill: process the prompt and prepare the first token', '01 / Foundations — prefill',
+          'Example: “The capital of France is” → “ Paris”. Word-sized blocks are illustrative, not tokenizer output.',
+          'Prefill builds prompt KV state and produces logits used to select the first output token.')
+text(s,.65,2.18,11.9,.3,'INPUT PROMPT  /  MANY POSITIONS IN ONE MODEL PASS',12,'blue',True)
+for i,word in enumerate(['The','capital','of','France','is']):
+    x=.65+i*1.52
+    rect(s,x,2.65,1.32,.5,'blue_bg',radius=True)
+    text(s,x+.06,2.73,1.2,.3,word,17,'blue',True,PP_ALIGN.CENTER)
+arrow(s,8.12,2.91,8.74,2.91,'blue')
+node(s,8.84,2.47,3.83,1.04,'Tokenizer → token IDs','Actual token boundaries vary','blue',17)
+node(s,.65,3.73,3.0,1.35,'Prompt token IDs','All uncached input positions','blue',20)
+node(s,4.15,3.73,4.16,1.35,'Transformer forward pass','Causal attention across the prompt','teal',20)
+node(s,9.0,3.73,3.67,1.35,'First output: “ Paris”','Select y1 from final-position logits','purple',18)
+arrow(s,3.65,4.4,4.15,4.4,'teal'); arrow(s,8.31,4.4,9.0,4.4,'purple')
+arrow(s,6.23,5.08,6.23,5.38,'teal')
+rect(s,.65,5.42,12.02,.62,'teal_bg',radius=True)
+text(s,.85,5.57,11.62,.34,'KV cache = per-layer attention keys + values for processed prompt tokens; reused during decode.',16,'teal')
+text(s,.65,6.13,11.95,.18,'Parallel across prompt positions, with a causal mask—not permission to see future tokens.',10,'muted')
+note(s, 'Scope: a standard decoder-only autoregressive Transformer with KV caching, no speculative decoding, and a simple single-request example. The visible words are conceptual blocks, not a claim about a real tokenizer or model output. The prompt is tokenized before the model executes. Prefill evaluates the uncached input positions; operations across positions can be batched within a layer, while the causal attention mask prevents each position from attending to future positions. Layers still execute according to model dependencies. Each layer stores attention keys and values for processed prompt tokens. These tensors are model state, not raw prompt text, model weights, or a cache of completed answers. The logits at the final prompt position define the next-token distribution; sampling or greedy selection yields the first generated token y1, shown illustratively as Paris. Its KV state is not yet included merely because it was sampled: the following forward pass processes y1 and appends its KV state. Serving engines can place first-token selection or delivery on different workers; this slide explains the computation, not the exact KAITO/llm-d transfer protocol. Chunked prefill may split prompt processing across scheduled chunks; prefix caching can skip reusable prompt positions. Thus one conceptual prefill phase is not necessarily one uninterrupted physical kernel or scheduler iteration. Client TTFT includes queueing, tokenization, prompt processing, selection/delivery and, where applicable, orchestration and transfer; it is not equal to pure GPU prefill latency.', [CACHE_DOC,'https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview'])
+
+s = slide('Decode: reuse KV state and generate the next token', '01 / Foundations — decode',
+          'Continue the same example: first output y1 = “ Paris”; then generate “.” and a stop token.',
+          'Decode does not rerun the whole prompt. Each step reuses past KV and appends the current token’s KV.')
+card(s,.65,2.28,5.63,2.31,'Step 1: process “ Paris”',
+     'Input: y1 + prompt KV cache\nAppend KV for y1; select y2 = “.”','purple','REUSE → COMPUTE → APPEND',17)
+card(s,7.03,2.28,5.63,2.31,'Step 2: process “.”',
+     'Input: y2 + KV for prompt and y1\nAppend KV for y2; select y3 = EOS','purple','REPEAT UNTIL A STOP CONDITION',17)
+arrow(s,6.28,3.49,7.03,3.49,'purple')
+text(s,.65,4.69,11.99,.25,'CLIENT-VISIBLE TIMING  /  SCHEMATIC, NOT TO SCALE',12,'blue',True)
+for x,title,detail,ac in [( .65,'Request sent','Prompt submitted','blue'),(4.48,'“ Paris”','First output token','teal'),(8.31,'“.”','Next visible token','purple')]:
+    node(s,x,5.22,3.35,.94,title,detail,ac,17)
+arrow(s,4.0,5.68,4.48,5.68,'teal'); arrow(s,7.83,5.68,8.31,5.68,'purple')
+text(s,2.18,4.94,3.0,.25,'TTFT: request → first token',11,'teal',True)
+text(s,6.37,4.94,4.28,.25,'ITL: gap between output tokens',11,'purple',True)
+note(s, 'Continue the standard autoregressive decoder-only example from the preceding slide. Prefill selected y1 (Paris) from the final prompt logits. Decode step 1 feeds y1 and past prompt KV into the same model, computes and appends the per-layer K/V for y1, and selects y2 (a period). Step 2 feeds y2 and the updated cache, appends its K/V, and selects y3 (EOS). An EOS token is a model stop signal and normally not displayed as user text; other stopping criteria include output limits and configured stop strings. The example is schematic, not a captured tokenizer/model result. At selection time, the newly selected token has not yet been processed into KV; cache updates correspond to the consumed input token. For full-context attention, later steps attend over the stored KV context, so reuse avoids recomputing old K/V but does not eliminate reading past state or all attention computation. Standard cached context grows as tokens are consumed, though sliding-window policies, eviction, static allocations and architecture differences can bound or alter memory behavior. Standard autoregressive generation has a sequential dependency within one request; engines can batch different requests, and speculative decoding can accept multiple output tokens per iteration. Do not claim every modern engine emits exactly one token per physical GPU iteration. The timeline is not to scale. TTFT is measured from request submission to first received output token and includes client-visible overhead, not just prefill compute. ITL is the gap between successive received output tokens; network streaming and buffering can affect it. Average time per output token is a related aggregate, not the same statistic as each ITL sample or its percentile. No KV-transfer hop is required between phases when they are colocated. Phase semantics apply whether serving is aggregated or disaggregated.', [CACHE_DOC,VLLM_METRICS])
 
 # 03
 s = slide('One request. Two different GPU workloads.', '01 / The problem',
@@ -1000,6 +1038,6 @@ for y,label,url in [(5.87,'KAITO: prefill/decode disaggregation',PD_DOC),(6.32,'
     sh.text_frame.paragraphs[0].runs[0].hyperlink.address=url
 note(s, 'Use workload, fabric, and operational constraints to guide questions. Both links are clickable in PowerPoint. Full URLs are retained here for export formats that do not preserve hyperlinks.',[PD_DOC,KEDA_DOC])
 
-assert len(prs.slides) == 54
+assert len(prs.slides) == 56
 prs.save(OUT)
 print(f'Saved {OUT} ({len(prs.slides)} slides; editable shapes plus three attributed public figures)')
