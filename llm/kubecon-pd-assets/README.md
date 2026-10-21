@@ -83,7 +83,7 @@ The generator resolves paths relative to itself and replaces only the PPTX. It r
 The redesign was exported with LibreOffice 25.8 and checked for:
 
 - 56 slides and 56 non-empty speaker-note pages;
-- all 54 slides from the previous deck preserved exactly except footer pagination;
+- the other 54 slides and their notes preserved byte-for-byte in native XML when updating foundation slides 3–4;
 - exact equivalence between the YAML example, source design, slide policy and generated prefill projection;
 - valid OOXML ZIP/XML and exactly three embedded pictures: the existing public Figure 4 plus two mechanical DistServe SVG renders;
 - exact source-array equivalence and reproducible TTFT percentiles, SLO-pass counts and normalized proxy;
@@ -112,9 +112,11 @@ This is a LibreOffice rendering check, not a Microsoft PowerPoint application te
 
 Actual slides **3–4** introduce the phases before the resource comparison and disaggregation motivation. All new objects are native editable PowerPoint shapes.
 
-- **3 — Prefill:** illustrative prompt → token IDs → causally masked Transformer pass → prompt KV state and first-token selection. Explains that the first generated token is selected from final-prompt-position logits.
-- **4 — Decode:** consume the selected token, reuse past KV, append current-token KV and select the next token; repeat until a stop condition. The same example ends with a period and EOS. A schematic client timeline distinguishes TTFT from ITL.
+- **3 — Prefill:** prompt “On a rainy afternoon, the little robot decided to” → token IDs → causally masked processing of all uncached prompt positions → per-layer prompt KV and selection of y1 = “ build” from final-position logits. Selecting y1 does not cache its K/V.
+- **4 — Decode:** six visible consume → append KV → select rows: build → a → small → boat → and → sail → across. Each row appends K/V for the consumed token, not the selected output. The omitted steps finish “ build a small boat and sail across the pond.”, then select EOS (normally hidden). A client stream shows the first six meaningful word arrivals, TTFT and five ITL gaps; it is not to scale.
+
+These are **conceptual word-sized tokens**, not actual tokenization or captured model output. After row 6, output KV covers build through sail; across is selected but not yet cached. Full-context attention still reads cached history.
 
 Speaker notes qualify conceptual token boundaries, chunked/prefix-cached prefill, KV indexing, client overhead, sliding-window caches, cross-request batching and speculative decoding. These are phase semantics, not a claim about which worker sends the first token.
 
-Reference: [Hugging Face Transformers — How caching works](https://huggingface.co/docs/transformers/cache_explanation). Existing motivation slides now occupy **7–9**.
+Reference: [Hugging Face Transformers — How caching works](https://huggingface.co/docs/transformers/en/cache_explanation). Existing motivation slides now occupy **7–9**.

@@ -940,9 +940,27 @@ Actual slides **7–9** expand why P/D can help: execution interference (DistSer
 
 ### Prefill and decode foundations in the PPTX
 
-Actual slides **3–4** explain a standard cached decoder-only Transformer request before discussing why to split its phases:
+Actual slides **3–4** explain a standard cached decoder-only Transformer request before discussing why to split its phases.
 
-1. **Prefill:** tokenize and process the prompt with causal attention, store per-layer attention keys and values, and select the first output token from final-position logits.
-2. **Decode:** consume the selected token using past KV state, append its KV, select the next token, and repeat until a stop condition. The schematic distinguishes client TTFT from inter-token latency.
+**Prompt:** “On a rainy afternoon, the little robot decided to”
 
-The word-level example is illustrative, not actual tokenizer output. Speaker notes explain chunked prefill, prefix caching, KV update indexing and speculative decoding. Reference: [Hugging Face Transformers cache explanation](https://huggingface.co/docs/transformers/cache_explanation).
+**Illustrative completion:** “ build a small boat and sail across the pond.”
+
+1. **Prefill:** tokenize first, process all uncached prompt positions with a causal mask, build per-layer attention keys and values, and select y1 = “ build” from the final prompt position's logits. The cache contains prompt state, not yet K/V for the selected y1.
+2. **Decode:** consume the selected token with past KV, append its K/V, select the next token, and repeat. Six visible steps generate meaningful words, not just punctuation:
+
+   | Step | Consumed input | Append to per-layer KV | Newly selected output |
+   | --- | --- | --- | --- |
+   | 1 | y1 = “ build” | K/V for y1 | y2 = “ a” |
+   | 2 | y2 = “ a” | K/V for y2 | y3 = “ small” |
+   | 3 | y3 = “ small” | K/V for y3 | y4 = “ boat” |
+   | 4 | y4 = “ boat” | K/V for y4 | y5 = “ and” |
+   | 5 | y5 = “ and” | K/V for y5 | y6 = “ sail” |
+   | 6 | y6 = “ sail” | K/V for y6 | y7 = “ across” |
+
+   After step 6, output KV covers y1–y6; y7 has been selected but not cached. Omitted continuation: consume across → select the; consume the → select pond; consume pond → select period; consume period → select EOS (normally hidden). EOS need not be consumed into KV once generation stops.
+3. **Client timing:** the first six meaningful output arrivals illustrate request → first token (**TTFT**) and five successive **ITL** gaps. Later arrivals are omitted; no durations or relative timing ratios are asserted. Client queueing, transport and buffering affect these metrics.
+
+These are **conceptual word-sized tokens**, not actual tokenization or captured model output; no real prompt-token count is asserted. KV reuse avoids recomputing old K/V, but full-context attention still reads the cached history. Speaker notes qualify chunked prefill, prefix caching, static/sliding-window caches, and ordinary autoregressive decode versus speculative multi-token acceptance. These phase definitions do not assign first-token delivery to a particular worker.
+
+Reference: [Hugging Face Transformers — How caching works](https://huggingface.co/docs/transformers/en/cache_explanation), live checked 2026-10-21. The documentation's generation loop selects from final-position logits, then passes only the newly selected token into the next forward pass.
