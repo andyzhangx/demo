@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build the KubeCon NA 2026 deck using editable PowerPoint primitives.
 
-Requires python-pptx==1.0.2. Uses editable shapes plus one attributed public
-benchmark figure. External results are not KAITO measurements; see speaker notes.
+Requires python-pptx==1.0.2. Uses editable shapes plus three attributed public
+research figures. External results are not KAITO measurements; see speaker notes.
 Run from any directory: python llm/generate_kubecon_pd_deck.py
 """
 from pathlib import Path
@@ -135,7 +135,7 @@ def slide(title, section, sub='', takeaway=None, dark=False):
         text(s, .68, 6.49, 11.97, .31, takeaway, 15, 'ink', True)
     arrow(s, .5, 7.12, 12.83, 7.12, 'muted' if dark else 'line', head=False, width=.7)
     text(s, .5, 7.19, 11.5, .2, 'KUBECON + CLOUDNATIVECON NORTH AMERICA 2026  /  KAITO + llm-d', 8, 'pale' if dark else 'muted')
-    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 51', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
+    text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 54', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
     return s
 
 
@@ -204,6 +204,41 @@ text(s,.82,5.26,6.5,.45,'One deployment • one coupled scaling boundary',17,'mu
 card(s,8.05,2.3,4.72,3.75,'The operational tension',
      'Prompt bursts can disrupt token delivery.\n\nScaling adds both phases, even when only one is saturated.', 'amber',size=19)
 note(s, 'Do not claim every aggregated deployment performs poorly. Continuous batching and chunked prefill can reduce interference. The point is that a shared resource and scaling boundary still constrains independent capacity shaping.')
+
+# Motivation additions — slides 05–07 (external evidence + conceptual consequence)
+DYNAMO_PD = 'https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview'
+DISTSERVE = 'https://arxiv.org/html/2401.09670v2'
+DISTSERVE_NOTES = ('Source: Zhong et al., DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving, arXiv:2401.09670v2, 19 March 2024, CC BY-SA 4.0. These are reproduced external research figures, not KAITO/llm-d measurements, not a reproduction performed for this deck, and not a benchmark of current vLLM scheduling. Captions identify a 13B LLM; sections 2–3 analyze A100 behavior. The individual figure captions do not specify every engine, kernel, model identifier or software version, so do not infer a current-deployment performance guarantee. Figure SVGs are kept verbatim in kubecon-pd-assets/motivation; their PNGs are mechanical rasterizations with axes and data intact. Source and license are visible on the slide and documented with hashes.\n')
+s = slide('One prefill can stall an entire decode batch', '01 / Why split — interference',
+          'External study: 13B LLM batch execution latency—not client TTFT. Panel scales differ.',
+          'A long prompt can delay many token streams—not just the request carrying that prompt.')
+text(s,1.61,2.16,4.79,.28,'SHORTER PREFILL: 128 INPUT TOKENS',13,'blue',True,PP_ALIGN.CENTER)
+text(s,6.78,2.16,4.94,.28,'LONGER PREFILL: 1,024 INPUT TOKENS',13,'amber',True,PP_ALIGN.CENTER)
+s.shapes.add_picture(str(ROOT/'kubecon-pd-assets/motivation/distserve-fig2-interference.png'),Inches(2.02),Inches(2.53),width=Inches(9.3))
+text(s,.65,6.17,11.38,.14,'Source: Zhong et al., DistServe (2024), Fig. 2 • arxiv.org/abs/2401.09670v2 • CC BY-SA 4.0 • external study, not KAITO results',8,'muted')
+note(s, DISTSERVE_NOTES+'Figure 2 compares decode-only batches (orange) with decoding plus one prefill (blue). Left panel: 128 input tokens; right panel: 1024 input tokens. Both axes remain as published. The y-axis is batch execution latency, not client TTFT or end-to-end request latency. The two panels have different y-axis and batch-size scales: compare the within-panel mixed-vs-decode-only gap, not apparent slopes or heights across panels. The blue horizontal line is the source prefill-only execution reference; the source arrows label decode and prefill slowdowns. The longer prefill increases the interference shown in this experiment. One chart, one interpretation: a new prompt can delay existing token streams in a shared execution boundary. Continuous batching, chunked prefill and better scheduling can mitigate the effect; this figure does not prove that every colocated or modern chunked-prefill implementation suffers the same penalty. P/D separates the execution pools, but introduces a KV-transfer boundary that must earn its cost.', [DISTSERVE+'#S2.F2',DISTSERVE+'#S2.SS3'])
+
+s = slide('The two phases prefer different batching', '01 / Why split — resource shape',
+          'External study: phase-only throughput as batch size changes for a 13B LLM.',
+          'Prefill and decode need different tuning—not one shared batch, parallelism and replica policy.')
+text(s,1.61,2.16,4.79,.28,'PREFILL: EARLIER THROUGHPUT PLATEAU',13,'teal',True,PP_ALIGN.CENTER)
+text(s,6.78,2.16,4.94,.28,'DECODE: BATCHING AMORTIZES WORK',13,'purple',True,PP_ALIGN.CENTER)
+s.shapes.add_picture(str(ROOT/'kubecon-pd-assets/motivation/distserve-fig3-throughput.png'),Inches(2.02),Inches(2.53),width=Inches(9.3))
+text(s,.65,6.17,11.38,.14,'Source: Zhong et al., DistServe (2024), Fig. 3 • arxiv.org/abs/2401.09670v2 • CC BY-SA 4.0 • external study, not KAITO results',8,'muted')
+note(s, DISTSERVE_NOTES+'Figure 3 is reproduced as published: prefill-only throughput on the left, decoding-only throughput on the right, with input lengths 128, 256, 512 and 1024. The x-axis is batch size on powers-of-two ticks. Do not compare absolute left-versus-right token throughput as equivalent useful work: prefill processes prompt tokens, whereas decode produces output tokens. Read the shape within each panel. Prefill throughput plateaus earlier; additional batching can add latency once computation is saturated. Decode benefits more from batching in this setup, amortizing weight-memory traffic across requests. This supports separate batching and resource planning, not unlimited decode batching: active KV capacity, latency SLOs, model architecture and compute saturation still bound it. The paper discusses compute-dominant prefill and memory-bandwidth-dominant decode; these are common regimes, not immutable properties of every model, batch size, hardware or context length. No current-AKS numerical threshold or universal GPU-size rule is inferred.', [DISTSERVE+'#S3.F3',DISTSERVE+'#S3.SS1',DISTSERVE+'#S3.SS2'])
+
+s = slide('Independent pools remove a forced compromise', '01 / Why split — capacity control',
+          'The payoff is a separate capacity decision for each phase—not separation for its own sake.',
+          'Split only when phase-specific gains outweigh KV transfer, duplicated weights and operational cost.')
+card(s,.55,2.35,5.96,2.42,'Prompt-heavy demand',
+     'Usually compute-bound; target TTFT.\nTune prefill capacity / parallelism first.','teal','INPUT SIDE',18)
+card(s,6.78,2.35,5.96,2.42,'Generation-heavy demand',
+     'Often bandwidth-bound; target ITL.\nTune decode capacity / batching first.','purple','OUTPUT SIDE',18)
+node(s,.65,4.92,3.85,1.11,'Different latency targets','TTFT versus token delivery','blue',18)
+node(s,4.74,4.92,3.85,1.11,'Different resource needs','Compute, bandwidth, active KV','teal',18)
+node(s,8.83,4.92,3.85,1.11,'Different capacity knobs','Replicas, TP, batching policy','purple',18)
+text(s,.65,6.17,11.8,.14,'Sources: NVIDIA Dynamo disaggregated-serving overview + DistServe §2.3 • Conceptual; bottlenecks depend on workload',8,'muted')
+note(s, 'NVIDIA Dynamo disaggregated-serving overview describes compute-bound prefill and memory-bandwidth-bound decode, with independent pools, batching, hardware and parallelism choices. These are common regimes rather than universal laws: model, context length, batch size and hardware change the limiting resource. Dynamo-specific worker orchestration and NIXL setup are not presented as KAITO architecture. Conceptual synthesis, not measured performance data. DistServe section 2.3 identifies resource and parallelism coupling as distinct from prefill/decode execution interference: a colocated deployment shares devices, resource allocation and a parallelism plan even when the two phases have different bottlenecks and latency constraints. Separate pools permit different hardware, tensor-parallel degrees, batching policies and replica counts, subject to runtime/connector compatibility; they do not imply every choice is supported by current KAITO. The two demand cards are first investigation directions, not a deterministic scaler: longer prompts also increase decode KV state and transfer bytes, so inspect both roles and the end-to-end SLO before changing capacity. Likewise larger decode batches must respect ITL and KV limits. Shared pools can still benefit from chunked prefill, continuous batching and scheduling improvements. P/D becomes worthwhile only when independent capacity tuning or interference isolation creates a measured gain larger than transfer, duplicated model residency and operational overhead. No fixed P:D ratio, GPU savings or current autoscaler implementation is claimed.', [DYNAMO_PD,DISTSERVE+'#S2.SS3',PD_DOC])
 
 # 05
 s = slide('Split the phases. Tune the pools independently.', '01 / The problem',
@@ -965,6 +1000,6 @@ for y,label,url in [(5.87,'KAITO: prefill/decode disaggregation',PD_DOC),(6.32,'
     sh.text_frame.paragraphs[0].runs[0].hyperlink.address=url
 note(s, 'Use workload, fabric, and operational constraints to guide questions. Both links are clickable in PowerPoint. Full URLs are retained here for export formats that do not preserve hyperlinks.',[PD_DOC,KEDA_DOC])
 
-assert len(prs.slides) == 51
+assert len(prs.slides) == 54
 prs.save(OUT)
-print(f'Saved {OUT} ({len(prs.slides)} slides; editable shapes plus one attributed public figure)')
+print(f'Saved {OUT} ({len(prs.slides)} slides; editable shapes plus three attributed public figures)')

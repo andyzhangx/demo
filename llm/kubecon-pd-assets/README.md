@@ -5,9 +5,9 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 ## Design
 
-- Retains the original narrative and English presentation language; now **51 slides**, with the full nine-slide autoscaling section restored, two KAITO annotation implementation/example slides, two P/D adoption decision slides, a concrete integration roadmap, and three attributed public-benchmark interpretations.
+- Retains the original narrative and English presentation language; now **54 slides**, with the full nine-slide autoscaling section restored, two KAITO annotation implementation/example slides, two P/D adoption decision slides, a concrete integration roadmap, three attributed public-benchmark interpretations, and three expanded P/D-motivation slides.
 - New slide 9 compares Dynamo, llm-d, AIBrix, KServe, Ray Serve/KubeRay and vLLM Production Stack, with a separate LWS DisaggregatedSet callout. New slide 10 explains why llm-d fits KAITO’s integration goals.
-- Diagrams, tables, labels, arrows and the TTFT/efficiency bars are **native PowerPoint objects**. Slide 38 contains one attributed original benchmark figure; there are no flattened slide images.
+- Diagrams, tables, labels, arrows and the TTFT/efficiency bars are **native PowerPoint objects**. Slides 5–6 and 41 contain attributed original research figures; there are no flattened slide images.
 - Blue = platform/routing; teal = prefill/KV data; purple = decode; amber = constraints or recommendations.
 - Architecture, resource graph, request sequence, KV-transfer paths, decode-pod layout, scaling loops, workload matrix, and adoption path are rebuilt as diagrams.
 - Speaker notes explain conceptual simplifications, deployment-dependent settings, and implementation references.
@@ -16,12 +16,12 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 ## P/D autoscaling presentation
 
-Slides **22–30** restore the original nine-slide section from commit `b1a2a23`, preserving its content, native shapes and speaker notes (only pagination changes): role saturation, existing KEDA/InferenceSet capability, independent loops, service policy boundary, control architecture, native gauges, policy table, operational safeguards and derived signals.
+Slides **25–33** restore the original nine-slide section from commit `b1a2a23`, preserving its content, native shapes and speaker notes (only pagination changes): role saturation, existing KEDA/InferenceSet capability, independent loops, service policy boundary, control architecture, native gauges, policy table, operational safeguards and derived signals.
 
 Two additional slides connect those concepts to the [role-aware autoscaling design](../kaito-llm-d/kaito-role-aware-autoscaling-for-pd.md):
 
-- **31 — KAITO annotation implementation:** proposed `autoscaling.kaito.sh/roles` → validated MRI adapter → each child `InferenceSet.metadata.annotations` → per-role ScaledObject → KEDA/HPA → child scale API. Shows the exact generated prefill annotations and the required MRI-child opt-in.
-- **32 — Concrete policy example:** prefill waiting-request thresholds 8/1 and range 1–8; decode running-request thresholds 24/4 and range 2–16. `replicas: null` releases MRI replica enforcement. With waiting=12 and running=12, prefill requests scale-up while decode holds; decode can scale independently when running rises above 24. These are hypothetical decisions, not measured scaling results.
+- **34 — KAITO annotation implementation:** proposed `autoscaling.kaito.sh/roles` → validated MRI adapter → each child `InferenceSet.metadata.annotations` → per-role ScaledObject → KEDA/HPA → child scale API. Shows the exact generated prefill annotations and the required MRI-child opt-in.
+- **35 — Concrete policy example:** prefill waiting-request thresholds 8/1 and range 1–8; decode running-request thresholds 24/4 and range 2–16. `replicas: null` releases MRI replica enforcement. With waiting=12 and running=12, prefill requests scale-up while decode holds; decode can scale independently when running rises above 24. These are hypothetical decisions, not measured scaling results.
 
 The [full proposed YAML example](../kaito-llm-d/examples/proposed-pd-autoscaling-annotations.yaml) matches the design and slide excerpt. It is **not a currently deployable MRI autoscaling API**: it requires the MRI policy adapter, explicit scaler support for opted-in MRI children, validation, metric wiring, ownership and safe handoff. Existing annotations on MRI alone do not enable this behavior. `AND` combines metrics within a role, not decisions across prefill and decode.
 
@@ -29,16 +29,16 @@ The autoscaling content remains editable. Source-backed notes preserve implement
 
 ## When to use P/D—and when not to
 
-Slides **44–45** expand [Slide 34 of the companion Markdown](../kubecon-na-2026-pd-disaggregation.md#slide-34--when-to-use-pd-and-when-not-to):
+Slides **47–48** expand [Slide 34 of the companion Markdown](../kubecon-na-2026-pd-disaggregation.md#slide-34--when-to-use-pd-and-when-not-to):
 
-- **44 — Decision matrix:** role bottleneck/scaling divergence versus KV-transfer cost. Different role needs plus cheap transfer is the strongest candidate; similar roles plus expensive transfer favors aggregated serving. Divergent roles with costly transfer should improve topology first; cheap transfer alone does not justify P/D.
-- **45 — Workload/topology scenarios:** keep aggregated serving for simple, similar-role workloads; benchmark P/D for divergent role capacity with a suitable transfer path; improve locality/transport before scaling a transfer-limited design. Single-node trials can simplify the first experiment; cross-node transfer must be measured, not assumed slow.
+- **47 — Decision matrix:** role bottleneck/scaling divergence versus KV-transfer cost. Different role needs plus cheap transfer is the strongest candidate; similar roles plus expensive transfer favors aggregated serving. Divergent roles with costly transfer should improve topology first; cheap transfer alone does not justify P/D.
+- **48 — Workload/topology scenarios:** keep aggregated serving for simple, similar-role workloads; benchmark P/D for divergent role capacity with a suitable transfer path; improve locality/transport before scaling a transfer-limited design. Single-node trials can simplify the first experiment; cross-node transfer must be measured, not assumed slow.
 
 These are qualitative selection guidelines, not benchmark results. Compare client-visible TTFT/ITL, SLO goodput, KV-transfer tails and total cost using the same model, workload and budget.
 
 ## What’s next for KAITO + llm-d
 
-Slide **49** expands [Slide 36 of the companion Markdown](../kubecon-na-2026-pd-disaggregation.md#slide-36--whats-next-for-kaito--llm-d) into three integration directions:
+Slide **52** expands [Slide 36 of the companion Markdown](../kubecon-na-2026-pd-disaggregation.md#slide-36--whats-next-for-kaito--llm-d) into three integration directions:
 
 - **Near term:** KV-event-based prefix-cache routing; tiered cache across HBM, CPU RAM and optional filesystem tiers.
 - **Next topology:** E/P/D (Encode / Prefill / Decode).
@@ -48,18 +48,18 @@ Speculative decoding is omitted from future work because it is already implement
 
 ## Public benchmark results
 
-Slides **37–39** interpret one external [vLLM / AMD MORI-IO study](https://vllm.ai/blog/2026-04-07-moriio-kv-connector), using Qwen3-235B-A22B-FP8 on eight MI300X GPUs with fixed 2K-input/1K-output requests:
+Slides **40–42** interpret one external [vLLM / AMD MORI-IO study](https://vllm.ai/blog/2026-04-07-moriio-kv-connector), using Qwen3-235B-A22B-FP8 on eight MI300X GPUs with fixed 2K-input/1K-output requests:
 
-- **37 — TTFT:** native bars computed from published Figure 3 observations. P/D is slower in this setup; the slide does not fabricate a prompt-length-dependent TTFT gain.
-- **38 — Useful throughput under load:** original Figure 4 SLO-attainment curve, with the 8 req/s region highlighted. This is SLO attainment, not an absolute token-throughput axis; fixed-length concurrent phases are not a heterogeneous mixed-traffic benchmark.
-- **39 — Efficiency proxy:** native bars for normalized SLO passes/GPU, at the same eight-GPU budget. No GPU busy-utilization, asymmetric-traffic or fewer-GPU result is claimed.
+- **40 — TTFT:** native bars computed from published Figure 3 observations. P/D is slower in this setup; the slide does not fabricate a prompt-length-dependent TTFT gain.
+- **41 — Useful throughput under load:** original Figure 4 SLO-attainment curve, with the 8 req/s region highlighted. This is SLO attainment, not an absolute token-throughput axis; fixed-length concurrent phases are not a heterogeneous mixed-traffic benchmark.
+- **42 — Efficiency proxy:** native bars for normalized SLO passes/GPU, at the same eight-GPU budget. No GPU busy-utilization, asymmetric-traffic or fewer-GPU result is claimed.
 
 [Benchmark sources, literal data, formulas, scope and source-data discrepancy](benchmarks/README.md) are included. Derived values consistently use the pinned Figure 3 arrays (29/100 vs 73/100 passes), not the differing static Table 3 values (28/100 vs 70/100). These are three views of one external study, **not KAITO measurements** or three independent experiments.
 
 ## Accuracy boundaries
 
-- Slides 33–36 are a **local KAITO evaluation plan**, not benchmark results. Slides 37–39 separately identify external public results; no local KAITO measurements are available. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
-- Slide 23 covers existing KEDA → InferenceSet scaling; slide 24 illustrates independent role loops. Slides 22–30 explain control and policy **design patterns**. Slides 31–32 explicitly label MRI annotation integration as **proposed**, not a released API. Derived recording rules require aggregation and collection; they are not native vLLM metric outputs.
+- Slides 36–39 are a **local KAITO evaluation plan**, not benchmark results. Slides 40–42 separately identify external public results; no local KAITO measurements are available. There are no invented performance percentages, synthetic result curves, or `[X]` / `[Y]` result placeholders.
+- Slide 26 covers existing KEDA → InferenceSet scaling; slide 27 illustrates independent role loops. Slides 25–33 explain control and policy **design patterns**. Slides 34–35 explicitly label MRI annotation integration as **proposed**, not a released API. Derived recording rules require aggregation and collection; they are not native vLLM metric outputs.
 - Slides 9–10 acknowledge existing declarative APIs, including DynamoGraphDeployment, StormService/RoleSet, LLMInferenceService and DisaggregatedSet. “Best fit” is scoped to extending KAITO, not a claim of universal platform superiority or measured performance. Official references and current alpha/runtime/gateway limitations are included in speaker notes.
 - Request/control messages and KV-tensor payloads are separate. The KV payload moves from prefill to decode even when the transport operation is a decode-initiated read.
 - Diagram arrows illustrate logical paths, not exact timings, port values, or strict Kubernetes owner references unless identified as such.
@@ -76,20 +76,20 @@ pip install python-pptx==1.0.2
 python llm/generate_kubecon_pd_deck.py
 ```
 
-The generator resolves paths relative to itself and replaces only the PPTX. It reads the checked-in benchmark JSON and source figure under `benchmarks/`, requires no network access, and does not modify the Markdown. Manual PowerPoint edits are possible, but rerunning the generator overwrites them; update the generator to keep reproducible changes.
+The generator resolves paths relative to itself and replaces only the PPTX. It reads the checked-in benchmark JSON and source figure under `benchmarks/` and `motivation/`, requires no network access, and does not modify the Markdown. Manual PowerPoint edits are possible, but rerunning the generator overwrites them; update the generator to keep reproducible changes.
 
 ## Validation
 
 The redesign was exported with LibreOffice 25.8 and checked for:
 
-- 51 slides and 51 non-empty speaker-note pages;
-- all 48 slides from the previous deck preserved except pagination and three local-evaluation wording clarifications (slides 33–35);
+- 54 slides and 54 non-empty speaker-note pages;
+- all 51 slides from the previous deck preserved exactly except footer pagination;
 - exact equivalence between the YAML example, source design, slide policy and generated prefill projection;
-- valid OOXML ZIP/XML and exactly one embedded picture, byte-identical to the pinned public Figure 4;
+- valid OOXML ZIP/XML and exactly three embedded pictures: the existing public Figure 4 plus two mechanical DistServe SVG renders;
 - exact source-array equivalence and reproducible TTFT percentiles, SLO-pass counts and normalized proxy;
 - visual review of the three new pages;
 - slide geometry and text-box overlap;
-- rendered text presence and text bounds on every slide (no new layout issues; two pre-existing slide-20 text-box margin overruns remain unchanged);
+- rendered text presence and text bounds on every slide (no new layout issues; two pre-existing slide-23 text-box margin overruns remain unchanged);
 - explicit distinction between existing capabilities, proposals, and unmeasured results.
 
 This is a LibreOffice rendering check, not a Microsoft PowerPoint application test. Preview the final deck on the presentation machine before the talk, particularly if font substitution occurs.

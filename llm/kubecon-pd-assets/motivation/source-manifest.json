@@ -1,0 +1,20 @@
+[
+  {
+    "source_url": "https://arxiv.org/html/2401.09670v2/prefill-decoding-interference.svg",
+    "svg": "distserve-fig2-interference.svg",
+    "svg_sha256": "ec61ae67210f47c1308f0d70c614c527fa26ebb7082898627a10eb822c4789a0",
+    "png": "distserve-fig2-interference.png",
+    "png_sha256": "8110d6436cf4ab80f9c2ac4ef2e2cadc564bd18c9747743ae50626e4efcce9a5",
+    "transformation": "PyMuPDF SVG rasterization at 3x; no cropping or data edits",
+    "license": "CC-BY-SA-4.0"
+  },
+  {
+    "source_url": "https://arxiv.org/html/2401.09670v2/prefill_decode_throughput.svg",
+    "svg": "distserve-fig3-throughput.svg",
+    "svg_sha256": "52554f41ac4981f72f91d22345b04fa428043718da2a82c527bf6180d3e4f2c0",
+    "png": "distserve-fig3-throughput.png",
+    "png_sha256": "cb6f350938f40830db83c576315afa2584849bc3447db1a6b627621c8ef9c327",
+    "transformation": "PyMuPDF SVG rasterization at 3x; no cropping or data edits",
+    "license": "CC-BY-SA-4.0"
+  }
+]

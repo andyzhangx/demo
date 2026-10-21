@@ -1,4 +1,4 @@
-# Public P/D benchmark used on slides 37–39
+# Public P/D benchmark used on slides 40–42
 
 These are **external vLLM / AMD MORI-IO results**, not KAITO/llm-d measurements, not a local reproduction and not a claim that every workload benefits.
 
@@ -8,9 +8,9 @@ These are **external vLLM / AMD MORI-IO results**, not KAITO/llm-d measurements,
 - [Published article](https://vllm.ai/blog/2026-04-07-moriio-kv-connector).
 - Source repository snapshot: `c4fa4eee56ed2c097a4e078c33955253db123018`.
 - [Figure 3 JavaScript, including published per-request arrays](https://github.com/vllm-project/vllm-project.github.io/blob/c4fa4eee56ed2c097a4e078c33955253db123018/assets/figures/2026-04-07-moriio-kv-connector/plotly-figure3.js).
-- [Figure 4 image](https://github.com/vllm-project/vllm-project.github.io/blob/c4fa4eee56ed2c097a4e078c33955253db123018/assets/figures/2026-04-07-moriio-kv-connector/SLO-attainment.png), reproduced unmodified with attribution; the slide adds an editable outline around the 8 req/s region. The source figure is the only raster object in this otherwise editable deck. No ownership or blanket relicensing of the source figure is asserted.
+- [Figure 4 image](https://github.com/vllm-project/vllm-project.github.io/blob/c4fa4eee56ed2c097a4e078c33955253db123018/assets/figures/2026-04-07-moriio-kv-connector/SLO-attainment.png), reproduced unmodified with attribution; the slide adds an editable outline around the 8 req/s region. The source figure is one of three attributed research images in this otherwise editable deck. No ownership or blanket relicensing of the source figure is asserted.
 
-`moriio-source-data.json` is the literal `DATA` object extracted from the Figure 3 JavaScript. It includes 100 paired TTFT and per-request ITL observations for each of four configurations, in seconds. Slides 37 and 39 calculate their native, editable bars directly from these arrays. No plotted values were visually estimated or digitized.
+`moriio-source-data.json` is the literal `DATA` object extracted from the Figure 3 JavaScript. It includes 100 paired TTFT and per-request ITL observations for each of four configurations, in seconds. Slides 40 and 42 calculate their native, editable bars directly from these arrays. No plotted values were visually estimated or digitized.
 
 ## Experimental boundary
 
