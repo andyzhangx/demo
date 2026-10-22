@@ -7,7 +7,7 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 
 - Retains the original narrative and English presentation language; now **56 slides**, with the full nine-slide autoscaling section restored, two KAITO annotation implementation/example slides, two P/D adoption decision slides, a concrete integration roadmap, three attributed public-benchmark interpretations, three expanded P/D-motivation slides, and two introductory prefill/decode explainers.
 - Slide 14 compares Dynamo, llm-d, AIBrix, KServe, Ray Serve/KubeRay and vLLM Production Stack, with a separate LWS DisaggregatedSet callout. Slide 15 explains why llm-d fits KAITO’s integration goals.
-- Diagrams, tables, labels, arrows and the TTFT/efficiency bars are **native PowerPoint objects**. Slides 7–8 and 43 contain attributed original research figures; there are no flattened slide images.
+- Diagrams, tables, labels, arrows and the TTFT/efficiency bars are **native PowerPoint objects**. Slide 43 contains an attributed original research figure; slides 7–8 use original editable conceptual diagrams; there are no flattened slide images.
 - Blue = platform/routing; teal = prefill/KV data; purple = decode; amber = constraints or recommendations.
 - Architecture, resource graph, request sequence, KV-transfer paths, decode-pod layout, scaling loops, workload matrix, and adoption path are rebuilt as diagrams.
 - Speaker notes explain conceptual simplifications, deployment-dependent settings, and implementation references.
@@ -20,7 +20,7 @@ Actual slide **5 — One request. Two different performance targets.** maps pref
 
 Both phases affect total response latency, capacity and SLO goodput (requests/s meeting latency targets). Notes distinguish aggregate throughput from per-request speed, vLLM streamed-event ITL from request-level TPOT, frontend/engine from client timing, and latency to the last token from request-close time. They cover queueing, input processing, delivery, P/D transfer, cross-phase interference and KV pressure without inventing performance numbers. See [vLLM metric definitions](https://docs.vllm.ai/en/latest/design/metrics/) and the [companion metric mapping](../kubecon-na-2026-pd-disaggregation.md#slide-3--one-request-two-phases).
 
-This update changes only slide 5 and its notes against baseline `4a6e810856b22ade7025e9d303c99868a531a64b`; the other 55 native slide XML/notes and all three embedded research images are unchanged. All 56 pages were rendered again, the full overview regenerated, and slide 5 visually checked. No new layout issues; the two pre-existing slide-25 text-box margin overruns remain unchanged.
+The preceding phase-metrics update changed only slide 5 and its notes against baseline `4a6e810856b22ade7025e9d303c99868a531a64b`; the other 55 native slide XML/notes and all three embedded research images are unchanged. All 56 pages were rendered again, the full overview regenerated, and slide 5 visually checked. No new layout issues; the two pre-existing slide-25 text-box margin overruns remain unchanged.
 
 ## P/D autoscaling presentation
 
@@ -93,7 +93,7 @@ The redesign was exported with LibreOffice 25.8 and checked for:
 - 56 slides and 56 non-empty speaker-note pages;
 - the other 54 slides and their notes preserved byte-for-byte in native XML when updating foundation slides 3–4;
 - exact equivalence between the YAML example, source design, slide policy and generated prefill projection;
-- valid OOXML ZIP/XML and exactly three embedded pictures: the existing public Figure 4 plus two mechanical DistServe SVG renders;
+- valid OOXML ZIP/XML and exactly one embedded picture: the existing MORI-IO SLO curve; slides 7–8 are native editable diagrams;
 - exact source-array equivalence and reproducible TTFT percentiles, SLO-pass counts and normalized proxy;
 - visual review of the two foundation pages and updated phase-metrics slide 5;
 - slide geometry and text-box overlap;
@@ -115,6 +115,18 @@ This is a LibreOffice rendering check, not a Microsoft PowerPoint application te
 - [Ray Serve P/D](https://docs.ray.io/en/latest/serve/llm/user-guides/prefill-decode.html)
 - [vLLM Production Stack P/D](https://docs.vllm.ai/projects/production-stack/en/latest/use_cases/disaggregated-prefill.html)
 - [LWS DisaggregatedSet](https://lws.sigs.k8s.io/docs/concepts/disaggregatedset/)
+
+## Readable P/D motivation and sentence-case labels
+
+Actual slides **7–8** replace the dense 2024 DistServe plots with two **original, native editable schematics**, grounded in NVIDIA’s **18 March 2025 Dynamo introduction** and current disaggregated-serving documentation (accessed 22 October 2026). They are not newer measured charts or reproduced vendor images:
+
+- **7 — Execution interference:** A is already decoding; B arrives with a new prompt. A simple shared-GPU schedule shows B prefill delaying A. Separate-GPU lanes illustrate concurrent work. Block widths/gaps are not timings; chunked prefill can mitigate shared-worker interference, and separation does not eliminate all jitter. B’s KV handoff remains required.
+- **8 — Different batching units:** prefill processes many prompt-token positions from one or more requests; ordinary decode consumes one newest input position per active sequence with prior KV, then selects the next output token. Original editable token tiles clarify within-prompt versus cross-request parallel work. More concurrency can raise ITL; counts are illustrative, not optimal settings.
+- **9 — Independent capacity:** existing conceptual capacity-control discussion remains unchanged except sentence case.
+
+The old DistServe assets remain an attributed **historical archive only**, not embedded. [Provenance and interpretation boundaries](motivation/README.md) distinguish the new diagrams from archived data. The one retained external image is the MORI-IO SLO curve on slide 43; benchmark values and underlying source data are unchanged.
+
+Throughout all 56 slides, prose headings, section labels, diagram labels and the footer now use sentence case rather than forced all caps. Proper names and technical acronyms (KAITO, GPU, KV, TTFT, ITL, SLO, KEDA, MRI, etc.), API identifiers, metric names and code excerpts retain their meaningful capitalization. Outside slides 7–8, changes are case-only: native shape geometry, order, notes and content are preserved. All slides were regenerated and rendered; the contact sheet was refreshed. Two existing slide-25 text-box margin overruns are unchanged.
 
 ## Prefill and decode foundations
 

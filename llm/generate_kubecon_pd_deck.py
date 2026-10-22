@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build the KubeCon NA 2026 deck using editable PowerPoint primitives.
 
-Requires python-pptx==1.0.2. Uses editable shapes plus three attributed public
-research figures. External results are not KAITO measurements; see speaker notes.
+Requires python-pptx==1.0.2. Uses editable shapes plus one attributed public
+research figure. External results are not KAITO measurements; see speaker notes.
 Run from any directory: python llm/generate_kubecon_pd_deck.py
 """
 from pathlib import Path
@@ -38,7 +38,7 @@ FONT = 'Arial'
 MONO = 'Courier New'
 prs = Presentation()
 prs.slide_width, prs.slide_height = Inches(W), Inches(H)
-prs.core_properties.title = 'Prefill Here, Decode There'
+prs.core_properties.title = 'Prefill here, decode there'
 prs.core_properties.subject = 'Kubernetes-native LLM inference disaggregation with KAITO and llm-d'
 prs.core_properties.author = 'Andy Zhang'
 prs.core_properties.keywords = 'KubeCon, KAITO, llm-d, prefill, decode, editable diagrams'
@@ -127,14 +127,14 @@ def note(s, value, refs=()):
 def slide(title, section, sub='', takeaway=None, dark=False):
     s = prs.slides.add_slide(prs.slide_layouts[6])
     s.background.fill.solid(); s.background.fill.fore_color.rgb = color('dark' if dark else 'bg')
-    text(s, .5, .27, 11.8, .28, section.upper(), 10, 'pale' if dark else 'blue', True)
+    text(s, .5, .27, 11.8, .28, section, 10, 'pale' if dark else 'blue', True)
     text(s, .5, .83, 12.3, .62, title, 29, 'white' if dark else 'ink', True)
     if sub: text(s, .52, 1.53, 12.2, .53, sub, 17, 'pale' if dark else 'muted')
     if takeaway:
         rect(s, .5, 6.38, 12.33, .53, 'blue_bg')
         text(s, .68, 6.49, 11.97, .31, takeaway, 15, 'ink', True)
     arrow(s, .5, 7.12, 12.83, 7.12, 'muted' if dark else 'line', head=False, width=.7)
-    text(s, .5, 7.19, 11.5, .2, 'KUBECON + CLOUDNATIVECON NORTH AMERICA 2026  /  KAITO + llm-d', 8, 'pale' if dark else 'muted')
+    text(s, .5, 7.19, 11.5, .2, 'KubeCon + CloudNativeCon North America 2026  /  KAITO + llm-d', 8, 'pale' if dark else 'muted')
     text(s, 12.13, 7.17, .7, .24, f'{len(prs.slides):02d} / 56', 9, 'pale' if dark else 'muted', align=PP_ALIGN.RIGHT)
     return s
 
@@ -153,9 +153,9 @@ def table(s, x, y, widths, rows, row_h=.65, header=True):
 
 
 # 01 — opening visual
-s = slide('Prefill Here, Decode There', 'Cloud Native AI + Inference Day / 20-minute talk', dark=True)
+s = slide('Prefill here, decode there', 'Cloud Native AI + Inference Day / 20-minute talk', dark=True)
 text(s, .52, 1.7, 10.9, 1.0, 'Kubernetes-native LLM inference disaggregation\nwith KAITO and llm-d', 25, 'white')
-pill(s, .55, 3.15, 2.6, 'ONE DECLARATIVE SERVICE', 'blue', 'blue_bg')
+pill(s, .55, 3.15, 2.6, 'One declarative service', 'blue', 'blue_bg')
 node(s, .55, 3.9, 3.25, 1.55, 'KAITO', 'Declare the serving topology', 'blue', 25)
 node(s, 5.0, 3.9, 3.0, 1.55, 'Prefill', 'Prompt → KV cache', 'teal', 25)
 node(s, 9.25, 3.9, 3.5, 1.55, 'Decode', 'KV cache → token stream', 'purple', 25)
@@ -186,7 +186,7 @@ FOUNDATION_SCOPE = ('Illustrative word-level tokens; not a real model tokenizer.
 s = slide('Prefill: read the prompt, select the first output token', '01 / Foundations — prefill',
           'Prompt: “What does Kubernetes do?”',
           'Prefill caches the prompt, then selects “Kubernetes”. Its K/V is not cached until it is consumed.')
-text(s,.65,2.17,11.9,.28,'TEACHING EXAMPLE  /  ONE WORD PER TOKEN',12,'blue',True)
+text(s,.65,2.17,11.9,.28,'Teaching example  /  One word per token',12,'blue',True)
 # Complete words stay intact; punctuation occupies its own schematic position.
 xs = [.65, 3.06, 5.47, 7.88, 10.29]
 for x,piece in zip(xs, FOUNDATION_PROMPT_TOKENS):
@@ -207,7 +207,7 @@ s = slide('Decode: consume one token, select the next, repeat', '01 / Foundation
           'Illustrative output: “Kubernetes helps teams deploy and scale applications.”',
           'Append KV for the consumed token—not the newly selected token. Read past KV; do not recompute it.')
 text(s,.65,2.10,12.02,.24,'Illustrative word-level tokens; not a real model tokenizer.',11,'muted')
-for x,w,label in [(.65,.73,'STEP'),(1.4,3.1,'CONSUME + READ PAST KV'),(4.55,4.02,'APPEND TO PER-LAYER KV'),(8.62,4.05,'SELECT NEXT OUTPUT')]:
+for x,w,label in [(.65,.73,'Step'),(1.4,3.1,'Consume + read past KV'),(4.55,4.02,'Append to per-layer KV'),(8.62,4.05,'Select next output')]:
     rect(s,x,2.43,w,.34,'dark')
     text(s,x+.08,2.48,w-.16,.24,label,10,'white',True)
 for row,(consumed,selected) in enumerate(zip(FOUNDATION_OUTPUT[:6],FOUNDATION_OUTPUT[1:7])):
@@ -219,7 +219,7 @@ for row,(consumed,selected) in enumerate(zip(FOUNDATION_OUTPUT[:6],FOUNDATION_OU
                           (8.71,3.85,selected,'purple')]:
         text(s,x,y+.035,w,.26,value,14,ac,True)
 text(s,.65,4.84,12.02,.25,'Repeat until the answer is complete. Each selected token becomes the next input.',14,'muted')
-text(s,.65,5.18,11.9,.24,'CLIENT ARRIVALS  /  FIRST 6 WORDS SHOWN  /  SCHEMATIC, NOT TO SCALE',10,'blue',True)
+text(s,.65,5.18,11.9,.24,'Client arrivals  /  First 6 words shown  /  Schematic, not to scale',10,'blue',True)
 xs=[.65,4.05,5.95,7.3,8.65,10.0,11.35]
 labels=['Request']+FOUNDATION_OUTPUT[:6]
 widths=[1.45,1.72]+[1.17]*5
@@ -237,18 +237,18 @@ s = slide('One request. Two different performance targets.', '01 / The problem',
           'Prefill mainly shapes the wait for the first token; decode shapes the pace after it.',
           'Both affect total response latency and SLO goodput: requests/s meeting the latency targets.')
 node(s,.55,2.16,2.0,1.08,'Prompt','Input tokens','blue')
-node(s,3.0,2.16,3.0,1.08,'PREFILL','Process uncached input','teal')
+node(s,3.0,2.16,3.0,1.08,'Prefill','Process uncached input','teal')
 node(s,6.5,2.16,2.0,1.08,'KV cache','Attention state','amber')
-node(s,9.0,2.16,3.75,1.08,'DECODE','Generate tokens iteratively','purple')
+node(s,9.0,2.16,3.75,1.08,'Decode','Generate tokens iteratively','purple')
 for a,b,ac in [(2.55,3.,'muted'),(6.,6.5,'teal'),(8.5,9.,'purple')]: arrow(s,a,2.70,b,2.70,ac)
 # Parallel native cards: latency targets first, role throughput second.
 for x,ac in [(.55,'teal'),(6.78,'purple')]:
     rect(s,x,3.51,5.95,2.45,'white','line',True)
     rect(s,x+.18,3.72,.38,.065,ac)
-text(s,.76,3.90,5.50,.43,'PREFILL → TTFT',23,'teal',True)
+text(s,.76,3.90,5.50,.43,'Prefill → TTFT',23,'teal',True)
 text(s,.76,4.39,5.50,.33,'Time to first token • lower is better',18,'ink',True)
 text(s,.76,4.92,5.50,.65,'Track prefill latency + input tok/s\nOften compute-bound',17,'muted')
-text(s,6.99,3.90,5.50,.43,'DECODE → ITL / TPOT',23,'purple',True)
+text(s,6.99,3.90,5.50,.43,'Decode → ITL / TPOT',23,'purple',True)
 text(s,6.99,4.39,5.50,.43,'Inter-token latency / avg. time per output token',16,'ink',True)
 text(s,6.99,4.92,5.50,.82,'Lower is better • track aggregate output tok/s\nOften memory-bandwidth-bound',17,'muted')
 text(s,.65,6.07,12.02,.23,'Not exclusive: queueing / delivery also affect TTFT; shared prefill can stall decode. Sources: vLLM metrics; NVIDIA Dynamo.',11,'muted')
@@ -259,12 +259,12 @@ s = slide('One shared pool couples two capacity decisions', '01 / The problem',
           'Aggregated serving is simple—but prefill bursts and active decoding share resources.',
           'The compromise is not only performance. It is how you size and scale the service.')
 rect(s,.55,2.3,7.15,3.75,'white','line',True)
-text(s,.8,2.56,6.6,.45,'SHARED GPU POOL',17,'blue',True)
+text(s,.8,2.56,6.6,.45,'Shared GPU pool',17,'blue',True)
 for i in range(3):
     x=.86+i*2.2
     rect(s,x,3.34,1.98,1.6,'bg','line',True)
-    pill(s,x+.12,3.56,1.73,'PREFILL','teal','teal_bg')
-    pill(s,x+.12,4.14,1.73,'DECODE','purple','purple_bg')
+    pill(s,x+.12,3.56,1.73,'Prefill','teal','teal_bg')
+    pill(s,x+.12,4.14,1.73,'Decode','purple','purple_bg')
 text(s,.82,5.26,6.5,.45,'One deployment • one coupled scaling boundary',17,'muted')
 card(s,8.05,2.3,4.72,3.75,'The operational tension',
      'Prompt bursts can disrupt token delivery.\n\nScaling adds both phases, even when only one is saturated.', 'amber',size=19)
@@ -273,32 +273,79 @@ note(s, 'Do not claim every aggregated deployment performs poorly. Continuous ba
 # Motivation additions — slides 05–07 (external evidence + conceptual consequence)
 DYNAMO_PD = 'https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview'
 DISTSERVE = 'https://arxiv.org/html/2401.09670v2'
-DISTSERVE_NOTES = ('Source: Zhong et al., DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving, arXiv:2401.09670v2, 19 March 2024, CC BY-SA 4.0. These are reproduced external research figures, not KAITO/llm-d measurements, not a reproduction performed for this deck, and not a benchmark of current vLLM scheduling. Captions identify a 13B LLM; sections 2–3 analyze A100 behavior. The individual figure captions do not specify every engine, kernel, model identifier or software version, so do not infer a current-deployment performance guarantee. Figure SVGs are kept verbatim in kubecon-pd-assets/motivation; their PNGs are mechanical rasterizations with axes and data intact. Source and license are visible on the slide and documented with hashes.\n')
-s = slide('One prefill can stall an entire decode batch', '01 / Why split — interference',
-          'External study: 13B LLM batch execution latency—not client TTFT. Panel scales differ.',
-          'A long prompt can delay many token streams—not just the request carrying that prompt.')
-text(s,1.61,2.16,4.79,.28,'SHORTER PREFILL: 128 INPUT TOKENS',13,'blue',True,PP_ALIGN.CENTER)
-text(s,6.78,2.16,4.94,.28,'LONGER PREFILL: 1,024 INPUT TOKENS',13,'amber',True,PP_ALIGN.CENTER)
-s.shapes.add_picture(str(ROOT/'kubecon-pd-assets/motivation/distserve-fig2-interference.png'),Inches(2.02),Inches(2.53),width=Inches(9.3))
-text(s,.65,6.17,11.38,.14,'Source: Zhong et al., DistServe (2024), Fig. 2 • arxiv.org/abs/2401.09670v2 • CC BY-SA 4.0 • external study, not KAITO results',8,'muted')
-note(s, DISTSERVE_NOTES+'Figure 2 compares decode-only batches (orange) with decoding plus one prefill (blue). Left panel: 128 input tokens; right panel: 1024 input tokens. Both axes remain as published. The y-axis is batch execution latency, not client TTFT or end-to-end request latency. The two panels have different y-axis and batch-size scales: compare the within-panel mixed-vs-decode-only gap, not apparent slopes or heights across panels. The blue horizontal line is the source prefill-only execution reference; the source arrows label decode and prefill slowdowns. The longer prefill increases the interference shown in this experiment. One chart, one interpretation: a new prompt can delay existing token streams in a shared execution boundary. Continuous batching, chunked prefill and better scheduling can mitigate the effect; this figure does not prove that every colocated or modern chunked-prefill implementation suffers the same penalty. P/D separates the execution pools, but introduces a KV-transfer boundary that must earn its cost.', [DISTSERVE+'#S2.F2',DISTSERVE+'#S2.SS3'])
+# Original editable schematics grounded in NVIDIA's 2025 explanation and current docs.
+# No quantitative data, copied vendor graphics, or measured performance implied.
+DYNAMO_DISAGG = 'https://docs.nvidia.com/dynamo/kubernetes/disaggregated-serving/overview'
+VLLM_DISAGG = 'https://docs.vllm.ai/en/latest/features/disagg_prefill/'
+VLLM_2025 = 'https://vllm.ai/blog/2025-09-05-anatomy-of-vllm'
+DYNAMO_2025 = 'https://developer.nvidia.com/blog/introducing-nvidia-dynamo-a-low-latency-distributed-inference-framework-for-scaling-reasoning-ai-models/'
+s = slide('Long prefills can interrupt token delivery', '01 / Why split — execution interference',
+          'A is already decoding. B arrives with a new prompt. Where should B run?',
+          'Separate GPUs remove direct prefill execution from the decode GPU—not every source of latency.')
+text(s,.65,2.12,12.0,.28,'Conceptual schedule · Not a benchmark · Block widths and gaps are not timings',12,'amber',True)
+rect(s,.55,2.58,12.23,1.27,'white','line',True)
+text(s,.76,2.80,2.65,.36,'Shared GPU',21,'ink',True)
+text(s,.76,3.29,2.65,.28,'One worker does both',14,'muted')
+for x,w,label,ac in [(3.75,1.10,'A','purple'),(5.05,1.10,'A','purple'),(6.35,3.00,'Prefill B','teal'),(9.55,1.10,'A','purple'),(10.85,1.10,'A','purple')]:
+    rect(s,x,3.09,w,.49,ac+'_bg',radius=True)
+    text(s,x+.03,3.18,w-.06,.30,label,16,ac,True,PP_ALIGN.CENTER)
+text(s,6.23,2.68,3.25,.30,'A waits while B runs prefill',15,'amber',True,PP_ALIGN.CENTER)
+rect(s,.55,4.06,12.23,1.79,'white','line',True)
+text(s,.76,4.30,2.65,.41,'Separate GPUs',21,'ink',True)
+text(s,.76,4.85,2.65,.26,'Prefill worker',14,'teal',True)
+text(s,.76,5.36,2.65,.26,'Decode worker',14,'purple',True)
+rect(s,6.35,4.75,3.00,.43,'teal_bg',radius=True)
+text(s,6.38,4.81,2.94,.29,'Prefill B',16,'teal',True,PP_ALIGN.CENTER)
+text(s,9.57,4.81,2.80,.29,'B still needs KV handoff',13,'amber')
+for x in [3.75,5.05,6.35,7.65,8.95,10.25,11.55]:
+    rect(s,x,5.28,.80,.39,'purple_bg',radius=True)
+    text(s,x+.02,5.33,.76,.28,'A',15,'purple',True,PP_ALIGN.CENTER)
+text(s,3.75,4.23,8.65,.28,'A can continue decoding while B runs prefill elsewhere',16,'purple',True)
+text(s,.65,5.97,11.95,.23,'A = ongoing decode; B = new request. Chunked prefill can mitigate the shared-worker pause.',11,'muted')
+text(s,.65,6.22,11.95,.15,'Original conceptual illustration; sources: NVIDIA and vLLM (2025) + current documentation.',8,'muted')
+note(s, 'Original author-created conceptual schedule, not a reproduced research figure, trace or benchmark. Source basis: NVIDIA Dynamo introduction, published 18 March 2025 (page metadata), and current disaggregated-serving overview, accessed 22 October 2026. A is one ongoing request; B is a different newly arriving request. Each purple A block represents some decode execution, not a measured token duration or count. The shared-GPU example chooses a simple non-chunked prefill scheduling interval to explain how prompt processing can delay ongoing decode. Real schedulers can chunk or interleave prefill, use decode-priority policies or mixed batches, and mitigate interference; not all colocated serving has a contiguous pause. Separate GPUs let A continue without executing B prefill on its decode GPU. Equally spaced symbols are for readability only, not a promise of constant ITL or a measured improvement. B still requires KV transfer before its own decode; that transfer and B decode are omitted from this schedule, not assumed free. Queueing, KV movement, memory contention, batching and shared infrastructure can still affect either stream. The split uses an additional worker in this structural sketch; it is not an equal-budget performance comparison. No latency numbers, speedup, throughput, model or GPU recommendation is inferred.', [DYNAMO_2025,VLLM_2025,DYNAMO_DISAGG,VLLM_DISAGG])
 
-s = slide('The two phases prefer different batching', '01 / Why split — resource shape',
-          'External study: phase-only throughput as batch size changes for a 13B LLM.',
-          'Prefill and decode need different tuning—not one shared batch, parallelism and replica policy.')
-text(s,1.61,2.16,4.79,.28,'PREFILL: EARLIER THROUGHPUT PLATEAU',13,'teal',True,PP_ALIGN.CENTER)
-text(s,6.78,2.16,4.94,.28,'DECODE: BATCHING AMORTIZES WORK',13,'purple',True,PP_ALIGN.CENTER)
-s.shapes.add_picture(str(ROOT/'kubecon-pd-assets/motivation/distserve-fig3-throughput.png'),Inches(2.02),Inches(2.53),width=Inches(9.3))
-text(s,.65,6.17,11.38,.14,'Source: Zhong et al., DistServe (2024), Fig. 3 • arxiv.org/abs/2401.09670v2 • CC BY-SA 4.0 • external study, not KAITO results',8,'muted')
-note(s, DISTSERVE_NOTES+'Figure 3 is reproduced as published: prefill-only throughput on the left, decoding-only throughput on the right, with input lengths 128, 256, 512 and 1024. The x-axis is batch size on powers-of-two ticks. Do not compare absolute left-versus-right token throughput as equivalent useful work: prefill processes prompt tokens, whereas decode produces output tokens. Read the shape within each panel. Prefill throughput plateaus earlier; additional batching can add latency once computation is saturated. Decode benefits more from batching in this setup, amortizing weight-memory traffic across requests. This supports separate batching and resource planning, not unlimited decode batching: active KV capacity, latency SLOs, model architecture and compute saturation still bound it. The paper discusses compute-dominant prefill and memory-bandwidth-dominant decode; these are common regimes, not immutable properties of every model, batch size, hardware or context length. No current-AKS numerical threshold or universal GPU-size rule is inferred.', [DISTSERVE+'#S3.F3',DISTSERVE+'#S3.SS1',DISTSERVE+'#S3.SS2'])
+s = slide('Prefill and decode batch different work', '01 / Why split — different batching units',
+          'Prefill processes many prompt positions; ordinary decode advances many independent requests.',
+          'Prefill finds parallel work in prompt length; decode finds it across active sequences.')
+text(s,.65,2.12,12.0,.28,'Conceptual illustration · Not a benchmark · Tokens and request counts are schematic',12,'amber',True)
+for x,title,sub,ac in [(.55,'Prefill','Many input positions in one forward pass','teal'),
+                       (6.79,'Decode','One newest input position per active request','purple')]:
+    rect(s,x,2.58,5.99,3.27,'white','line',True)
+    rect(s,x+.18,2.81,.07,.40,ac)
+    text(s,x+.37,2.76,5.37,.46,title,24,ac,True)
+    text(s,x+.22,3.31,5.55,.32,sub,16,'ink')
+for row,(name,tokens) in enumerate([('Request A',['p1','p2','p3','p4']),('Request B',['q1','q2','q3'])]):
+    y=3.94+row*.58
+    text(s,.78,y+.06,1.34,.31,name,15,'muted',True)
+    for j,token in enumerate(tokens):
+        x=2.29+j*.80
+        rect(s,x,y,.65,.43,'teal_bg',radius=True)
+        text(s,x+.015,y+.075,.62,.29,token,16,'teal',True,PP_ALIGN.CENTER)
+text(s,.79,5.28,5.44,.32,'Batch prompt positions from one or more requests.',14,'teal',True)
+text(s,7.02,3.76,1.37,.23,'Request',11,'muted',True)
+text(s,8.42,3.76,1.31,.23,'Read history',11,'muted',True)
+text(s,10.11,3.76,2.35,.23,'Consume newest input',11,'muted',True)
+for row,name in enumerate(['A','B','C']):
+    y=4.10+row*.48
+    text(s,7.02,y+.04,1.21,.27,name,16,'purple',True)
+    rect(s,8.40,y,1.22,.35,'teal_bg',radius=True)
+    text(s,8.43,y+.035,1.16,.25,'Prior KV',13,'teal',True,PP_ALIGN.CENTER)
+    text(s,9.72,y+.02,.28,.27,'+',15,'muted',True,PP_ALIGN.CENTER)
+    rect(s,10.13,y,1.98,.35,'purple_bg',radius=True)
+    text(s,10.16,y+.035,1.92,.25,'One token',13,'purple',True,PP_ALIGN.CENTER)
+text(s,7.02,5.59,5.45,.23,'Then select a next output token for each request.',12,'purple',True)
+text(s,.65,5.99,11.95,.25,'More decode concurrency can increase ITL. Batch within latency and KV-memory budgets.',13,'amber',True)
+text(s,.65,6.22,11.95,.15,'Original conceptual illustration; sources: NVIDIA and vLLM (2025) + current documentation.',8,'muted')
+note(s, 'Original author-created conceptual batching illustration, not measured curves or reproduced vendor artwork. Dated sources: NVIDIA Dynamo introduction, 18 March 2025; Anatomy of vLLM, article dated 5 September 2025 (published repository 8 September; analyzes an August 9 snapshot). Also current vLLM disaggregated-prefill and Dynamo disaggregated-serving documentation, accessed 22 October 2026. Prefill has many prompt input positions from one or more requests in a forward pass; their p/q labels are schematic positions, not words, actual tokenizer IDs or optimal batch counts. Causal attention still applies: parallel processing does not let a position attend to future positions. Uncached prompt positions may be split across multiple chunks/passes, and prefix reuse can skip cached positions. Ordinary autoregressive decode consumes one newest input position per active sequence, attends to the sequence’s previous KV history, appends that position’s per-layer KV, then selects the next output token. The consumed token is not the newly selected output token of that same step. Independent requests can share a decode batch, but generation remains sequential within each request. The diagram represents three independent sequences, not three successive tokens from one sequence. Speculative decoding and multi-token methods are outside this ordinary-decode illustration. vLLM V1 can mix decode with chunked prefill in one scheduled step, so these conceptual units do not mandate separate physical passes or workers. Longer prompts provide within-request parallel work for prefill; more active sequences provide cross-request decode batching. Larger decode batches can amortize work but increase iteration time, ITL and KV-memory demand; no monotonic throughput improvement, ideal batch size, fixed worker count or latency number is claimed. Both phases use memory and compute. Independent phase tuning may help but remains workload-dependent. P/D additionally requires KV transfer and coordination; see slide7 and slide9 for that tradeoff. This slide deliberately explains batching units, not the independent capacity allocation shown on slide9.', [DYNAMO_2025,VLLM_2025,DYNAMO_DISAGG,VLLM_DISAGG])
 
 s = slide('Independent pools remove a forced compromise', '01 / Why split — capacity control',
           'The payoff is a separate capacity decision for each phase—not separation for its own sake.',
           'Split only when phase-specific gains outweigh KV transfer, duplicated weights and operational cost.')
 card(s,.55,2.35,5.96,2.42,'Prompt-heavy demand',
-     'Usually compute-bound; target TTFT.\nTune prefill capacity / parallelism first.','teal','INPUT SIDE',18)
+     'Usually compute-bound; target TTFT.\nTune prefill capacity / parallelism first.','teal','Input side',18)
 card(s,6.78,2.35,5.96,2.42,'Generation-heavy demand',
-     'Often bandwidth-bound; target ITL.\nTune decode capacity / batching first.','purple','OUTPUT SIDE',18)
+     'Often bandwidth-bound; target ITL.\nTune decode capacity / batching first.','purple','Output side',18)
 node(s,.65,4.92,3.85,1.11,'Different latency targets','TTFT versus token delivery','blue',18)
 node(s,4.74,4.92,3.85,1.11,'Different resource needs','Compute, bandwidth, active KV','teal',18)
 node(s,8.83,4.92,3.85,1.11,'Different capacity knobs','Replicas, TP, batching policy','purple',18)
@@ -310,11 +357,11 @@ s = slide('Split the phases. Tune the pools independently.', '01 / The problem',
           'P/D introduces a KV-transfer boundary between prompt processing and generation.',
           'The transfer path must be fast enough to justify the split.')
 rect(s,.55,2.4,4.5,3.45,'teal_bg',radius=True)
-text(s,.8,2.66,4,.48,'PREFILL POOL',23,'teal',True)
+text(s,.8,2.66,4,.48,'Prefill pool',23,'teal',True)
 node(s,.85,3.4,3.9,1.14,'Prompt processing','Compute + latency','teal')
 text(s,.82,4.98,3.9,.78,'Choose replicas and parallelism\nfor prompt pressure.',17,'teal')
 rect(s,8.28,2.4,4.5,3.45,'purple_bg',radius=True)
-text(s,8.53,2.66,4,.48,'DECODE POOL',23,'purple',True)
+text(s,8.53,2.66,4,.48,'Decode pool',23,'purple',True)
 node(s,8.58,3.4,3.9,1.14,'Token generation','Bandwidth + active KV memory','purple')
 text(s,8.55,4.98,3.9,.78,'Choose replicas and parallelism\nfor sustained generation.',17,'purple')
 arrow(s,5.05,3.98,8.28,3.98,'teal',width=3)
@@ -326,9 +373,9 @@ note(s, 'Conceptual data direction is prefill to decode. The low-level transfer 
 s = slide('P/D fits when the phases need different shapes', '01 / The problem',
           'Start with the traffic profile, not the architecture trend.')
 for i,(title,body,ac,tag) in enumerate([
- ('Long prompts','RAG and retrieval add significant prefill work.','teal','PROMPT PRESSURE'),
- ('Long generations','High concurrency keeps decode busy and KV state resident.','purple','GENERATION PRESSURE'),
- ('Different resources','Each phase needs its own scaling or parallelism choices.','blue','CAPACITY MISMATCH')]):
+ ('Long prompts','RAG and retrieval add significant prefill work.','teal','Prompt pressure'),
+ ('Long generations','High concurrency keeps decode busy and KV state resident.','purple','Generation pressure'),
+ ('Different resources','Each phase needs its own scaling or parallelism choices.','blue','Capacity mismatch')]):
     card(s,.55+i*4.14,2.35,3.95,3.45,title,body,ac,tag,20)
 note(s, 'The real value is independent capacity shaping. Long prompts alone do not prove P/D wins; combine workload measurements with transfer-fabric and operational constraints. A fast GPU-to-GPU path lowers the barrier; cross-node P/D requires closer attention to the transfer path.')
 
@@ -373,7 +420,7 @@ s = slide('Open-source P/D: several paths, different abstractions', '02 / Ecosys
           'Representative approaches—not an adoption ranking or mutually exclusive stacks.',
           'Declarative APIs already exist. The opportunity is simpler integration—not the first CRD.')
 rows = [
-    ['APPROACH', 'SERVING / ROUTING PATH', 'KUBERNETES PACKAGING'],
+    ['Approach', 'Serving / routing path', 'Kubernetes packaging'],
     ['NVIDIA Dynamo', 'Integrated inference stack', 'Operator + DynamoGraphDeployment'],
     ['llm-d', 'P/D-aware EPP + routing sidecar', 'Gateway API / InferencePool'],
     ['AIBrix', 'P/D-aware gateway + engines', 'StormService / RoleSet'],
@@ -446,14 +493,14 @@ for i,(title,desc,ac) in enumerate([
  ('MultiRoleInference','Describe role-specific\nserving topology','amber')]):
     x=.55+i*3.13; y=3.4-i*.32
     node(s,x,y,2.94,1.53,title,desc,ac,16)
-    text(s,x,y+1.73,2.94,.4,['SERVE','SCALE','ROUTE','COMPOSE'][i],12,ac,True,PP_ALIGN.CENTER)
+    text(s,x,y+1.73,2.94,.4,['Serve','Scale','Route','Compose'][i],12,ac,True,PP_ALIGN.CENTER)
     if i<3: route(s,[(x+2.94,y+.75),(x+3.04,y+.75),(x+3.04,y+.43),(x+3.13,y+.43)],ac)
 note(s, 'This is a capability progression, not a strict ownership chain. InferencePool is the Gateway API Inference Extension routing abstraction. KAITO manages the objects and wiring around the runtime.',[PD_DOC])
 
 # 10
 s = slide('A continuous API model as serving gets harder', '03 / KAITO + llm-d',
           'Add capabilities without asking users to hand-assemble a new stack.')
-rows=[['USER NEED','KUBERNETES OBJECT','PLATFORM RESPONSIBILITY'],
+rows=[['User need','Kubernetes object','Platform responsibility'],
       ['Run one model','Workspace','Provision and run the workload'],
       ['Add replicas','InferenceSet','Manage the replica set'],
       ['Route intelligently','InferencePool','Integrate inference-aware routing'],
@@ -521,7 +568,7 @@ arrow(s,11.11,3.63,11.11,4.5,'teal',width=3)
 text(s,11.33,3.83,1.34,.4,'KV data',12,'teal',True)
 route(s,[(9.45,5.53),(8.8,5.53),(8.8,6.04),(.97,6.04),(.97,3.67)],'purple')
 text(s,4.55,6.12,5.4,.28,'Token stream returns through proxy + Gateway',12,'purple')
-pill(s,.55,6.62,12.23,'KAITO RECONCILES THE SERVING TOPOLOGY; THE GATEWAY IS THE API ENTRY POINT','blue','blue_bg')
+pill(s,.55,6.62,12.23,'KAITO reconciles the serving topology; the Gateway is the API entry point','blue','blue_bg')
 note(s, 'Conceptual topology, not a port-level deployment diagram. The Gateway consults the EPP, then sends the request to the selected decode pod routing sidecar. That sidecar calls prefill, forwards metadata to local decode, and streams the response back through the Gateway. The return line is a summarized path. KV data moves from prefill memory to decode; transport initiation may be a decode-side read. Gateway installation/lifecycle is separate from MRI.',[PD_DOC])
 
 # 15 — resource graph
@@ -584,7 +631,7 @@ s = slide('The decode pod contains two different roles', '03 / Runtime boundary'
           'The routing sidecar coordinates the request; vLLM executes decode.',
           'Generated Service targetPorts, probes, and runtime arguments must agree.')
 rect(s,3.0,2.36,9.78,3.67,'purple_bg','line',True)
-text(s,3.26,2.59,8.9,.4,'DECODE POD  /  SHARED POD NETWORK',16,'purple',True)
+text(s,3.26,2.59,8.9,.4,'Decode pod  /  Shared pod network',16,'purple',True)
 node(s,3.3,3.47,3.25,1.75,'llm-d routing\nsidecar','Receives inference requests','purple',20)
 node(s,9.05,3.47,3.4,1.75,'vLLM decode\nruntime','Local backend listener','purple',20)
 node(s,.55,3.67,1.93,1.28,'Gateway','Via Service','blue',18)
@@ -610,8 +657,8 @@ s = slide('Autoscale the role that is actually saturated', '04 / Per-role autosc
           'Different bottlenecks deserve different signals and scale decisions.',
           'Independent scaling only helps when the metrics match each role.')
 for x,t,body,metric,ac in [
- (.55,'PREFILL','Protect prompt latency\nand time to first token.','Primary signal: vLLM waiting requests','teal'),
- (6.78,'DECODE','Protect token delivery\nand sustained throughput.','Primary signal: vLLM running requests','purple')]:
+ (.55,'Prefill','Protect prompt latency\nand time to first token.','Primary signal: vLLM waiting requests','teal'),
+ (6.78,'Decode','Protect token delivery\nand sustained throughput.','Primary signal: vLLM running requests','purple')]:
     card(s,x,2.35,5.95,2.7,t,body,ac,size=22)
     pill(s,x,5.35,5.95,metric,ac,'teal_bg' if ac=='teal' else 'purple_bg')
 note(s, 'Use native vllm:num_requests_waiting for prefill and vllm:num_requests_running for decode as primary role-specific signals. Verify availability and aggregation on the actual runtime. KV utilization and latency add diagnostic context; a derived signal becomes a control input only after its semantics and safety policy are validated. This is a control-pattern recommendation, not a claim about an automatically available MRI feature.',[AUTOSCALING_DOC,KEDA_DOC])
@@ -620,7 +667,7 @@ note(s, 'Use native vllm:num_requests_waiting for prefill and vllm:num_requests_
 s = slide('Today: KEDA targets the InferenceSet scale API', '04 / Existing capability',
           'Documented KAITO examples cover both scheduled and metric-based scaling.',
           'The scale target is the InferenceSet—not a manually scaled workload Pod.')
-pill(s,.55,2.21,2.4,'DOCUMENTED TODAY','blue','blue_bg')
+pill(s,.55,2.21,2.4,'Documented today','blue','blue_bg')
 node(s,.55,3.12,3.5,1.37,'Trigger','Cron or Prometheus query','amber',22)
 node(s,4.92,3.12,3.5,1.37,'KEDA / HPA','ScaledObject target','blue',22)
 node(s,9.28,3.12,3.5,1.37,'InferenceSet','Scale subresource','teal',22)
@@ -634,8 +681,8 @@ note(s, 'KEDA is installed separately. The KAITO documentation shows Cron and Pr
 s = slide('Two independent control loops, one logical service', '04 / Per-role autoscaling',
           'Conceptual design: validate signals and thresholds for the actual workload.')
 for y,role,metric,target,ac in [
- (2.48,'PREFILL','Waiting requests','Prefill InferenceSet','teal'),
- (4.55,'DECODE','Running requests','Decode InferenceSet','purple')]:
+ (2.48,'Prefill','Waiting requests','Prefill InferenceSet','teal'),
+ (4.55,'Decode','Running requests','Decode InferenceSet','purple')]:
     pill(s,.55,y,1.5,role,ac,'teal_bg' if ac=='teal' else 'purple_bg')
     for x,w,t,d in [(2.42,2.85,metric,'Observe'),(6.0,2.6,'KEDA / HPA','Decide'),(9.32,3.46,target,'Reconcile replicas')]:
         node(s,x,y-.08,w,1.19,t,d,ac,17)
@@ -648,7 +695,7 @@ note(s, 'Conceptual two-loop design. A KEDA deployment can use one ScaledObject 
 s = slide('One service, independently managed role capacity', '04 / Policy boundary',
           'Coordinate P/D at the service level; make capacity decisions separately for each role.',
           'Scale a complete serving replica—not an individual tensor-parallel worker.')
-pill(s,.55,2.22,4.3,'DESIGN PATTERN / PER-ROLE CONTROL','amber','amber_bg')
+pill(s,.55,2.22,4.3,'Design pattern / Per-role control','amber','amber_bg')
 node(s,.55,3.15,3.6,2.22,'Service-level intent','Prefill: latency objective\nDecode: delivery objective','blue',22)
 node(s,5.0,3.53,3.3,1.47,'Policy reconciliation','Independent role targets','blue',21)
 node(s,9.15,2.96,3.63,1.17,'Prefill scale target','Generated policy + target','teal',18)
@@ -678,8 +725,8 @@ s = slide('Two native gauges, two scaling decisions', '04 / vLLM-native metrics'
           'Use per-replica role aggregation; tune thresholds against the deployed model and workload.',
           'Illustrative thresholds only. Verify actual /metrics output before enabling either policy.')
 for x,role,metric,body,low,high,bounds,ac,bg in [
- (.55,'PREFILL','vllm:num_requests_waiting','Queue inside the prefill engine.\nProtect prompt admission latency.','< 1','> 8','Example bounds: 1–8 role replicas','teal','teal_bg'),
- (6.78,'DECODE','vllm:num_requests_running','Requests in decode execution batches.\nProtect token delivery under load.','< 4','> 24','Example bounds: 2–16 role replicas','purple','purple_bg')]:
+ (.55,'Prefill','vllm:num_requests_waiting','Queue inside the prefill engine.\nProtect prompt admission latency.','< 1','> 8','Example bounds: 1–8 role replicas','teal','teal_bg'),
+ (6.78,'Decode','vllm:num_requests_running','Requests in decode execution batches.\nProtect token delivery under load.','< 4','> 24','Example bounds: 2–16 role replicas','purple','purple_bg')]:
     rect(s,x,2.28,5.95,3.8,'white','line',True)
     pill(s,x+.2,2.48,1.6,role,ac,bg)
     text(s,x+.2,3.06,5.55,.44,metric,20,ac,True,mono=True)
@@ -697,7 +744,7 @@ s = slide('Different roles need different scaling policies', '04 / Role-specific
           'Use the same safety contract, but tune each role against its own workload and objective.',
           'Illustrative policy—not universal tuning. Validate thresholds, cooldown and model warm-up.')
 table(s,.55,2.25,[3.2,4.51,4.51],[
- ['POLICY','PREFILL','DECODE'],
+ ['Policy','Prefill','Decode'],
  ['Primary signal','Waiting requests','Running requests'],
  ['Example replica range','1–8','2–16'],
  ['Example scale-up','Signal > 8','Signal > 24'],
@@ -710,9 +757,9 @@ s = slide('Safe autoscaling starts with ownership and valid data', '04 / Operati
           'The happy path is small. Correct handoff and failure behavior make it operable.',
           'Avoid competing controllers, count only ready capacity, and protect in-flight requests.')
 for i,(title,body,ac,tag) in enumerate([
- ('Choose one writer','One policy owns replica count\nSeparate targets for P and D\nNo competing autoscalers','blue','01 / REPLICA OWNERSHIP'),
- ('Verify real signals','Inspect actual /metrics\nScope samples per role\nMissing is not zero\nOn failure: hold + report','teal','02 / METRIC AVAILABILITY'),
- ('Make handoff explicit','Stop the old writer first\nDelete only owned scalers\nAllow model warm-up\nTest safe scale-down','purple','03 / LIFECYCLE')]):
+ ('Choose one writer','One policy owns replica count\nSeparate targets for P and D\nNo competing autoscalers','blue','01 / Replica ownership'),
+ ('Verify real signals','Inspect actual /metrics\nScope samples per role\nMissing is not zero\nOn failure: hold + report','teal','02 / Metric availability'),
+ ('Make handoff explicit','Stop the old writer first\nDelete only owned scalers\nAllow model warm-up\nTest safe scale-down','purple','03 / Lifecycle')]):
     card(s,.55+i*4.14,2.35,3.95,3.35,title,body,ac,tag,17)
 text(s,.57,5.97,12.1,.33,'On missing or invalid signals: hold decisions and report the problem. Missing is not zero.',16,'muted')
 note(s, 'Safety contract: do not let a fixed-replica reconciler and an autoscaler compete for the same target. Stop the old writer before handing over control, and never silently adopt/delete user-managed autoscalers. Missing, stale, unreachable or non-finite metric samples should prevent activation or hold active decisions and surface a condition/event. This is the required behavior, not an assertion that all controller/HPA fallback paths implement it today; verify end to end. Partial scrape coverage must not look like zero load. Readiness includes model loading and actual serving eligibility. Protect in-flight requests and KV state during scale-down.', [AUTOSCALING_DOC])
@@ -722,10 +769,10 @@ s = slide('Derived signals add context to scaling decisions', '04 / Signal inter
           'Aggregate native vLLM metrics to understand KV utilization, latency and throughput.',
           'KV occupancy is not demand. High or low throughput alone should not change replica counts.')
 table(s,.55,2.25,[4.43,3.4,4.4],[
- ['NATIVE INPUT (vllm: PREFIX)','DERIVATION','DECISION SUPPORT'],
+ ['Native input (vllm: prefix)','Derivation','Decision support'],
  ['kv_cache_usage_perc','max(role samples)','Candidate downscale guard'],
  ['kv_cache_usage_perc','1 - max(role samples)','Minimum free fraction;\nnot effective request capacity'],
- ['time_to_first_token_seconds\n(histogram buckets)','P95 over bucket rates','Latency tail; tune prefill policy'],
+ ['time_to_first_token_seconds\n(histogram buckets)','p95 over bucket rates','Latency tail; tune prefill policy'],
  ['generation_tokens_total','sum(rate(counter[5m]))','Output throughput;\nobserve and benchmark']],.78)
 note(s, 'These are derived-signal design examples, not metrics natively emitted by vLLM or a claim of current MRI integration support. All table input names have the vllm: prefix. Proposed recording-rule names: kaito:decode_kv_cache_usage_max = max valid role-scoped vllm:kv_cache_usage_perc; kaito:decode_kv_cache_free_fraction_min = 1 - that maximum; kaito:prefill_ttft_p95_seconds = histogram_quantile(0.95, summed per-series 5m bucket rates preserving workload/role and le); kaito:decode_generation_tokens_per_second = sum of reset-aware rate(vllm:generation_tokens_total[5m]). Generation tokens is a native Counter exposed with the _total suffix. KV usage is a fraction 0–1; 0.8 is 80%. Maximum usage and minimum free fraction are complements, not independent evidence, bytes or effective request capacity. A fleet maximum does not identify a safe removal target. Histogram quantiles need sufficient observations and are engine-local, not client P/D latency. Apply rate before summing counters, account for resets, deduplicate engines and require fresh/full role coverage. Recording-rule outputs do not appear on vLLM /metrics; a verified adapter/query integration is required. The desired guard allows high running load to scale up independently of KV occupancy, while low load permits scale-down only with safe KV utilization. Simply appending KV to the existing conservative AND list can suppress needed scale-up and is not this policy. Start with observation; promote a signal to control only after failure and workload tests.', [AUTOSCALING_DOC,VLLM_METRICS])
 
@@ -739,7 +786,7 @@ node(s,4.24,2.24,3.28,1.08,'MRI adapter (new)','Validate + project by role','amb
 node(s,8.0,2.24,4.78,1.08,'Role InferenceSet metadata','scaledobject.kaito.sh/*','teal',19)
 arrow(s,3.8,2.78,4.24,2.78,'blue'); arrow(s,7.52,2.78,8.0,2.78,'teal')
 rect(s,.55,3.56,6.08,2.56,'white','line',True)
-text(s,.75,3.72,5.68,.3,'GENERATED PREFILL CHILD ANNOTATIONS',12,'teal',True)
+text(s,.75,3.72,5.68,.3,'Generated prefill child annotations',12,'teal',True)
 code = '''scaledobject.kaito.sh/auto-provision: "true"
 scaledobject.kaito.sh/min-replicas: "1"
 scaledobject.kaito.sh/max-replicas: "8"
@@ -751,7 +798,7 @@ scaledobject.kaito.sh/metrics: |
     downthreshold: 1'''
 sh=text(s,.75,4.19,5.68,1.76,code,11.6,'ink',mono=True)
 for p in sh.text_frame.paragraphs: p.space_after=Pt(0)
-text(s,7.0,3.59,5.65,.33,'ONE PATH PER ROLE',12,'blue',True)
+text(s,7.0,3.59,5.65,.33,'One path per role',12,'blue',True)
 text(s,7.0,4.02,5.65,.78,'Scaler provisions ScaledObject\nKEDA / HPA writes InferenceSet /scale',18,'ink')
 text(s,7.0,4.97,5.65,1.13,'Required: opt in MRI-owned children\nWrite metadata, not template annotations\nreplicas: null releases MRI enforcement',15,'amber')
 note(s, 'This is the proposed annotation-first integration, not an existing deployable MRI API. Existing scaler source consumes InferenceSet.metadata.annotations and provisions an owned ScaledObject. It currently rejects MRI-owned children in create/update predicates; deliberately support only adapter-managed opt-in children, including cleanup events. MRI currently copies annotations to child spec.template.annotations; that placement does not configure this scaler. A new adapter must validate/version autoscaling.kaito.sh/roles, match entries by role type, project only allowed scalar/metrics keys into the matching child metadata, keep the policy blob out of workload templates, watch annotation-only changes, and remove stale owned output. One child InferenceSet and one ScaledObject per enabled role; KEDA/HPA targets that child scale subresource, not MRI or an individual Pod. A null role replicas value stops MRI steady-state replica enforcement but does not create an autoscaler. Reject fixed replicas plus policy and conflicting manually managed autoscalers; preserve unrelated annotations and perform ordered cleanup/handoff. KEDA, the scaler and metrics collection must be installed/configured separately. Sources are pinned in the design document: KAITO 3c831cad and scaler ba1f2340. The annotation block shown is generated output inside child metadata.annotations. Decode receives the analogous 2..16 / running / 24 / 4 policy.', [AUTOSCALING_DOC,KEDA_DOC])
@@ -791,7 +838,7 @@ rect(s,7.02,2.22,5.76,1.55,'blue_bg',radius=True)
 text(s,7.22,2.36,5.36,.3,'MRI spec.roles (excerpt)',13,'blue',True,mono=True)
 sh=text(s,7.22,2.83,5.36,.79,'- type: prefill\n  replicas: null\n- type: decode\n  replicas: null',12,'ink',mono=True)
 for p in sh.text_frame.paragraphs: p.space_after=Pt(0)
-text(s,7.04,3.98,5.69,.31,'ROLE AVERAGES / START AT P=1, D=2',12,'blue',True)
+text(s,7.04,3.98,5.69,.31,'Role averages / Start at P=1, D=2',12,'blue',True)
 text(s,7.04,4.49,5.69,.7,'Waiting=12; running=12\nPrefill scales up; decode holds.',17,'teal')
 text(s,7.04,5.4,5.69,.68,'Running later rises above 24:\ndecode can scale up independently.',16,'purple')
 note(s, 'The left panel is a literal excerpt under MRI metadata.annotations; the right is a spec.roles excerpt, not the entire deployable resource. Full YAML: llm/kaito-llm-d/examples/proposed-pd-autoscaling-annotations.yaml in this repository. Model and instanceType values in that file are illustrative and not deployment-validated. Annotation policy is a proposal and needs the integration work on the preceding slide. Role replicas are null to stop MRI enforcement; the adapter must reject non-null replicas with an enabled policy and bootstrap minima safely. The modelpod source discovers Workspaces owned by the target InferenceSet and scrapes their Workspace Service /metrics endpoints, not every GPU worker individually. The gauge default is service-avg: sum matching label series within each service, then average across successfully scraped services. Treat this as a per-serving-replica signal only after verifying the runtime/service topology; do not use an MRI-wide total or include router/EPP queues. Current source skips failed services and can treat a partially absent metric as zero, so complete-coverage missing-is-not-zero hardening is still required, not an existing guarantee. Example: with P=1 and D=2, prefill waiting=12 is above 8, so prefill has an up decision while decode running=12 lies between 4 and 24, so decode holds. Later running above 24 can independently request decode scale-up. These are illustrative decision outcomes, not observed tests or guaranteed instantaneous replica counts: readiness, cooldown, stabilization, data availability and bounds still apply. Strict comparisons mean equality holds. The generated expression produces 2.0 when ready and above up-threshold, 0.5 below down-threshold, otherwise 1.0; raw desired replicas are ceil(current replicas times that result). The generated HPA behavior limits each directional change to at most one replica per configured cooldown period, subject to stabilization and bounds. The formula is not itself N+1/N-1 and an evaluation does not guarantee immediate scaling. Values below 1 for prefill or below 4 for decode can request scale-down only after safeguards and within minima. Each role has only one metric, so AND is trivial within a role; it does NOT mean prefill and decode must both be busy. Do not claim an asymmetric KV guard is implemented by appending KV to AND. Require deployed vLLM /metrics verification and full-role sample coverage before activation.', [AUTOSCALING_DOC,VLLM_METRICS,'https://github.com/andyzhangx/demo/blob/master/llm/kaito-llm-d/examples/proposed-pd-autoscaling-annotations.yaml'])
@@ -806,7 +853,7 @@ node(s,9.45,2.37,3.33,1.31,'Disaggregated','Prefill + decode configuration','tea
 arrow(s,3.85,2.86,5.05,2.86,'blue')
 route(s,[(3.85,3.2),(4.4,3.2),(4.4,4.04),(11.12,4.04),(11.12,3.68)],'teal')
 table(s,.55,4.38,[3.2,9.03],[
- ['HOLD CONSTANT','REPORT WITH THE RESULT'],
+ ['Hold constant','Report with the result'],
  ['Model + traffic','Version, quantization, prompt/output lengths, concurrency'],
  ['Cost + SLO','GPU budget, fabric, TTFT/ITL target, warm-up and duration']],.59)
 note(s, 'This slide is an evaluation protocol, not a result. Match GPU budget or cost budget and state the comparison basis. Report latency percentiles and achieved throughput at matched load. Include transport and hardware topology, model and runtime versions, warm-up, run duration, and sampling method. No synthetic performance curves should be mistaken for measurements.')
@@ -814,9 +861,9 @@ note(s, 'This slide is an evaluation protocol, not a result. Match GPU budget or
 # 25 — no fake chart
 s = slide('TTFT: measure the tail under prompt pressure', '05 / Benchmark scorecard',
           'Local measurement plan. External benchmark results are separate—not KAITO data.')
-pill(s,.55,2.18,2.9,'AWAITING MEASURED RESULTS','amber','amber_bg')
+pill(s,.55,2.18,2.9,'Awaiting measured results','amber','amber_bg')
 table(s,.55,2.87,[3.52,4.35,4.36],[
- ['TTFT METRIC','AGGREGATED','P/D'],
+ ['TTFT metric','Aggregated','P/D'],
  ['p50 / median','Not measured','Not measured'],
  ['p95 / tail','Not measured','Not measured'],
  ['p99 / extreme tail','Not measured','Not measured']],.64)
@@ -828,9 +875,9 @@ note(s, 'Replaces the original [X]% / [Y]% placeholders. There is no numeric cla
 # 26
 s = slide('Throughput: count useful work inside the SLO', '05 / Benchmark scorecard',
           'Local measurement plan. Report useful throughput and its cost together.')
-pill(s,.55,2.18,2.9,'AWAITING MEASURED RESULTS','amber','amber_bg')
+pill(s,.55,2.18,2.9,'Awaiting measured results','amber','amber_bg')
 table(s,.55,2.87,[3.52,4.35,4.36],[
- ['MEASURE','AGGREGATED','P/D'],
+ ['Measure','Aggregated','P/D'],
  ['Output tokens / second','Not measured','Not measured'],
  ['Requests meeting SLO','Not measured','Not measured'],
  ['Cost / useful output','Not measured','Not measured']],.64)
@@ -843,7 +890,7 @@ note(s, 'No benchmark results are supplied. High utilization alone does not prov
 s = slide('The break-even boundary is a measurement problem', '05 / Workload decision map',
           'Qualitative candidates only—not a measured heatmap or a performance guarantee.')
 table(s,.55,2.48,[3.35,4.44,4.44],[
- ['WORKLOAD','SHORT OUTPUT','LONG OUTPUT'],
+ ['Workload','Short output','Long output'],
  ['Short prompt','Start with aggregated','Evaluate decode pressure'],
  ['Long prompt','Evaluate prefill isolation','Strong P/D candidate to test']],.88)
 rect(s,.55,5.5,12.23,.88,'amber_bg',radius=True)
@@ -888,9 +935,9 @@ s.shapes.add_picture(str(ROOT/'kubecon-pd-assets/benchmarks/moriio-slo-attainmen
 # Outline a narrow region around 8 req/s without modifying the original chart pixels.
 highlight = rect(s,5.57,2.35,.61,2.81,'white','amber',True)
 highlight.fill.background()
-text(s,7.68,2.38,4.96,.43,'FOCUS: 8 OFFERED REQ/S',14,'amber',True)
+text(s,7.68,2.38,4.96,.43,'Focus: 8 offered req/s',14,'amber',True)
 text(s,7.68,3.04,4.96,.68,'29% → 73%',32,'teal',True)
-text(s,7.68,3.91,4.96,.96,'Joint SLO passes at this load\nColocated 2× TP4 → P/D write\nTTFT ≤1 s AND ITL ≤50 ms',16,'ink')
+text(s,7.68,3.91,4.96,.96,'Joint SLO passes at this load\nColocated 2× TP4 → P/D write\nTTFT ≤1 s and ITL ≤50 ms',16,'ink')
 text(s,7.68,5.18,4.96,.89,'Concurrent P/D phases; fixed 2K/1K.\nNot a heterogeneous traffic benchmark\nor an absolute tokens/s result.',14,'muted')
 text(s,.65,6.09,11.9,.18,'Source: vLLM blog Figure 4, reproduced with attribution; highlighted region at 8 req/s. Callout uses pinned Figure 3 arrays.',9,'muted')
 note(s, bench_notes+'Keep narration high signal. Original Figure 4 shows request SLO attainment versus offered request rate, not measured token throughput. The source calls the joint-SLO benefit higher goodput; this slide retains the original y-axis instead of relabeling it as throughput. The orange outline focuses attention on about 8 req/s. The 29% and 73% callout comes from the exact Figure 3 arrays for standard TP4 and MORI-IO write, not visual digitization. Other configurations are retained as source context; do not narrate every curve. At this load the colocated configuration’s per-request ITL values account for failed joint SLOs; the P/D write configuration’s TTFT values account for its failures. This supports phase-interference interpretation, not an unqualified peak-throughput claim. Prompt/output lengths are fixed, so mixed-length traffic remains a validation gap. The source caption overstates improvement across all rates: at the lowest rate standard TP4 also reaches 100%, so this slide only highlights the loaded regime.', [BENCH_URL,BENCH_RAW])
@@ -898,7 +945,7 @@ note(s, bench_notes+'Keep narration high signal. Original Figure 4 shows request
 s = slide('Evaluation results: more SLO passes per GPU', '05 / Public benchmark — efficiency proxy',
           bench_context,
           'More useful work on the same eight GPUs—not measured GPU utilization or proof that fewer GPUs suffice.')
-text(s,.66,2.25,6.51,.38,'NORMALIZED SLO PASSES / GPU',14,'blue',True)
+text(s,.66,2.25,6.51,.38,'Normalized SLO passes / GPU',14,'blue',True)
 ratio=BENCH_PASSES['write']/BENCH_PASSES['normal']
 for y,name,value,ac in ((3.16,'Colocated',1.0,'blue'),(4.37,'P/D write',ratio,'teal')):
     text(s,.66,y-.02,1.75,.37,name,16,'ink',True)
@@ -949,7 +996,7 @@ note(s, 'The chain represents logical serving readiness, not a mandatory serial 
 s = slide('Production lesson #3: use role-appropriate signals', '06 / Production lessons',
           'One dashboard can show both phases; one scaling signal should not govern both.')
 table(s,.55,2.45,[2.24,4.15,5.84],[
- ['ROLE','USEFUL SIGNALS','WATCH OUT FOR'],
+ ['Role','Useful signals','Watch out for'],
  ['Prefill','Queue / prompt pressure','Averages that hide burst and tail latency'],
  ['Decode','Running load; observe KV usage','Evicting active work during scale-down'],
  ['Both','Warm-up + SLO + capacity','Oscillation, slow model load, fabric limits']],.85)
@@ -969,16 +1016,16 @@ note(s, 'Use these gates to decide whether to keep, tune, or reject P/D. Do not 
 # P/D adoption addition — source Markdown Slide 34, actual slides 41–42
 s = slide('When should you use P/D—and when not?', '06 / P/D decision matrix',
           'Two axes matter: how different the roles are, and what the KV-transfer path costs.',
-          'Use P/D when the roles want different capacity AND KV transfer does not erase the gain.')
-text(s,2.38,2.17,4.85,.32,'EXPENSIVE / WEAK KV TRANSFER',13,'amber',True,PP_ALIGN.CENTER)
-text(s,7.69,2.17,4.85,.32,'CHEAP / FAST ENOUGH KV TRANSFER',13,'teal',True,PP_ALIGN.CENTER)
+          'Use P/D when the roles want different capacity and KV transfer does not erase the gain.')
+text(s,2.38,2.17,4.85,.32,'Expensive / weak KV transfer',13,'amber',True,PP_ALIGN.CENTER)
+text(s,7.69,2.17,4.85,.32,'Cheap / fast enough KV transfer',13,'teal',True,PP_ALIGN.CENTER)
 text(s,.55,2.9,1.55,.92,'Different\nbottlenecks /\nscaling needs',14,'ink',True)
 text(s,.55,4.74,1.55,.8,'Similar\nbottlenecks /\nscaling needs',14,'muted',True)
 for x,y,w,title,body,fill,ink in [
- (2.3,2.68,5.05,'IMPROVE TOPOLOGY FIRST','Independent capacity may help.\nTransfer overhead may erase the gain.','amber_bg','amber'),
- (7.62,2.68,5.16,'STRONG P/D CANDIDATE','Different role capacity or parallelism.\nValidate the gain at matched SLO + cost.','teal_bg','green'),
- (2.3,4.39,5.05,'STAY AGGREGATED','Little role separation benefit,\nplus an expensive transfer path.','line','muted'),
- (7.62,4.39,5.16,'USUALLY STAY AGGREGATED','Fast fabric alone is not a reason to split.\nOperational gains may be limited.','white','blue')]:
+ (2.3,2.68,5.05,'Improve topology first','Independent capacity may help.\nTransfer overhead may erase the gain.','amber_bg','amber'),
+ (7.62,2.68,5.16,'Strong P/D candidate','Different role capacity or parallelism.\nValidate the gain at matched SLO + cost.','teal_bg','green'),
+ (2.3,4.39,5.05,'Stay aggregated','Little role separation benefit,\nplus an expensive transfer path.','line','muted'),
+ (7.62,4.39,5.16,'Usually stay aggregated','Fast fabric alone is not a reason to split.\nOperational gains may be limited.','white','blue')]:
     rect(s,x,y,w,1.48,fill,radius=True)
     text(s,x+.18,y+.16,w-.36,.31,title,16,ink,True)
     text(s,x+.18,y+.67,w-.36,.67,body,15,'ink')
@@ -988,9 +1035,9 @@ s = slide('Apply the matrix to your workload and topology', '06 / P/D adoption e
           'Workload shape suggests a candidate. Measurement decides whether to keep it.',
           'A long prompt or a fast interconnect alone is not enough—both axes must justify separation.')
 for i,(title,body,ac,tag) in enumerate([
- ('Keep it simple','Small model, short prompts\nLow concurrency\nSimilar P/D scaling needs\n\nStart with aggregated.','blue','SIMILAR ROLES'),
- ('Benchmark P/D','Different role bottlenecks\nDifferent scaling or TP needs\nCheap, reliable KV transfer\n\nTest independent role capacity.','teal','STRONG CANDIDATE'),
- ('Fix the path first','Different role bottlenecks\nCostly or unstable KV path\n\nImprove locality or transport.\nThen reassess P/D.','amber','TRANSFER-LIMITED')]):
+ ('Keep it simple','Small model, short prompts\nLow concurrency\nSimilar P/D scaling needs\n\nStart with aggregated.','blue','Similar roles'),
+ ('Benchmark P/D','Different role bottlenecks\nDifferent scaling or TP needs\nCheap, reliable KV transfer\n\nTest independent role capacity.','teal','Strong candidate'),
+ ('Fix the path first','Different role bottlenecks\nCostly or unstable KV path\n\nImprove locality or transport.\nThen reassess P/D.','amber','Transfer-limited')]):
     card(s,.55+i*4.14,2.3,3.95,3.43,title,body,ac,tag,15)
 text(s,.57,5.94,12.1,.35,'Start with a simple topology; measure client TTFT / ITL, KV-transfer tails, SLO goodput and total cost.',14,'muted')
 note(s, 'Expands companion Markdown Slide 34 into concrete but unmeasured adoption scenarios. Small models, short prompts, low concurrency and simple traffic often favor aggregated serving, but those attributes are heuristics rather than hard cutoffs. Long prompts, retrieval-heavy traffic, long generation or high concurrency are reasons to investigate divergent P/D pressure, not sufficient conditions for a win. Use P/D when separate capacity/parallelism can address a demonstrated bottleneck and KV-transfer overhead does not eliminate that benefit. A single-node multi-GPU experiment can simplify the initial topology if the model and role placement fit; it is not a universal fastest or feasible configuration. Cross-node P/D raises the validation bar: test transfer payload sizes, sustained/tail latency, contention, reliability, network policy and failure recovery. Improve locality or transport before adding scale if KV transfer is already the bottleneck. Compare aggregated and P/D at the same model, request distribution, offered load and GPU/cost budget, measuring client-visible TTFT/ITL, SLO goodput, transfer tails and total GPU cost. Retain a reversible aggregated baseline; do not claim measured savings here.', [SOURCE+'#slide-34--when-to-use-pd-and-when-not-to'])
@@ -1004,7 +1051,7 @@ for i,(title,body,ac) in enumerate([
  ('Tune','Set role capacity.\nBenchmark at fixed cost.','purple'),
  ('Operate','Add scale policies.\nTest failure + rollback.','amber')]):
     x=.55+i*3.13
-    card(s,x,2.55,2.94,3.38,title,body,ac,f'STEP {i+1}',18)
+    card(s,x,2.55,2.94,3.38,title,body,ac,f'Step {i+1}',18)
     if i<3: arrow(s,x+2.94,4.16,x+3.13,4.16,ac,width=1.4)
 note(s, 'Begin with a measurable aggregated baseline. Keep an operationally viable rollback path and compare like-for-like cost and SLO. Per-role autoscaling should follow validated signals; avoid changing topology, parallelism, transport, and autoscaling all at once.')
 
@@ -1026,7 +1073,7 @@ for i,(title,body,ac) in enumerate([
  ('Scaling UX','Express per-role policy\nwithout repetitive plumbing.','teal'),
  ('Observability','Connect request latency,\nrole load, and KV transfer.','blue'),
  ('Topology UX','Keep richer serving layouts\ninside the same API model.','purple')]):
-    card(s,.55+i*4.14,2.45,3.95,3.43,title,body,ac,'DIRECTION',20)
+    card(s,.55+i*4.14,2.45,3.95,3.43,title,body,ac,'Direction',20)
 note(s, 'These are talk recommendations derived from the source outline, not a published project delivery timeline. Keep the distinction between current capability and proposed user experience explicit.')
 
 # Roadmap addition — source Markdown Slide 36, actual slide 46
@@ -1034,9 +1081,9 @@ s = slide('What’s next for KAITO + llm-d', '07 / Integration roadmap',
           'Build on P/D with better cache reuse, richer role layouts and larger-scale execution.',
           'Integration directions—not release dates or claims that every upstream capability is new.')
 for i,(title,body,ac,tag) in enumerate([
- ('Cache-aware serving','KV-event-based\nprefix-cache routing\n\nTiered cache: HBM + CPU RAM\n+ optional filesystem tiers','teal','NEAR TERM'),
- ('E/P/D','Encode / Prefill / Decode\n\nExtend role-based serving\nto richer inference topologies.','blue','NEXT TOPOLOGY'),
- ('Larger-scale systems','Wide Expert Parallelism\n\nCross-node transport\nand communication\noptimization','purple','AT LARGER SCALE')]):
+ ('Cache-aware serving','KV-event-based\nprefix-cache routing\n\nTiered cache: HBM + CPU RAM\n+ optional filesystem tiers','teal','Near term'),
+ ('E/P/D','Encode / Prefill / Decode\n\nExtend role-based serving\nto richer inference topologies.','blue','Next topology'),
+ ('Larger-scale systems','Wide Expert Parallelism\n\nCross-node transport\nand communication\noptimization','purple','At larger scale')]):
     card(s,.55+i*4.14,2.35,3.95,3.72,title,body,ac,tag,17)
 note(s, 'Based on companion Markdown Slide 36 — What’s next for KAITO + llm-d. Near-term integration directions are precise prefix-cache routing driven by KV events and tiered prefix cache across GPU HBM, CPU RAM, and optional filesystem tiers. The next topology item is E/P/D: Encode, Prefill, Decode. Larger-scale work includes Wide Expert Parallelism and cross-node transport/communication optimization. These are presentation-level KAITO integration directions, not a dated release commitment or a claim that llm-d and its runtimes lack these capabilities today. Speculative decoding was removed from future work because the presenter confirms it is already implemented; this slide does not attempt to revalidate its support matrix or claim universal runtime support. Keep feature availability tied to the deployed KAITO/llm-d/runtime versions.', [SOURCE+'#slide-36--whats-next-for-kaito--llm-d'])
 
@@ -1067,4 +1114,4 @@ note(s, 'Use workload, fabric, and operational constraints to guide questions. B
 
 assert len(prs.slides) == 56
 prs.save(OUT)
-print(f'Saved {OUT} ({len(prs.slides)} slides; editable shapes plus three attributed public figures)')
+print(f'Saved {OUT} ({len(prs.slides)} slides; editable shapes plus one attributed public figure)')

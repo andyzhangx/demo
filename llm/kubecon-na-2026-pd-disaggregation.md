@@ -349,7 +349,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - **Decode → ITL (inter-token latency) / TPOT (average time per output token after the first):** mainly affects ongoing token delivery; lower is better. Also track aggregate **output tok/s**. Often memory-bandwidth-bound, depending on workload and hardware.
 - **Both → total response latency and system capacity / SLO goodput:** requests/s meeting the TTFT and token-delivery targets, not simply raw token throughput.
 
-**Visual:** editable Prompt → PREFILL → KV cache → DECODE diagram above two color-matched metric cards.
+**Visual:** editable Prompt → Prefill → KV cache → Decode diagram above two color-matched metric cards.
 
 **Speaker notes and measurement boundaries:**
 - TTFT is not just prefill compute: queueing, routing, input processing/tokenization, scheduling and delivery contribute. In P/D, KV transfer and coordination can also be on the first-token critical path; this does not prescribe a worker protocol or delivery order.
@@ -359,7 +359,7 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Aggregate output tok/s across concurrent requests is not per-request speed. At matching boundaries, a request's post-first-token speed is approximately `1/TPOT`; larger batches may increase aggregate throughput while hurting ITL/TPOT. Input tok/s and output tok/s represent different work, not equivalent productivity. State aggregation scope, time window, sequence lengths and prefix-cache accounting.
 - Prefill populates KV; longer prompts also affect decode attention and KV cost. KV occupancy is a capacity-pressure indicator, not memory bandwidth or a primary latency metric.
 
-Sources: [vLLM metrics definitions](https://docs.vllm.ai/en/latest/design/metrics/), [vLLM benchmark latency definitions](https://docs.vllm.ai/en/latest/benchmarking/cli/#understanding-the-latency-metrics), and [NVIDIA Dynamo P/D overview](https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview). Conceptual mapping, not benchmark results.
+Sources: [vLLM metrics definitions](https://docs.vllm.ai/en/latest/design/metrics/), [vLLM benchmark latency definitions](https://docs.vllm.ai/en/latest/benchmarking/cli/#understanding-the-latency-metrics), and [NVIDIA Dynamo P/D overview](https://docs.nvidia.com/dynamo/kubernetes/disaggregated-serving/overview). Conceptual mapping, not benchmark results.
 
 ### Slide 4 — Prefill profile
 - compute-bound
@@ -946,7 +946,7 @@ Possible follow-up artifacts from this outline:
 
 ### Expanded motivation in the PPTX
 
-Actual slides **7–9** expand why P/D can help: execution interference (DistServe Figure 2), different batching/resource curves (Figure 3), and independent capacity decisions. The [NVIDIA Dynamo disaggregated-serving overview](https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview) is cited for common compute-bound prefill / memory-bandwidth-bound decode regimes and independently tuned worker pools. These are workload-dependent bottlenecks, not universal hardware laws. These external illustrations retain the original axes and are not KAITO measurements. See [sources, license and interpretation limits](kubecon-pd-assets/motivation/README.md).
+Actual slides **7–9** expand why P/D can help. Slides **7–8** are now original native editable **conceptual diagrams, not benchmark results**: (7) shared-GPU prefill can delay ongoing decode, contrasted with separate-worker lanes; (8) editable token tiles contrast prompt-position versus active-sequence batching units. Their basis is the [NVIDIA Dynamo introduction, 18 March 2025](https://developer.nvidia.com/blog/introducing-nvidia-dynamo-a-low-latency-distributed-inference-framework-for-scaling-reasoning-ai-models/) and [current disaggregated-serving docs](https://docs.nvidia.com/dynamo/kubernetes/disaggregated-serving/overview), accessed 22 October 2026. No timings, optimal batch sizes, speedups or KAITO measurements are implied. Chunked prefill can mitigate colocated interference; separation removes direct prefill execution from the decode GPU, not all jitter. Slide 9 retains the independent-capacity discussion and workload-dependent bottleneck caveats. The former 2024 DistServe plots are archived, not relabeled or embedded. See [provenance and interpretation boundaries](kubecon-pd-assets/motivation/README.md). Prose labels throughout the PPTX use sentence case while technical acronyms, API names and code keep their exact capitalization.
 
 ### Prefill and decode foundations in the PPTX
 
