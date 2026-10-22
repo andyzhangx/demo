@@ -14,6 +14,14 @@ The narrative source remains [`../kubecon-na-2026-pd-disaggregation.md`](../kube
 - Uses common PowerPoint font families: Arial and Courier New. Fonts are not embedded; substitutions can affect layout on systems without those fonts.
 - `overview.png` is a rendered contact sheet **for preview only**; it is not used inside the deck.
 
+## Phase-specific performance metrics
+
+Actual slide **5 — One request. Two different performance targets.** maps prefill to **TTFT** (time to first token) and decode to **ITL / TPOT** (inter-token latency / average time per output token). Lower latency is better. Supporting metrics are prefill latency and input tok/s versus aggregate output tok/s; common compute/bandwidth regimes are qualified as **often**, not universal laws.
+
+Both phases affect total response latency, capacity and SLO goodput (requests/s meeting latency targets). Notes distinguish aggregate throughput from per-request speed, vLLM streamed-event ITL from request-level TPOT, frontend/engine from client timing, and latency to the last token from request-close time. They cover queueing, input processing, delivery, P/D transfer, cross-phase interference and KV pressure without inventing performance numbers. See [vLLM metric definitions](https://docs.vllm.ai/en/latest/design/metrics/) and the [companion metric mapping](../kubecon-na-2026-pd-disaggregation.md#slide-3--one-request-two-phases).
+
+This update changes only slide 5 and its notes against baseline `4a6e810856b22ade7025e9d303c99868a531a64b`; the other 55 native slide XML/notes and all three embedded research images are unchanged. All 56 pages were rendered again, the full overview regenerated, and slide 5 visually checked. No new layout issues; the two pre-existing slide-25 text-box margin overruns remain unchanged.
+
 ## P/D autoscaling presentation
 
 Slides **27–35** restore the original nine-slide section from commit `b1a2a23`, preserving its content, native shapes and speaker notes (only pagination changes): role saturation, existing KEDA/InferenceSet capability, independent loops, service policy boundary, control architecture, native gauges, policy table, operational safeguards and derived signals.
@@ -87,7 +95,7 @@ The redesign was exported with LibreOffice 25.8 and checked for:
 - exact equivalence between the YAML example, source design, slide policy and generated prefill projection;
 - valid OOXML ZIP/XML and exactly three embedded pictures: the existing public Figure 4 plus two mechanical DistServe SVG renders;
 - exact source-array equivalence and reproducible TTFT percentiles, SLO-pass counts and normalized proxy;
-- visual review of the two new foundation pages;
+- visual review of the two foundation pages and updated phase-metrics slide 5;
 - slide geometry and text-box overlap;
 - rendered text presence and text bounds on every slide (no new layout issues; two pre-existing slide-25 text-box margin overruns remain unchanged);
 - explicit distinction between existing capabilities, proposals, and unmeasured results.

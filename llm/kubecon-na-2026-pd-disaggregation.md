@@ -342,14 +342,24 @@ Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
 - Tell the audience the whole talk is basically answering this one question.
 
 ### Slide 3 — One request, two phases
-- prefill
-- decode
 
-**Suggested visual:** very simple request timeline with prefill then decode.
+**Actual PPTX slide 5 — One request. Two different performance targets.** (The outline numbering predates the two foundation slides.)
 
-**Speaker note:**
-- Keep this simple and visual.
-- Do not go deep into internals yet.
+- **Prefill → TTFT (time to first token):** mainly affects the wait for the first output; lower is better. Also track prefill latency and input-token processing throughput (**input tok/s**). Often compute-bound, not universally.
+- **Decode → ITL (inter-token latency) / TPOT (average time per output token after the first):** mainly affects ongoing token delivery; lower is better. Also track aggregate **output tok/s**. Often memory-bandwidth-bound, depending on workload and hardware.
+- **Both → total response latency and system capacity / SLO goodput:** requests/s meeting the TTFT and token-delivery targets, not simply raw token throughput.
+
+**Visual:** editable Prompt → PREFILL → KV cache → DECODE diagram above two color-matched metric cards.
+
+**Speaker notes and measurement boundaries:**
+- TTFT is not just prefill compute: queueing, routing, input processing/tokenization, scheduling and delivery contribute. In P/D, KV transfer and coordination can also be on the first-token critical path; this does not prescribe a worker protocol or delivery order.
+- ITL/TPOT are not pure decode-kernel time. Scheduling, preemption, contention, detokenization, transport and stream buffering can change observed latency. Colocated prefill can stall decode; chunked prefill can mitigate interference.
+- At matching client boundaries and with more than one output token, latency **to the last token ≈ TTFT + (Nout − 1) × TPOT**. This is not HTTP request-close time. Client timing differs from vLLM frontend/engine timing and additionally includes network/delivery overhead.
+- vLLM's ITL histogram samples consecutive streamed **output events**, potentially multi-token; TPOT is one sample per request, `(e2e − TTFT)/(Nout − 1)`. Their means/percentiles need not match because of event grouping and weighting. The server records zero TPOT for requests with at most one output token; the benchmark excludes them from TPOT statistics.
+- Aggregate output tok/s across concurrent requests is not per-request speed. At matching boundaries, a request's post-first-token speed is approximately `1/TPOT`; larger batches may increase aggregate throughput while hurting ITL/TPOT. Input tok/s and output tok/s represent different work, not equivalent productivity. State aggregation scope, time window, sequence lengths and prefix-cache accounting.
+- Prefill populates KV; longer prompts also affect decode attention and KV cost. KV occupancy is a capacity-pressure indicator, not memory bandwidth or a primary latency metric.
+
+Sources: [vLLM metrics definitions](https://docs.vllm.ai/en/latest/design/metrics/), [vLLM benchmark latency definitions](https://docs.vllm.ai/en/latest/benchmarking/cli/#understanding-the-latency-metrics), and [NVIDIA Dynamo P/D overview](https://docs.nvidia.com/dynamo/dev/kubernetes/disaggregated-serving/overview). Conceptual mapping, not benchmark results.
 
 ### Slide 4 — Prefill profile
 - compute-bound
