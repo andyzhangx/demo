@@ -237,6 +237,33 @@ env:
 
 必须在启动 `hf download` 的进程之前设置。它禁用的是 **HF 原生 Xet 客户端路径**，不是关闭 HTTPS/TLS 验证。HTTP fallback 仍可能访问 Hugging Face 的 CDN/bridge 域名，不应据此删除相关网络放行规则。
 
+### 重要限制：HTTP fallback 不支持超过 50 GB 的单个文件
+
+**本结论针对本次使用的 `huggingface-hub==1.18.0`，不是所有版本的永久保证。** 该版本的普通 HTTP 下载路径包含以下上限：
+
+```python
+MAX_HTTP_DOWNLOAD_SIZE = 50 * 1000 * 1000 * 1000  # 50 GB
+```
+
+从头下载时，若元数据中的单文件大小超过 **50,000,000,000 字节（十进制 50 GB，约 46.57 GiB）**，`http_get()` 会拒绝下载，并报错：
+
+```text
+The file is too large to be downloaded using the regular download method.
+Install `hf_xet` with `pip install hf_xet` for xet-powered downloads.
+```
+
+这里限制的是 **单个文件，不是整个模型仓库的总大小**。保持 `HF_HUB_DISABLE_XET=1` 时，即使已经安装 `hf_xet`，也不会重新启用它；不能仅通过再次安装包解决这个限制。
+
+2026-10-23 检查 `Qwen/Qwen3-Coder-30B-A3B-Instruct` 的 revision `b2cff646eb4bb1d68355c01b18ae02e7cf42d120`：
+
+- 28 个文件合计约 **61.08 GB**。
+- 权重拆为 **16 个 shard**，最大单文件 **3,999,975,472 字节，约 4 GB**。
+- 没有单个文件超过 50 GB，因此**当前模型不会触发这一大小限制**。这不代表已验证完整模型下载成功，也不排除网络、PVC 或资源问题。
+
+**影响与建议**：如果其他模型包含超过 50 GB 的单个权重文件，强制禁用 Xet 会使其下载失败。方案二适合作为当前模型的临时 workaround，不宜无条件对所有模型永久启用。长期应修复 helper 镜像的 CA 信任库后恢复 Xet，或使用上游提供且可被推理框架正确加载的分片权重；库版本或模型 revision 变化后，应重新核对限制和文件大小。
+
+此外，禁用 Xet 可能降低大模型下载吞吐量，但 KAITO 的 `--max-workers 4` 文件级并发仍然生效。当前未进行完整模型的性能对照，不能给出固定的速度损失比例。
+
 ### 已提交的 KAITO 修改
 
 - 分支：[security/helper-image-update-downloader](https://github.com/andyzhangx/kaito/tree/security/helper-image-update-downloader)
