@@ -933,6 +933,10 @@ These are the official KAITO docs that should continue to anchor this deck's ter
 - **Slides 23-24** → KEDA / autoscaling UX for P/D
 - **Slides 29-30** → production lessons and future integration direction
 
+### Related conference talk
+
+- [From Model Serving to Distributed Inference: How Llm-d Evolves AI Platforms on Kubernetes](https://www.youtube.com/watch?v=TXKfWGdns9s) — Kay Yan (DaoCloud) and Linbo He (Microsoft), KubeCon + CloudNativeCon Japan 2026.
+
 ## Next Draft Ideas
 
 Possible follow-up artifacts from this outline:
