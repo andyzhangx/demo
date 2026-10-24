@@ -1,5 +1,7 @@
 # KAITO 场景下的 Racer 集成架构图
 
+> 详细方案见 [Racer + KAITO 模型分发与流式加载设计](./racer-kaito-design.md)：包含下载落盘与 Run:ai provider 两条接入路线、Azure API 兼容性、版本一致性、安全边界和验证计划。本文为下载阶段的架构概览。
+
 ## 结论
 
 对于 KAITO 的模型下载场景，**Racer 最适合放在“模型下载分发层”**，而不是一开始就深度耦合进推理 runtime 的文件访问路径。
