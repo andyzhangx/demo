@@ -216,3 +216,34 @@ These hotels are **not** part of the KubeCon official room block, so you won't g
 **🎯 Loyalty program tip / 积分党提示:** Marriott Bonvoy (7 properties here), Hilton Honors (2), World of Hyatt (3), IHG One Rewards (Holiday Inn Express), Radisson Rewards (1).
 
 Official venue + travel page (booking links, room block cutoffs): <https://events.linuxfoundation.org/kubecon-cloudnativecon-north-america/attend/venue-travel/>
+
+### NBA Games in Salt Lake City / 盐湖城 NBA 观赛参考（2026-11-07 至 2026-11-20）
+
+**查询范围：2026 年 11 月 7 日至 11 月 20 日，含首尾日期。** 根据 2026-10-24 查询到的公开赛程和票务信息，这段时间盐湖城有以下 **4 场犹他爵士（Utah Jazz）主场比赛**，均在 **Delta Center** 举行。
+
+| 日期 / Date | 星期 / Day | 比赛 / Matchup | 开赛时间 / Tip-off（盐湖城当地时间） | 备注 / Notes |
+|---|---|---|---|---|
+| **2026-11-10** | 周二 / Tuesday | 爵士 vs 迈阿密热火 / Utah Jazz vs. Miami Heat | **19:00** | 常规赛 / Regular season |
+| **2026-11-11** | 周三 / Wednesday | 爵士 vs 奥兰多魔术 / Utah Jazz vs. Orlando Magic | **19:00** | 常规赛 / Regular season |
+| **2026-11-15** | 周日 / Sunday | 爵士 vs 圣安东尼奥马刺 / Utah Jazz vs. San Antonio Spurs | **15:00** | 周末下午场 / Sunday afternoon |
+| **2026-11-20** | 周五 / Friday | 爵士 vs 菲尼克斯太阳 / Utah Jazz vs. Phoenix Suns | **19:30** | **NBA Cup 小组赛 / Group play** |
+
+**场馆 / Venue:** Delta Center<br>
+**地址 / Address:** 301 West South Temple, Salt Lake City, UT 84101, USA
+
+**时区提醒 / Time zone:** 表中均为盐湖城当地时间，**不是北京时间**。这段时间盐湖城使用 **MST（UTC−7）**，比北京时间（UTC+8）**晚 15 小时**。例如当地 11 月 10 日 19:00 对应北京时间 11 月 11 日 10:00。
+
+**选择建议 / Suggestions:**
+
+- 想周末看球，可优先考虑 **11 月 15 日（周日）15:00 的马刺场**。
+- 如果 **11 月 20 日**仍在盐湖城，也可考虑当晚 **19:30 的太阳 NBA Cup 场**。
+- **11 月 10 日、11 日**是晚场，安排观赛前请核对自己的会议、晚间活动及交通计划。
+
+**赛程来源与购票入口 / Schedule sources and tickets:**
+
+- [Utah Jazz 官方赛程及购票入口 / Official schedule](https://www.nba.com/jazz/schedule)
+- [American Arenas — Utah Jazz 2026–2027 赛程列表](https://americanarenas.com/sports/nba/utah-jazz/schedule/)（本表的比赛日期、场馆及当地开赛时间来源）
+- [11 月 10 日：热火客场对爵士 / Heat at Jazz — StubHub](https://www.stubhub.com/utah-jazz-salt-lake-city-tickets-11-10-2026/event/161731659/)
+- [11 月 20 日：太阳客场对爵士 / Suns at Jazz, NBA Cup — StubHub](https://www.stubhub.com/utah-jazz-salt-lake-city-tickets-11-20-2026/event/161731648/)
+
+> 信息整理日期：**2026-10-24**。比赛日期、开赛时间及票务库存可能调整；**购票前请再次以爵士官方赛程和实际票务页面为准**。StubHub 为第三方票务平台，本表不代表票价或余票保证。
