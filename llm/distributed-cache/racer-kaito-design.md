@@ -6,7 +6,7 @@
 
 ## 1. 设计结论
 
-**将 Racer 作为集群级模型对象 read-through cache，将 KAITO 保持为推理工作负载编排层。** 两者职责分离：
+**以 KAITO 现有 Model Mirror + Model Streaming 为主路径，将 Racer 作为 Model Streaming 下方的可选分布式 read-through cache。** 三者是叠加关系，不另建一套 Model Mirror，也不要求普通用户手动拼装缓存组件。职责分离：
 
 - KAITO：选择模型、创建推理 Pod、配置模型加载方式、控制就绪与发布。
 - Racer：跨节点共享对象页、合并部分重复读取、管理本地内存与磁盘缓存、在 miss 时回源。
@@ -20,7 +20,7 @@
 | A：下载后本地加载 | Racer → downloader → 本地完整模型目录 → runtime | 优先兼容现有 runtime、希望模型准备完成后解除缓存依赖 | manifest-aware downloader、完整性检查和原子发布 |
 | B：流式加载 | Racer → cache-provider `.so` → Run:ai Model Streamer → GPU | 已使用 Azure Blob + Run:ai/vLLM 流式加载，希望避免每个 Pod 保存完整权重 | Racer-backed provider、镜像打包、版本一致性和故障测试 |
 
-**推荐先验证 Azure Blob + 托管 origin；对于已经使用 Run:ai 的 KAITO 工作负载，以路线 B 做专项 POC。** 路线 A 保留为通用、解耦程度更高的方案。不应在没有基准测试时宣称 B 一定更快，也不应把两条路线叠加成默认的“先完整下载，再流式下载一次”。
+**主方案为路线 B：保留现有 ModelMirror、Blob CSI PVC、GPU provisioning 和 Run:ai streaming，在 native range read 路径增加 Racer provider。** 路线 A 降为非 streaming runtime 的备选，不改变现有 streaming 用户默认不完整落盘权重的行为。不应在没有基准测试时宣称 B 一定更快，也不应把两条路线叠加成默认的“先完整下载，再流式下载一次”。
 
 明确不做以下假设：
 
@@ -29,6 +29,91 @@
 - Racer 不保证一个对象整个集群永远只回源一次，不保证缓存永不驱逐。
 - peer RDMA 不等于 GPU-direct loading；普通 AKS GPU 节点也不一定有可用 RDMA 或本地 NVMe。
 - 本文不解决 KV cache、请求路由或 prefill/decode 调度。
+
+### 1.1 与现有 Model Mirror + Streaming 的关系
+
+依据 [KAITO Model Mirror and Streaming 文档](https://kaito-project.github.io/kaito/docs/model-mirror-streaming/)，现有功能已经完成模型镜像和流式加载编排，不应在 Racer 集成里重复实现。
+
+| 层次 | 解决的问题 | 共享边界 |
+|---|---|---|
+| Model Mirror | 避免 Workspace 独立从 HuggingFace 重复下载；下载与 GPU provisioning 并行 | 当前文档路径为同 namespace、同模型复用一个 ModelMirror |
+| Model Streaming | 避免在每个 inference Pod 先完整落盘权重，再加载到 GPU | 每个 Pod 通过 Run:ai 读取 Blob |
+| Racer（新增） | 减少扩容/重建时对 Blob 的重复权重读取 | 在被授权共享同一 cache 的参与节点之间复用页 |
+
+**Mirror 减少 HuggingFace → Azure Blob 的重复传输；Racer 减少 Azure Blob → 推理节点的重复传输。** Mirror 中的“下载一次”不是整个集群以后只需一次模型数据传输。
+
+```text
+现有路径：
+HuggingFace → ModelMirror download Job → Blob-backed PVC / Azure Blob
+                                             ├→ Run:ai → Pod A → GPU
+                                             ├→ Run:ai → Pod B → GPU
+                                             └→ Run:ai → Pod C → GPU
+
+集成后（箭头表示数据流）：
+HuggingFace → 原有 ModelMirror download Job → 同一个 Azure Blob
+                                             │ cache miss 时读取
+                                             ▼
+                                      Racer 分布式缓存
+                                             ├→ provider → Run:ai → Pod A → GPU
+                                             ├→ provider → Run:ai → Pod B → GPU
+                                             └→ provider → Run:ai → Pod C → GPU
+```
+
+Blob CSI 仍负责 Mirror 存储供应和 download Job 的挂载；Racer 不替换 PVC/StorageClass。推理 native streaming 从 Blob 对象 API 读数据，不应把这条路径等同于 BlobFuse 文件系统读取。StorageClass 上的 BlobFuse block cache 也不等于 Racer 跨节点共享缓存。
+
+### 1.2 普通用户体验：同一个 Workspace，同一个推理 API
+
+**目标是平台启用集成后，已有 streaming 用户无需修改模型定义。** 用户继续提交官方文档形态的 Workspace：
+
+```yaml
+apiVersion: kaito.sh/v1beta1
+kind: Workspace
+metadata:
+  name: workspace-phi-4-mini
+resource:
+  instanceType: Standard_NC48ads_A100_v4
+  labelSelector:
+    matchLabels:
+      apps: phi-4-mini
+inference:
+  preset:
+    name: microsoft/Phi-4-mini-instruct
+```
+
+无需用户手填 `ClusterCache`、container URL、UDS、provider library path，或逐个配置 Ray worker。用户也不必改模型 URI 或推理请求。**这个透明的 Racer 体验是待开发目标：当前安装 KAITO ModelMirror/ModelStreaming feature gates 不会自动启用 Racer。**
+
+| 用户操作 | 现有行为 | 集成后额外收益/限制 |
+|---|---|---|
+| 首次部署新模型 | Mirror 下载与 GPU provisioning 并行 | cache 仍冷；不能保证首个 Pod 更快 |
+| 同 namespace 再部署同模型 | 复用 Mirror，不重复从 HF 镜像 | 已缓存页可避免再次从 Blob 获取 |
+| 扩容到新 GPU 节点 | 新 Pod 从 Blob 加载 | 即使本地无缓存，也可向 warm peers 获取 |
+| 重建 Pod | 再次加载模型 | 可复用未被驱逐的缓存页 |
+| cache eviction | 不适用 | 正常回 Blob；不影响源站模型持久性 |
+| 调用已就绪服务 | 原有 inference endpoint | API 不变；不承诺 token 生成速度提升 |
+
+用户仍观察 `kubectl get modelmirrors`、`kubectl describe workspace` 和推理 readiness。集成应补充可诊断的 cache binding/provider 错误事件，但不要把缓存命中率变成用户必须管理的模型状态，也不要杜撰已经存在的 condition 名称。
+
+### 1.3 平台管理员体验：缓存是 streaming 的独立策略
+
+保留现有配置：`ModelMirror=true`、`ModelStreaming=true`、Blob StorageClass 和 namespace streaming ServiceAccount / Workload Identity。管理员额外配置：
+
+1. Racer 安装、参与节点、容量和安全策略。
+2. origin 对 Mirror Blob 的最小读取权限及独立 Workload Identity trust。
+3. 含兼容 Racer provider 的 runtime image。
+4. 经授权的 container/cache binding，以及 KAITO 生成 Pod 时的配置注入。
+5. 默认缓存策略、错误策略与工作负载级退出机制。
+
+建议保留两个独立控制维度：
+
+| Streaming | Cache 策略（概念，不是现有 API） | 行为 |
+|---|---|---|
+| 开启 | 无缓存 | 原有 Run:ai 直接读取 Blob |
+| 开启 | Racer | native range read 经过 Racer；辅助操作仍按既有路径 |
+| 关闭 | 不适用 | 保留原有非 streaming 下载路径 |
+
+现有 `kaito.sh/model-streaming: "disabled"` 是关闭 streaming，**不能复用来表示仅关闭 Racer**。新的 cache 配置 API/annotation/Helm value 需单独设计，本文不提供虚构的可用开关。禁用 Racer 后，后续新建/滚动更新的 Pod 应恢复原生 Blob streaming；不会使运行中的进程自动卸载 provider。
+
+当前文档的 streaming 限定 Azure/AKS 和 vLLM，Transformers 会回到普通下载路径。不要通过安装 Racer 就宣称改变了这些支持范围。
 
 ## 2. 已核实的上游能力与集成缺口
 
@@ -49,12 +134,15 @@
 
 核查 KAITO commit `63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e`：
 
+- 现有 ModelMirror 在 namespace 内管理 Blob-backed PVC 和 download Job；当前主路径会等待 Mirror Ready 与 GPU provisioning 完成后创建推理 Pod。
+- `WIBlobProvider.GetStreamingConfig` 已经沿 ModelMirror → PVC → PV → CSI volumeHandle 解析 account/container，生成 `az://<container>/<model-id>` 与 `AZURE_STORAGE_ACCOUNT_NAME`。
+- `SetStreamingConfig` 已负责 provider env、streaming ServiceAccount 等 Pod 配置，是待扩展的集成边界。
 - `InferenceSpec.Template` 是可用于自定义推理 Pod 的 `PodTemplateSpec`；与 `Preset` 互斥。
 - `InferenceSpec.Config` 引用同 namespace 下的 inference 参数 ConfigMap。
 - vLLM 入口已有模型加载及资产预取逻辑。
 - `_workarounds/model_asset_prefetch.py` 在 Ray 多节点场景预取非权重资产；权重仍由 Run:ai 从对象存储流式读取。
 
-这些是接入边界，不代表 KAITO 已原生实现 Racer 配置。POC 先使用自定义模板和专用 runtime image；preset 支持必须单独实现、测试，不能假设任意 Workspace metadata 都会自动传播到全部 Pod。
+这些是接入边界，不代表 KAITO 已原生实现 Racer 配置。provider 独立 POC 可使用自定义模板和专用 runtime image，但它不是用户层面的产品方案，也不能据此假设自动复用了 preset 的 ModelMirror 编排。产品化必须在现有 preset/streaming 生成路径实现自动绑定和全 Pod 配置，保留原有用户 YAML，不能假设任意 Workspace metadata 都会自动传播到全部 Pod。
 
 ### 2.3 Run:ai 已有实验性 Azure cache-provider ABI
 
@@ -77,9 +165,13 @@ void shutdown(void); // 可选
 
 ```mermaid
 flowchart TB
-    source["Azure Blob: immutable model revisions"]
-    publisher["Model publishing pipeline + manifest"] --> source
-    kaito["KAITO controller"] --> app
+    hf["HuggingFace model"] --> mirror["Existing ModelMirror download Job"]
+    mirror --> source["Azure Blob: existing Blob CSI PVC backing container"]
+    publisher["Proposed immutable revision + manifest contract"] -.-> source
+    kaito["KAITO controller"] --> mirror
+    kaito --> app
+    kaito -.-> binding["NEW authorized container/cache binding"]
+    binding -.-> sidecar
     operator["Unbounded operator"] --> controller["racer-controller"]
     operator --> originB
 
@@ -142,6 +234,8 @@ manifest 是本文提出的应用层协议，不是 Racer CRD。至少包含：
 - 在可信发布环节生成并验证的来源信息；生产环境按供应链要求签名验证。
 
 发布顺序为：上传对象、验证、最后发布 manifest；不覆写已发布 revision。启用版本管理本身不够，客户端必须实际选择版本。`trust_remote_code` 是独立代码执行风险，缓存不会使远程代码可信。
+
+**与现有 Mirror 的差异：** 本次核查的 Azure streaming 路径使用 `az://<container>/<model-id>`；ModelMirror source 字段和此路径本身并不提供本文提出的 revision/manifest 绑定保证。不能把现有 Mirror Ready 视为已满足不可变模型契约。POC 至少应确保 Mirror 完成后在所有消费者生命周期内不覆写模型对象；产品化再明确内容摘要/版本固定与更新发布流程，而不是为了 Racer 另建重复的 HF 下载系统。
 
 ### 4.2 一致性边界
 
@@ -247,7 +341,7 @@ spec:
 
 ### 6.2 工作负载模板
 
-下面是 **Pod template 片段，不是完整可直接应用的 Workspace**。通过 KAITO 自定义 `inference.template` 接入时还需填写模型、资源、runtime 参数、应用 discovery identity 和 GPU placement。镜像/库路径为待实现示例。
+下面是 **平台实现/独立 POC 使用的 Pod template 片段，不是完整可直接应用的 Workspace，也不是预期让普通用户填写的接口**。产品化时应由 KAITO 的 preset/streaming 生成路径输出等效配置。通过自定义 `inference.template` 做独立验证时还需填写模型、资源、runtime 参数、应用 discovery identity 和 GPU placement；不能假定它自动触发 preset 的 Mirror 流程。镜像/库路径为待实现示例。
 
 ```yaml
 metadata:
@@ -281,7 +375,9 @@ provider 的 loopback URL、允许的 account/container、timeout 和重试预�
 建议状态流是应用侧设计，不是声称 KAITO 已存在这些 condition：
 
 ```text
-Validate model revision and cache binding
+Existing ModelMirror download + GPU provisioning in parallel
+  -> both complete; retain existing inference Pod creation gate
+  -> validate model consistency contract and authorized cache binding
   -> Pod scheduled on eligible Racer node
   -> sidecar process starts
   -> provider verifies bounded test read / handles startup retries
@@ -295,6 +391,47 @@ Validate model revision and cache binding
 sidecar 监听 Pod loopback，普通 HTTP probe 默认访问 Pod IP；不要错误添加会永远失败的 Pod-IP probe。diagnostic `/healthz` 也不证明 cache/origin 可读。让模型加载完成与 runtime readiness 决定是否接收推理流量。
 
 路线 A 的 runtime 应只消费已验证的本地目录；可用原子发布标记作为 init/downloader 完成条件。路线 B 的完整加载结束前仍依赖缓存链路；是否推理期间继续 lazy-read 要按具体 runtime 验证。
+
+### 6.4 自动绑定：复用已有 StreamingConfig，不要求重复输入 Blob 地址
+
+建议新增的控制面流程：
+
+```text
+Workspace selects model
+  -> existing ModelMirror / PVC / PV resolution
+  -> existing Azure account + container + model URI
+  -> resolve authorized cache binding for storage identity + trust domain
+  -> validate origin permissions and cache availability
+  -> add Racer provider config + sidecar binding to generated inference Pods
+  -> retain existing model URI, streaming format and discovery identity
+```
+
+binding 是设计概念，不代表已经存在的新 CRD。可先采用平台管理的绑定表，再评估专门的 reconciliation 资源。缓存创建权限属于集群级，不应允许任意 namespace 用户通过字符串 annotation 指向别人的 container/cache。
+
+关键约束：
+
+- 一个 Racer 托管 Azure origin/cache 对应一个 container；Mirror 的动态 PVC 可能解析到不同 container。不能用一个固定 `kaito-models` cache 覆盖所有 Mirror。
+- 在允许的信任域内复用同一 storage identity 的绑定；在身份中包含 cloud endpoint、account 和 container，不能仅使用 model ID 或 container 短名称。
+- 若两个 namespace 把同一模型复制到不同 container，Racer 不会仅因为 bytes 相同就自动跨 cache 去重。跨 namespace 共享应先设计共享模型目录/存储和授权，不是简单打开一个缓存开关。
+- 第一版可按实际 container 建立 cache，但每个 cache 会带来对应 origin DaemonSet。必须在多模型/多 container 情况下测量 origin Pod 数量、调度和资源成本，不能无限自动创建。
+- cache 生命周期不应绑定到单个 Workspace：删除一个消费者不能删除其他消费者共用的 cache。需要明确引用管理、retention 和最终清理策略；删除再创建 cache 会换 UID。
+- 源站身份和 container 切换应创建/验证新绑定再 rollout，禁止把已有 cache 悄悄指向别人的存储。
+
+### 6.5 状态、预热与退出行为
+
+严格保持三个不同语义：
+
+| 状态语义 | 表示什么 | 不表示什么 |
+|---|---|---|
+| 现有 ModelMirror Ready | 模型在 Blob 准备好 | Racer 已填满、全节点已缓存 |
+| 集成层 cache 可用性（待设计） | origin/binding/provider 路径满足启动条件 | 所有模型页都有缓存命中 |
+| 推理服务 Ready | runtime 加载和 warm-up 完成，可以接流量 | 缓存永久保留 |
+
+Mirror 下载仍与 GPU provisioning 并行。首次镜像未完成前不能因为 cache listener 已启动就让模型使用部分上传的文件。反过来，不应要求所有模型页预热完毕才允许推理 Pod 开始加载。
+
+可选预热在 Mirror 准备好之后进行，能与剩余 GPU provisioning 时间重叠；不把 `ModelMirror Ready` 改为 cache warm 的标志。预热失败应作为独立的优化失败报告，具体是否阻断由明确策略决定。
+
+冷缓存/驱逐是正常 miss，由 Racer origin 回源；它与 Racer 服务不可用不是同一种情况。服务不可用时，provider 只有明确配置的有界重试，没有现成的逐次读取 direct-Azure fallback。工作负载级退出 Racer 通过配置变更和受控 rollout 恢复原有 streaming，不修改 Mirror 内容，不把 streaming 一起关掉。
 
 ## 7. 安全与多租户
 
@@ -375,7 +512,7 @@ provider 指标是待实现项；可引用 Racer 已有 `racer_requests_total`�
 
 1. **版本与环境验证**：确认 KAITO runtime 里的 vLLM/streamer 版本和 ABI；验证 Azure origin、loopback range、实际多节点 peer read。
 2. **provider POC**：开发库、固定 allowlist/config、单元测试与镜像构建；required mode 防止无意绕过缓存。
-3. **KAITO 接入**：自定义 template、完整 leader/worker 配置、辅助资产预取、startup/readiness、工作负载级 rollback。
+3. **KAITO 接入**：以已有 ModelMirror + Streaming 为主路径，扩展 StreamingConfig/Pod 生成，自动解析并授权 container/cache binding，覆盖完整 leader/worker、辅助资产预取、startup/readiness 和工作负载级 rollback；自定义 template 只作为独立 POC 工具。
 4. **性能与故障评估**：按矩阵验证容量、回源、并发、版本与安全；据实选择 A/B。
 5. **产品化**：增加经审查的 KAITO 配置入口/preset 支持、权限策略、版本矩阵、监控与操作手册。
 6. **可选演进**：manifest-only 无应用源站凭据方案、SDK/direct bridge、HF origin、warm scheduling。
@@ -386,6 +523,7 @@ HuggingFace 直连不是托管 Azure origin 的现成能力。第一阶段可在
 
 ### 官方文档
 
+- [KAITO Model Mirror and Streaming：现有用户体验与安装流程](https://kaito-project.github.io/kaito/docs/model-mirror-streaming/)
 - [Racer concepts](https://unbounded-cloud.io/concepts/racer/)
 - [Azure Blob cache guide](https://unbounded-cloud.io/guides/azure-blob-cache/)
 - [racer-object API、socket、安全和 readiness](https://unbounded-cloud.io/reference/racer-object/)
@@ -393,6 +531,9 @@ HuggingFace 直连不是托管 Azure origin 的现成能力。第一阶段可在
 
 ### KAITO：`63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e`
 
+- [ModelMirror API / namespace 范围和状态](https://github.com/kaito-project/kaito/blob/63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e/api/v1alpha1/modelmirror_types.go)
+- [WIBlobProvider：从 PVC/PV 解析 account/container 和 streaming URI](https://github.com/kaito-project/kaito/blob/63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e/pkg/workspace/inference/modelstreaming/azure/wiblob.go)
+- [ModelStreaming 开关、Mirror key 和 SetStreamingConfig](https://github.com/kaito-project/kaito/blob/63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e/pkg/workspace/inference/modelstreaming/modelstreaming.go)
 - [Workspace API / inference template](https://github.com/kaito-project/kaito/blob/63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e/api/v1beta1/workspace_types.go)
 - [vLLM 入口](https://github.com/kaito-project/kaito/blob/63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e/presets/workspace/inference/vllm/inference_api.py)
 - [多节点非权重资产预取](https://github.com/kaito-project/kaito/blob/63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e/presets/workspace/inference/vllm/_workarounds/model_asset_prefetch.py)
