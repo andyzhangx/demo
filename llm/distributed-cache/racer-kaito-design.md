@@ -130,6 +130,43 @@ inference:
 - origin 支持 Azure Workload Identity / DefaultAzureCredential；托管 Azure origin 不支持 SAS 或 shared key。
 - Racer 仍是 pre-release：API、参数、磁盘格式可能变动；组件必须使用匹配 release。
 
+#### 2.1.1 模型权重缓存实际保存在哪里
+
+**Racer 的缓存位于参与缓存服务的节点上，由 `racer-dataplane` 管理内存和本地磁盘，不在 `kaito-base` / Racer runtime 镜像中，也不是每个推理 Pod 独占的一份完整模型目录。** 在本文的 Model Mirror + native streaming POC 中，应区分三个位置：
+
+| 层次 | 保存位置 | 内容与生命周期 |
+|---|---|---|
+| 持久化模型源 | Azure Blob 的 Model Mirror container | 完整的模型权重对象，是回源和恢复依据 |
+| Racer 缓存 | Racer 节点的内存、本地磁盘，以及其他参与节点上的缓存页 | 按需缓存对象数据页；受容量、admission 和 eviction 策略影响，不保证每个节点都有完整模型 |
+| 推理运行态 | 推理进程使用的主机内存和 GPU 显存 | Streamer 加载后用于推理的权重；不是可持久恢复的模型仓库 |
+
+按当前 [Racer reference 的节点要求与 dataplane 配置](https://unbounded-cloud.io/reference/racer/)，默认文件型磁盘缓存路径为：
+
+```text
+节点 hostPath: /var/lib/racer/slabs
+配置项:        RACER_SLAB_DIRECTORY
+```
+
+其中是 Racer 管理的 **slab 缓存文件和 checkpoint**，不是按模型名称直接保存的 `model-00001-of-00004.safetensors` 下载目录。默认部署通过 hostPath 提供给 dataplane；实际位置、容量和存储介质应以部署版本的配置与节点挂载为准。
+
+- **目录名不代表 NVMe。** `/var/lib/racer/slabs` 可能落在 OS 盘或其他挂载盘上；要使用本地 SSD/NVMe，需明确确认该目录背后的存储布局。
+- Racer 也支持显式选择专用裸块设备保存缓存数据。该模式会覆盖选中设备的缓存区域，必须使用经确认可擦写、可丢弃的专用设备，不能使用承载业务数据的盘。设备模式下 slab 目录仍需可写，用于 checkpoint。
+- `/var/lib/racer/identity` 保存节点身份状态，**不是模型权重目录**。
+- `/run/racer/<cache>/client/socket` 和 `origin/socket` 是通信入口，**不是缓存数据目录**。例如 POC 中的 `/run/racer/models/client/socket` 只是连接 dataplane 的 Unix socket；`racer-object` sidecar 负责适配访问，不是独立的持久模型仓库。
+
+读取关系可以简化为：
+
+```text
+vLLM / Model Streamer → provider → racer-object sidecar → Racer dataplane
+                                                       ├─ 本地内存 / 磁盘缓存
+                                                       ├─ 其他 Racer 节点的缓存页
+                                                       └─ cache miss → origin → Azure Blob
+```
+
+推理 Pod 重建后可以复用仍然可用的缓存，native streaming 不要求先在每个 Pod 保存完整权重副本；但这不是“所有读取都会命中”的保证。缓存可能被淘汰，节点消失、ClusterCache 身份变化或不兼容的版本升级也可能导致冷缓存。**Racer 不是 PV/PVC 或持久化模型仓库，不能替代 Azure Blob 中的源文件或备份。** 普通下载/非 streaming 路径仍可能额外保存完整模型文件，应与 Racer 的页缓存区分。
+
+以上描述来自上游默认配置与 POC 设计，**没有据此声称已检查实际 AKS 集群的节点磁盘、挂载路径、缓存容量或命中情况**。
+
 ### 2.2 KAITO 已有可利用的边界
 
 核查 KAITO commit `63d715de32b0ebf204ffaf5acfd9fb0d8e22c00e`：

@@ -177,6 +177,47 @@ Racer 的几个关键特征：
 
 > **一个面向大模型权重分发的集群级缓存平面**
 
+### Racer 缓存的模型权重保存在哪里？
+
+**保存在运行 `racer-dataplane` 的参与节点上：内存 + 节点本地磁盘，并可通过网络复用其他节点的缓存页。** 不是打包进 `kaito-base` 镜像，也不是由每个 `racer-object` sidecar 各维护一份持久化的完整模型副本。
+
+需要把模型源、分布式页缓存和最终消费数据分开：
+
+| 层次 | 保存位置 | 作用 |
+|---|---|---|
+| 模型源文件 | 原始 HuggingFace/HTTP 源，或已经镜像到 Azure Blob 的完整对象 | 持久化模型供应与回源依据；具体取决于实际接入路径 |
+| Racer 缓存 | Racer 节点的内存和本地磁盘 | 按需保存对象数据页并跨节点复用，可被淘汰，不保证每节点都有完整权重 |
+| 消费端 | 普通下载流程的模型目录，或 streaming 推理进程的主机内存/GPU 显存 | 由下载或加载方式决定，不等同于 Racer 缓存 |
+
+当前 [Racer 官方默认配置](https://unbounded-cloud.io/reference/racer/)中，文件型磁盘缓存位于节点上的：
+
+```text
+/var/lib/racer/slabs      # 默认 slab/checkpoint 目录，由 hostPath 提供给 dataplane
+RACER_SLAB_DIRECTORY     # 对应配置项
+```
+
+这个目录保存 Racer 的 slab 缓存文件和 checkpoint，**不是一个能直接按模型名查找完整 `.safetensors` 文件的模型下载目录**。实际路径和介质应以部署版本的配置、节点挂载为准：
+
+- 默认目录不意味着默认使用 NVMe；它可能位于 OS 盘或另一个挂载盘上。使用 SSD/NVMe 必须确认底层存储布局。
+- 也可显式配置专用裸块设备保存缓存。Racer 会写入/覆盖所选设备的缓存区域，只能使用已确认可擦写的专用缓存盘；设备模式下 slab 目录仍用于 checkpoint。
+- `/var/lib/racer/identity` 是节点身份状态，不是模型数据。
+- `/run/racer/<cache>/client/socket` 和 `origin/socket` 是通信 socket，不是存储目录。例如 `/run/racer/models/client/socket` 只是 POC 客户端访问 dataplane 的入口。
+
+对已有 Azure Blob Model Mirror 的 KAITO native streaming POC，读取关系是：
+
+```text
+Model Streamer → provider → racer-object sidecar → Racer dataplane
+                                                ├─ 本地内存 / 磁盘缓存
+                                                ├─ 其他节点的缓存页
+                                                └─ miss → origin → Azure Blob
+```
+
+这里的持久模型源是 Azure Blob；它与本文讨论的传统 HuggingFace 下载入口是不同的接入场景，详见 [KAITO + Racer 设计文档](racer-kaito-design.md)。HuggingFace/通用 HTTP 入口仍需要相应 origin 适配，不能因缓存具有通用抽象就视为已接通。
+
+**下载加速不等于取消本地模型文件。** 如果最终消费者仍使用普通下载方式，它可以在读取缓存后额外写出完整模型；native streaming 则不要求先在每个推理 Pod 落一份完整权重。Pod 重建可以复用仍可用的节点/跨节点缓存，但缓存淘汰、节点丢失或版本/身份变化都可能使其变冷。Racer 不提供模型持久性保证，也不是 PV/PVC；必须保留可靠的源文件，不能把缓存当备份。
+
+上述路径是上游默认行为，**不是实际集群的磁盘布局或命中率验证结果**。本节没有推断 DACS 的磁盘目录；不能把 Racer 的路径配置直接套用到 DACS。
+
 ### DACS 更像“存储访问加速层”
 
 DACS 的几个关键特征：
@@ -356,6 +397,8 @@ Racer 在安全设计上更完整一些，文档提到：
 ## 参考依据
 
 - Racer 文档：<https://unbounded-cloud.io/concepts/racer/>
+- Racer 节点存储与配置参考：<https://unbounded-cloud.io/reference/racer/>
+- Racer Azure Blob 接入指南：<https://unbounded-cloud.io/guides/azure-blob-cache/>
 - DACS 仓库：<https://github.com/Azure/dacs>
 - KAITO 仓库：<https://github.com/kaito-project/kaito>
 - KAITO custom model 文档：<https://kaito-project.github.io/kaito/docs/custom-model/>
