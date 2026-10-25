@@ -307,6 +307,71 @@ provider 要求：
 
 POC 默认 bounded retry 后 fail closed，不把 403、版本冲突或完整性失败静默降级。若需要直接 Azure fallback，必须单独设计：同版本、同授权、明确指标与限流；防止所有 Pod 同时绕过缓存造成回源风暴。
 
+### 5.5 POC 镜像分层：`KAITO_STREAMING_BASE_IMAGE` 的用途
+
+本节说明 [`andyzhangx/kaito` 的 `poc/racer-model-streaming` 分支](https://github.com/andyzhangx/kaito/tree/poc/racer-model-streaming)中的实验性镜像构建约定，不表示 KAITO 上游发行镜像已包含 Racer 集成。完整构建、部署及验证步骤见 [KAITO + Racer POC 文档第 5 节](https://github.com/andyzhangx/kaito/blob/poc/racer-model-streaming/docs/racer-model-streaming-poc.md#5-使用-makefile-构建控制器streaming-base-和-racer-runtime)。
+
+`KAITO_STREAMING_BASE_IMAGE` 是**构建 Racer 推理镜像时使用的基础镜像地址**。它提供现有 KAITO preset 推理环境，包括 **vLLM、Ray 和 Model Streamer**；最终 Racer runtime 在其上加入 `libkaito_racer_cache.so`，将 Streamer 的模型数据读取接入 Racer。
+
+| Make 目标 | `KAITO_STREAMING_BASE_IMAGE` 的作用 |
+|---|---|
+| `docker-build-kaito-streaming-base` | **输出镜像名**：将现有 `docker/presets/models/tfs/Dockerfile` 构建为这个 tag |
+| `docker-build-racer-streaming` | **输入基础镜像**：通过 `FROM ${KAITO_STREAMING_BASE_IMAGE}` 继承推理环境，再加入并检查 provider；输出为 `RACER_STREAMING_IMAGE` |
+
+```text
+现有 KAITO vLLM preset Dockerfile
+        │
+        ▼
+KAITO_STREAMING_BASE_IMAGE
+  vLLM + Ray + Model Streamer
+        │
+        │ 加入 libkaito_racer_cache.so
+        │ 检查 Streamer ABI 和 provider 加载
+        ▼
+RACER_STREAMING_IMAGE
+  最终部署到推理容器的 runtime 镜像
+```
+
+**base 不是需要额外部署的容器，也不是 Racer cache server 或 `racer-object` sidecar 的镜像。** 各镜像的边界如下：
+
+- `CONTROLLER_IMAGE`：运行包含本 POC 编排逻辑的 KAITO Workspace 控制器。
+- `KAITO_STREAMING_BASE_IMAGE`：构建阶段使用的推理底座，其内容由最终 runtime 镜像继承。
+- `RACER_STREAMING_IMAGE`（部署示例中赋给 `RACER_RUNTIME_IMAGE`）：运行 vLLM 推理进程，包含 Racer provider。
+- 管理员绑定中的 `objectImage`：单独运行 `racer-object` sidecar，连接 Racer cache；不是由上述 base/runtime 目标构建的。
+
+以下命令在该 KAITO POC 分支的仓库根目录执行，需要有 Docker/buildx 的构建机及 registry 推送权限；不是在本设计文档所在的 demo 仓库执行：
+
+```bash
+export REGISTRY=YOUR_REGISTRY_NAMESPACE
+export VERSION=0.13.0-racer
+export OUTPUT_TYPE=type=docker
+export ARCH=amd64
+export PLATFORMS=linux/amd64
+export KAITO_STREAMING_BASE_IMAGE="$REGISTRY/kaito-streaming-base:$VERSION"
+export RACER_STREAMING_IMAGE="$REGISTRY/kaito-vllm-racer:$VERSION"
+
+make docker-build-kaito-streaming-base ARCH=amd64
+# type=docker 只加载到本机；Racer 构建使用 --pull，需先让 registry 中存在 base。
+docker push "$KAITO_STREAMING_BASE_IMAGE"
+make docker-build-racer-streaming ARCH=amd64
+docker push "$RACER_STREAMING_IMAGE"
+```
+
+**如果已有兼容 base，可以跳过 base 的构建和推送**，直接指定 registry 中可拉取的现有 tag 或 digest：
+
+```bash
+# 保留上面 REGISTRY、VERSION、OUTPUT_TYPE、ARCH、PLATFORMS 和最终 runtime 的设置。
+export KAITO_STREAMING_BASE_IMAGE="YOUR_REGISTRY/compatible-kaito-streaming-base:YOUR_TAG"
+make docker-build-racer-streaming ARCH=amd64
+docker push "$RACER_STREAMING_IMAGE"
+```
+
+- 输入基础镜像可以固定为 `@sha256:...`；构建输出必须使用 tag，且 base 与 runtime 的输出名称不能相同。
+- 不能随意使用普通 vLLM 镜像或任意版本的 `kaito-base`。当前 POC 要求 KAITO preset 运行环境，以及 `runai-model-streamer==0.16.0`、`runai-model-streamer-azure==0.16.0` 和相应 cache ABI。
+- [Racer runtime Dockerfile](https://github.com/andyzhangx/kaito/blob/poc/racer-model-streaming/docker/racer-streaming/Dockerfile)会检查 wheel 版本、native cache-loader markers，并实际加载 provider 校验导出符号；失败应修正 base，不能跳过检查。
+- 上述命令只展示 base/runtime 的关系。控制器仍需按 POC 文档构建和部署，Racer server/sidecar 及身份配置也需要单独完成。
+- 本节补充的是构建约定，**不代表 Docker 镜像构建、真实 AKS/GPU 部署或冷/热缓存性能已验证**。
+
 ## 6. Kubernetes / KAITO 集成
 
 ### 6.1 集群平台层
