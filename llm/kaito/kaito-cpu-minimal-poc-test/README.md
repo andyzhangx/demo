@@ -15,7 +15,16 @@ This folder stores the exact prompt content used for the Qwen CPU rerun benchmar
   - `2026-10-15-live-vllm-cpu-benchmark.md`
   - `2026-10-15-live-cpu-tfs-pod-benchmark.md`
 
-## Latest comparison summary
+## Latest live TFS benchmark (2026-10-28)
+
+- [Full report (Chinese)](2026-10-28-live-cpu-tfs-pod-benchmark.md) · [Per-sample statistics and provenance](2026-10-28-live-cpu-tfs-pod-benchmark-summary.json)
+- Target: `qwen-2-5-0-5b-instruct-cpu-tfs-pmfmn-0`, actual Transformers/TFS runtime, `Standard_D16s_v6`.
+- Same 20 short + 20 long prompts, serial chat requests, `temperature=0`, `max_tokens=32/256`.
+- Mean latency: **2,504.37 ms short / 28,671.93 ms long**; end-to-end output throughput: **8.39 / 8.93 tokens/s**.
+- **49 client attempts total**: 40 original attempts (31 successes, 9 transport failures), followed by 9 explicit recovery retries (all successful). Final results contain 20 unique successful samples per group across two measurement windows, not an uninterrupted 40/40 run.
+- Pod remained healthy with zero restarts. Compared with historical TFS, mean latency was 39.3% / 24.1% lower, but node generation and image/runtime differ; this is not a controlled code-performance comparison.
+
+## Historical runtime comparison summary (2026-10-16)
 - Both reports benchmark the same `Qwen/Qwen2.5-0.5B-Instruct` request family on `Standard_D16s_v5` with 20 short + 20 long serial requests.
 - The **vLLM CPU** run was much faster than the **transformers/TFS CPU** run.
 - Headline numbers:

@@ -1,0 +1,1037 @@
+{
+  "percentile_method": "Hyndman-Fan type 7: sort x, h=(n-1)*p, linear interpolation between floor(h) and ceil(h), zero-based",
+  "latency_scope": "HTTP request send through complete non-streaming response body; includes client/port-forward transport, server queue, prefill, generation; excludes post-response parse and disk writes",
+  "throughput_scope": "sum completion tokens / sum successful request elapsed seconds; end-to-end output token throughput, not pure decode speed",
+  "status": "complete_with_explicit_transport_recovery",
+  "original_attempts": 40,
+  "original_successes": 31,
+  "original_transport_failures": 9,
+  "explicit_retry_attempts": 9,
+  "explicit_retry_successes": 9,
+  "total_attempts": 49,
+  "total_successful_responses": 40,
+  "total_transport_failures": 9,
+  "selected_unique_successful_samples": 40,
+  "automatic_retries": 0,
+  "selection": "short 1–20 from initial; long 1–11 from initial plus long 12–20 from explicit recovery; no successful request repeated",
+  "measurement_windows_utc": [
+    {
+      "phase": "initial",
+      "start": "2026-10-28T13:54:47.088Z",
+      "end": "2026-10-28T14:01:09.687Z"
+    },
+    {
+      "phase": "explicit_recovery",
+      "start": "2026-10-28T14:12:43.269Z",
+      "end": "2026-10-28T14:17:00.649Z"
+    }
+  ],
+  "transport_caveat": "Initial long 12 disconnected; initial long 13–20 connection refused. The first disconnected request may have completed server-side; its completion and tokens are unknown and excluded. These failures are not a model reliability measurement. Recovery started well after the interrupted request.",
+  "groups": {
+    "short": {
+      "selected_successful_samples": 20,
+      "total_client_attempts": 20,
+      "initial_successes": 20,
+      "explicit_retry_successes": 0,
+      "transport_failures": 0,
+      "sum_success_elapsed_seconds": 50.08747302507982,
+      "latency_ms": {
+        "mean": 2504.373651253991,
+        "p50": 2513.433253043331,
+        "p95": 2544.4644962379243,
+        "min": 2432.8310119453818,
+        "max": 2586.7851759539917
+      },
+      "tokens": {
+        "prompt_tokens": {
+          "sum": 1031,
+          "mean": 51.55
+        },
+        "completion_tokens": {
+          "sum": 420,
+          "mean": 21
+        },
+        "total_tokens": {
+          "sum": 1451,
+          "mean": 72.55
+        }
+      },
+      "finish_reasons": {
+        "stop": 20
+      },
+      "end_to_end_output_tokens_per_second": 8.385330196029203,
+      "comparison_vs_2026_10_16": {
+        "prior_mean_ms": 4123.78,
+        "prior_rounded_output_tokens_per_second": 5.09,
+        "latency_reduction_percent": 39.26995011242135,
+        "latency_speedup_ratio": 1.6466312836086336,
+        "confounded_by": "D16s_v5 versus D16s_v6, image/runtime differences, uncontrolled load and cache state; long recovery measured in separate window"
+      }
+    },
+    "long": {
+      "selected_successful_samples": 20,
+      "total_client_attempts": 29,
+      "initial_successes": 11,
+      "explicit_retry_successes": 9,
+      "transport_failures": 9,
+      "sum_success_elapsed_seconds": 573.438590940088,
+      "latency_ms": {
+        "mean": 28671.9295470044,
+        "p50": 28673.749635985587,
+        "p95": 29382.40740778856,
+        "min": 27923.001150949858,
+        "max": 29771.802923060022
+      },
+      "tokens": {
+        "prompt_tokens": {
+          "sum": 1431,
+          "mean": 71.55
+        },
+        "completion_tokens": {
+          "sum": 5120,
+          "mean": 256
+        },
+        "total_tokens": {
+          "sum": 6551,
+          "mean": 327.55
+        }
+      },
+      "finish_reasons": {
+        "length": 20
+      },
+      "end_to_end_output_tokens_per_second": 8.928593367960005,
+      "comparison_vs_2026_10_16": {
+        "prior_mean_ms": 37772.32,
+        "prior_rounded_output_tokens_per_second": 6.78,
+        "latency_reduction_percent": 24.092749539863046,
+        "latency_speedup_ratio": 1.3173972103299338,
+        "confounded_by": "D16s_v5 versus D16s_v6, image/runtime differences, uncontrolled load and cache state; long recovery measured in separate window"
+      }
+    }
+  },
+  "environment": {
+    "pod": "qwen-2-5-0-5b-instruct-cpu-tfs-pmfmn-0",
+    "namespace": "default",
+    "pod_uid": "8c709b73-2433-4593-ab26-b40b05a8a22f",
+    "node_sku": "Standard_D16s_v6",
+    "runtime": {
+      "versions": {
+        "torch": "2.13.0+cu129",
+        "transformers": "5.15.0",
+        "accelerate": "1.15.0",
+        "fastapi": "0.136.3",
+        "uvicorn": "0.54.0"
+      },
+      "cpu_count": 16,
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "cpu_model_names": [
+        "INTEL(R) XEON(R) PLATINUM 8573C"
+      ],
+      "cgroup": {
+        "/sys/fs/cgroup/cpu.max": "max 100000",
+        "/sys/fs/cgroup/cpuset.cpus.effective": "0-15"
+      },
+      "serving_processes": [
+        {
+          "pid": "1",
+          "threads": "1",
+          "thread_env": {}
+        },
+        {
+          "pid": "7",
+          "threads": "16",
+          "thread_env": {}
+        },
+        {
+          "pid": "24",
+          "threads": "26",
+          "thread_env": {
+            "OMP_NUM_THREADS": "1"
+          }
+        }
+      ]
+    },
+    "image": "mcr.microsoft.com/aks/kaito/kaito-base:0.6.3",
+    "image_digest": "sha256:48d7501110feb859b247fa84baa6986e11724739a253da20fc793324e23e424f",
+    "resource_requests_limits": {},
+    "command": [
+      "/bin/sh",
+      "-c",
+      "accelerate launch --gpu_ids=all --num_processes=1 --num_machines=1 --machine_rank=0 /workspace/tfs/inference_api.py --pipeline=text-generation --served_model_name=qwen2.5-0.5b-instruct --pretrained_model_name_or_path=qwen/qwen2.5-0.5b-instruct --allow_remote_files --torch_dtype=bfloat16"
+    ]
+  },
+  "recovery_health_evidence": {
+    "before": {
+      "checked_at": "2026-10-28T14:12:41.870Z",
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "health": {
+        "checked_at": "2026-10-28T14:12:43.178Z",
+        "http_status": 200,
+        "body": "{\"status\":\"Healthy\"}"
+      }
+    },
+    "after": {
+      "checked_at": "2026-10-28T14:17:01.810Z",
+      "phase": "Running",
+      "ready": true,
+      "restart_count": 0,
+      "health": {
+        "checked_at": "2026-10-28T14:17:00.863Z",
+        "http_status": 200,
+        "body": "{\"status\":\"Healthy\"}"
+      }
+    },
+    "same_pod_uid_container_id_and_image_digest_as_original": true
+  },
+  "cleanup": {
+    "checked_at": "2026-10-28T14:17:02.015Z",
+    "temporary_credentials_removed": true,
+    "own_port_forward_stopped": true,
+    "original_attempt_files_unchanged": true,
+    "cluster_resources_modified": false
+  },
+  "method": {
+    "model": "qwen2.5-0.5b-instruct",
+    "endpoint": "/v1/chat/completions",
+    "concurrency": 1,
+    "temperature": 0,
+    "stream": false,
+    "timeout_seconds": 600,
+    "retries": "0 automatic; 9 explicit retries of failed long samples only",
+    "warmup_requests": 0,
+    "prompt_parsing": "Strip NN. list prefix only; retain Request N: and all remaining prompt text",
+    "input_sha256": {
+      "short-requests.txt": "c4d1b7e8d51ec6b6130b24212a9848692cf06d7a9cf52d930875d44d2ace2731",
+      "long-requests.txt": "188306b17eff6a237f6ab754bb9aa4db6f055565948f90d2954e812ff1c8f29b"
+    }
+  },
+  "samples": [
+    {
+      "group": "short",
+      "sample": 1,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:54:47.088Z",
+      "ended_at": "2026-10-28T13:54:49.618Z",
+      "elapsed_seconds": 2.5295824389904737,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 2,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:54:49.690Z",
+      "ended_at": "2026-10-28T13:54:52.169Z",
+      "elapsed_seconds": 2.4788377300137654,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 3,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:54:52.201Z",
+      "ended_at": "2026-10-28T13:54:54.691Z",
+      "elapsed_seconds": 2.490210199030116,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 4,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:54:54.732Z",
+      "ended_at": "2026-10-28T13:54:57.207Z",
+      "elapsed_seconds": 2.475492865894921,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 5,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:54:57.276Z",
+      "ended_at": "2026-10-28T13:54:59.789Z",
+      "elapsed_seconds": 2.512968918075785,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 6,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:54:59.836Z",
+      "ended_at": "2026-10-28T13:55:02.352Z",
+      "elapsed_seconds": 2.5161680290475488,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 7,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:02.383Z",
+      "ended_at": "2026-10-28T13:55:04.888Z",
+      "elapsed_seconds": 2.505003923899494,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 8,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:04.921Z",
+      "ended_at": "2026-10-28T13:55:07.372Z",
+      "elapsed_seconds": 2.4516379720298573,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 9,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:07.415Z",
+      "ended_at": "2026-10-28T13:55:09.848Z",
+      "elapsed_seconds": 2.4328310119453818,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 51,
+        "total_tokens": 72
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 10,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:09.924Z",
+      "ended_at": "2026-10-28T13:55:12.418Z",
+      "elapsed_seconds": 2.494015910080634,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 11,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:12.496Z",
+      "ended_at": "2026-10-28T13:55:15.038Z",
+      "elapsed_seconds": 2.541609705076553,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 12,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:15.072Z",
+      "ended_at": "2026-10-28T13:55:17.615Z",
+      "elapsed_seconds": 2.542237092042342,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 13,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:17.660Z",
+      "ended_at": "2026-10-28T13:55:20.117Z",
+      "elapsed_seconds": 2.4565802980214357,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 14,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:20.166Z",
+      "ended_at": "2026-10-28T13:55:22.631Z",
+      "elapsed_seconds": 2.464826210984029,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 15,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:22.673Z",
+      "ended_at": "2026-10-28T13:55:25.190Z",
+      "elapsed_seconds": 2.5179195509990677,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 16,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:25.230Z",
+      "ended_at": "2026-10-28T13:55:27.751Z",
+      "elapsed_seconds": 2.521213148953393,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 17,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:27.788Z",
+      "ended_at": "2026-10-28T13:55:30.309Z",
+      "elapsed_seconds": 2.5208826089510694,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 18,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:30.346Z",
+      "ended_at": "2026-10-28T13:55:32.933Z",
+      "elapsed_seconds": 2.5867851759539917,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 19,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:32.978Z",
+      "ended_at": "2026-10-28T13:55:35.491Z",
+      "elapsed_seconds": 2.5138975880108774,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "short",
+      "sample": 20,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:35.527Z",
+      "ended_at": "2026-10-28T13:55:38.062Z",
+      "elapsed_seconds": 2.5347726470790803,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 21,
+        "prompt_tokens": 52,
+        "total_tokens": 73
+      },
+      "finish_reason": [
+        "stop"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 1,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:55:38.097Z",
+      "ended_at": "2026-10-28T13:56:07.869Z",
+      "elapsed_seconds": 29.771802923060022,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 2,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:56:07.913Z",
+      "ended_at": "2026-10-28T13:56:36.781Z",
+      "elapsed_seconds": 28.867480489076115,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 3,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:56:36.816Z",
+      "ended_at": "2026-10-28T13:57:05.799Z",
+      "elapsed_seconds": 28.983602375956252,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 4,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:57:05.838Z",
+      "ended_at": "2026-10-28T13:57:34.529Z",
+      "elapsed_seconds": 28.691250078962184,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 5,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:57:34.648Z",
+      "ended_at": "2026-10-28T13:58:03.169Z",
+      "elapsed_seconds": 28.520845697028562,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 6,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:58:03.203Z",
+      "ended_at": "2026-10-28T13:58:32.565Z",
+      "elapsed_seconds": 29.3619129069848,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 7,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:58:32.602Z",
+      "ended_at": "2026-10-28T13:59:00.928Z",
+      "elapsed_seconds": 28.32553412998095,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 8,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:59:00.967Z",
+      "ended_at": "2026-10-28T13:59:29.635Z",
+      "elapsed_seconds": 28.668226331006736,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 9,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:59:29.678Z",
+      "ended_at": "2026-10-28T13:59:58.167Z",
+      "elapsed_seconds": 28.48879274597857,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 71,
+        "total_tokens": 327
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 10,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T13:59:58.217Z",
+      "ended_at": "2026-10-28T14:00:26.897Z",
+      "elapsed_seconds": 28.679272940964438,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 11,
+      "source": "initial",
+      "attempt": 1,
+      "started_at": "2026-10-28T14:00:26.937Z",
+      "ended_at": "2026-10-28T14:00:55.057Z",
+      "elapsed_seconds": 28.12017691496294,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 12,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:12:43.269Z",
+      "ended_at": "2026-10-28T14:13:12.470Z",
+      "elapsed_seconds": 29.201505633071065,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 13,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:13:12.534Z",
+      "ended_at": "2026-10-28T14:13:41.532Z",
+      "elapsed_seconds": 28.99777501600329,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 14,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:13:41.577Z",
+      "ended_at": "2026-10-28T14:14:10.756Z",
+      "elapsed_seconds": 29.179438162012957,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 15,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:14:10.820Z",
+      "ended_at": "2026-10-28T14:14:39.257Z",
+      "elapsed_seconds": 28.437137390021235,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 16,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:14:39.301Z",
+      "ended_at": "2026-10-28T14:15:07.540Z",
+      "elapsed_seconds": 28.2383614750579,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 17,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:15:07.587Z",
+      "ended_at": "2026-10-28T14:15:35.855Z",
+      "elapsed_seconds": 28.267892246949486,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 18,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:15:35.896Z",
+      "ended_at": "2026-10-28T14:16:03.819Z",
+      "elapsed_seconds": 27.923001150949858,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 19,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:16:03.869Z",
+      "ended_at": "2026-10-28T14:16:31.878Z",
+      "elapsed_seconds": 28.009393985033967,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    },
+    {
+      "group": "long",
+      "sample": 20,
+      "source": "explicit_recovery",
+      "attempt": 2,
+      "started_at": "2026-10-28T14:16:31.944Z",
+      "ended_at": "2026-10-28T14:17:00.649Z",
+      "elapsed_seconds": 28.705188347026706,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 72,
+        "total_tokens": 328
+      },
+      "finish_reason": [
+        "length"
+      ]
+    }
+  ],
+  "failed_original_attempts": [
+    {
+      "group": "long",
+      "sample": 12,
+      "started_at": "2026-10-28T14:00:55.093Z",
+      "ended_at": "2026-10-28T14:01:09.370Z",
+      "elapsed_seconds": 14.27647826098837,
+      "http_status": null,
+      "error": "RemoteDisconnected: Remote end closed connection without response"
+    },
+    {
+      "group": "long",
+      "sample": 13,
+      "started_at": "2026-10-28T14:01:09.417Z",
+      "ended_at": "2026-10-28T14:01:09.417Z",
+      "elapsed_seconds": 0.00020443391986191273,
+      "http_status": null,
+      "error": "ConnectionRefusedError: [Errno 111] Connection refused"
+    },
+    {
+      "group": "long",
+      "sample": 14,
+      "started_at": "2026-10-28T14:01:09.463Z",
+      "ended_at": "2026-10-28T14:01:09.463Z",
+      "elapsed_seconds": 0.00017759902402758598,
+      "http_status": null,
+      "error": "ConnectionRefusedError: [Errno 111] Connection refused"
+    },
+    {
+      "group": "long",
+      "sample": 15,
+      "started_at": "2026-10-28T14:01:09.495Z",
+      "ended_at": "2026-10-28T14:01:09.495Z",
+      "elapsed_seconds": 0.00018149393144994974,
+      "http_status": null,
+      "error": "ConnectionRefusedError: [Errno 111] Connection refused"
+    },
+    {
+      "group": "long",
+      "sample": 16,
+      "started_at": "2026-10-28T14:01:09.534Z",
+      "ended_at": "2026-10-28T14:01:09.535Z",
+      "elapsed_seconds": 0.00013784307520836592,
+      "http_status": null,
+      "error": "ConnectionRefusedError: [Errno 111] Connection refused"
+    },
+    {
+      "group": "long",
+      "sample": 17,
+      "started_at": "2026-10-28T14:01:09.566Z",
+      "ended_at": "2026-10-28T14:01:09.566Z",
+      "elapsed_seconds": 0.00013901595957577229,
+      "http_status": null,
+      "error": "ConnectionRefusedError: [Errno 111] Connection refused"
+    },
+    {
+      "group": "long",
+      "sample": 18,
+      "started_at": "2026-10-28T14:01:09.597Z",
+      "ended_at": "2026-10-28T14:01:09.597Z",
+      "elapsed_seconds": 0.00012182898353785276,
+      "http_status": null,
+      "error": "ConnectionRefusedError: [Errno 111] Connection refused"
+    },
+    {
+      "group": "long",
+      "sample": 19,
+      "started_at": "2026-10-28T14:01:09.656Z",
+      "ended_at": "2026-10-28T14:01:09.656Z",
+      "elapsed_seconds": 0.0001715040998533368,
+      "http_status": null,
+      "error": "ConnectionRefusedError: [Errno 111] Connection refused"
+    },
+    {
+      "group": "long",
+      "sample": 20,
+      "started_at": "2026-10-28T14:01:09.686Z",
+      "ended_at": "2026-10-28T14:01:09.687Z",
+      "elapsed_seconds": 0.0001286650076508522,
+      "http_status": null,
+      "error": "ConnectionRefusedError: [Errno 111] Connection refused"
+    }
+  ],
+  "artifact_integrity": {
+    "all_original_attempt_files_unchanged": true,
+    "original_requests_jsonl_sha256": "2cab578503ab420983a398ba308e48744c74a9dbe246c90139a1d8eb254fe9c8",
+    "recovery_jsonl_sha256": "3df9718f12e7db7ceb120090de3346598f9c1677b5ec3f0038cf16dd45602074"
+  }
+}
