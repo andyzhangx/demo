@@ -1,6 +1,6 @@
 # kaito-cpu-minimal-poc-test
 
-This folder stores the exact prompt content used for the Qwen CPU rerun benchmark documented in `llm/kaito/kaito-cpu-minimal-poc.md`.
+This folder stores the exact prompt content originally used for the Qwen CPU rerun benchmark documented in `llm/kaito/kaito-cpu-minimal-poc.md`, and subsequent live reruns including Gemma CPU vLLM.
 
 ## Files
 - `short-requests.txt`: the 20 short benchmark prompts
@@ -14,6 +14,15 @@ This folder stores the exact prompt content used for the Qwen CPU rerun benchmar
 - The two main live comparison reports in this folder are:
   - `2026-10-15-live-vllm-cpu-benchmark.md`
   - `2026-10-15-live-cpu-tfs-pod-benchmark.md`
+
+## Latest live Gemma CPU vLLM benchmark (2026-10-29)
+
+- [Full report (Chinese)](2026-10-29-live-cpu-vllm-pod-benchmark.md) · [Per-request statistics and provenance](2026-10-29-live-cpu-vllm-pod-benchmark-summary.json)
+- Target: `gemma-4-e4b-it-cpu-vllm-lq449-0`; actual **Gemma 4 E4B IT**, **vLLM 0.25.1+cpu / BF16**, `Standard_D16s_v6`; explicit `--gpu-memory-utilization=0.8` (CPU engine).
+- Same 20 short + 20 long prompts, serial non-streaming chat requests, `temperature=0`, `max_tokens=32/256`, 600-second socket timeout, no warmup/retries.
+- Mean latency: **3,539.01 ms short / 27,438.26 ms long**; **end-to-end** output throughput: **9.04 / 9.33 tokens/s** (not decode-only TPS; TTFT not measured).
+- **40 attempts / 40 API successes / 0 failures / 0 retries**, one measurement window. Same Pod UID/container/node; Ready and zero restarts before/after.
+- All responses hit the 32/256-token caps; sampled content contains planning-style text, so API success does **not** establish answer-quality success. Different model/runtime/template/output behavior makes historical Qwen numbers contextual, not a controlled vLLM-vs-TFS comparison.
 
 ## Latest live TFS benchmark (2026-10-28)
 
