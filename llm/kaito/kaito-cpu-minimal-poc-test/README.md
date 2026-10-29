@@ -15,7 +15,16 @@ This folder stores the exact prompt content originally used for the Qwen CPU rer
   - `2026-10-15-live-vllm-cpu-benchmark.md`
   - `2026-10-15-live-cpu-tfs-pod-benchmark.md`
 
-## Latest live Gemma CPU vLLM benchmark (2026-10-29)
+## Latest live Gemma CPU vLLM benchmark — q9575 (2026-10-29)
+
+- [Full report (Chinese)](2026-10-29-live-cpu-vllm-q9575-benchmark.md) · [Full request records and statistics](2026-10-29-live-cpu-vllm-q9575-benchmark-summary.json)
+- Target: `gemma-4-e4b-it-cpu-vllm-q9575-0`; actual **Gemma 4 E4B IT**, **vLLM 0.30.0+cpu / BF16**, `Standard_D16s_v6`. Automatic GPU KV offload/LMCache sidecar setup is skipped; native CPU KV cache remains enabled and the CPU memory-utilization default remains `0.8`.
+- Exact same prompts and serial settings: 20 short + 20 long, `temperature=0`, `max_tokens=32/256`, no generation warmup and no retries.
+- **40/40 API successes**; mean latency **4,099.88 / 27,987.86 ms**, P50 **3,604.08 / 27,948.75 ms**, P95 **4,585.26 / 28,512.94 ms**; **end-to-end** output throughput **7.81 / 9.15 tokens/s** (not decode-only TPS or TTFT).
+- First short request took **12.8505 s** and is retained in every headline statistic. Compared with the earlier lq449 run, mean latency increased **15.85% short / 2.00% long**; image, runtime, node and cache/load conditions differ, so this does not establish the effect of disabling offload.
+- Same Pod/container before and after; no added restarts, health/model checks passed. All 40 responses reached their token caps and were truncated: this is not complete-answer quality validation.
+
+## Earlier live Gemma CPU vLLM benchmark — lq449 (2026-10-29)
 
 - [Full report (Chinese)](2026-10-29-live-cpu-vllm-pod-benchmark.md) · [Per-request statistics and provenance](2026-10-29-live-cpu-vllm-pod-benchmark-summary.json)
 - Target: `gemma-4-e4b-it-cpu-vllm-lq449-0`; actual **Gemma 4 E4B IT**, **vLLM 0.25.1+cpu / BF16**, `Standard_D16s_v6`; explicit `--gpu-memory-utilization=0.8` (CPU engine).

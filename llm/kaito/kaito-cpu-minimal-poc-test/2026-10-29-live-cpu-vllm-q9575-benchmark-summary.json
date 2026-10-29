@@ -1,0 +1,3245 @@
+{
+  "target_pod": "gemma-4-e4b-it-cpu-vllm-q9575-0",
+  "namespace": "default",
+  "actual_model": "google/gemma-4-e4b-it",
+  "metadata": {
+    "model": "gemma-4-e4b-it-cpu-vllm",
+    "endpoint": "/v1/chat/completions",
+    "concurrency": 1,
+    "temperature": 0,
+    "stream": false,
+    "timeout_seconds": 600,
+    "retries": 0,
+    "warmup_requests": 0,
+    "prompt_parsing": "Strip NN. list prefix only; retain Request N: and all remaining prompt text",
+    "input_sha256": {
+      "short-requests.txt": "c4d1b7e8d51ec6b6130b24212a9848692cf06d7a9cf52d930875d44d2ace2731",
+      "long-requests.txt": "188306b17eff6a237f6ab754bb9aa4db6f055565948f90d2954e812ff1c8f29b"
+    },
+    "started_at": "2026-10-29T14:37:24.142Z",
+    "ended_at": "2026-10-29T14:48:10.166Z",
+    "completed": true
+  },
+  "groups": {
+    "short": {
+      "attempts": 20,
+      "successes": 20,
+      "errors": 0,
+      "latency_seconds": {
+        "mean": 4.099881371669471,
+        "p50": 3.6040849100099877,
+        "p95": 4.585256997845142,
+        "min": 3.5321042209398,
+        "max": 12.85049907490611
+      },
+      "total_elapsed_seconds": 81.99762743338943,
+      "total_output_tokens": 640,
+      "end_to_end_output_tokens_per_second": 7.805103879620206,
+      "finish_reasons": {
+        "length": 20
+      },
+      "length_truncated": 20,
+      "nonempty_content": 20,
+      "nonempty_reasoning": 0
+    },
+    "long": {
+      "attempts": 20,
+      "successes": 20,
+      "errors": 0,
+      "latency_seconds": {
+        "mean": 27.987856686546003,
+        "p50": 27.948754583019763,
+        "p95": 28.51294212253997,
+        "min": 27.472047508927062,
+        "max": 28.60379274119623
+      },
+      "total_elapsed_seconds": 559.75713373092,
+      "total_output_tokens": 5120,
+      "end_to_end_output_tokens_per_second": 9.146824026830942,
+      "finish_reasons": {
+        "length": 20
+      },
+      "length_truncated": 20,
+      "nonempty_content": 20,
+      "nonempty_reasoning": 0
+    }
+  },
+  "baseline_groups": {
+    "short": {
+      "attempts": 20,
+      "successes": 20,
+      "errors": 0,
+      "latency_seconds": {
+        "mean": 3.5390146675053984,
+        "p50": 3.5198037209920585,
+        "p95": 3.6906841730175075,
+        "min": 3.4104110880289227,
+        "max": 3.9421442529419437
+      },
+      "total_elapsed_seconds": 70.78029335010797,
+      "total_output_tokens": 640,
+      "end_to_end_output_tokens_per_second": 9.042064813638184,
+      "finish_reasons": {
+        "length": 20
+      },
+      "length_truncated": 20,
+      "nonempty_content": 20,
+      "nonempty_reasoning": 0
+    },
+    "long": {
+      "attempts": 20,
+      "successes": 20,
+      "errors": 0,
+      "latency_seconds": {
+        "mean": 27.438262202008627,
+        "p50": 27.288472049462143,
+        "p95": 28.064805412228452,
+        "min": 27.108951937989332,
+        "max": 28.32763270207215
+      },
+      "total_elapsed_seconds": 548.7652440401725,
+      "total_output_tokens": 5120,
+      "end_to_end_output_tokens_per_second": 9.33003694312898,
+      "finish_reasons": {
+        "length": 20
+      },
+      "length_truncated": 20,
+      "nonempty_content": 20,
+      "nonempty_reasoning": 0
+    }
+  },
+  "comparison": {
+    "short": {
+      "mean_latency_change_percent": 15.848103408947424,
+      "p95_latency_change_percent": 24.238671825886172,
+      "e2e_output_tps_change_percent": -13.680071526940008
+    },
+    "long": {
+      "mean_latency_change_percent": 2.0030222048725177,
+      "p95_latency_change_percent": 1.5967925083715695,
+      "e2e_output_tps_change_percent": -1.9636890766329018
+    }
+  },
+  "identity": {
+    "same_uid": true,
+    "same_node": true,
+    "same_container_ids": true,
+    "same_images": true,
+    "same_commands_resources": true,
+    "same_restart_counts": true,
+    "ready_before_after": true
+  },
+  "health_http_status": {
+    "health-before.json": 200,
+    "health-after.json": 200,
+    "models-before.json": 200,
+    "models-after.json": 200
+  },
+  "image_digest": "docker.io/andyzhangx/kaito-base-vllm-cpu@sha256:5a22f2daec54902c156ec3ce4bce7da31b50858b9d06c33705e4f46e92810627",
+  "limitations": [
+    "End-to-end output token rate, not decode TPS or TTFT",
+    "No concurrency/load isolation/cold-start guarantee; no generation warmup",
+    "Image/runtime/node/default configuration differ from baseline; not causal attribution",
+    "HTTP success is not answer-quality success; inspect content/reasoning and length truncation",
+    "Model revision main; resolved weight commit not established"
+  ],
+  "requests": [
+    {
+      "group": "short",
+      "sample": 1,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 1: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:37:24.206Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8d9fada1a58b0828",
+        "object": "chat.completion",
+        "created": 1793284644,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan: Define Kubernetes simply as a container orchestration system",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8d9fada1a58b0828\",\"object\":\"chat.completion\",\"created\":1793284644,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan: Define Kubernetes simply as a container orchestration system\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 12.85049907490611,
+      "ended_at": "2026-10-29T14:37:37.057Z"
+    },
+    {
+      "group": "short",
+      "sample": 2,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 2: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:37:37.190Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-bcd5acba82a96912",
+        "object": "chat.completion",
+        "created": 1793284657,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a one-sentence explanation of Kubernetes, strictly under 20 words.\n2",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-bcd5acba82a96912\",\"object\":\"chat.completion\",\"created\":1793284657,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Thinking Process:\\n\\n1.  **Analyze the Request:** The user wants a one-sentence explanation of Kubernetes, strictly under 20 words.\\n2\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.608497517183423,
+      "ended_at": "2026-10-29T14:37:40.799Z"
+    },
+    {
+      "group": "short",
+      "sample": 3,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 3: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:37:40.874Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-bf0ab30d808c7b60",
+        "object": "chat.completion",
+        "created": 1793284660,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-bf0ab30d808c7b60\",\"object\":\"chat.completion\",\"created\":1793284660,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.6281886340584606,
+      "ended_at": "2026-10-29T14:37:44.502Z"
+    },
+    {
+      "group": "short",
+      "sample": 4,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 4: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:37:44.624Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-bdef9972fb7f4b9a",
+        "object": "chat.completion",
+        "created": 1793284664,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-bdef9972fb7f4b9a\",\"object\":\"chat.completion\",\"created\":1793284664,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.6092095759231597,
+      "ended_at": "2026-10-29T14:37:48.234Z"
+    },
+    {
+      "group": "short",
+      "sample": 5,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 5: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:37:48.348Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-aa250a00753cccb4",
+        "object": "chat.completion",
+        "created": 1793284668,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a one-sentence explanation of Kubernetes, strictly under 20 words.\n2",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-aa250a00753cccb4\",\"object\":\"chat.completion\",\"created\":1793284668,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Thinking Process:\\n\\n1.  **Analyze the Request:** The user wants a one-sentence explanation of Kubernetes, strictly under 20 words.\\n2\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.549010135931894,
+      "ended_at": "2026-10-29T14:37:51.898Z"
+    },
+    {
+      "group": "short",
+      "sample": 6,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 6: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:37:51.979Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-91c6d6ed0a544338",
+        "object": "chat.completion",
+        "created": 1793284672,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-91c6d6ed0a544338\",\"object\":\"chat.completion\",\"created\":1793284672,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.5913766780868173,
+      "ended_at": "2026-10-29T14:37:55.570Z"
+    },
+    {
+      "group": "short",
+      "sample": 7,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 7: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:37:55.645Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-b0c5b68706f1e7b1",
+        "object": "chat.completion",
+        "created": 1793284675,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-b0c5b68706f1e7b1\",\"object\":\"chat.completion\",\"created\":1793284675,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.5704324210528284,
+      "ended_at": "2026-10-29T14:37:59.215Z"
+    },
+    {
+      "group": "short",
+      "sample": 8,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 8: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:37:59.320Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-a69f952247ba2a7d",
+        "object": "chat.completion",
+        "created": 1793284679,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-a69f952247ba2a7d\",\"object\":\"chat.completion\",\"created\":1793284679,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.5477817789651453,
+      "ended_at": "2026-10-29T14:38:02.868Z"
+    },
+    {
+      "group": "short",
+      "sample": 9,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 9: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:02.946Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8c85712ceb39d576",
+        "object": "chat.completion",
+        "created": 1793284683,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a one-sentence explanation of Kubernetes.\n2.  **Constraint Check:** The",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 35,
+          "total_tokens": 67,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8c85712ceb39d576\",\"object\":\"chat.completion\",\"created\":1793284683,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Thinking Process:\\n\\n1.  **Analyze the Request:** The user wants a one-sentence explanation of Kubernetes.\\n2.  **Constraint Check:** The\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":35,\"total_tokens\":67,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 35,
+        "total_tokens": 67,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.6047136830165982,
+      "ended_at": "2026-10-29T14:38:06.550Z"
+    },
+    {
+      "group": "short",
+      "sample": 10,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 10: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:06.686Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-848dd8220cba5340",
+        "object": "chat.completion",
+        "created": 1793284686,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-848dd8220cba5340\",\"object\":\"chat.completion\",\"created\":1793284686,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.5704947458580136,
+      "ended_at": "2026-10-29T14:38:10.257Z"
+    },
+    {
+      "group": "short",
+      "sample": 11,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 11: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:10.375Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-a10340165478cdb0",
+        "object": "chat.completion",
+        "created": 1793284690,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-a10340165478cdb0\",\"object\":\"chat.completion\",\"created\":1793284690,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.61357816378586,
+      "ended_at": "2026-10-29T14:38:13.988Z"
+    },
+    {
+      "group": "short",
+      "sample": 12,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 12: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:14.083Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-b62c773f1c7cd283",
+        "object": "chat.completion",
+        "created": 1793284694,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-b62c773f1c7cd283\",\"object\":\"chat.completion\",\"created\":1793284694,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.603456137003377,
+      "ended_at": "2026-10-29T14:38:17.687Z"
+    },
+    {
+      "group": "short",
+      "sample": 13,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 13: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:17.810Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8634bf6648fd4e92",
+        "object": "chat.completion",
+        "created": 1793284697,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8634bf6648fd4e92\",\"object\":\"chat.completion\",\"created\":1793284697,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.5321042209398,
+      "ended_at": "2026-10-29T14:38:21.342Z"
+    },
+    {
+      "group": "short",
+      "sample": 14,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 14: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:21.439Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8ded77b5c40ebc17",
+        "object": "chat.completion",
+        "created": 1793284701,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8ded77b5c40ebc17\",\"object\":\"chat.completion\",\"created\":1793284701,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.5847894058097154,
+      "ended_at": "2026-10-29T14:38:25.024Z"
+    },
+    {
+      "group": "short",
+      "sample": 15,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 15: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:25.108Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-ae6ca4430f351e64",
+        "object": "chat.completion",
+        "created": 1793284705,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-ae6ca4430f351e64\",\"object\":\"chat.completion\",\"created\":1793284705,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 4.15024425694719,
+      "ended_at": "2026-10-29T14:38:29.258Z"
+    },
+    {
+      "group": "short",
+      "sample": 16,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 16: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:29.351Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-a4bc9644e15179f0",
+        "object": "chat.completion",
+        "created": 1793284709,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-a4bc9644e15179f0\",\"object\":\"chat.completion\",\"created\":1793284709,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.918227771995589,
+      "ended_at": "2026-10-29T14:38:33.269Z"
+    },
+    {
+      "group": "short",
+      "sample": 17,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 17: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:33.363Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-a1f312f4e4779582",
+        "object": "chat.completion",
+        "created": 1793284713,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-a1f312f4e4779582\",\"object\":\"chat.completion\",\"created\":1793284713,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.582292147912085,
+      "ended_at": "2026-10-29T14:38:36.945Z"
+    },
+    {
+      "group": "short",
+      "sample": 18,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 18: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:37.108Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-92bb4e598ec64279",
+        "object": "chat.completion",
+        "created": 1793284717,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-92bb4e598ec64279\",\"object\":\"chat.completion\",\"created\":1793284717,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.651434544008225,
+      "ended_at": "2026-10-29T14:38:40.759Z"
+    },
+    {
+      "group": "short",
+      "sample": 19,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 19: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:40.858Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-bd3dcbdbf8d5c6f0",
+        "object": "chat.completion",
+        "created": 1793284720,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\n\nPlan:\n1. Define Kubernetes simply.\n",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-bd3dcbdbf8d5c6f0\",\"object\":\"chat.completion\",\"created\":1793284720,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"The user wants a very short, one-sentence explanation of Kubernetes, strictly under 20 words.\\n\\nPlan:\\n1. Define Kubernetes simply.\\n\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.6364535850007087,
+      "ended_at": "2026-10-29T14:38:44.494Z"
+    },
+    {
+      "group": "short",
+      "sample": 20,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 20: In one short sentence, explain what Kubernetes is. Keep it under 20 words."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 32,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:44.609Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-94c6ba020a32f019",
+        "object": "chat.completion",
+        "created": 1793284724,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants a one-sentence explanation of Kubernetes, strictly under 20 words.\n2",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 36,
+          "total_tokens": 68,
+          "completion_tokens": 32,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-94c6ba020a32f019\",\"object\":\"chat.completion\",\"created\":1793284724,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Thinking Process:\\n\\n1.  **Analyze the Request:** The user wants a one-sentence explanation of Kubernetes, strictly under 20 words.\\n2\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":36,\"total_tokens\":68,\"completion_tokens\":32,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 36,
+        "total_tokens": 68,
+        "completion_tokens": 32,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 3.594842955004424,
+      "ended_at": "2026-10-29T14:38:48.204Z"
+    },
+    {
+      "group": "long",
+      "sample": 1,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 1: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:38:48.306Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-906359109be8e6a2",
+        "object": "chat.completion",
+        "created": 1793284728,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Sections):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/stores it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\n    *   **Scheduler",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-906359109be8e6a2\",\"object\":\"chat.completion\",\"created\":1793284728,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Sections):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/stores it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\\n    *   **Scheduler\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.98439407092519,
+      "ended_at": "2026-10-29T14:39:16.290Z"
+    },
+    {
+      "group": "long",
+      "sample": 2,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 2: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:39:16.423Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-a0a2cd14fea5af0f",
+        "object": "chat.completion",
+        "created": 1793284756,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/persists it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\n    *   **",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-a0a2cd14fea5af0f\",\"object\":\"chat.completion\",\"created\":1793284756,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/persists it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\\n    *   **\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.871108010178432,
+      "ended_at": "2026-10-29T14:39:44.294Z"
+    },
+    {
+      "group": "long",
+      "sample": 3,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 3: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:39:44.391Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-b0c8d1bb323f6d98",
+        "object": "chat.completion",
+        "created": 1793284784,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/stores it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\n    *   **Scheduler",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-b0c8d1bb323f6d98\",\"object\":\"chat.completion\",\"created\":1793284784,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/stores it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\\n    *   **Scheduler\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 28.253616931149736,
+      "ended_at": "2026-10-29T14:40:12.644Z"
+    },
+    {
+      "group": "long",
+      "sample": 4,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 4: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:40:12.742Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-9d8d7971f81388a5",
+        "object": "chat.completion",
+        "created": 1793284812,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/stores it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\n    *   **Scheduler",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-9d8d7971f81388a5\",\"object\":\"chat.completion\",\"created\":1793284812,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/stores it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\\n    *   **Scheduler\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.850562787847593,
+      "ended_at": "2026-10-29T14:40:40.593Z"
+    },
+    {
+      "group": "long",
+      "sample": 5,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 5: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:40:40.713Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-b3172aaff21ffe41",
+        "object": "chat.completion",
+        "created": 1793284840,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/stores it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\n    *   **Scheduler",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-b3172aaff21ffe41\",\"object\":\"chat.completion\",\"created\":1793284840,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/stores it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\\n    *   **Scheduler\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.87231787503697,
+      "ended_at": "2026-10-29T14:41:08.585Z"
+    },
+    {
+      "group": "long",
+      "sample": 6,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 6: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:41:08.673Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-98b30c438712354e",
+        "object": "chat.completion",
+        "created": 1793284868,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the entire lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/persists it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Key action: Receives, validates, stores.*\n    *   **Scheduler (The Match",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-98b30c438712354e\",\"object\":\"chat.completion\",\"created\":1793284868,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the entire lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/persists it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Key action: Receives, validates, stores.*\\n    *   **Scheduler (The Match\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.87549011898227,
+      "ended_at": "2026-10-29T14:41:36.549Z"
+    },
+    {
+      "group": "long",
+      "sample": 7,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 7: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:41:36.639Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8b967cee3bac766a",
+        "object": "chat.completion",
+        "created": 1793284896,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/persists it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\n    *   **",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8b967cee3bac766a\",\"object\":\"chat.completion\",\"created\":1793284896,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/persists it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\\n    *   **\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.91650066501461,
+      "ended_at": "2026-10-29T14:42:04.555Z"
+    },
+    {
+      "group": "long",
+      "sample": 8,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 8: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:42:04.644Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-84fc779555fc70b9",
+        "object": "chat.completion",
+        "created": 1793284924,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/stores it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\n    *   **Scheduler",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-84fc779555fc70b9\",\"object\":\"chat.completion\",\"created\":1793284924,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/stores it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\\n    *   **Scheduler\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.472047508927062,
+      "ended_at": "2026-10-29T14:42:32.116Z"
+    },
+    {
+      "group": "long",
+      "sample": 9,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 9: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:42:32.204Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8a124daef5537c27",
+        "object": "chat.completion",
+        "created": 1793284952,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the entire lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/persists it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Key action: Receives, validates, stores.*\n    *   **Scheduler (The Match",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 56,
+          "total_tokens": 312,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8a124daef5537c27\",\"object\":\"chat.completion\",\"created\":1793284952,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the entire lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/persists it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Key action: Receives, validates, stores.*\\n    *   **Scheduler (The Match\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":56,\"total_tokens\":312,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 56,
+        "total_tokens": 312,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.647878149989992,
+      "ended_at": "2026-10-29T14:42:59.852Z"
+    },
+    {
+      "group": "long",
+      "sample": 10,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 10: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:42:59.980Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-9916acb9197d0b3e",
+        "object": "chat.completion",
+        "created": 1793284980,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet on the assigned Node notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Structure the Explanation (Mapping to Required Sections):**\n    *   **Introduction/Trigger:** (API Server)\n    *   **Decision Making:** (Scheduler)\n    *   **",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-9916acb9197d0b3e\",\"object\":\"chat.completion\",\"created\":1793284980,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet on the assigned Node notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Structure the Explanation (Mapping to Required Sections):**\\n    *   **Introduction/Trigger:** (API Server)\\n    *   **Decision Making:** (Scheduler)\\n    *   **\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 28.20409900904633,
+      "ended_at": "2026-10-29T14:43:28.184Z"
+    },
+    {
+      "group": "long",
+      "sample": 11,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 11: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:43:28.312Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-998a708be8391adf",
+        "object": "chat.completion",
+        "created": 1793285008,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet on the assigned Node notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Structure the Explanation (Mapping to Required Sections):**\n    *   **Introduction/Trigger:** (API Server)\n    *   **Decision Making:** (Scheduler)\n    *   **",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-998a708be8391adf\",\"object\":\"chat.completion\",\"created\":1793285008,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet on the assigned Node notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Structure the Explanation (Mapping to Required Sections):**\\n    *   **Introduction/Trigger:** (API Server)\\n    *   **Decision Making:** (Scheduler)\\n    *   **\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 28.085424941033125,
+      "ended_at": "2026-10-29T14:43:56.397Z"
+    },
+    {
+      "group": "long",
+      "sample": 12,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 12: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:43:56.564Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8e69bfcc7cdeb1ff",
+        "object": "chat.completion",
+        "created": 1793285036,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/persists it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\n    *   **",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8e69bfcc7cdeb1ff\",\"object\":\"chat.completion\",\"created\":1793285036,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/persists it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Self-Correction: Keep this brief; it's the entry point.*\\n    *   **\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.985152386827394,
+      "ended_at": "2026-10-29T14:44:24.549Z"
+    },
+    {
+      "group": "long",
+      "sample": 13,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 13: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:44:24.668Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-800bd614a3cc0dc4",
+        "object": "chat.completion",
+        "created": 1793285064,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet (on the assigned Node) notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-800bd614a3cc0dc4\",\"object\":\"chat.completion\",\"created\":1793285064,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet (on the assigned Node) notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 28.60379274119623,
+      "ended_at": "2026-10-29T14:44:53.272Z"
+    },
+    {
+      "group": "long",
+      "sample": 14,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 14: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:44:53.378Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-9a1a650232dea47a",
+        "object": "chat.completion",
+        "created": 1793285093,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet (on the assigned Node) notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-9a1a650232dea47a\",\"object\":\"chat.completion\",\"created\":1793285093,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet (on the assigned Node) notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 28.508160511031747,
+      "ended_at": "2026-10-29T14:45:21.886Z"
+    },
+    {
+      "group": "long",
+      "sample": 15,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 15: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:45:21.972Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-97fee4a3ec504b5c",
+        "object": "chat.completion",
+        "created": 1793285122,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet (on the assigned Node) notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-97fee4a3ec504b5c\",\"object\":\"chat.completion\",\"created\":1793285122,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet (on the assigned Node) notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.85371722909622,
+      "ended_at": "2026-10-29T14:45:49.826Z"
+    },
+    {
+      "group": "long",
+      "sample": 16,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 16: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:45:49.941Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-a91b595e1f569343",
+        "object": "chat.completion",
+        "created": 1793285150,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet (on the assigned Node) notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-a91b595e1f569343\",\"object\":\"chat.completion\",\"created\":1793285150,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet (on the assigned Node) notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.786617414793,
+      "ended_at": "2026-10-29T14:46:17.727Z"
+    },
+    {
+      "group": "long",
+      "sample": 17,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 17: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:46:17.816Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8a641f9a817a23d7",
+        "object": "chat.completion",
+        "created": 1793285177,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet (on the assigned Node) notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8a641f9a817a23d7\",\"object\":\"chat.completion\",\"created\":1793285177,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet (on the assigned Node) notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 28.06475773593411,
+      "ended_at": "2026-10-29T14:46:45.880Z"
+    },
+    {
+      "group": "long",
+      "sample": 18,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 18: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:46:45.978Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-a6517dc8c0742eff",
+        "object": "chat.completion",
+        "created": 1793285206,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet (on the assigned Node) notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Structure the Explanation (Mapping to Required Sections):**\n    *   **Introduction/Trigger:** (API Server)\n    *   **Decision Making:** (Scheduler)\n    *",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-a6517dc8c0742eff\",\"object\":\"chat.completion\",\"created\":1793285206,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet (on the assigned Node) notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Structure the Explanation (Mapping to Required Sections):**\\n    *   **Introduction/Trigger:** (API Server)\\n    *   **Decision Making:** (Scheduler)\\n    *\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.981008501024917,
+      "ended_at": "2026-10-29T14:47:13.959Z"
+    },
+    {
+      "group": "long",
+      "sample": 19,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 19: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:47:14.043Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-9c5a5d6824012ab8",
+        "object": "chat.completion",
+        "created": 1793285234,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\n    *   **Style:** Concise but detailed structure.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it.\n    *   API Server validates and persists it $\\rightarrow$ Scheduler finds a suitable Node.\n    *   Scheduler updates the Pod object (assigns the Node).\n    *   Kubelet on the assigned Node notices the change $\\rightarrow$ Kubelet acts.\n    *   Kubelet instructs the Container Runtime $\\rightarrow$ Containers start.\n    *   Networking/Storage hooks in $\\rightarrow$ Pod is ready to communicate.\n\n3.  **Structure the Explanation (Mapping to Required Sections):**\n    *   **Introduction/Trigger:** (API Server)\n    *   **Decision Making:** (Scheduler)\n    *   **",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-9c5a5d6824012ab8\",\"object\":\"chat.completion\",\"created\":1793285234,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components:** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage considerations.\\n    *   **Style:** Concise but detailed structure.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it.\\n    *   API Server validates and persists it $\\\\rightarrow$ Scheduler finds a suitable Node.\\n    *   Scheduler updates the Pod object (assigns the Node).\\n    *   Kubelet on the assigned Node notices the change $\\\\rightarrow$ Kubelet acts.\\n    *   Kubelet instructs the Container Runtime $\\\\rightarrow$ Containers start.\\n    *   Networking/Storage hooks in $\\\\rightarrow$ Pod is ready to communicate.\\n\\n3.  **Structure the Explanation (Mapping to Required Sections):**\\n    *   **Introduction/Trigger:** (API Server)\\n    *   **Decision Making:** (Scheduler)\\n    *   **\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 28.189115095883608,
+      "ended_at": "2026-10-29T14:47:42.232Z"
+    },
+    {
+      "group": "long",
+      "sample": 20,
+      "request": {
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Request 20: Explain how Kubernetes handles pod creation from API submission to container start. Use a concise but detailed structure with sections for API server, scheduler, kubelet, container runtime, and networking/storage considerations."
+          }
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": false
+      },
+      "started_at": "2026-10-29T14:47:42.323Z",
+      "http_status": 200,
+      "response": {
+        "id": "chatcmpl-8eefb229d2f04cc0",
+        "object": "chat.completion",
+        "created": 1793285262,
+        "model": "gemma-4-e4b-it-cpu-vllm",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Here's a thinking process that leads to the suggested explanation:\n\n1.  **Deconstruct the Request:**\n    *   **Goal:** Explain the entire lifecycle of Pod creation in Kubernetes.\n    *   **Scope:** From API submission to container start.\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\n    *   **Tone/Style:** Concise but detailed.\n\n2.  **Determine the Flow (The Journey of the Pod):**\n    *   User submits YAML $\\rightarrow$ API Server receives it $\\rightarrow$ API Server validates/persists it $\\rightarrow$ Scheduler finds a node $\\rightarrow$ Scheduler updates the object $\\rightarrow$ Kubelet on the chosen node sees the change $\\rightarrow$ Kubelet instructs the Container Runtime $\\rightarrow$ Container Runtime pulls images/starts processes $\\rightarrow$ Networking/Storage hooks in.\n\n3.  **Draft Content for Each Section (Iterative Refinement):**\n\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Key action: Receives, validates, stores.*\n    *   **Scheduler (The Match",
+              "refusal": null,
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "reasoning": null
+            },
+            "logprobs": null,
+            "finish_reason": "length",
+            "stop_reason": null,
+            "token_ids": null,
+            "routed_experts": null
+          }
+        ],
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.30.0-e7d2ec7e",
+        "usage": {
+          "prompt_tokens": 57,
+          "total_tokens": 313,
+          "completion_tokens": 256,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "prompt_logprobs": null,
+        "prompt_token_ids": null,
+        "prompt_text": null,
+        "kv_transfer_params": null,
+        "ec_transfer_params": null,
+        "metrics": null
+      },
+      "response_text": "{\"id\":\"chatcmpl-8eefb229d2f04cc0\",\"object\":\"chat.completion\",\"created\":1793285262,\"model\":\"gemma-4-e4b-it-cpu-vllm\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here's a thinking process that leads to the suggested explanation:\\n\\n1.  **Deconstruct the Request:**\\n    *   **Goal:** Explain the entire lifecycle of Pod creation in Kubernetes.\\n    *   **Scope:** From API submission to container start.\\n    *   **Required Components (Structure):** API Server, Scheduler, Kubelet, Container Runtime, Networking/Storage Considerations.\\n    *   **Tone/Style:** Concise but detailed.\\n\\n2.  **Determine the Flow (The Journey of the Pod):**\\n    *   User submits YAML $\\\\rightarrow$ API Server receives it $\\\\rightarrow$ API Server validates/persists it $\\\\rightarrow$ Scheduler finds a node $\\\\rightarrow$ Scheduler updates the object $\\\\rightarrow$ Kubelet on the chosen node sees the change $\\\\rightarrow$ Kubelet instructs the Container Runtime $\\\\rightarrow$ Container Runtime pulls images/starts processes $\\\\rightarrow$ Networking/Storage hooks in.\\n\\n3.  **Draft Content for Each Section (Iterative Refinement):**\\n\\n    *   **API Server (The Front Door):** Needs to handle the initial request, validation, and persistence (etcd). *Key action: Receives, validates, stores.*\\n    *   **Scheduler (The Match\",\"refusal\":null,\"annotations\":null,\"audio\":null,\"function_call\":null,\"reasoning\":null},\"logprobs\":null,\"finish_reason\":\"length\",\"stop_reason\":null,\"token_ids\":null,\"routed_experts\":null}],\"service_tier\":null,\"system_fingerprint\":\"vllm-0.30.0-e7d2ec7e\",\"usage\":{\"prompt_tokens\":57,\"total_tokens\":313,\"completion_tokens\":256,\"prompt_tokens_details\":null,\"completion_tokens_details\":{\"reasoning_tokens\":0}},\"prompt_logprobs\":null,\"prompt_token_ids\":null,\"prompt_text\":null,\"kv_transfer_params\":null,\"ec_transfer_params\":null,\"metrics\":null}",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 313,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": [
+        "length"
+      ],
+      "success": true,
+      "error": null,
+      "elapsed_seconds": 27.751372047001496,
+      "ended_at": "2026-10-29T14:48:10.074Z"
+    }
+  ],
+  "runtime_versions": {
+    "vllm": "0.30.0+cpu",
+    "torch": "2.13.0+cpu",
+    "transformers": "5.17.0",
+    "accelerate": "No package metadata was found for accelerate",
+    "fastapi": "0.136.3",
+    "uvicorn": "0.53.0"
+  },
+  "instance_type": "Standard_D16s_v6",
+  "cpu_model_names": [
+    "INTEL(R) XEON(R) PLATINUM 8573C"
+  ],
+  "verification": {
+    "independent_recomputation": "PASS",
+    "all_40_raw_records_consistent": true
+  },
+  "publication_note": "Sanitized public export; raw cluster inspection and local credential-access scripts are not published."
+}
