@@ -701,18 +701,51 @@ Also relevant: **LWS DisaggregatedSet** declaratively orchestrates roles as chil
 - Don’t get too deep into KEDA internals.
 - The audience mainly needs the conceptual shift: from generic resource proxies to workload-aware scaling signals.
 
-### Slide 28 — How the KAITO KEDA scaler works
-- the scaling target is `InferenceSet`
-- the KEDA KAITO scaler can auto-provision a `ScaledObject` from `InferenceSet` annotations
-- it directly scrapes inference metrics from vLLM pods
-- it removes the need for a separate Prometheus dependency for this flow
+### Slide 28 — KEDA autoscales a KAITO InferenceSet
 
-**Suggested visual:** `InferenceSet` -> annotations -> KEDA KAITO scaler -> `ScaledObject` / HPA -> replicas.
+**Takeaway:** KEDA and the KAITO external scaler provide direct-metric autoscaling for one InferenceSet; independent prefill/decode scaling is the next step.
 
-**Speaker note:**
-- This is the implementation slide for autoscaling.
-- Mention the practical point from the docs: the dedicated scaler simplifies configuration and directly uses inference metrics.
-- Good concrete example: `vllm:num_requests_waiting`.
+**On-slide copy:**
+
+- The KAITO external scaler reads vLLM metrics directly—no Prometheus required.
+- InferenceSet annotations enable autoscaling and select the metric + target.
+- The KAITO scaler creates a ScaledObject and scrapes vLLM inference pods.
+- KEDA manages an HPA; HPA sets replicas through the InferenceSet `/scale` API.
+- KAITO reconciles the desired number of inference replicas.
+- Guide example: average `vllm:num_requests_waiting`, target **10**, maximum **5** replicas.
+- Scheduled scaling is separate: built-in KEDA cron + manually configured ScaledObject; no dedicated KAITO scaler needed.
+
+**Visual:** Left-to-right control flow: annotated InferenceSet → KAITO external scaler → KEDA + HPA → KAITO operator. Below it, show the guide’s waiting-request metric example and a separate cron option.
+
+**Speaker notes:**
+
+KAITO supports annotation-driven, metric-based autoscaling of an InferenceSet with KEDA and the dedicated KEDA KAITO external scaler. The external scaler reads scaledobject.kaito.sh/* annotations, automatically provisions the ScaledObject, and scrapes vLLM metrics directly from the associated inference pods. No separate Prometheus deployment is required for this integration. KEDA creates/manages the HPA; the Kubernetes HPA controller updates the InferenceSet /scale subresource, and KAITO reconciles the desired inference replicas.
+
+The guide’s example aggregates vllm:num_requests_waiting using average, with threshold/target 10 and maxReplicaCount 5. These are illustrative settings, not universal defaults or a fixed scaling-time guarantee. HPA stabilization, scaling policies, and workload readiness also affect observed scaling. Configure annotation keys and API versions for the deployed KAITO/scaler release; the guide and scaler repository can differ.
+
+Scheduled scaling is a separate option: a manually authored ScaledObject can use KEDA’s built-in cron trigger against the InferenceSet. It does not require the dedicated KAITO scaler. Do not describe the direct-metrics integration as a Prometheus-query path.
+
+Scaling here changes one InferenceSet replica count. Independent prefill/decode replica control is the proposed next step, not an existing capability demonstrated by this example.
+
+**Speaker script:**
+
+Let’s look at how KAITO integrates with KEDA today. For metric-based scaling, we enable autoscaling on an InferenceSet through annotations. The dedicated KEDA KAITO external scaler uses those annotations to create a ScaledObject automatically.
+
+The scaler reads vLLM metrics directly from the inference pods, so this path does not require a separate Prometheus deployment. KEDA manages an HPA, which updates the InferenceSet’s desired replica count through its scale API. KAITO then reconciles the inference replicas.
+
+The guide’s example uses the average number of waiting requests as the scaling signal, with a target of ten and a maximum of five replicas. That is a queue-pressure signal, not GPU utilization and not request rate.
+
+For predictable traffic, KEDA’s built-in cron trigger is another option. That uses a manually configured ScaledObject and does not need the dedicated KAITO scaler.
+
+The important boundary is that this scales one InferenceSet as a unit. It does not yet give us independent prefill and decode scaling. That is the next step we will look at.
+
+**Sources:**
+
+- https://kaito-project.github.io/kaito/docs/keda-autoscaler-inference/
+- https://github.com/kaito-project/keda-kaito-scaler
+- https://keda.sh/docs/2.18/concepts/scaling-deployments/#scaling-custom-resources
+
+---
 
 ### Slide 29 — Independent autoscaling by role in P/D
 - in P/D, prefill and decode should not share one scaling signal
