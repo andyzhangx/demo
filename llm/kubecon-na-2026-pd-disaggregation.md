@@ -1,15 +1,5 @@
 # KubeCon North America 2026 — Speaker Scripts (Slides 2–39)
 
-**Talk:** Prefill Here, Decode There: Kubernetes-Native LLM Inference Disaggregation with KAITO and llm-d
-
-**Source:** [kubecon-na-2026-pd-disaggregation.pptx](./kubecon-na-2026-pd-disaggregation.pptx)
-
-Extracted from the [PowerPoint at commit `357e175`](https://github.com/andyzhangx/demo/blob/357e17507395dbb4f365c61142e987913e3f46d7/llm/kubecon-na-2026-pd-disaggregation.pptx).
-
-Slide numbers below follow the PowerPoint’s actual slide order. This document contains the speaker scripts for slides **2 through 39 inclusive** (38 slides). Script wording is preserved from the `SPEAKER SCRIPT` section of each slide’s notes; `REFERENCE NOTES (NOT SPOKEN)` are excluded.
-
----
-
 ## Slide 2 — Agenda
 
 We'll follow four questions. Why separate prefill and decode? What makes that difficult to operate? How do KAITO and llm-d divide the work? And how do we decide whether the extra complexity pays off?
