@@ -1,4 +1,4 @@
-# Speaker Scripts — Slides 2–33
+# Speaker Scripts — Slides 2–32
 
 ## Slide 2 — Prefill here, decode there Kubernetes-native LLM inference with KAITO and llm-d
 
@@ -68,13 +68,7 @@ On the right graph, decode consumes one new token per active request, **read its
 
 Prefill gets parallel work from prompt length; decode gets it from active requests. More decode concurrency can raise ITL. Stay within latency and KV-memory budgets.
 
-## Slide 10 — Separate GPU pools let us tune each phase independently
-
-Separate GPU pools let us tune each phase independently. The real benefit is scaling prefill and decode independently to match demand—not simply splitting them into two deployments.
-
-Prefill is often compute-bound. Tune its capacity and parallelism to get better TTFT. On the other hand, decode is often memory-bandwidth-bound. Tune its capacity and batching to get better ITL. **Different latency targets and resource needs can call for different replicas, tensor parallelism and batching policies**. Split only if the gains outweigh KV transfer, extra weight copies and operating costs.
-
-## Slide 11 — The hard part is the Kubernetes wiring to support P/D
+## Slide 10 — The hard part is the Kubernetes wiring to support P/D
 
 The hard part is the Kubernetes wiring to support prefill and decode disaggregation.
 
@@ -84,7 +78,7 @@ Routing, KV transfer, labels, ports and readiness must stay in sync, even when p
 
 **There are lots of things to combine, that is why the hard part is the Kubernetes wiring.**
 
-## Slide 12 — Production Distributed Inference Architecture
+## Slide 11 — Production Distributed Inference Architecture
 
 So, this slide shows the big picture.
 
@@ -100,23 +94,61 @@ The main takeaway is simple: all these pieces need to work together.
 
 Today, we’ll focus on how KAITO and llm-d help with that. Let’s look at some of the open-source options.
 
-## Slide 13 — Open-source P/D has several paths, not one winner
+## Slide 12 — Several open-source projects support P/D disaggregation
 
-Open-source P/D has several paths, not one winner. The following table presents examples, not a ranking. Some approaches can be used together.
+There are already several open-source ways to deploy prefill and decode separately.
 
-**The middle column** shows the serving and routing path; **the right column** shows what users configure in Kubernetes. Dynamo, llm-d, AIBrix, KServe, Ray Serve and vLLM Production Stack offer different combinations. P/D deployment options already exist. KAITO aims to make them easier to use. **For KAITO users, they want less manual configuration to maintain. Let’s start with llm-d.**
+Here are a few examples, including Dynamo, llm-d, and AIBrix. **This isn’t a ranking**, and some of these projects can work together.
 
-## Slide 14 — llm-d: a distributed inference stack
+They take different approaches to routing requests and managing workloads on Kubernetes.
 
-llm-d is a Kubernetes-native framework for high-performance distributed inference. It joined the CNCF Sandbox in March 2026. **It does not replace vLLM, gateways, or storage systems; it composes them**. **Its value is organized into three ideas**: first modular architecture: Gateway API connects inference routing to Kubernetes, second, Extensible components: combine runtimes, routing plugins and KV transport, third, Well-lit paths, there are tested deployment patterns make trade-offs clear.
+For KAITO, the goal is simple: make these options easier to deploy and manage, with less manual configuration.
 
-## Slide 15 — llm-d: capabilities for distributed inference
+Today, we’ll focus on **llm-d**. Let’s take a closer look.
+
+## Slide 13 — llm-d: a distributed inference stack
+
+So, what is **llm-d**?
+
+It’s a framework for running distributed inference on Kubernetes. **It doesn’t replace vLLM—it brings the pieces around it together**, like routing and KV cache transfer.
+
+There are three ideas here.
+
+First, **a modular design**. It connects inference routing to Kubernetes through Gateway API.
+
+Second, **flexible components**. You can combine different runtimes, routing plugins, and KV transport options.
+
+Third, **tested deployment patterns**. You don’t have to figure out every piece from scratch.
+
+So, llm-d helps these components **work together as a system**. Next, let’s look at what that enables.
+
+## Slide 14 — llm-d: capabilities for distributed inference
 
 These are reusable capabilities, not a performance guarantee. llm-d builds on the serving runtime, not replace it. And we combine reusable llm-d components, Deployment paths explain the trade-offs.
 
 There are mainly four areas of capability for llm-d projects:
 
-first: State-of-the-art MoE serving, Expert parallelism spreads expert computation across GPUs, second, prefill/decode disaggregation, we separate the phases and transfer KV between roles. Third, State-aware scheduling: Routing plugins use cache and load signals to pick workers. Last is autoscaling architecture: workload signals and SLOs guide capacity; each integration chooses its policy.
+first: State-of-the-art MoE serving, Expert parallelism spreads expert computation across GPUs,
+
+second, prefill/decode disaggregation, we separate the phases and transfer KV between roles.
+
+Third, State-aware scheduling: Routing plugins use cache and load signals to pick workers.
+
+Last is autoscaling architecture: workload signals and SLOs guide capacity; each integration chooses its policy.
+
+## Slide 15 — llm-d “well-lit paths”
+
+llm-d calls these “well-lit paths”—these are tested ways to deploy, with clear guidance on what works well and what the limitations are.
+
+Intelligent scheduling determines where this request should run
+
+KV cache management determines where should reusable state live?
+
+Wide expert parallelism determines how should a large MoE model run across GPUs?
+
+P/D disaggregation determines how should prompt and generation capacity differ?
+
+**These paths can work together, but we don’t need all of them at once. Results depend on the hardware. Today, we’ll focus on P/D disaggregation and use KAITO to manage the workloads.**
 
 ## Slide 16 — What is KAITO (Kubernetes AI Toolchain Operator)?
 
@@ -142,21 +174,13 @@ KAITO reserves memory for overhead and KV cache, then fits the weights into the 
 
 KAITO saves the result as status.targetNodeCount. This path uses tensor parallelism within nodes and pipeline parallelism across nodes. It sizes memory, not how much traffic it can handle.
 
-## Slide 19 — One shared pool ties two capacity decisions together
-
-One shared pool ties two capacity decisions together
-
-A shared pool is simple, but prefill bursts compete with active decoding. **Every worker handles both phases**. One deployment scales both phases together.
-
-Where is the trade-off? Prompt bursts can disrupt token delivery. We scale the whole replica, even when only prefill or decode needs more capacity.We must decide how to run each phase and how much shared capacity to add.
-
-## Slide 20 — Why bring llm-d into KAITO?
+## Slide 19 — Why bring llm-d into KAITO?
 
 So why do we bring llm-d into KAITO?
 
 We want P/D routing without replacing KAITO’s Kubernetes operating model. KAITO manages deployment and lifecycle. llm-d adds endpoint selection and request routing. **vLLM runs the prefill and decode phases, and NIXL moves KV.**
 
-## Slide 21 — Where KAITO and llm-d fit
+## Slide 20 — Where KAITO and llm-d fit
 
 So where KAITO and llm-d fit.
 
@@ -164,7 +188,7 @@ This is a map of responsibilities, not a required installation checklist. Applic
 
 vLLM runs prefill, decode and batching. NIXL moves KV; cache systems reuse or offload it. **And we depend on Kubernetes to provide** the whole infrastructure to support the stack. We will follow the roles, request routing, KV transfer and capacity control.
 
-## Slide 22 — One endpoint, three separate paths
+## Slide 21 — one endpoint, three separate paths
 
 KAITO manages resources. HTTP carries requests. NIXL moves KV between runtimes.
 
@@ -172,13 +196,13 @@ KAITO manages resources. HTTP carries requests. NIXL moves KV between runtimes.
 
 **For a request, the gateway consults the EPP, then forwards to the selected decode sidecar. The sidecar calls remote prefill when needed and local decode.** The client uses one endpoint. KV data bypasses the gateway, EPP and routing sidecar. **NIXL would move KV data between prefill and decode vLLM runtime directly.**
 
-## Slide 23 — One MultiRoleInference declares both roles
+## Slide 22 — one KAITO MultiRoleInference declares both roles
 
-One MultiRoleInference declares both roles. This KAITO yaml example sets one prefill replica on A100 and two decode replicas on H100
+One KAITO MultiRoleInference declares both roles. This KAITO yaml example sets one prefill replica on A100 and two decode replicas on H100
 
-On the right, we still have one logical service and InferencePool. **Both roles serve the same model.** Each has its own InferenceSet and capacity settings.
+On the right, we still have one logical service and InferencePool. Both roles serve the same model. Each has its own InferenceSet and capacity settings.
 
-## Slide 24 — KAITO creates resources and keeps them aligned
+## Slide 23 — KAITO creates resources and keeps them aligned
 
 KAITO creates resources and keeps them aligned
 
@@ -188,98 +212,86 @@ For routing, llm-d connect Services, ports and endpoint selection. **So with KAI
 
 KAITO keeps the resources working together; it does not just generate YAML.
 
-## Slide 25 — The decode sidecar coordinates the P/D request
+## Slide 24 — The decode sidecar coordinates the P/D request
 
 The decode sidecar coordinates the P/D request
-
-The sidecar calls remote prefill when needed, then invokes local decode.
 
 **So here is the graph which shows the whole process.**
 
 **Starting with step one, the gateway sends the request to the decode sidecar.**
 
-**The sidecar calls the remote prefill worker to process the prompt. Prefill returns the KV cache metadata—not the actual KV data.**
+**The sidecar calls the remote prefill worker to process the prompt.**
 
-**The sidecar passes that metadata to the local decode worker, which uses NIXL to fetch the KV cache directly from prefill and generate the response.**
+**Prefill returns the KV cache metadata instead of the actual KV data.**
+
+**The sidecar passes that metadata to the local decode worker, which uses NIXL to fetch the KV cache directly from prefill runtime and generate the response.**
 
 **The response then goes back through the sidecar and gateway to the client.**
 
 **So, the sidecar coordinates the request, while the runtimes transfer the KV data directly.**
 
-## Slide 26 — KAITO Autoscaling: keda-kaito-scaler
+## Slide 25 — KAITO autoscaling: keda-kaito-scaler
 
-Now, autoscaling. This is how KAITO changes the number of replicas as load moves. The component is keda-kaito-scaler.
+Now, let’s talk about **autoscaling**—increasing replicas when traffic grows, and decreasing replicas them when it drops.
 
-It builds on KEDA, but adds three things that matter for GPUs.
+KAITO uses a component called **keda-kaito-scaler**, built on KEDA. There are three things to highlight.
 
-First, no extra dependencies - it does not need Prometheus. It reads metrics directly from vLLM, on each pod. Less to install, less to break.
+First, **no Prometheus is needed**. The scaler reads metrics directly from vLLM pods, **does not depend on Prometheus.**
 
-Second, it is GPU-safe. GPU nodes are expensive and slow to start, so it moves gently - only one copy up or down at a time. That keeps things smooth and avoids waste.
+Second, **it scales gradually**. It adds or removes one replica at a time, with a pause between changes.
 
-Third, it can watch more than one signal at once - like queue length and latency together - and it only scales up when both agree there is real pressure.
+Third, **it can combine multiple signals**. It can combine queue length and queue wait time; both must cross their thresholds before scaling up.
 
-So it is autoscaling made for GPU inference: simple, safe on cost, driven by what the server really sees. Next, how does KAITO configures these signals.
+So the idea is simple: **follow the workload, without adding GPU capacity too aggressively**.
 
-## Slide 27 — Let prefill and decode scale independently
+## Slide 26 — Let prefill and decode scale independently
 
 **And for p/d disaggregation mode, there is new problem.**
 
-We want to let prefill and decode scale independently.
+We want to let prefill and decode scale independently. each role gets its own signal, threshold and replica target.
 
-Prefill watches waiting requests and scales prefill InferenceSet. Decode watches running requests and scales decode InferenceSet.
+Prefill watches waiting requests and scales replicas of prefill InferenceSet. Decode watches running requests and scales replicas of decode InferenceSet.
 
 Give each target one owner. Allow warm-up time, stabilize changes and scale down safely.
 
 **Independent capacity decisions are the goal; KEDA and HPA are the way to implement them.**
 
-## Slide 28 — KAITO autoscaling example: scale prefill and decode separately
+## Slide 27 — KAITO autoscaling example: scale prefill and decode separately
 
 Here is the KAITO autoscaling example which could scale prefill and decode separately.
 
-In the yaml config, we have set minimum replicas as 1, maximum replicas as 8 for prefill role, prefill would watch on vLLM number of waiting requests metrics. And we have set minimum replicas as 2, maximum replicas as 16 for decode role, decode would watch on vLLM number of running requests metrics.
+In the yaml config, for prefill role, we have set minimum replicas as 1, maximum replicas as 8, prefill would watch on vLLM number of waiting requests metrics. And we have set minimum replicas as 2, maximum replicas as 16 for decode role, decode would watch on vLLM number of running requests metrics.
 
 On the right side, if waiting requests is 12, running is 12, then prefill requests scale up, decode holds. And later on if running requests exceeds 24, decode can scale up on it’s own.
 
-## Slide 29 — Use derived signals to explain the load
+## Slide 28 — Use derived signals to explain the load
 
-Besides the former vLLM number of waiting requests, number of running requests metrics, we have other vLLM metrics, like kv\_cache\_usage\_percentage,, and time to first token seconds which shows engine-side TTFT tails, and generation token total which shows the output rate. We could monitor on those metrics to write different autoscaling strategy for prefill and decode roles.
+Besides the former vLLM number of waiting requests, number of running requests metrics, we have other vLLM metrics, like kv\_cache\_usage\_percentage,, and time to first token seconds which shows engine-side TTFT tails, and generation token total which shows the output rate. **We could monitor on those metrics to write different autoscaling strategy for prefill and decode roles.**
 
-## Slide 30 — Where KAITO + llm-d goes next
+## Slide 29 — Where KAITO + llm-d goes next
 
 What’s the next plan for KAITO and llm-d integration.
 
 There are mainly three parts on the road map.
 
-First, we should enable precise cache aware severing, make KAITO route using KV cache events, and supports tier cache across HBM, CPU RAM
+First, we should enable precise cache aware severing, **make KAITO** route using KV cache events, and **supports** tier cache across HBM, CPU RAM
 
 and optional filesystems.
 
-Second, Support Encode to Prefill / Decode, support more inference roles.
+Second, extend P/D disaggregation to include encoding **for multimodal inputs, such as images and audio.**
 
 Third, support explore wide expert parallelism, improve cross-node transport and communication.
 
-## Slide 31 — Resources
+## Slide 30 — Resources
 
-Explore the projects, then try the KAITO + llm-d P/D guide. llm-d and KAITO are both CNCF Sandbox projects. Start with their repositories for the code, check keda-kaito-scaler for scaling details, and use the P/D guide for prerequisites and configuration.
+Explore the projects, then try the KAITO + llm-d P/D guide. **Here are all the resource links.**
 
-References
+llm-d and KAITO are both CNCF Sandbox projects. Start with their repositories for the code, check keda-kaito-scaler for scaling details, and use the P/D guide for prerequisites and configuration.
 
-https://github.com/llm-d
-
-https://github.com/kaito-project/kaito
-
-https://kaito-project.github.io/kaito/docs/prefill-decode-disaggregation/
-
-https://www.cncf.io/projects/llm-d/
-
-https://www.cncf.io/projects/kaito/
-
-https://github.com/kaito-project/keda-kaito-scaler
-
-## Slide 32 — Where can you find us
+## Slide 31 — Where can you find us
 
 All of these components are open. On the left, you can find the llm-d website, GitHub organization, and community Slack. On the right are the KAITO documentation and GitHub organization. We welcome you to try the well-lit paths, reproduce the experiments, and bring your real workloads and feedback back to the communities.
 
-## Slide 33 — Thank you
+## Slide 32 — Thank you
 
 Thank you. We’re happy to take questions.
