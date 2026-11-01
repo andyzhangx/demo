@@ -1,6 +1,6 @@
-# KubeCon North America 2026 — Speaker Scripts (Slides 2–39)
+# Speaker Scripts — Slides 2–32
 
-## Slide 2 — Agenda
+## Slide 2 — The route from idea to production
 
 We'll follow four questions. Why separate prefill and decode? What makes that difficult to operate? How do KAITO and llm-d divide the work? And how do we decide whether the extra complexity pays off?
 
@@ -131,31 +131,3 @@ Routing and scaling solve different problems. Routing chooses among the capacity
 ## Slide 32 — Two native gauges, two scaling decisions
 
 Here are illustrative thresholds, not production recommendations. Prefill scales up above eight waiting requests and down below one. Decode uses running requests, above twenty-four or below four. Values between or equal to those thresholds hold. Validate per-replica aggregation first: engine queues don't include requests still waiting upstream, and missing data must never quietly become zero load.
-
-## Slide 33 — Different roles need different scaling policies
-
-The policies differ, but their safety contract should match: fresh data, readiness, bounds, stabilization, and protection for in-flight work. The replica ranges are examples. Tune each role against its own workload and objective rather than copying these numbers into production.
-
-## Slide 34 — Safe autoscaling starts with ownership and valid data
-
-The most important safeguards aren't clever formulas. Choose one replica-count writer, make ownership handoff explicit, and verify the real metrics. When data is missing or invalid, the intended behavior is to hold and report the problem. Test that behavior end to end, especially during partial scrape failures, model loading, and scale-down.
-
-## Slide 35 — Derived signals add context to scaling decisions
-
-Derived signals add useful context. Maximum KV occupancy can inform a downscale guard, but it isn't demand or available request capacity. Histogram rates can describe latency tails, and token-counter rates show throughput. Start by observing these signals. Promoting them into control inputs requires tested semantics, correct aggregation, and a reliable query or adapter path.
-
-## Slide 36 — KAITO annotations wire each role to its own scaler
-
-Here's a concrete integration proposal, not a feature enabled by adding annotations today. A new MRI adapter would validate role policies and project allowed annotations onto each child InferenceSet's metadata. The scaler could then create the corresponding ScaledObject. That needs explicit child opt-in and ownership handling; putting annotations in workload templates isn't sufficient.
-
-## Slide 37 — Example: one MRI policy, independent P/D decisions
-
-In this proposed example, prefill and decode carry separate policies. If waiting requests reach twelve while running requests are twelve, prefill requests more capacity and decode holds. Later, decode can scale independently. Null replicas releases MRI's fixed-replica enforcement; it doesn't create an autoscaler. Readiness, cooldown, bounds, and full metric coverage still govern the actual changes.
-
-## Slide 38 — Benchmark the operating point—not only the peak
-
-Now we need to prove that the topology helps. Compare aggregated and disaggregated serving with the same model, traffic, SLO, and stated GPU or cost budget. Record versions, placement, fabric, warm-up, and duration. This is our local evaluation plan, not a results slide. Without those controls, a bigger deployment can masquerade as a better architecture.
-
-## Slide 39 — TTFT: measure the tail under prompt pressure
-
-For first-token latency, look beyond the median. Under matched prompt-heavy load, do the tails improve once transfer overhead is included? These cells are intentionally unmeasured. An honest scorecard is more useful than a percentage borrowed from a different model or system.
