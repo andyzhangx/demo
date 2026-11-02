@@ -193,6 +193,10 @@
 ## 天气 / 路况查询网站
 
 - 美国国家气象局 **NWS / weather.gov**：<https://www.weather.gov/>
+- **Hanksville（汉克斯维尔）天气预报（NWS，摄氏度）**：[查看未来约 7 天天气](https://forecast.weather.gov/MapClick.php?lat=38.3736&lon=-110.714&unit=1)
+  - 对应 **Hanksville 镇附近**，坐标 **38.3736, -110.714**；不是 Lake Blanche 附近的山区预报。
+  - 可查看最高／最低温、降水概率及逐小时预报。**11/13 出行前 3–5 天再次确认，前一天复查**；远期预测只用于看趋势。
+  - 镇上预报不等于 Moonscape、Factory Butte 等镇外景点的实际天气或土路通行情况，还需核对目的地及此前几天的降雨。
 - **Utah** 路况：<https://udottraffic.utah.gov/>
 - **Zion（锡安）** 周边路况：<https://zionarea.udot.utah.gov/>
 - **Arizona** 路况：<https://az511.gov/map>
