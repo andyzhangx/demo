@@ -204,6 +204,35 @@
 - **Bryce（布莱斯）** 当前情况：<https://www.nps.gov/brca/planyourvisit/conditions.htm>
 - **Zion（锡安）** 当前情况：<https://www.nps.gov/zion/planyourvisit/conditions.htm>
 
+### Hanksville 11/2–11/14 天气预测快照
+
+> **查询日期：2026-11-02（UTC）**；以下日期按犹他州当地时间 **America/Denver**。数据来自 **Open-Meteo 模型预报**，不是 NWS 的 11/13 官方预报，也不是实际观测。地点为 Hanksville 镇附近（38.3736, -110.714），不是 Lake Blanche 山区。温度取整，单位为摄氏度。
+>
+> **11/9 之后尤其只能看趋势，最低温、云量和降水概率仍可能明显调整。** 本表是查询时的静态快照，不会自动更新。
+
+| 日期（2026 年） | 当前模型天气 | 最高／最低温 | 降水概率 |
+|---|---|---:|---:|
+| 11/2 | 阴 | **15／4°C** | 22% |
+| 11/3 | 阴 | **14／1°C** | 0% |
+| 11/4 | 晴 | **15／7°C** | 7% |
+| 11/5 | 阴 | **13／6°C** | 0% |
+| 11/6 | 阴 | **15／7°C** | 1% |
+| 11/7 | 大部晴朗 | **13／7°C** | 1% |
+| 11/8 | 晴 | **13／6°C** | 0% |
+| 11/9 | 阴 | **14／6°C** | 0% |
+| 11/10 | 阴 | **15／8°C** | 2% |
+| 11/11 | 阴 | **15／8°C** | 11% |
+| 11/12 | 晴 | **15／7°C** | 17% |
+| **11/13** | **阴** | **15／8°C** | **12%** |
+| **11/14** | **晴** | **16／9°C** | **20%** |
+
+- 降水概率为模型给出的当日最高概率；**0% 或当前预计降水量为 0，不代表保证不下雨**。
+- 查询时 Open-Meteo 与 NWS 对近期部分夜间低温已有差异：NWS 对 11/2–11/8 多数夜间给出约 **3–4°C**。近期安排优先参考最新 NWS，不要只按较暖的模型最低温准备衣物。
+- 当前模型整体偏少雨，但**不代表 Moonscape、Factory Butte、Long Dong Silver 等土路已经干燥可通行**；也要看此前几天的降雨、实际道路情况和管理部门提示。
+- 建议 **11/9–11/10 再确认天气，11/12 复查短期预报和路况**。
+- [Hanksville NWS 官方预报（未来约 7 天，摄氏度）](https://forecast.weather.gov/MapClick.php?lat=38.3736&lon=-110.714&unit=1)
+- [Open-Meteo 16 天模型数据（动态查询接口，之后打开的数值可能不同）](https://api.open-meteo.com/v1/forecast?latitude=38.3736&longitude=-110.714&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=America%2FDenver&forecast_days=16)
+
 ---
 
 ## 出行备注
