@@ -235,6 +235,34 @@
 
 ---
 
+## 10 条犹他州热门徒步路线：位置对照（非排名）
+
+> **信息说明（2026-11-02）：** [AllTrails 犹他州页面](https://www.alltrails.com/us/utah) 对本次自动读取返回 403，未能直接核实页面当时的 Top 10 名单和顺序。以下是用于行程规划的 **10 条热门路线位置参考，不是已核实的该页面 Top 10**，也不按排名排序。
+
+| 徒步路线 | 所属国家公园／区域 | 附近城市或住宿基地 |
+|---|---|---|
+| **Angels Landing（天使降临）** | **Zion NP** | **Springdale**；较远可住 Hurricane、St. George |
+| **The Narrows — Bottom Up（锡安峡谷溯溪）** | **Zion NP** | **Springdale** |
+| **Canyon Overlook Trail（峡谷观景步道）** | **Zion NP**，东侧隧道出口附近 | **Springdale**；也可从公园东侧前往 |
+| **Navajo Loop and Queens Garden Trail** | **Bryce Canyon NP** | **Bryce Canyon City、Tropic** |
+| **Fairyland Loop Trail（仙境环线）** | **Bryce Canyon NP** | **Bryce Canyon City、Tropic** |
+| **Peekaboo Loop Trail** | **Bryce Canyon NP** | **Bryce Canyon City、Tropic** |
+| **Delicate Arch Trail（精致拱门）** | **Arches NP** | **Moab** |
+| **Devils Garden / Double O Arch 一带路线** | **Arches NP**；AllTrails 上有不同长度的路线版本 | **Moab** |
+| **Lake Blanche Trail** | **不属于国家公园**；Big Cottonwood Canyon 内，Twin Peaks Wilderness／Uinta-Wasatch-Cache National Forest | **Salt Lake City、Cottonwood Heights** |
+| **Donut Falls Trail（甜甜圈瀑布）** | **不属于国家公园**；Big Cottonwood Canyon／Uinta-Wasatch-Cache National Forest | **Salt Lake City、Cottonwood Heights** |
+
+### 按自驾路线分组
+
+- **住 Springdale：** Zion 的 Angels Landing、Narrows、Canyon Overlook。
+- **住 Bryce Canyon City／Tropic：** Navajo＋Queens Garden、Fairyland、Peekaboo。
+- **住 Moab：** Arches 的 Delicate Arch、Devils Garden；也方便去 Canyonlands。
+- **住盐湖城：** Lake Blanche、Donut Falls，和南部国家公园是不同区域。
+
+**11 月特别注意：** Angels Landing 的链条路段需要许可；Narrows 要看水温、流量和山洪信息；Bryce 及盐湖城高山路线可能有积雪结冰。网站上的热门排名不等于适合实际出行日期的推荐。
+
+---
+
 ## 出行备注
 
 - 11 月中旬白天较短，安排行程时要给日照时间留足余量。
