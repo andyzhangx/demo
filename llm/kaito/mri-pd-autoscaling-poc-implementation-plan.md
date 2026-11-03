@@ -14,7 +14,7 @@ These are reproducible analysis baselines, not a promise that upstream has not c
 
 ## 0. Fastest Path: Minimal, Manually Operated Scale-Up Demo
 
-**Choose this section if the immediate goal is a basically working experiment, not the complete managed-mode implementation in proposal #2503.** Sections 1–12 retain the full plan. This shortcut deliberately replaces policy projection and automated ownership handoff with an operator-run procedure; it is **not proposal-compliant managed mode**, a supported production configuration, or evidence that the POC already works. The checklist below must pass on a real cluster before making that claim.
+**Choose this section if the immediate goal is a basically working experiment, not the complete managed-mode implementation in proposal #2503.** Sections 1–9 retain the full plan. This shortcut deliberately replaces policy projection and automated ownership handoff with an operator-run procedure; it is **not proposal-compliant managed mode**, a supported production configuration, or evidence that the POC already works. The checklist below must pass on a real cluster before making that claim.
 
 ### 0.1 Scope and minimum changes
 
@@ -141,7 +141,7 @@ Explicitly defer:
 - Arbitrary user-supplied HPA templates, fallback replicas and scale-to-zero.
 - A generalized policy engine or broad controller refactoring.
 
-For the full managed-mode implementation in sections 1–12, use the versioned annotation policy and validation rules defined in the proposal. The separately scoped manual lab in section 0 uses existing child annotations instead; it does not introduce a second policy schema or treat proposed annotation/status fields as already implemented APIs.
+For the full managed-mode implementation in sections 1–9, use the versioned annotation policy and validation rules defined in the proposal. The separately scoped manual lab in section 0 uses existing child annotations instead; it does not introduce a second policy schema or treat proposed annotation/status fields as already implemented APIs.
 
 ## 3. Ownership and Control Flow
 
