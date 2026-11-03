@@ -84,19 +84,19 @@ Routing, KV transfer, labels, ports and readiness must stay in sync, even when p
 
 ## Slide 11 — Production Distributed Inference Architecture
 
-So, this slide shows the big picture.
+**So, this slide shows the big picture.**
 
-Running an inference workload takes more than just a model and a GPU. We also need to route requests, manage workloads, and scale when traffic changes.
+**Running an inference workload takes more than just a model and a GPU. We also need to route requests, manage workloads, and scale when traffic changes.**
 
-That’s where&#32;<strong>KAITO and llm-d&#32;</strong>come in—the orchestration layer in the middle.
+**That’s where KAITO and llm-d come in—the orchestration layer in the middle.**
 
-Below that,&#32;**vLLM**&#32;runs the model, and the&#32;<strong>KV cache&#32;</strong>helps us reuse work instead of doing it again. Kubernetes provides the infrastructure underneath.
+**Below that, vLLM runs the model, and the KV cache helps us reuse work instead of doing it again. Kubernetes provides the infrastructure underneath.**
 
-We also need things like security and monitoring around the whole system.
+**We also need things like security and monitoring around the whole system.**
 
-The main takeaway is simple: all these pieces need to work together.
+**The main takeaway is simple: all these pieces need to work together.**
 
-Today, we’ll focus on how KAITO and llm-d help with that. Let’s look at some of the open-source options.
+**Today, we’ll focus on how KAITO and llm-d help with that. Let’s look at some of the open-source options.**
 
 ## Slide 12 — Several open-source projects support P/D disaggregation
 
@@ -232,13 +232,15 @@ The decode sidecar coordinates the P/D request
 
 <strong>The sidecar calls the remote prefill worker to process the prompt.&#32;</strong>
 
-**Prefill returns the KV cache metadata instead of the actual KV data.**
+**Prefill returns the KV cache metadata instead of the actual KV data to the decode sidear.**
 
-**The sidecar passes that metadata to the local decode worker, which uses NIXL to fetch the KV cache directly from prefill runtime and generate the response.**
+**The sidecar passes that KV metadata to the local decode worker, which uses NIXL to fetch the KV cache directly from prefill runtime and generate the response.**
 
 **The response then goes back through the sidecar and gateway to the client.**
 
-**So, the sidecar coordinates the request, while the runtimes transfer the KV data directly.**
+So, the sidecar passes calls and KV metadata. The runtimes transfer the actual KV data.
+
+<p></p>
 
 ## Slide 24 — KAITO autoscaling: keda-kaito-scaler
 
@@ -254,7 +256,7 @@ Third, it can combine multiple signals. It can combine queue length and queue wa
 
 ## Slide 25 — Let prefill and decode scale independently
 
-**And for p/d disaggregation mode, there is new problem.**
+**And for p/d disaggregation mode, there is a new problem.**
 
 We want to let prefill and decode scale independently. each role gets its own signal, threshold and replica target.
 
