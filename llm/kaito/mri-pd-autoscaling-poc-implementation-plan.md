@@ -12,6 +12,98 @@ Analysis date: **2026-11-03**. Source snapshots inspected:
 
 These are reproducible analysis baselines, not a promise that upstream has not changed. Recheck them when implementation starts. This work should use dedicated branches and must not be mixed into CPU inference PR #2431.
 
+## 0. Fastest Path: Minimal, Manually Operated Scale-Up Demo
+
+**Choose this section if the immediate goal is a basically working experiment, not the complete managed-mode implementation in proposal #2503.** Sections 1–12 retain the full plan. This shortcut deliberately replaces policy projection and automated ownership handoff with an operator-run procedure; it is **not proposal-compliant managed mode**, a supported production configuration, or evidence that the POC already works. The checklist below must pass on a real cluster before making that claim.
+
+### 0.1 Scope and minimum changes
+
+Use an **isolated disposable test cluster**, dedicated pinned KAITO/scaler builds, one explicitly opted-in MRI, exactly one prefill and one decode role, and fixed per-Workspace GPU/node/TP topology. Record the MRI namespace/name/UID and both child names/UIDs in a lab allowlist; names or role labels alone are not authorization. Start with spare suitable GPU capacity so the first experiment tests serving scale-out rather than node provisioning. Test provisioning separately afterward.
+
+| Component | Minimum experiment work | Deliberately deferred |
+|---|---|---|
+| KAITO install | Remove the unconditional MRI role-replica default from the dedicated chart/installed CRD; prove nil survives admission, readback and reconciliation | General mode-aware mutator and compatibility migration |
+| KAITO controller | Reuse the existing nil guard **only if** live tests establish ownership; test child metadata preservation | Full parent policy projection/status/lifecycle automation; add a small projection change if metadata does not survive |
+| Scaler | Add an explicitly authorized MRI-child path, strict role-local collection, positive bounds and enforced scale-up-only behavior | General managed-policy schema, broad refactoring, automatic drain/downscale |
+| Operator | Bootstrap positive replicas, configure existing child annotations, activate only after gates pass, and perform verified shutdown | Unattended activation, restart recovery and ownership transitions |
+
+**Stock KAITO installation plus a scaler-only change is not a reliable shortcut.** The installed replica default can make the parent overwrite the HPA. Merely removing the scaler's MRI predicate exclusion also leaves unsafe metric aggregation and ownership gaps. The minimum deliverable is the install adjustment **plus** the focused scaler changes and the runbook below; a controller Go change may be unnecessary, but that is a testable conditional, not a guarantee.
+
+### 0.2 Establish replica ownership before enabling KEDA
+
+The pinned source makes the narrower path plausible:
+
+- [`reconcileInferenceSet`](https://github.com/kaito-project/kaito/blob/4c450c328a21047f7fa576780a086cc1a393cc95/pkg/controllers/multiroleinference/controller.go) assigns child `spec.replicas` only when `role.Replicas != nil`. The [Go API](https://github.com/kaito-project/kaito/blob/4c450c328a21047f7fa576780a086cc1a393cc95/api/v1alpha1/multiroleinference_types.go) explicitly describes nil as allowing external autoscalers.
+- The [Helm MRI CRD](https://github.com/kaito-project/kaito/blob/4c450c328a21047f7fa576780a086cc1a393cc95/charts/kaito/workspace/templates/kaito.sh_multiroleinferences.yaml) has `default: 1` for role replicas, while the [base CRD](https://github.com/kaito-project/kaito/blob/4c450c328a21047f7fa576780a086cc1a393cc95/config/crd/bases/kaito.sh_multiroleinferences.yaml) does not. Inspect the **rendered and installed** CRD, not just the base YAML.
+- [`SetDefaults`](https://github.com/kaito-project/kaito/blob/4c450c328a21047f7fa576780a086cc1a393cc95/api/v1alpha1/multiroleinference_default.go) also fills nil replicas with one. However, the pinned [MRI webhook registration](https://github.com/kaito-project/kaito/blob/4c450c328a21047f7fa576780a086cc1a393cc95/pkg/workspace/webhooks/webhooks.go) is validating-only. The [pinned Knative validation path](https://github.com/knative/pkg/blob/c9015f8bfdea/webhook/resourcesemantics/validation/validation_admit.go) decodes and calls `Validate`, not `SetDefaults`, and returns an allow response without a mutation patch. No direct MRI reconciler call to `SetDefaults` was found in this baseline. Thus the method's existence alone does **not** prove it persists a default, nor does source inspection prove a particular deployed admission stack leaves nil intact.
+
+Lab procedure:
+
+1. Pin the controller, chart, scaler, KEDA, vLLM and routing-sidecar versions/images. In this **test installation only**, remove the unconditional `roles[].replicas` default from the chart/CRD installation path. Verify every served version and any conversion/mutating admission path actually installed. Do not blanket-patch a shared/production CRD. Fixed workloads in this test installation must specify replicas explicitly; do not rely on the removed default. An explicit YAML `null` is **not** a bypass for Kubernetes defaulting.
+2. With autoscaling disabled, create the MRI with explicit safe positive counts (for example one Workspace per role). Wait for both child InferenceSets, Workspaces, model pods and the working P/D route. This lets KAITO bootstrap the counts; the scaler must never directly write replicas. Avoid creating a nil-parent child at zero and expecting KEDA to recover it.
+3. Remove each role's parent replica field using an identity/type-checked edit. Read the stored MRI back through the API and prove **both roles remain absent/nil**, rather than one. Repeat after metadata updates, repeated MRI reconciles and a controller restart. Retain the positive child counts. If a live defaulter/controller restores a parent value, stop: adjust that active lab defaulting path or implement the required KAITO change before activation.
+4. Check the installed child InferenceSet `/scale` endpoint and HPA RBAC. The [baseline CRD](https://github.com/kaito-project/kaito/blob/4c450c328a21047f7fa576780a086cc1a393cc95/config/crd/bases/kaito.sh_inferencesets.yaml) declares `spec.replicas`, `status.replicas` and `status.selector`, but the live API must expose and populate them correctly. Before KEDA activation, test an operator-controlled positive scale increase, confirm repeated MRI reconciles do not revert it, and wait for serving readiness. Do not overlap that test writer with an HPA.
+
+The result is a manually established external-writer arrangement using the existing nil guard, **not** the proposal's implemented `managed` mode. If nil cannot be preserved, stay observation-only; there is no annotation that fixes two competing replica writers.
+
+### 0.3 Configure existing child annotations, not invented parent APIs
+
+For this lab only, manually configure the **top-level `metadata.annotations` of each child InferenceSet**, not its Workspace template. The pinned [annotation constants](https://github.com/kaito-project/keda-kaito-scaler/blob/3964e100f0093ec609b663704e726f2bb3fe8fd9/pkg/constants/constants.go) and [metric parser](https://github.com/kaito-project/keda-kaito-scaler/blob/3964e100f0093ec609b663704e726f2bb3fe8fd9/pkg/scaledobject/provisioner.go) already support the following keys. The example is an annotation fragment, **not a complete object or a runnable unmodified-install recipe**:
+
+```yaml
+metadata:
+  annotations:
+    scaledobject.kaito.sh/auto-provision: "false" # change only after activation gates pass
+    scaledobject.kaito.sh/min-replicas: "1"
+    scaledobject.kaito.sh/max-replicas: "3" # illustrative: MUST be >= the live child count
+    scaledobject.kaito.sh/metrics: |
+      - name: vllm:num_requests_waiting
+        type: gauge
+        source: modelpod
+        upthreshold: 2
+        downthreshold: 1
+```
+
+This is the **prefill** fragment. For the **decode** child, use `name: vllm:num_requests_running` instead, with separately calibrated thresholds. The example numbers only exercise the parser; they are not recommended capacity targets. For `source: modelpod`, `type: gauge` defaults to `service-avg` in the current parser; the supported explicit equivalent is `aggregation: service-avg`. Keep this aggregation fixed for the narrow demo. Both thresholds are required by the existing positive-minimum parser; their presence does **not** authorize downscale in this demo. Validate `0 <= downthreshold < upthreshold`, positive bounds and a maximum no smaller than the current count before enabling either role.
+
+The baseline MRI `CreateOrUpdate` updates selected child metadata entries and the template, rather than replacing the child's top-level annotation map, which suggests these scaler annotations can survive. **Verify it** across repeated parent reconciles and restarts, including unchanged Workspace template hashes and no model rollout caused by autoscaling-only edits. If the deployed path removes/replaces these annotations or rolls models, a small KAITO projection/preservation change is required; do not paper over this with a script that continually fights the controller.
+
+Keep `auto-provision: "false"` until the custom scaler gates below pass. Then enable the two roles deliberately, one at a time. The existing annotations configure scaling; a separate lab feature gate/UID allowlist authorizes this experiment. Do not claim the proposal's parent role-policy annotation is already supported, or introduce a new public policy spelling for this shortcut.
+
+### 0.4 Focused scaler changes that cannot be skipped
+
+1. **Explicit MRI authorization, not only a predicate edit.** The current auto-provision predicates exclude MRI children. Add an opt-in path without changing standalone behavior. At reconciliation **and metric serving**, verify the controller-owner API group/kind/name/UID, live same-namespace nonterminating parent UID, persisted nil parent replicas, exact P/D role membership and intended child UID. A matching name suffix/label is insufficient. Revalidate on resync and before activation; parent replacement, role changes or missing authorization block decisions. A ScaledObject watch can enqueue reconciliation without the child predicate, so the checks must live inside the handler too. Add the needed MRI read/watch permission, and ensure the lab gate blocks recreation during shutdown.
+2. **One SO/HPA pair per role, no competing writers.** Reject activation if any other ScaledObject/HPA targets the child; never adopt or delete a foreign one. Keep parent/child/SO/HPA UIDs and owner chains for later cleanup. The scaler supplies metrics/configuration only; HPA alone performs recurring child `/scale` writes after bootstrap.
+3. **Strict complete role-local metrics.** Replace the legacy partial-success averaging for opted-in children only. Snapshot the verified role's child/Workspace/endpoint membership, require desired-count and readiness agreement, and hold decisions on pending/terminating/rollout/membership changes rather than choosing a partial ready subset. Require each expected endpoint to return the correct nonnegative finite **gauge**, with known engine/rank cardinality and no duplicate global series. Missing series, timeout, malformed response, NaN/Inf, stale samples or incomplete coverage mean unavailable/error, **not zero** or an average of survivors. Keep prefill waiting and decode running entirely separate. Scope caches by object UIDs, role, configuration and membership epoch; invalidate known failures and old in-flight refreshes. Bound every sample's age (at most two collection intervals) and cross-endpoint skew. A present numeric zero is valid only after all these checks.
+4. **Verify the actual decode metrics route.** The [Workspace Service](https://github.com/kaito-project/kaito/blob/4c450c328a21047f7fa576780a086cc1a393cc95/pkg/workspace/manifests/manifests.go) is `80 -> 5000`; decode's routing sidecar listens on `5000` and the engine on `5001`. The MRI controller explicitly intends `/metrics` proxying through that sidecar. From the scaler's network context compare the real Service/sidecar response with the engine response for the pinned runtime, including names, TYPE, cardinality and failure propagation. **Do not blindly scrape Service port 5001**: the engine container port does not imply a Service port exists. If proxying is broken, fix it or add a controlled role-aware metrics Service/targetPort, then repeat validation.
+5. **Enforce scale-up-only beyond one YAML field.** Generate `advanced.horizontalPodAutoscalerConfig.behavior.scaleDown.selectPolicy: Disabled` on each SO, verify it reaches the live HPA, and include `SelectPolicy` in drift comparison/repair (the baseline comparison omits it). Use bounded scale-up increments. HPA can clamp an above-max replica count **before** scale-down behavior normalization, so activation and every bounds update must reject `maxReplicas < current replicas`; retain a safe last-applied bound on rejection. Protect the child/SO/HPA from out-of-band writers with lab RBAC/admission and recheck live counts before applying bounds. A preflight check alone is not protection against concurrent writers. If safe writer/bounds enforcement cannot be established, remain observation-only.
+6. **Exclude bypasses.** No scale-to-zero, fallback, idle replicas, restore-to-original-replica-count, replica-setting pause annotations or automatic drain/downscale. Reject or remove these fields only on positively identified demo-owned objects, and detect drift. Keep replicas positive throughout activation. Metric failures must reach KEDA as unavailable; they must not invoke a fallback or synthetic low signal.
+
+### 0.5 Bring-up and acceptance: what “basically working” must mean
+
+Implement and unit-test the narrow changes first, then run in this order: install/defaulting check → positive fixed P/D serving baseline → nil-parent ownership check → annotation preservation → strict observation-only metrics → one-role activation → two-role scale-up → failure injection → manual shutdown. Do not enable the HPA while still debugging replica ownership or scrape coverage.
+
+Record the following acceptance evidence, not just created Kubernetes objects:
+
+- [ ] Both parent role replicas are persisted absent/nil across API readback, unrelated updates, repeated MRI reconciles and controller restart; positive child counts are preserved.
+- [ ] Supported child annotations survive reconciliation, and autoscaling-only edits cause no Workspace template change/model rollout. The live `/scale` contract and permissions work.
+- [ ] Each role has exactly one authorized SO/HPA pair. An HPA-driven child increase survives repeated MRI reconciles; the scaler never writes replicas directly.
+- [ ] Separate long-input/short-output and short-input/long-output load profiles, with cold/unique prefixes as needed, demonstrate the intended **distinct** prefill-waiting and decode-running signals. Record both roles' metric samples and decisions; do not infer independence just from two HPAs existing.
+- [ ] Newly added Workspaces become Ready **and actually receive routed inference work / participate in P/D KV transfer**. Capture routing/engine logs or equivalent request evidence and successful responses, not only pod readiness.
+- [ ] Failed endpoints, missing series, partial coverage, stale caches and readiness/membership changes freeze the affected role's decision and surface unavailable, never a synthetic zero or reduced-denominator average. No stale sample crosses child recreation or role boundaries.
+- [ ] Low load does not decrease either child count; live HPA `scaleDown` remains Disabled after drift reconciliation. A requested maximum below the live count is rejected without modifying the safe live bound. Unsupported replica-changing KEDA settings are rejected.
+- [ ] Manual shutdown below proves SO **and** HPA absence before any fixed parent replica value is restored. Repeat with KEDA unavailable: handoff must remain blocked, not optimistically succeed.
+
+### 0.6 Manual safe exit and deliberately deferred work
+
+For this disposable lab, the operator replaces the full lifecycle/status state machine:
+
+1. Stop load and **disable new activation/recreation first** using the lab gate; set child auto-provision annotations false and verify the scaler cannot recreate the demo SOs. Do not write parent replicas yet. Preserve recorded UIDs/owner chains and cleanup access even when activation is disabled.
+2. Remove only the positively identified demo-owned ScaledObjects (UID-preconditioned deletion). Confirm each SO is absent **and its KEDA-owned HPA is absent**, and check no other writer targets the child. A successful Delete call, a deletion timestamp, or an unavailable KEDA operator is not proof of release. If KEDA is unavailable or cleanup stalls, stop here; do not hand off replicas.
+3. Only after both pairs are absent, restore explicit positive parent role counts, normally equal to the current child counts so handoff itself does not downscale. Verify MRI now maintains those fixed counts. Any later lab teardown is a separate operator action, not an autoscaling/drain demonstration.
+
+Mode-aware admission, full parent policy validation/projection, durable accepted-policy/status reporting, automatic disable/delete/restart handoff, compatibility migration and drain-aware downscale remain in the full plan below. This manual shortcut deliberately does not implement those guarantees. **This document is still a plan, not a tested implementation: basic functionality cannot be guaranteed until the real-cluster acceptance checklist passes.**
+
 ## 1. Recommendation
 
 Implement the POC in three stages:
@@ -49,7 +141,7 @@ Explicitly defer:
 - Arbitrary user-supplied HPA templates, fallback replicas and scale-to-zero.
 - A generalized policy engine or broad controller refactoring.
 
-Use the versioned annotation policy and validation rules defined in the proposal. This plan does not introduce a second policy schema or treat proposed annotation/status fields as already implemented APIs.
+For the full managed-mode implementation in sections 1–12, use the versioned annotation policy and validation rules defined in the proposal. The separately scoped manual lab in section 0 uses existing child annotations instead; it does not introduce a second policy schema or treat proposed annotation/status fields as already implemented APIs.
 
 ## 3. Ownership and Control Flow
 
