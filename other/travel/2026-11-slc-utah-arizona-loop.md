@@ -1,6 +1,6 @@
 # 2026 年 11 月中旬｜盐湖城出发 Utah / Arizona 8 天行程
 
-这是一份按既定住宿点和路线整理的 8 天自驾行程，起点和终点分别为 **Salt Lake City（盐湖城）** 和 **Salt Lake City International Airport（盐湖城国际机场）**。
+这是一份按既定住宿点和路线整理的 8 天自驾行程，起点为 **Salt Lake City（盐湖城）**，11/19 返回盐湖城机场区域并住宿，11/20 从酒店前往 **Avis Car Rental（Avis 租车还车点）** 还车。
 
 本版以已确认的路线和住宿为准，**酒店名称保留英文**，景点与说明尽量采用 **中文 + 中英对照** 的方式，方便出发前直接查看和导航。
 
@@ -8,16 +8,18 @@
 
 ## 行程总表
 
-| 日期 | 星期 | 路线 | 参考里程 / 车程 | 住宿 |
+> **里程与车程沿用所提供的估算，未重新核验地图路线**；不含观景、徒步、停车、接驳、用餐及雨雪路况缓冲。房型与早餐按所提供的信息记录；未注明早餐的酒店不推定含早。
+
+| 日期 | 星期 | 路线 | 参考里程 / 车程 | 住宿 / 房型与早餐 |
 |---|---|---|---|---|
-| 11.13 | 周五 | **Salt Lake City（盐湖城） → Capitol Reef National Park（圆顶礁国家公园）**；沿途可看 **Long Dong Silver Trailhead（长东银步道起点）, Hanksville**、**Moonscape Overlook（月球地貌观景点）, F526+39, Hanksville** | **5 hr 17 min (471 km)** via **US-6 E** | **Capitol Reef Resort**, Utah 24, Torrey, UT |
-| 11.14 | 周六 | **Capitol Reef Resort → Capitol Reef National Park（圆顶礁国家公园） → Bryce Canyon National Park（布莱斯峡谷国家公园）** | **2 hr 30 min (205 km)** via **UT-24 E** | **Best Western Plus Bryce Canyon Grand Hotel**, 30 N 100 E, Bryce Canyon City |
-| 11.15 | 周日 | **Bryce Canyon City → Zion National Park（锡安国家公园） → Springdale** | **1 hr 51 min (135 km)** via **US-89 S** | **Hyatt Place Springdale / Zion National Park**, 1215 Zion Park Blvd, Springdale |
-| 11.16 | 周一 | **Springdale → Page（佩吉）** | **2 hr 21 min (189 km)** via **US-89 S** | **Page** |
-| 11.17 | 周二 | **Page（佩吉）** | 本地活动日 | **Page** |
-| 11.18 | 周三 | **Page（佩吉） → Forrest Gump Point（阿甘打卡点） → Moab（摩押）** | **4 hr 28 min (430 km)** via **AZ-98 E** | **Moab** |
-| 11.19 | 周四 | **Moab（摩押）** | 本地活动日 | **Moab** |
-| 11.20 | 周五 | **Moab（摩押） → Salt Lake City International Airport（盐湖城国际机场）** | **3 hr 48 min (382 km)** | —— |
+| 11.13 | 周五 | **Salt Lake City（盐湖城） → Capitol Reef National Park（圆顶礁国家公园）**；沿途 **Moon Overlook Rd**、**Long Dong Silver Trailhead（长东银步道起点）, Hanksville**、**Moonscape Overlook（月球地貌观景点）, F526+39, Hanksville** | **5 hr 17 min (471 km)** via **US-6 E** | **Broken Spur Inn & Steakhouse**, 955 East UT-24 Building 1, Wayne County, Utah, 84775；**山景房，2 张大床，含早** |
+| 11.14 | 周六 | **Broken Spur Inn → Capitol Reef National Park（圆顶礁国家公园） → Bryce Canyon National Park（布莱斯峡谷国家公园）** | **2 hr 30 min (205 km)** via **UT-24 E** | **Best Western Plus Bryce Canyon Grand Hotel**, 30 N 100 E, Bryce Canyon City；**2 张大床房，含早** |
+| 11.15 | 周日 | **Bryce Canyon City → Zion National Park（锡安国家公园） → Springdale** | **1 hr 51 min (135 km)** via **US-89 S** | **Zion Canyon Lodge**；**标准房，2 张大床** |
+| 11.16 | 周一 | **Springdale → Page（佩吉）** | **2 hr 21 min (189 km)** via **US-89 S** | **Best Western View of Lake Powell Hotel**；**2 张大床房，含早** |
+| 11.17 | 周二 | **Page（佩吉）**：**Lower Antelope Canyon（下羚羊谷）**、**The New Wave（新浪潮岩）** | 本地活动日 | **Best Western View of Lake Powell Hotel**；**2 张大床房，含早** |
+| 11.18 | 周三 | **Page（佩吉） → Forrest Gump Point（阿甘打卡点） → Moab（摩押）** | **4 hr 28 min (430 km)** via **AZ-98 E** | **My Place Hotel-Moab**, 1520 N Main St, Moab, Utah；**2 张大床房** |
+| 11.19 | 周四 | **Moab（摩押） → Salt Lake City International Airport（盐湖城国际机场）区域 → 酒店** | **3 hr 41 min (381 km)**（Moab 至机场的提供值，至酒店路段另留余量） | **Spark by Hilton Salt Lake City Airport**；**特大床房，含早** |
+| 11.20 | 周五 | **Spark by Hilton Salt Lake City Airport → Avis Car Rental**, 3921 W Terminal Dr, Salt Lake City | **7 min (6.8 km)** | —— |
 
 ---
 
@@ -26,18 +28,21 @@
 ### 11.13（周五）｜Salt Lake City（盐湖城） → Capitol Reef National Park（圆顶礁国家公园）
 - 这是第一天的长距离转场日。
 - 按既定路线，沿途可重点关注：
+  - **Moon Overlook Rd**（按提供的道路名称保留，导航入口与道路条件需出发前确认）
   - **Long Dong Silver Trailhead（长东银步道起点）, Hanksville**
   - **Moonscape Overlook（月球地貌观景点）, F526+39, Hanksville**
 - 当天入住：
-  - **Capitol Reef Resort, Utah 24, Torrey, UT**
+  - **Broken Spur Inn & Steakhouse, 955 East UT-24 Building 1, Wayne County, Utah, 84775**
+  - **山景房，2 张大床，含早**
 - 说明：
   - 如果当天土路条件可以，可以把 **Hanksville（汉克斯维尔）** 一带的景观点尽量安排在这一天完成。
   - 若遇到雨雪或路况一般，建议优先保留主线行程，土路点位保守处理。
 
-### 11.14（周六）｜Capitol Reef Resort → Capitol Reef National Park（圆顶礁国家公园） → Bryce Canyon National Park（布莱斯峡谷国家公园）
-- 这一天以 **Capitol Reef（圆顶礁）** + **Bryce Canyon（布莱斯峡谷）** 为主。
+### 11.14（周六）｜Broken Spur Inn → Capitol Reef National Park（圆顶礁国家公园） → Bryce Canyon National Park（布莱斯峡谷国家公园）
+- 从前一晚的 **Broken Spur Inn & Steakhouse** 出发；这一天以 **Capitol Reef（圆顶礁）** + **Bryce Canyon（布莱斯峡谷）** 为主。
 - 当天入住：
   - **Best Western Plus Bryce Canyon Grand Hotel, 30 N 100 E, Bryce Canyon City**
+  - **2 张大床房，含早**
 - 说明：
   - Capitol Reef 可优先安排 **Visitor Center（游客中心）**、**Fruita Historic District（Fruita 历史聚落）** 一带和 **Scenic Drive（景观公路）**。
   - 下午或傍晚进入 Bryce，适合看主要观景点。
@@ -51,7 +56,8 @@
 ### 11.15（周日）｜Bryce Canyon City → Zion National Park（锡安国家公园） → Springdale
 - 这一天从 **Bryce Canyon（布莱斯峡谷）** 转去 **Zion（锡安）**，再住到 **Springdale（斯普林代尔）**。
 - 当天入住：
-  - **Hyatt Place Springdale / Zion National Park, 1215 Zion Park Blvd, Springdale**
+  - **Zion Canyon Lodge**
+  - **标准房，2 张大床**（早餐未注明）
 - 说明：
   - Bryce 早上可继续补观景点。
   - 下午到 Zion 后，建议以轻量活动为主，为后续 Zion 徒步留体力。
@@ -59,7 +65,8 @@
 ### 11.16（周一）｜Springdale → Page（佩吉）
 - 这一天是从 **Zion / Springdale（锡安 / 斯普林代尔）** 转场去 **Page（佩吉）**。
 - 当天入住：
-  - **Page**
+  - **Best Western View of Lake Powell Hotel**
+  - **2 张大床房，含早**
 - 说明：
   - 如果当天早上还想在 Zion 安排主徒步，可优先考虑 **Angels Landing（天使降临峰）**（有 permit 时）或 **Scout Lookout（侦察台）**（无 permit 时）。
   - 下午到达 Page 后，可视时间安排 **Horseshoe Bend（马蹄湾）**。
@@ -71,11 +78,14 @@
 ### 11.17（周二）｜Page（佩吉）
 - 这一天为 **Page（佩吉）本地活动日**。
 - 当天入住：
-  - **Page**
+  - **Best Western View of Lake Powell Hotel**
+  - **2 张大床房，含早**
 - 建议安排：
-  - **Antelope Canyon（羚羊峡谷）**（建议提前预约）
-  - **Glen Canyon Dam Overlook（格伦峡谷大坝观景点）**
+  - **Lower Antelope Canyon（下羚羊谷）**（提前预约导览团，按预约时间签到）
+  - **The New Wave（新浪潮岩）**（与导览时间搭配，留足白天观景时间）
+  - 如有余裕，可加 **Glen Canyon Dam Overlook（格伦峡谷大坝观景点）**
   - 如前一天没去成，可补 **Horseshoe Bend（马蹄湾）**
+- **当天主计划为下羚羊谷；上羚羊谷仅作备选参考，不默认两处都去。**
 - 羚羊谷步行信息（以 tour operator 公布信息为准）：
   - **Upper Antelope Canyon（上羚羊谷）**：常见 tour 标注约 **1.6 km / 1 mile 步行**，总时长约 **1 小时 40 分**，以平缓步行为主，通常更容易出片。
   - **Lower Antelope Canyon（下羚羊谷）**：常见 tour 标注约 **1.8 km / 1.1 miles 往返步行**，总时长约 **1 小时 30 分**，需要更多上下台阶/梯子，体力要求略高。
@@ -84,24 +94,26 @@
 ### 11.18（周三）｜Page（佩吉） → Forrest Gump Point（阿甘打卡点） → Moab（摩押）
 - 这一天从 Page 继续北上，经 **Forrest Gump Point（阿甘打卡点）** 前往 **Moab（摩押）**。
 - 当天入住：
-  - **Moab**
+  - **My Place Hotel-Moab, 1520 N Main St, Moab, Utah**
+  - **2 张大床房**（早餐未注明）
 - 说明：
   - 如果时间允许，也可以结合当日体力和天气，考虑 **Monument Valley（纪念碑谷）** 一带的停留时间。
   - 这一天整体仍属于景观转场日，建议不要额外塞过多徒步。
 
-### 11.19（周四）｜Moab（摩押）
-- 这一天为 **Moab（摩押）本地活动日**。
+### 11.19（周四）｜Moab（摩押） → Salt Lake City International Airport（盐湖城国际机场）区域
+- 这一天从 Moab 返回盐湖城机场区域，**不是 Moab 整日本地活动日**。
+- 参考车程：**3 hr 41 min (381 km)**（所提供的 Moab 至机场估算；至酒店路段另留余量）。
 - 当天入住：
-  - **Moab**
-- 说明：
-  - 这一整天建议保留弹性，可以根据天气、体力、摄影计划再决定具体去哪些点。
+  - **Spark by Hilton Salt Lake City Airport**
+  - **特大床房，含早**
+- 如需在 Moab 观景，只安排不影响返程的短时活动；留足长途驾驶、用餐及雨雪路况缓冲。
+- **当晚先住机场附近酒店，次日再还车**，不是当天还车或默认当天搭机。
 
-### 11.20（周五）｜Moab（摩押） → Salt Lake City International Airport（盐湖城国际机场）
-- 最后一天返回机场。
-- 参考车程：
-  - **3 hr 48 min (382 km)**
-- 建议：
-  - 返程当天尽量不要再安排重徒步，给开车和机场时间留足缓冲。
+### 11.20（周五）｜酒店 → Avis Car Rental（Avis 租车还车点）
+- 从 **Spark by Hilton Salt Lake City Airport** 出发，前往：
+  - **Avis Car Rental, 3921 W Terminal Dr, Salt Lake City**
+- 参考车程：**7 min (6.8 km)**。
+- 这是酒店至还车点的驾驶估算，不含加油、还车检查、前往航站楼、值机和安检；若当天搭机，请按实际航班时间另留缓冲。
 
 ---
 
@@ -111,25 +123,32 @@
 - **Long Dong Silver Trailhead（长东银步道起点）**, Hanksville
 - **Moonscape Overlook（月球地貌观景点）**, F526+39, Hanksville
 - **Capitol Reef National Park（圆顶礁国家公园）**
-- **Capitol Reef Resort**, Torrey
+- **Moon Overlook Rd**
+- **Broken Spur Inn & Steakhouse**, 955 East UT-24 Building 1, Wayne County, Utah, 84775
 
 ### Bryce / Zion 一段
 - **Bryce Canyon National Park（布莱斯峡谷国家公园）**
 - **Springdale（斯普林代尔）**
-- **Hyatt Place Springdale / Zion National Park**
+- **Best Western Plus Bryce Canyon Grand Hotel**, Bryce Canyon City
+- **Zion Canyon Lodge**, Springdale
 - **Zion National Park（锡安国家公园）**
 - **Angels Landing（天使降临峰） / Scout Lookout（侦察台）**（按 permit 情况决定）
 
 ### Page 一段
 - **Page（佩吉）**
-- **Antelope Canyon（羚羊峡谷）**
+- **Lower Antelope Canyon（下羚羊谷）**
+- **The New Wave（新浪潮岩）**
+- **Best Western View of Lake Powell Hotel**
 - **Horseshoe Bend（马蹄湾）**
 - **Glen Canyon Dam Overlook（格伦峡谷大坝观景点）**
 
 ### 北返一段
 - **Forrest Gump Point（阿甘打卡点）**
 - **Moab（摩押）**
+- **My Place Hotel-Moab**, 1520 N Main St, Moab, Utah
 - **Salt Lake City International Airport（盐湖城国际机场）**
+- **Spark by Hilton Salt Lake City Airport**
+- **Avis Car Rental**, 3921 W Terminal Dr, Salt Lake City
 
 ---
 
@@ -158,6 +177,9 @@
   - 特点：景观已经很强，也是去 Angels Landing 前的大平台；不进最后铁链段也很值。
 
 ### Antelope Canyon（羚羊峡谷）
+
+> **11/17 安排 Lower Antelope Canyon（下羚羊谷）**；Upper 仅保留作路线比较，不是当天额外必去项目。
+
 - **Upper Antelope Canyon（上羚羊谷）**
   - 步行：约 **1.6 km / 1 mile**
   - 总时长：约 **1 小时 40 分**
@@ -255,9 +277,9 @@
 
 ---
 
-## 10 条犹他州热门徒步路线：位置对照（非排名）
+## 9 条犹他州热门徒步路线：位置对照（非排名）
 
-> **信息说明（2026-11-02）：** [AllTrails 犹他州页面](https://www.alltrails.com/us/utah) 对本次自动读取返回 403，未能直接核实页面当时的 Top 10 名单和顺序。以下是用于行程规划的 **10 条热门路线位置参考，不是已核实的该页面 Top 10**，也不按排名排序。
+> **信息说明（2026-11-02）：** [AllTrails 犹他州页面](https://www.alltrails.com/us/utah) 对本次自动读取返回 403，未能直接核实页面当时的 Top 10 名单和顺序。以下是用于行程规划的 **9 条热门路线位置参考，不是已核实的该页面 Top 10**，也不按排名排序。
 
 | 徒步路线 | 所属国家公园／区域 | 附近城市或住宿基地 |
 |---|---|---|
@@ -269,15 +291,14 @@
 | **Peekaboo Loop Trail** | **Bryce Canyon NP** | **Bryce Canyon City、Tropic** |
 | **Delicate Arch Trail（精致拱门）** | **Arches NP** | **Moab** |
 | **Devils Garden / Double O Arch 一带路线** | **Arches NP**；AllTrails 上有不同长度的路线版本 | **Moab** |
-| **Lake Blanche Trail** | **不属于国家公园**；Big Cottonwood Canyon 内，Twin Peaks Wilderness／Uinta-Wasatch-Cache National Forest | **Salt Lake City、Cottonwood Heights** |
 | **Donut Falls Trail（甜甜圈瀑布）** | **不属于国家公园**；Big Cottonwood Canyon／Uinta-Wasatch-Cache National Forest | **Salt Lake City、Cottonwood Heights** |
 
 ### 按自驾路线分组
 
 - **住 Springdale：** Zion 的 Angels Landing、Narrows、Canyon Overlook。
 - **住 Bryce Canyon City／Tropic：** Navajo＋Queens Garden、Fairyland、Peekaboo。
-- **住 Moab：** Arches 的 Delicate Arch、Devils Garden；也方便去 Canyonlands。
-- **住盐湖城：** Lake Blanche、Donut Falls，和南部国家公园是不同区域。
+- **住 Moab：** Arches 的 Delicate Arch、Devils Garden；也方便去 Canyonlands。本次仅 11/18 住一晚，11/19 返回盐湖城，以上仅作位置参考，不代表有整天游览时间。
+- **盐湖城周边参考：** Donut Falls，和南部国家公园是不同区域；不默认安排在本次机场酒店住宿日。
 
 **11 月特别注意：** Angels Landing 的链条路段需要许可；Narrows 要看水温、流量和山洪信息；Bryce 及盐湖城高山路线可能有积雪结冰。网站上的热门排名不等于适合实际出行日期的推荐。
 
