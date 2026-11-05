@@ -55,6 +55,8 @@
 - **最高海拔**：NPS 标注 UT-12 在 **Boulder Mountain 的公路最高点约 2,926 m（9,600 ft）**，位于 **Torrey → Boulder 镇** 之间；这是道路海拔，不是山峰海拔，比 Bryce 游客中心约高 500 m。
 - **沿途路段**：Torrey → Boulder 翻越高海拔森林路段；Boulder → Escalante 经过 **Hogback 山脊公路**，有弯道和临崖路段，保持低速并仅在安全停车区停靠。
 - **车程安排**：NPS 给出 Capitol Reef 与 Bryce 经 UT-12 的车程约 **3 小时**。正常路况下，少量观景停靠可按 **4–5 小时**预留（行程建议，不是实时导航）；不含此前 Capitol Reef 游览。下雪、结冰、清雪或管制时不能保证这个时间。
+- **相比最快路线多花多久？** 以 **Capitol Reef Visitor Center → Bryce Canyon Visitor Center** 为同一起终点，2026-11-05 查询 [OSRM 静态驾车路由](https://router.project-osrm.org/route/v1/driving/-111.2615,38.2912;-112.1699,37.6393?overview=false&steps=true&alternatives=true)，未指定途经点时，其最快候选本身就是 **UT-24 W → UT-12 经 Boulder Mountain → UT-63 S**，约 **199 km／3 小时 4 分钟**。因此，**就这次静态路由比较，选择上述 UT-12 景观路线的额外绕行时间基本为 0 分钟**，不能把原先未经核验的“2 小时 30 分钟”当成最快路线并据此声称多花半小时。添加 Boulder、Escalante 镇内途经点的计算约为 **3 小时 5 分钟**，约 1 分钟差异来自具体落点，不是另一条明显更慢的路线。
+- **纯驾驶与停靠要分开算**：上面的 **4–5 小时**是含少量观景停靠的行程预算，比约 3 小时纯驾驶多留 **1–2 小时**，不是公路本身多绕这么久。OSRM 是非实时地图模型，**不是 Google Maps 的当天最快路线，也不反映实时交通、积雪或封路**；11/14 出发时应使用相同起终点重新比较导航，并结合 UDOT 管制决定路线。
 - **11 月冬季风险**：山顶路段不能套用 Capitol Reef、Bryce 游客中心的天气预报。出发前一天及当天查看 **UT-12 Boulder Mountain 段**的天气、[UDOT 实时路况与摄像头](https://udottraffic.utah.gov/)；优先白天通过，遇积雪、结冰或封路时等待或重新评估路线，不把防滑链视为可以通过封闭道路的许可。
 - **避免导航土路捷径**：NPS 特别提醒，不要走从 Lower Bowns Campground / Reservoir 一带通往公园的 **South Draw Road**；这是一条未维护、需高底盘四驱的道路，不适合普通乘用车、房车或缺乏经验的驾驶者。不要为绕开 UT-12 管制而自行走林道或土路。
 - **官方参考**：[NPS Capitol Reef — Directions（含 UT-12 路线、约 3 小时车程、2,926 m 海拔及冬季警告）](https://www.nps.gov/care/planyourvisit/directions.htm)。本段为路线说明，**不代表已确认 11/14 道路开放或无冰雪**。
