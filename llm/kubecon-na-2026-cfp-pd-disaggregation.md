@@ -217,6 +217,20 @@ These hotels are **not** part of the KubeCon official room block, so you won't g
 
 Official venue + travel page (booking links, room block cutoffs): <https://events.linuxfoundation.org/kubecon-cloudnativecon-north-america/attend/venue-travel/>
 
+### Grocery Stores near Radisson / Radisson 附近步行可达超市
+
+**出发点：Radisson Hotel Salt Lake City Downtown，215 W South Temple。** 以下均为单程步行距离与时间的街区路线估算，**未核实实时步行导航**，不含购物、等红灯或施工绕行；与上方酒店表中的“到会场距离”不同。地址及常规营业时间于 **2026-11-05** 核对门店官网，均为盐湖城当地时间；临时调整请出发前再次确认。
+
+| 超市 | 地址 | 单程步行距离（估算） | 单程步行时间（估算） | 官网公布营业时间 | 适合买什么 |
+|---|---|---|---|---|---|
+| **The Store — The Gateway** | **90 S Rio Grande, Salt Lake City, UT 84101** | **约 0.8–1.0 km** | **约 10–15 分钟** | **周一至周六 07:00–22:00；周日 08:00–20:00** | 较小型精品超市，适合简单食品杂货、零食饮料及路餐补给；当天熟食供应以门店为准 |
+| **Harmons — City Creek Center** | **135 E 100 S, Salt Lake City, UT 84111** | **约 1.1–1.3 km** | **约 15–20 分钟** | **每天 07:00–22:00，含周日** | 较完整的超市，适合购买水果、面包、酸奶、饮料和徒步零食，一次买齐早餐与路餐 |
+
+- **只买几样零食饮料：**优先考虑较近的 The Store；**准备徒步补给或集中采购：**建议多走几分钟到 Harmons。若准备 11/8 徒步早餐与路餐，建议前一天买齐。
+- **The Store 步行导航：**[Radisson → The Store Gateway（Google Maps）](https://www.google.com/maps/dir/?api=1&origin=Radisson+Hotel+Salt+Lake+City+Downtown&destination=The+Store+90+S+Rio+Grande+St+Salt+Lake+City&travelmode=walking)。[门店官网与营业时间](https://www.thestorefinefoods.com/thestore)，电话 **385-213-7900**。
+- **Harmons 步行导航：**[Radisson → Harmons City Creek（Google Maps）](https://www.google.com/maps/dir/?api=1&origin=Radisson+Hotel+Salt+Lake+City+Downtown&destination=Harmons+135+E+100+S+Salt+Lake+City&travelmode=walking)。[门店官网与营业时间](https://www.harmonsgrocery.com/locations/city-creek-center)，电话 **801-428-0366**。
+- **周日提醒：**两家超市官网均列出周日营业，但 The Store 周日关门较早；不要将其他商场或餐厅的周日营业安排直接套用于这两家门店。
+
 ### NBA Games in Salt Lake City / 盐湖城 NBA 观赛参考（2026-11-07 至 2026-11-20）
 
 **查询范围：2026 年 11 月 7 日至 11 月 20 日，含首尾日期。** 根据 2026-10-24 查询到的公开赛程和票务信息，这段时间盐湖城有以下 **4 场犹他爵士（Utah Jazz）主场比赛**，均在 **Delta Center** 举行。
