@@ -8,12 +8,12 @@
 
 ## 行程总表
 
-> **里程与车程沿用所提供的估算，未重新核验地图路线**；不含观景、徒步、停车、接驳、用餐及雨雪路况缓冲。房型与早餐按所提供的信息记录；未注明早餐的酒店不推定含早。
+> **除 11/14 Capitol Reef → Bryce 段按 NPS 的 UT-12 路线说明更新外，里程与车程沿用所提供的估算，未重新核验地图路线**；不含观景、徒步、停车、接驳、用餐及雨雪路况缓冲。房型与早餐按所提供的信息记录；未注明早餐的酒店不推定含早。
 
 | 日期 | 星期 | 路线 | 参考里程 / 车程 | 住宿 / 房型与早餐 |
 |---|---|---|---|---|
 | 11.13 | 周五 | **Salt Lake City（盐湖城） → Capitol Reef National Park（圆顶礁国家公园）**；沿途 **Moon Overlook Rd**、**Long Dong Silver Trailhead（长东银步道起点）, Hanksville**、**Moonscape Overlook（月球地貌观景点）, F526+39, Hanksville** | **5 hr 17 min (471 km)** via **US-6 E** | **Broken Spur Inn & Steakhouse**, 955 East UT-24 Building 1, Wayne County, Utah, 84775；**山景房，2 张大床，含早** |
-| 11.14 | 周六 | **Broken Spur Inn → Capitol Reef National Park（圆顶礁国家公园） → Bryce Canyon National Park（布莱斯峡谷国家公园）** | **2 hr 30 min (205 km)** via **UT-24 E** | **Best Western Plus Bryce Canyon Grand Hotel**, 30 N 100 E, Bryce Canyon City；**2 张大床房，含早** |
+| 11.14 | 周六 | **Broken Spur Inn → Capitol Reef National Park（圆顶礁国家公园） → Bryce Canyon National Park（布莱斯峡谷国家公园）** | **Capitol Reef → Bryce 约 3 小时**（NPS 参考，不含酒店出发及园内游览）；**UT-24 W → UT-12 经 Boulder Mountain → UT-63 S**，里程待导航确认 | **Best Western Plus Bryce Canyon Grand Hotel**, 30 N 100 E, Bryce Canyon City；**2 张大床房，含早** |
 | 11.15 | 周日 | **Bryce Canyon City → Zion National Park（锡安国家公园） → Springdale** | **1 hr 51 min (135 km)** via **US-89 S** | **Zion Canyon Lodge**；**标准房，2 张大床** |
 | 11.16 | 周一 | **Springdale → Page（佩吉）** | **2 hr 21 min (189 km)** via **US-89 S** | **Best Western View of Lake Powell Hotel**；**2 张大床房，含早** |
 | 11.17 | 周二 | **Page（佩吉）**：**Lower Antelope Canyon（下羚羊谷）**、**The New Wave（新浪潮岩）** | 本地活动日 | **Best Western View of Lake Powell Hotel**；**2 张大床房，含早** |
@@ -45,7 +45,22 @@
   - **2 张大床房，含早**
 - 说明：
   - Capitol Reef 可优先安排 **Visitor Center（游客中心）**、**Fruita Historic District（Fruita 历史聚落）** 一带和 **Scenic Drive（景观公路）**。
-  - 下午或傍晚进入 Bryce，适合看主要观景点。
+  - 路况允许时尽量白天抵达 Bryce；结合 Capitol Reef 游览及途中停靠安排，不为赶观景点在雨雪或结冰时段翻山。
+
+#### Capitol Reef → Bryce：UT-12 经 Boulder Mountain
+
+**铺装公路路线：** Capitol Reef Visitor Center / Fruita → **UT-24 向西** → **Torrey** → 转 **UT-12 向南** → **Boulder Mountain（博尔德山）** → **Boulder, Utah** → **Escalante** → **Henrieville → Cannonville → Tropic** → 转 **UT-63 向南** → **Bryce Canyon City／Bryce Canyon National Park**。
+
+- **导航设置**：以 Capitol Reef Visitor Center 为起点、Bryce Canyon Visitor Center 或酒店为终点，依次添加 **Boulder, Utah**、**Escalante, Utah** 为途经点，并检查导航保持在 **UT-24／UT-12／UT-63** 铺装公路。此处从 Capitol Reef 返回 Torrey 是 **UT-24 W（向西）**，不是向东；酒店先去 Capitol Reef 的路程另计。
+- **最高海拔**：NPS 标注 UT-12 在 **Boulder Mountain 的公路最高点约 2,926 m（9,600 ft）**，位于 **Torrey → Boulder 镇** 之间；这是道路海拔，不是山峰海拔，比 Bryce 游客中心约高 500 m。
+- **沿途路段**：Torrey → Boulder 翻越高海拔森林路段；Boulder → Escalante 经过 **Hogback 山脊公路**，有弯道和临崖路段，保持低速并仅在安全停车区停靠。
+- **车程安排**：NPS 给出 Capitol Reef 与 Bryce 经 UT-12 的车程约 **3 小时**。正常路况下，少量观景停靠可按 **4–5 小时**预留（行程建议，不是实时导航）；不含此前 Capitol Reef 游览。下雪、结冰、清雪或管制时不能保证这个时间。
+- **11 月冬季风险**：山顶路段不能套用 Capitol Reef、Bryce 游客中心的天气预报。出发前一天及当天查看 **UT-12 Boulder Mountain 段**的天气、[UDOT 实时路况与摄像头](https://udottraffic.utah.gov/)；优先白天通过，遇积雪、结冰或封路时等待或重新评估路线，不把防滑链视为可以通过封闭道路的许可。
+- **避免导航土路捷径**：NPS 特别提醒，不要走从 Lower Bowns Campground / Reservoir 一带通往公园的 **South Draw Road**；这是一条未维护、需高底盘四驱的道路，不适合普通乘用车、房车或缺乏经验的驾驶者。不要为绕开 UT-12 管制而自行走林道或土路。
+- **官方参考**：[NPS Capitol Reef — Directions（含 UT-12 路线、约 3 小时车程、2,926 m 海拔及冬季警告）](https://www.nps.gov/care/planyourvisit/directions.htm)。本段为路线说明，**不代表已确认 11/14 道路开放或无冰雪**。
+
+#### Bryce 抵达后徒步备选
+
 - Bryce 徒步可优先考虑：
   - **Queen’s/Navajo Combination Loop（皇后花园 + 纳瓦霍组合环线）**：约 **4.6 km**，约 **2–3 小时**，是最经典、最适合第一次去 Bryce 的线路。
   - 体力保守版可拆成两段：
