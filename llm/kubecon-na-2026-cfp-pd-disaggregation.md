@@ -231,6 +231,21 @@ Official venue + travel page (booking links, room block cutoffs): <https://event
 - **Harmons 步行导航：**[Radisson → Harmons City Creek（Google Maps）](https://www.google.com/maps/dir/?api=1&origin=Radisson+Hotel+Salt+Lake+City+Downtown&destination=Harmons+135+E+100+S+Salt+Lake+City&travelmode=walking)。[门店官网与营业时间](https://www.harmonsgrocery.com/locations/city-creek-center)，电话 **801-428-0366**。
 - **周日提醒：**两家超市官网均列出周日营业，但 The Store 周日关门较早；不要将其他商场或餐厅的周日营业安排直接套用于这两家门店。
 
+### Korean Food near Radisson / Radisson 出发的韩餐选择
+
+**出发点：Radisson Hotel Salt Lake City Downtown，215 W South Temple。** 步行范围内主要是韩式快餐；Stun Cube 和 Baek Ri Hyang 位于酒店以南，**不属于酒店附近步行可达餐厅**。以下交通时间均为粗估，不是实时导航；轻轨候车、换乘及拥堵另计。地址信息于 **2026-11-05** 核对，下列来源类型分别注明。
+
+| 餐厅 | 地址 | 菜式与适合场景 | 从酒店怎么去 |
+|---|---|---|---|
+| **Cupbop Downtown** | **45 E Broadway（300 S）, Salt Lake City, UT 84111** | 韩式快餐饭碗，烤肉／鸡肉搭配米饭、粉丝和酱汁；不是桌边韩式烤肉店。适合就近简单吃一顿 | **步行约 20–25 分钟**；或步行至 **Temple Square Station**，乘向南的 TRAX 蓝线或绿线至 **Gallivan Plaza**，再步行几分钟 |
+| **Stun Cube** | **2732 S State St, South Salt Lake, UT 84115**（官网地址） | 韩式家常便当 **dosirak**，米饭搭配主菜和小菜；菜单以官网点餐页为准 | 不建议步行；打车可先预留 **约 15–25 分钟**，具体以当时导航为准 |
+| **Baek Ri Hyang（百里香）** | **3390 S State St #31, South Salt Lake, UT 84115**（第三方目录交叉核对，非已验证官网） | 韩式中华料理，可关注 **jajangmyeon（炸酱面）、jjamppong（辣海鲜面）、tangsuyuk（糖醋肉）**；当天供应需确认 | 不建议步行；打车可先预留 **约 15–25 分钟**，具体以当时导航为准 |
+
+- **Cupbop：**[品牌官网](https://www.cupbop.com/)；[Downtown 门店地址及点餐页](https://order.online/en-US/store/CupBop-Downtown-491273)。与 Ramen 930 位于同一地址，但不要把另一品牌的营业时间直接视为 Cupbop 的营业时间；本次未确认 Cupbop Downtown 的官方营业时段，出发前查看门店页面。[从酒店步行导航](https://www.google.com/maps/dir/?api=1&origin=Radisson+Hotel+Salt+Lake+City+Downtown&destination=Cupbop+45+E+Broadway+Salt+Lake+City&travelmode=walking)。
+- **Stun Cube：**[官网与菜单](https://www.stuncube.com/)，电话 **801-419-0082**；官网公布 **周一至周六 11:00–20:00，周日休息**。请使用官网当前列出的 **2732 S State St** 导航。[驾车导航](https://www.google.com/maps/dir/?api=1&origin=Radisson+Hotel+Salt+Lake+City+Downtown&destination=Stun+Cube+2732+S+State+St+South+Salt+Lake&travelmode=driving)。
+- **Baek Ri Hyang：**[FindRice 门店资料](https://www.findrice.com/salt-lake-city/store/95)及[另一门店目录](https://usarestaurants.info/explore/united-states/utah/salt-lake-county/south-salt-lake/baek-ri-hyang-801-883-9693.htm)均列出 **3390 S State St #31**；目录联系电话 **801-883-9693**。本次未验证到可用官网或官方营业时间，建议先电话确认仍在营业、当天时段及地址。[驾车导航](https://www.google.com/maps/dir/?api=1&origin=Radisson+Hotel+Salt+Lake+City+Downtown&destination=Baek+Ri+Hyang+3390+S+State+St+31+South+Salt+Lake&travelmode=driving)。
+- **选择建议：**图方便选 **Cupbop**；想吃韩式家常便当选 **Stun Cube**；想吃韩式炸酱面或辣海鲜面可考虑 **Baek Ri Hyang**，但先确认营业。公共交通以当天 Transit App／Google Maps 为准，尤其注意周日与晚间班次；是否免费乘车以 [UTA Free Fare Zone 官方范围](https://www.rideuta.com/Fares-And-Passes/Individual-Fares/Free-Fare-Zone)判断。
+
 ### NBA Games in Salt Lake City / 盐湖城 NBA 观赛参考（2026-11-07 至 2026-11-20）
 
 **查询范围：2026 年 11 月 7 日至 11 月 20 日，含首尾日期。** 根据 2026-10-24 查询到的公开赛程和票务信息，这段时间盐湖城有以下 **4 场犹他爵士（Utah Jazz）主场比赛**，均在 **Delta Center** 举行。
