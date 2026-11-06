@@ -1,6 +1,6 @@
 # KubeCon North America 2026 — Speaker Scripts (Slides 2–31)
 
-Source: [PowerPoint speaker notes](https://github.com/andyzhangx/demo/blob/248663dbe34e427d5cc27c46ef38c9755dff8554/llm/pd-disaggregation/kubecon-na-2026-pd-disaggregation-kaito-llmd.pptx) · [Word version](kubecon-na-2026-pd-disaggregation-kaito-llmd.docx).
+Source: [PowerPoint speaker notes](https://github.com/andyzhangx/demo/blob/6df3f65b142e08ab83fa85db04200e901764edf1/llm/pd-disaggregation/kubecon-na-2026-pd-disaggregation-kaito-llmd.pptx) · [Word version](kubecon-na-2026-pd-disaggregation-kaito-llmd.docx).
 
 Slide numbers follow the presentation’s actual slide order. Original wording, paragraphs, line breaks, and bold emphasis are preserved.
 
