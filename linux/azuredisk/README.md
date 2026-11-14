@@ -96,3 +96,4 @@ tmpfs           6.9G   12K  6.9G   1% /run/secrets/kubernetes.io/serviceaccount
  - [Exploring Windows Azure Drives, Disks, and Images](https://blogs.msdn.microsoft.com/windowsazurestorage/2012/06/27/exploring-windows-azure-drives-disks-and-images/)
  - [Kubernetes Persistent Volumes with Deployment and StatefulSet](https://akomljen.com/kubernetes-persistent-volumes-with-deployment-and-statefulset/)
  - [Troubleshoot Linux VM device name changes](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/linux/troubleshoot-device-names-problems)
+ - [Local CSI / VolumeBinding 大规模集群调度性能分析](local-csi-volumebinding-scheduling-performance.md) — node-local NVMe 容量检查、scheduler 优化及 driver 侧缓解；不是 Azure Disk CSI 故障归因。
