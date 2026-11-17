@@ -16,7 +16,7 @@
 | 11.14 | 周六 | **Broken Spur Inn → Capitol Reef National Park（圆顶礁国家公园） → Bryce Canyon National Park（布莱斯峡谷国家公园）** | **Capitol Reef → Bryce 约 3 小时**（NPS 参考，不含酒店出发及园内游览）；**UT-24 W → UT-12 经 Boulder Mountain → UT-63 S**，里程待导航确认 | **Best Western Plus Bryce Canyon Grand Hotel**, 30 N 100 E, Bryce Canyon City；**2 张大床房，含早** |
 | 11.15 | 周日 | **Bryce Canyon City → Zion National Park（锡安国家公园） → Springdale** | **1 hr 51 min (135 km)** via **US-89 S** | **Zion Canyon Lodge**；**标准房，2 张大床** |
 | 11.16 | 周一 | **Springdale → Page（佩吉）** | **2 hr 21 min (189 km)** via **US-89 S** | **Best Western View of Lake Powell Hotel**；**2 张大床房，含早** |
-| 11.17 | 周二 | **Page（佩吉）**：**Lower Antelope Canyon（下羚羊谷）**、**The New Wave（新浪潮岩）** | 本地活动日 | **Best Western View of Lake Powell Hotel**；**2 张大床房，含早** |
+| 11.17 | 周二 | **Page（佩吉）**：**Lower Antelope Canyon（下羚羊谷）**、**The New Wave（新浪潮岩）**；另见[五点地图与全天备选](#page-five-stops)（不与导览全天叠加） | 本地活动日 | **Best Western View of Lake Powell Hotel**；**2 张大床房，含早** |
 | 11.18 | 周三 | **Page（佩吉） → Forrest Gump Point（阿甘打卡点） → Moab（摩押）** | **4 hr 28 min (430 km)** via **AZ-98 E** | **My Place Hotel-Moab**, 1520 N Main St, Moab, Utah；**2 张大床房** |
 | 11.19 | 周四 | **Moab（摩押） → Salt Lake City International Airport（盐湖城国际机场）区域 → 酒店** | **3 hr 41 min (381 km)**（Moab 至机场的提供值，至酒店路段另留余量） | **Spark by Hilton Salt Lake City Airport**；**特大床房，含早** |
 | 11.20 | 周五 | **Spark by Hilton Salt Lake City Airport → Avis Car Rental**, 3921 W Terminal Dr, Salt Lake City | **7 min (6.8 km)** | —— |
@@ -103,10 +103,176 @@
   - 如有余裕，可加 **Glen Canyon Dam Overlook（格伦峡谷大坝观景点）**
   - 如前一天没去成，可补 **Horseshoe Bend（马蹄湾）**
 - **当天主计划为下羚羊谷；上羚羊谷仅作备选参考，不默认两处都去。**
+- 新增：[Page 五点地图与一日备选计划](#page-five-stops)。这是不含下羚羊谷导览的全天版本；若保留预约，按预约及天气删减，不叠加全部景点，也不改变住宿。
 - 羚羊谷步行信息（以 tour operator 公布信息为准）：
   - **Upper Antelope Canyon（上羚羊谷）**：常见 tour 标注约 **1.6 km / 1 mile 步行**，总时长约 **1 小时 40 分**，以平缓步行为主，通常更容易出片。
   - **Lower Antelope Canyon（下羚羊谷）**：常见 tour 标注约 **1.8 km / 1.1 miles 往返步行**，总时长约 **1 小时 30 分**，需要更多上下台阶/梯子，体力要求略高。
   - 这里不是常规意义上的自助徒步，基本都按 **guided tour（导览团）** 走，实际集合时间、车接驳、等候和峡谷内停留时长会因运营商而变化。
+
+<a id="page-five-stops"></a>
+
+#### Page 五点地图与一日备选计划
+
+> **这是一套新增的整日备选，不是把五个点全部叠加在下羚羊谷导览之上。** 仍住 **Best Western View of Lake Powell Hotel**，不改变 11/18 经 Forrest Gump Point 去 Moab 的安排。下羚羊谷若已预约，优先保留预约与签到缓冲；尚未确认预约时刻，不擅自取消或假定某时段可自由活动。若 11/16 已去过马蹄湾，这次可以跳过，不必重复。
+>
+> **天气优先：** 下面时刻表仅适用于天气、路况和现场开放情况允许的白天。按本文件 **2026-11-17 05:14 UTC（当地 11/16 22:14 MST）** 获取的预报，**11/17 Page 镇白天有阵雨／雷暴信号，阵风可达 63 km/h**；这是 Page 代表点，不是五个景点逐点预报，也不是实时预警。上午不保证安全，不能为了按表走完而进入冲沟、湿滑岩面或暴露崖边。出发前另查各点／上游天气、预警与 [UDOT](https://udottraffic.utah.gov/)／[AZ511](https://az511.gov/map)；本次新增地图不代表已核实道路、步道或景区开放状态。
+
+##### 地图：五个点与导航
+
+地图编号就是建议游览顺序：**① Toadstool Hoodoos → ② Beehive Trail／The New Wave → ③ Glen Canyon Dam Overlook → ④ Biidi the Arch → ⑤ Horseshoe Bend**。先去最远的蘑菇石，再沿 US-89 返回 Page 一带，减少往返折返。
+
+以下为 GitHub 原生 `geojson` 地图；可缩放、点击标记查看地点属性。**只标地点，不画直线充当公路或徒步路线**；停车／入口与景观本体的区别见表，坐标不是准许驾车进入步道的依据。若客户端只显示代码，请打开 GitHub 网页或下方 Google Maps 链接。GeoJSON 坐标顺序为 **经度、纬度**，表内则为 **纬度、经度**。
+
+```geojson
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "1. Toadstool Hoodoos Trailhead",
+        "说明": "步道入口／停车区域，不是蘑菇石本体",
+        "Google Maps": "https://maps.app.goo.gl/mQvUvj67TpCHjqUE8",
+        "坐标来源": "https://www.naztrails.org/toadstools-trail",
+        "marker-color": "#1769aa",
+        "marker-size": "medium",
+        "marker-symbol": "1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -111.873205,
+          37.10128333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "2. Beehive Trail / The New Wave",
+        "说明": "Beehives 步道入口／停车区域，不是营地预订点",
+        "Google Maps": "https://maps.app.goo.gl/U7KhSMK63BpGaBbH6",
+        "坐标来源": "https://www.naztrails.org/beehives-trail",
+        "marker-color": "#1769aa",
+        "marker-size": "medium",
+        "marker-symbol": "2"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -111.49687667,
+          36.93792667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "3. Glen Canyon Dam Overlook",
+        "说明": "观景步道入口／停车区域，不是游客中心",
+        "Google Maps": "https://maps.app.goo.gl/Pv75NQuJXGxzjH5F7",
+        "坐标来源": "https://www.naztrails.org/glen-canyon-dam-overlook-trail",
+        "marker-color": "#1769aa",
+        "marker-size": "medium",
+        "marker-symbol": "3"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -111.47706,
+          36.92404667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "4. Biidi The Arch",
+        "说明": "景观 POI，不是已确认停车位；驾车先到1501CoppermineRd周边合法停车点",
+        "Google Maps": "https://www.google.com/maps/search/?api=1&query=Biidi+The+Arch+Page",
+        "坐标来源": "https://www.google.com/maps/place/Biidi+The+Arch/@36.8971304,-111.442353,17z/data=!3m1!4b1!4m6!3m5!1s0x873413004d5352c1:0xb5c2bd7f1adf1864!8m2!3d36.8971304!4d-111.442353!16s%2Fg%2F11yfh0pz1j?hl=en",
+        "marker-color": "#1769aa",
+        "marker-size": "medium",
+        "marker-symbol": "4"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -111.442353,
+          36.8971304
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "5. Horseshoe Bend Parking Lot",
+        "说明": "停车场 POI，不是马蹄湾崖沿或科罗拉多河",
+        "Google Maps": "https://www.google.com/maps/search/?api=1&query=Horseshoe+Bend+Parking+Lot+Page",
+        "坐标来源": "https://grandcanyon.com/poi/horseshoe-bend-overlook-parking-lot/",
+        "marker-color": "#1769aa",
+        "marker-size": "medium",
+        "marker-symbol": "5"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -111.5028016,
+          36.876343
+        ]
+      }
+    }
+  ]
+}
+```
+
+| 顺序 | 地点／Google Maps | 地图标记含义 | 坐标（纬度，经度）／来源 |
+|---|---|---|---|
+| **1** | [Toadstool Hoodoos Trailhead](https://maps.app.goo.gl/mQvUvj67TpCHjqUE8) | 步道入口／停车区域，不是蘑菇石本体 | `37.10128333, -111.873205` · [来源](https://www.naztrails.org/toadstools-trail) |
+| **2** | [Beehive Trail / The New Wave](https://maps.app.goo.gl/U7KhSMK63BpGaBbH6) | Beehives 步道入口／停车区域，不是营地预订点 | `36.93792667, -111.49687667` · [来源](https://www.naztrails.org/beehives-trail) |
+| **3** | [Glen Canyon Dam Overlook](https://maps.app.goo.gl/Pv75NQuJXGxzjH5F7) | 观景步道入口／停车区域，不是游客中心 | `36.92404667, -111.47706` · [来源](https://www.naztrails.org/glen-canyon-dam-overlook-trail) |
+| **4** | [Biidi The Arch](https://www.google.com/maps/search/?api=1&query=Biidi+The+Arch+Page) | 景观 POI，不是已确认停车位；驾车先到1501CoppermineRd周边合法停车点 | `36.8971304, -111.442353` · [来源](https://www.google.com/maps/place/Biidi+The+Arch/@36.8971304,-111.442353,17z/data=!3m1!4b1!4m6!3m5!1s0x873413004d5352c1:0xb5c2bd7f1adf1864!8m2!3d36.8971304!4d-111.442353!16s%2Fg%2F11yfh0pz1j?hl=en) |
+| **5** | [Horseshoe Bend Parking Lot](https://www.google.com/maps/search/?api=1&query=Horseshoe+Bend+Parking+Lot+Page) | 停车场 POI，不是马蹄湾崖沿或科罗拉多河 | `36.876343, -111.5028016` · [来源](https://grandcanyon.com/poi/horseshoe-bend-overlook-parking-lot/) |
+
+
+**分段驾驶导航：** [酒店 → ① 蘑菇石入口](https://www.google.com/maps/dir/?api=1&origin=Best+Western+View+of+Lake+Powell+Hotel%2C+Page%2C+AZ&destination=37.10128333%2C-111.873205&travelmode=driving) · [① → ② → ③ → ④ 周边街道地址 → ⑤ 停车场](https://www.google.com/maps/dir/?api=1&origin=37.10128333%2C-111.873205&destination=36.876343%2C-111.5028016&waypoints=36.93792667%2C-111.49687667%7C36.92404667%2C-111.47706%7C1501+Coppermine+Rd%2C+Page%2C+AZ+86040&travelmode=driving) · [⑤ → 酒店](https://www.google.com/maps/dir/?api=1&origin=36.876343%2C-111.5028016&destination=Best+Western+View+of+Lake+Powell+Hotel%2C+Page%2C+AZ&travelmode=driving)。
+
+- 中段路线含三个途经点，Biidi 使用 **1501 Coppermine Rd** 的街道地址，**不把洞穴坐标当作驾车终点**；停车位置和可进入通道仍需现场确认。
+- 如手机／客户端忽略途经点，按表格逐点导航；地图与链接只辅助定位，不保证当天道路可通行、停车位可用或景点开放。
+
+##### 建议时刻表：不含下羚羊谷导览的全天版本
+
+时间均为 **当地 MST（UTC−7）**；本行程日期 Utah 与 Page 没有时差。**车程是规划估算，不是实时导航计算**，不反映堵车、雨雪、封路、排队；走合法道路，按现场停车与通行标识调整。
+
+| 当地时间 | 安排 | 建议预留／说明 |
+|---|---|---|
+| **08:00–08:45** | 从 Page 酒店出发 → **① Toadstool Hoodoos Trailhead** | 约 40–45 分钟车程，先去最远点 |
+| **08:45–10:15** | **蘑菇石徒步、拍照** | 约 1–1.5 小时；往返约 2.5–3 km，探索范围影响长度 |
+| **10:15–11:00** | 沿 US-89 往 Page 返回 → **② Beehive Trail／The New Wave** | 约 35–45 分钟车程 |
+| **11:00–12:15** | **Beehive 主环线、波纹岩石拍照** | 约 1–1.25 小时；主环线约 2–3 km，不加远处洞穴支线 |
+| **12:15–13:00** | 开车 → **③ Glen Canyon Dam Overlook**，观景 | 车程约 10–15 分钟；停留约 20–30 分钟 |
+| **13:00–14:00** | 回 Page 午餐、休息 | 留出停车、用餐及天气调整缓冲 |
+| **14:00–14:40** | **④ Biidi the Arch** | 包括附近转场、短途步行与拍照，约 30–40 分钟 |
+| **14:40–16:15** | 开车 → **⑤ Horseshoe Bend Parking Lot**，步行至马蹄湾观景点再返回 | 车程约 10–15 分钟；游览预留 1–1.25 小时，往返约 2.4 km |
+| **16:15 后** | 返回 Page 酒店 | 不必为了日落一直等在崖边，不把徒步拖到天黑 |
+
+**整体按约 8–9 小时、步行约 7–9 km 预算。** 上表为行程分配建议，不是已确认预约或实时路由；沙地、岩面、拍照和绕行都会增加耗时。早餐、饮水和防风层提前准备，手机保存离线地图；不要把“短线”理解成无需看天气。
+
+##### 五个地点的取舍与注意事项
+
+1. **Toadstool Hoodoos（蘑菇石）**：优先上午、留足拍照时间；不攀爬脆弱岩柱，沿既有路线走。路线含冲沟／排水地形，有雷暴、上游降雨、积水或泥泞风险时取消；“本地还没下雨”不是安全依据。导航到 **Trailhead**，不是让车辆开到蘑菇石本体；不是较远的 Wahweap Hoodoos。
+2. **Beehive Trail／The New Wave（新浪潮岩）**：这里指 **Page 附近、Glen Canyon Dam 西侧的步道**，不是 Acadia 的同名铁梯步道，也不是需要抽签的 The Wave。主环线拍照即可，不加长支线、不为照片攀爬湿滑岩面；遇雷电、强风或湿岩面就跳过。入口支路及停车条件以现场为准，不自行驶入沙地或未维护土路。
+3. **Glen Canyon Dam Overlook（格伦峡谷大坝观景点）**：这是看大坝和下游峡谷的观景点，**不是 Carl Hayden Visitor Center，也不是大坝内部参观**。短停 20–30 分钟即可；岩石台阶雨后易滑，靠近停车场不等于雷暴时安全。
+4. **Biidi the Arch（砂岩洞穴）**：位于 **1501 Coppermine Road 的 Big Lake Trading Post／Shell 加油站后方**，是顺路小景点，不是长线拱门徒步。按现场允许的位置停车、确认进入通道和标识，不阻挡加油或商家出入口；**不能把砂岩洞穴／岩檐当作雷暴避难处**。
+5. **Horseshoe Bend（马蹄湾）**：导航到 **停车场**，不是河边或崖沿。停车场至观景点往返约 **2.4 km**，不是下车即到。下午从容游览，不必执着日落；远离无护栏崖边，强风、雷暴时取消。2026-11-17 查阅的 [NPS 页面](https://www.nps.gov/glca/planyourvisit/horseshoe-bend.htm)列普通轿车／房车停车费 **$10**，国家公园年票不抵停车费，以现场最新收费为准。
+
+##### 若保留下羚羊谷预约，或 11/17 天气不佳
+
+- **有下羚羊谷预约**：以实际集合／签到时间为锚点，按运营商要求另留签到、接驳、等候及往返车程；不要同时承诺上面完整五点时刻表。天气允许时，可在剩余白天优先挑 **Glen Canyon Dam Overlook＋Biidi＋Horseshoe Bend**，次序按预约位置调整；**Toadstool、Beehive 是优先删减项**。The New Wave 与 Beehive 是同一活动，不重复安排。
+- **预报或现场出现雷暴、强风**：不要把三个短停点当成全天候替代方案；马蹄湾和大坝观景点同样暴露。取消冲沟徒步、裸露岩面和崖边活动，改在镇内合适建筑中休息、用餐或等天气改善；雷暴期间不在洞穴／岩檐下避雷。羚羊谷是否运营以运营商与管理方通知为准，关闭时不自行进入。
+- **缩减而不是挤到次日**：11/18 原计划仍需经阿甘打卡点去 Moab，不默认把今天未完成的五点都补到转场日；优先保证白天驾驶和既定住宿。
+
+**地图与步道资料（2026-11-17 核对）：** [Northern Arizona Trails：Toadstools](https://www.naztrails.org/toadstools-trail)、[Beehives](https://www.naztrails.org/beehives-trail)、[Glen Canyon Dam Overlook](https://www.naztrails.org/glen-canyon-dam-overlook-trail) 提供步道入口坐标与停车说明；前三点由源文度分坐标换算为十进制度，末尾小数不代表厘米级精度。Biidi 采用 Google Maps 同名 POI 坐标及地址、不是已核实停车位；马蹄湾采用 [停车场位置资料](https://grandcanyon.com/poi/horseshoe-bend-overlook-parking-lot/)，明确区别于崖沿。步道安全与收费参考 [NPS 马蹄湾说明](https://www.nps.gov/glca/planyourvisit/horseshoe-bend.htm) 和 [NPS Glen Canyon 日间步道](https://www.nps.gov/glca/planyourvisit/day-hikes.htm)。这些资料用于定位与规划，不构成当前开放／准入保证。
 
 ### 11.18（周三）｜Page（佩吉） → Forrest Gump Point（阿甘打卡点） → Moab（摩押）
 - 这一天从 Page 继续北上，经 **Forrest Gump Point（阿甘打卡点）** 前往 **Moab（摩押）**。
@@ -154,7 +320,10 @@
 ### Page 一段
 - **Page（佩吉）**
 - **Lower Antelope Canyon（下羚羊谷）**
-- **The New Wave（新浪潮岩）**
+- **The New Wave（新浪潮岩）／Beehive Trail**
+- **Toadstool Hoodoos Trailhead（蘑菇石步道入口）**
+- **Biidi the Arch（砂岩洞穴）**
+- [五点地图与驾驶导航](#page-five-stops)
 - **Best Western View of Lake Powell Hotel**
 - **Horseshoe Bend（马蹄湾）**
 - **Glen Canyon Dam Overlook（格伦峡谷大坝观景点）**
