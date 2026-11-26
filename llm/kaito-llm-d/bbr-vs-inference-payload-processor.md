@@ -24,7 +24,7 @@ BBR（Body-Based Routing）最初属于 Gateway API Inference Extension（GIE）
 | 定位 | 从请求 body 提取模型名，辅助 pool 路由 | 可检查、修改推理请求和响应的 headers/body；路由是主要用途之一 |
 | 项目归属与发布 | GIE 仓库内组件 | 独立的 llm-d 仓库、所有权与发布周期 |
 | 请求处理 | `model` → `X-Gateway-Model-Name` | `body-field-to-header`、`base-model-to-header`、`model-selector` 等插件组合 |
-| 响应处理 | 初始能力描述不包含响应插件框架 | profile 的响应 header、完整 body、流式 chunk 扩展点；内置 `model-name-to-header` |
+| 响应处理 | 初始能力描述不包含响应插件框架 | profile 的完整 body / 流式 chunk 扩展点；全局 post-processing 支持响应 header / 完整 body，内置 `model-name-to-header` |
 | 多模型与 LoRA | 依据提取的模型名匹配路由 | 可把 LoRA adapter 映射到 base model，再通过 header 与 HTTPRoute 选择 pool |
 | 模型选择 | 使用客户端指定的模型名 | `Filter → Score → Pick`，选出具体模型后改写请求 `model` |
 | 跨请求数据 | 初始实现不提供通用数据层 | Extractor、Collector、Datasource 维护模型配置、in-flight 等决策数据 |
@@ -42,7 +42,7 @@ BBR（Body-Based Routing）最初属于 Gateway API Inference Extension（GIE）
 - `body-field-to-header`：把指定 JSON 字段复制到指定请求 header，例如 `model` → `X-Gateway-Model-Name`。
 - `base-model-to-header`：通过带标签的模型映射 ConfigMap，把模型名或 LoRA adapter 名映射为 base model，设置 `X-Gateway-Base-Model-Name`。
 - `model-selector`：执行模型选择，并将选中的具体模型写回请求 body。
-- `model-name-to-header`：从请求周期状态读取选中的模型，在响应 header 中返回；需要同一个 profile 执行过 `model-selector`，并非任意请求都会自动生成此响应头。
+- `model-name-to-header`：配置在全局 `postProcessing.plugins`，从请求周期状态读取选中的模型，在响应 header 中返回；需要请求所选 profile 执行过 `model-selector`，并非任意请求都会自动生成此响应头。它实现 `ResponseHeadersProcessor`，不能放入仅接受完整 body / chunk 接口的 profile `response` 列表。
 
 模型映射 ConfigMap 可以被 watch 并更新，但这只说明映射数据可更新，**不等于任意插件代码或整个 pipeline 可以运行时热加载**。ConfigMap 映射也不会替你部署、下载或加载 LoRA adapter。
 
@@ -59,7 +59,7 @@ BBR（Body-Based Routing）最初属于 Gateway API Inference Extension（GIE）
 - `model-group-name-filter`：精确模型名保留同名候选；`auto` 保留全部候选；`auto/chat` 只保留配置为 `chat` 组的候选模型。
 - `inflight-requests-scorer`：依据数据层记录的每模型 in-flight 数量评分，较低负载得分较高。
 - `max-score-picker`、`random-picker`、`weighted-random-picker`：分别按最高分、均匀随机、按分数加权随机选择。
-- `cost-scorer`：仓库内有参考实现，但**默认 runner 未注册**；不能只加一段 YAML 就假定官方默认二进制能使用它。
+- `cost-scorer`：仓库内有参考实现，但**默认 runner 未注册**；不能只加一段 YAML 就假定官方默认二进制能使用它。默认 runner 已注册的 `costguard` 是另一个 scorer，不应混淆。
 
 `auto` / `auto/chat` 是配置相应插件后的语义，不是网关看到字符串就会自动生效。模型组属性、候选模型和所需信号必须存在；它也不是自动理解 prompt 难度或保证回答质量的语义路由器。
 
@@ -70,6 +70,7 @@ BBR（Body-Based Routing）最初属于 Gateway API Inference Extension（GIE）
 - **Extractor**：异步消费请求/响应事件；例如 `request-metadata-extractor` 更新每模型的 in-flight 计数。
 - **Collector / Datasource**：分别适用于周期采集和 watch 等持续同步机制。
 - **Profile**：每个请求选择一个 profile，再执行其 request/response 插件；只有一个 profile 且未显式配置 picker 时，自动使用 `single-profile-picker`。
+- **全局处理阶段**：`preProcessing` 已在 profile 选择前执行；全局 body post-processors 在 profile 的完整响应 body 插件后执行，header post-processors 则在响应 headers 阶段执行。它们不是尚未接入的占位字段，详见下文的文档与代码差异。
 
 这些计数是处理器观察到并异步更新的信号，不应无条件等同于模型服务器的精确实时队列或全局所有副本的负载。
 
@@ -168,8 +169,8 @@ profiles:
 
 ## 当前限制与落地检查
 
-1. **全局 pre/post 阶段尚未执行**：`preProcessing` / `postProcessing` 是配置中接受的预留扩展点，当前请求路径未调用。实际可用的 profile request/response 插件不要与这些全局字段混淆。上游文档个别段落仍有不一致表述，应优先遵循 architecture/configuration 的明确限制并核对实现。
-2. **响应插件有流式边界**：完整 body 的 `ResponseProcessor` 会强制缓冲；`ResponseChunkProcessor` 按流式 chunk 工作，两者不能在同一 profile 混用。响应 header 插件不要求等待完整 body。
+1. **全局 pre/post 已接入，旧文档说明滞后**：固定提交的 architecture/configuration 文档仍写“预留、尚未调用”，但 [loader][loader] 已加载这些插件，[runner][runner] 已传给服务端，[请求 handler][request-handler] 在 profile 选择前调用 `preProcessors`，[响应 handler][response-handler] 在 profile body 插件后调用 `postProcessors`，并在响应 headers 阶段调用 header post-processors。因此不能继续沿用“pre/post 未接入”的结论；本文以该提交代码为准，不推定较旧发布版本也具有相同行为。
+2. **响应插件有流式边界**：完整 body 的 `ResponseProcessor` 会强制缓冲；`ResponseChunkProcessor` 按流式 chunk 工作，两者不能在同一 profile 混用。全局 body post-processors 会令所有 profiles 需要缓冲，并与 profile chunk processors 冲突；loader 会拒绝该组合。全局 header post-processors 不强制完整 body 缓冲。
 3. **仓库里有代码，不等于默认可用**：`cost-scorer` 未出现在该提交的默认注册列表，需额外注册；`model-config-datasource` 则已注册，尽管插件文档尚未更新。还要区分“已注册”“已配置”“对应事件已启用”。
 4. **Guardrail、语义选模是扩展方向，不是默认保证**：迁移提案提到待贡献的 guardrail 示例，不等于默认发行版已包含完整安全审查或语义路由能力。
 5. **没有自动性能提升承诺**：ext-proc 事件带来代理与 IPP 之间的额外交互；解析、插件处理、响应缓冲都可能增加延迟与资源使用。纯路由场景可关闭不需要的响应事件，但依赖响应事件维护 in-flight 的方案需保留相应事件并验证计数行为。
@@ -188,6 +189,9 @@ profiles:
 - [IPP Creating a Plugin（固定提交）][create-plugin]
 - [IPP runner：默认插件注册（固定提交）][runner]
 - [IPP model-config-datasource：模型、分组与价格配置实现（固定提交）][modelconfig]
+- [IPP 配置 loader：插件接口分类、pre/post 装配及缓冲约束（固定提交）][loader]
+- [IPP 请求 handler：全局 pre-processing 调用（固定提交）][request-handler]
+- [IPP 响应 handler：全局 post-processing 调用（固定提交）][response-handler]
 
 [ipp-repo]: https://github.com/llm-d/llm-d-inference-payload-processor
 [migration]: https://llm-d.ai/docs/0.7/proposals/llm-d-inference-payload-processor
@@ -200,3 +204,6 @@ profiles:
 [create-plugin]: https://github.com/llm-d/llm-d-inference-payload-processor/blob/373c6b25056a848be71792395ce4add108d9d682/docs/create_new_plugin.md
 [runner]: https://github.com/llm-d/llm-d-inference-payload-processor/blob/373c6b25056a848be71792395ce4add108d9d682/cmd/runner/runner.go
 [modelconfig]: https://github.com/llm-d/llm-d-inference-payload-processor/blob/373c6b25056a848be71792395ce4add108d9d682/pkg/framework/plugins/datalayer/modelconfigcollector/plugin.go
+[loader]: https://github.com/llm-d/llm-d-inference-payload-processor/blob/373c6b25056a848be71792395ce4add108d9d682/pkg/config/loader/configloader.go
+[request-handler]: https://github.com/llm-d/llm-d-inference-payload-processor/blob/373c6b25056a848be71792395ce4add108d9d682/pkg/handlers/request.go
+[response-handler]: https://github.com/llm-d/llm-d-inference-payload-processor/blob/373c6b25056a848be71792395ce4add108d9d682/pkg/handlers/response.go
