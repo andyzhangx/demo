@@ -6,7 +6,6 @@
 
 - 常规 KAITO 推理、不希望维护 Prometheus：优先评估 `keda-kaito-scaler`，前提是使用 KAITO `InferenceSet`。
 - 已有 Prometheus，需要复杂指标、Prefill/Decode（PD）分离或系统化策略评测：参考 `llm-d-autoscaling` 的配置和 benchmark 框架。
-- Racer 与两者互补：scaler 决定何时扩容，Racer 尝试降低新实例的权重加载时间；它不负责副本数决策。
 
 本文基于以下源码快照，不将 `main` 的能力等同于所有已发布版本：
 
@@ -163,17 +162,6 @@ llm-d 的 KEDA 路线是否安全支持缩零、用什么信号唤醒，取决�
 - 希望在模拟环境和真实 GPU 上系统比较阈值、队列策略及成本/延迟表现。
 
 这不等于把 llm-d 的 Deployment blueprint 原样应用到 KAITO MultiRoleInference 就能生效；资源模型、控制权和副本语义需要单独适配。尤其不能让两个 controller 同时争用同一资源的 replicas。
-
-### 与 Racer 的关系
-
-```text
-Autoscaler：根据负载决定增加推理实例
-KAITO / Kubernetes：调度并启动实例
-Racer：在支持的加载路径上复用权重缓存，降低重复读取开销
-模型 Ready：承接请求
-```
-
-权重缓存可能降低扩容生效延迟，但不消除 GPU 调度、镜像拉取、CUDA/JIT 等其他开销，也不保证常驻 GPU 后的稳态 tokens/s 提升。应分别测量扩容决策延迟、Pod→Ready、模型加载时间及服务 SLO。
 
 ## 参考资料
 
