@@ -272,7 +272,7 @@ profiles:
 - Helm 的 `provider.name=istio` 生成 `EnvoyFilter` 等接入资源；`gke` 生成 `GCPRoutingExtension`；`none` 只创建 IPP 核心资源，代理接入需自行配置。
 - 上游架构按每 Gateway 一个 IPP 部署描述；IPP 与 EPP 独立配置和部署。需要核实代理对 ext-proc `FULL_DUPLEX_STREAMED` 等模式的支持及事件开关。
 
-## 与 EPP、KAITO、Racer 的分工
+## 与 EPP、KAITO 的分工
 
 ```text
 客户端 → Gateway/Proxy → IPP：payload 处理、模型选择、路由 header
@@ -287,9 +287,6 @@ profiles:
 | IPP | 请求用哪个模型、如何处理 payload、如何提供 pool 路由依据？ | 不管理模型工作负载，不替 EPP 选择具体 Pod |
 | EPP（Endpoint Picker Extension） | 已选 pool 中，哪个 endpoint/Pod 更适合？ | 不是 IPP 的通用请求/响应处理框架 |
 | KAITO | 如何声明、部署和管理模型服务工作负载及相关资源？ | 上游 IPP 有插件不代表 KAITO 已自动暴露对应 API 或完成集成 |
-| Racer | 模型文件/权重的数据分发、缓存与加载加速如何实现？ | 不负责 HTTP payload 的模型选择，也不替代 EPP 调度；不同于推理 KV-cache 路由信号 |
-
-因此，IPP 的 data layer 是**决策元数据层**，不能与 Racer 的模型数据缓存混为一谈。它们可以在一个服务系统中协作，但不会因为都使用“数据/缓存”就承担相同职责。
 
 ## 当前限制与落地检查
 
