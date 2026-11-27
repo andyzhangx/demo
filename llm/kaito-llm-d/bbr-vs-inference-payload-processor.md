@@ -25,7 +25,7 @@ BBR（Body-Based Routing）最初属于 Gateway API Inference Extension（GIE）
 | 项目归属与发布 | GIE 仓库内组件 | 独立的 llm-d 仓库、所有权与发布周期 |
 | 请求处理 | `model` → `X-Gateway-Model-Name` | `body-field-to-header`、`base-model-to-header`、`model-selector` 等插件组合 |
 | 响应处理 | 初始能力描述不包含响应插件框架 | profile 的完整 body / 流式 chunk 扩展点；全局 post-processing 支持响应 header / 完整 body，内置 `model-name-to-header` |
-| 多模型与 LoRA | 依据提取的模型名匹配路由 | 可把 LoRA adapter 映射到 base model，再通过 header 与 HTTPRoute 选择 pool |
+| 多模型与 LoRA | 依据提取的模型名匹配路由 | 根据 LoRA adapter 与 base model 的配置关系，通过 header 与 HTTPRoute 选择兼容的 pool；仍需保留 adapter 身份并确保后端可服务它 |
 | 模型选择 | 使用客户端指定的模型名 | `Filter → Score → Pick`，选出具体模型后改写请求 `model` |
 | 跨请求数据 | 初始实现不提供通用数据层 | Extractor、Collector、Datasource 维护模型配置、in-flight 等决策数据 |
 | 配置与扩展 | 初始逻辑较固定 | YAML `PayloadProcessorConfig`、profiles、插件参数与引用；自定义 Go 插件需注册并构建 |
@@ -75,6 +75,130 @@ BBR（Body-Based Routing）最初属于 Gateway API Inference Extension（GIE）
 这些计数是处理器观察到并异步更新的信号，不应无条件等同于模型服务器的精确实时队列或全局所有副本的负载。
 
 `model-config-datasource` 从 JSON 文件同步候选模型，并支持显式配置 `groups` 和 `pricing`。**这里上游文档与代码存在差异**：插件文档仍写“默认 runner 未注册”，但固定提交的 [runner 注册代码][runner]已经注册它，[datasource 实现][modelconfig]也已处理模型组与价格。因此本文以该提交的代码为准；不要把过时的文档限制套用到所有版本。`chat` 分组仍需显式配置，不会自动产生。
+
+## LoRA adapter 是什么，为什么要映射到 base model？
+
+> 本节概念说明补充于 2026-11-27；不改变上文基于固定提交的 IPP 能力核对范围。以下模型名称和部署拓扑仅用于解释，不是可直接部署的完整配置。
+
+### 1. LoRA adapter：基础模型上的一组微调参数
+
+**LoRA（Low-Rank Adaptation，低秩适应）是一种参数高效微调方法。** 它通常冻结基础模型的原始参数，只训练一小组额外参数；这组参数通常称为 **LoRA adapter（适配器）**。
+
+例如，针对同一个兼容的 Qwen 基础模型，可以训练不同的 adapter：
+
+```text
+Qwen + 客服 adapter → 适应客服问答任务
+Qwen + SQL adapter  → 适应 SQL 生成任务
+Qwen + 法律 adapter → 适应法律领域任务
+```
+
+Adapter **不是一个完整的模型，不能独立运行**，需要与兼容的基础模型一起使用。它也不是 system prompt 或知识库文件，而是训练得到的参数；并不是任何 adapter 都能与任意 Qwen/Llama 模型混用。
+
+对于应用 LoRA 的权重矩阵，可简化理解为：
+
+```text
+有效权重 = 基础权重 W + adapter 增量 ΔW
+ΔW = 缩放因子 × B × A
+```
+
+`A`、`B` 是低秩矩阵，其参数量通常远小于原始权重矩阵。相比全参数微调，这样可以降低需要训练、保存的参数量和相应的训练资源开销。具体效果仍取决于模型、训练方法和任务。
+
+### 2. 多个 adapter 可以共用一份基础模型
+
+如果推理引擎支持并启用了 multi-LoRA，一个模型服务可以加载一份基础模型，再服务多个 adapter：
+
+```text
+一个支持 multi-LoRA 的 vLLM 服务
+├── 一份兼容的 Qwen 基础模型权重
+├── 客服 adapter，对外模型名 qwen-customer-service
+├── SQL adapter，对外模型名 qwen-sql
+└── 法律 adapter，对外模型名 qwen-legal
+```
+
+每个请求指定要使用哪个 adapter，从而减少不同微调版本之间基础模型权重的重复加载。Adapter 自身仍然占用资源，具体并发、加载和容量限制由引擎及配置决定。
+
+**部署 IPP 不会自动启用 multi-LoRA，也不会自动训练、下载或加载 adapter。** 这些属于模型服务的配置与生命周期管理职责。
+
+### 3. “映射到 base model”是查路由关系，不是转换模型
+
+假设平台有两组后端：
+
+```text
+qwen-pool
+└── 运行 Qwen，能够服务 qwen-customer-service、qwen-sql
+
+llama-pool
+└── 运行 Llama，能够服务 llama-legal
+```
+
+客户端发送：
+
+```json
+{
+  "model": "qwen-sql",
+  "messages": [
+    {"role": "user", "content": "查询最近一个月销售额最高的十个商品"}
+  ]
+}
+```
+
+`qwen-sql` 是对外暴露的 adapter 模型名称。IPP 根据显式配置的映射关系知道它依赖 Qwen：
+
+```text
+请求模型 qwen-sql → 基础模型 qwen → 由 HTTPRoute 选择 qwen-pool
+```
+
+这里不是把 adapter 转换成基础模型，也不是 IPP 根据名称猜测模型兼容性，而是使用平台提供的映射数据辅助路由。
+
+### 4. 为什么需要 header 和 HTTPRoute？
+
+模型名在 JSON body 中，而标准 Gateway API `HTTPRoute` 的匹配条件不会直接解析 JSON body 中的 `model` 字段。因此，IPP 将模型信息转换成网关可以匹配的 header。
+
+在本文固定提交所描述的 `base-model-to-header` 插件配置下，典型流程是：
+
+```text
+① 客户端：body.model = qwen-sql
+          │
+          ▼
+② IPP：查配置映射，qwen-sql → qwen
+          │
+          ▼
+③ base-model-to-header 设置路由 header
+   X-Gateway-Base-Model-Name: qwen
+          │
+          ▼
+④ HTTPRoute 匹配 header，选择 qwen-pool
+          │
+          ▼
+⑤ EPP 在该 pool 中选择能够服务此请求的 endpoint/Pod
+          │
+          ▼
+⑥ 模型服务器使用 Qwen + SQL adapter 完成推理
+```
+
+IPP 通过代理的 ext-proc 接口参与处理；上图是职责与决策顺序示意，并不意味着 IPP 是所有推理流量都直接穿过的独立 HTTP 反向代理。具体代理配置还需要保证路由决策能够消费修改后的 header。
+
+### 5. 关键边界：保留 adapter 身份，选中的后端必须支持它
+
+**用于选择 pool 的基础模型信息，与后端执行时需要的 adapter 信息，是两件事。**
+
+```text
+路由 header：X-Gateway-Base-Model-Name: qwen
+请求 body：  model = qwen-sql
+```
+
+对于这种显式指定 adapter 的请求，典型做法是保留 body 中的 `qwen-sql`，额外设置基础模型路由 header。模型服务器依靠原始 adapter 名选择对应的微调参数。
+
+如果直接把 body 中的 `model` 改成 `qwen`，又没有通过其他受支持的机制保留 adapter 身份，后端可能只执行基础模型，而不是 SQL adapter。不要将 `base-model-to-header` 的路由映射与 `model-selector` 的主动选模、body 改写混为一谈。
+
+此外，选对基础模型池并不代表请求必然成功：
+
+- 最终后端必须已经加载该 adapter，或者具备经过配置和验证的加载机制。
+- 不能假设同一个 pool 的所有 Pod 都自动拥有所有 adapter。
+- 如果不同 Pod 的 adapter 可用性不同，需要相应的后端筛选/路由能力，或将 pool 组织为具有一致服务能力的后端集合；仅增加 ConfigMap 映射不能解决这个问题。
+- 未知 adapter、映射缺失、加载失败等情况，需要按目标版本验证错误处理，不能默认静默退回基础模型。
+
+简言之：**基础模型决定兼容的后端集合，adapter 决定使用哪个微调版本；IPP 提供模型到 pool 的路由依据，但不负责保证 adapter 已在后端可用。**
 
 ## 两个请求示例
 
